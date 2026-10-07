@@ -71,6 +71,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .elementor-widget-text-editor table,table { display:block;max-width:100%;overflow-x:auto; }
 }
 @media (max-width:420px) { .elementor-location-header .elementor-element-60bda77b img { width:min(165px,100%)!important; } }
+@media (max-width:1100px) {
+  /* The mirror does not ship Elementor's icon font; draw the search glyph so
+     the visible search control never becomes an empty hit area. */
+  .elementor-location-header .ekit_navsearch-button { position:relative!important;color:#26384b!important; }
+  .elementor-location-header .ekit_navsearch-button i { display:none!important; }
+  .elementor-location-header .ekit_navsearch-button::before {
+    content:"";position:absolute;width:13px;height:13px;left:12px;top:11px;
+    border:2px solid currentColor;border-radius:50%;
+  }
+  .elementor-location-header .ekit_navsearch-button::after {
+    content:"";position:absolute;width:7px;height:2px;left:25px;top:26px;
+    background:currentColor;transform:rotate(45deg);transform-origin:left center;
+  }
+}
 @media (min-width:768px) and (max-width:1024px) {
   .elementor-location-header .elementor-widget-fibosearch { display:none!important; }
   .elementor-location-header .elementor-widget-elementskit-header-search { display:block!important; }
@@ -78,6 +92,39 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .elementor-widget-wrap,.e-con-inner { max-width:100%; }
   .elementor-location-header .elementor-element-737110e1 { flex-basis:240px!important; }
   .elementor-location-header .elementor-element-1cef4aec { font-size:18px; }
+}
+/* Keep the header controls in one compact row between mobile and desktop.
+   Elementor's four 25% columns otherwise make the search/account columns
+   overlap at tablet widths and narrow laptop windows. */
+@media (min-width:768px) and (max-width:1100px) {
+  .elementor-location-header .elementor-element-4ad863ec > .elementor-container {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 44px 44px 44px;
+    gap:8px;
+    align-items:center;
+  }
+  .elementor-location-header .elementor-element-4ad863ec > .elementor-container > .elementor-column {
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    flex:none!important;
+    margin:0!important;
+  }
+  .elementor-location-header .elementor-element-60bda77b { justify-self:start; }
+  .elementor-location-header .elementor-element-60bda77b img { width:min(220px,100%)!important;height:auto!important; }
+  .elementor-location-header .elementor-element-10c81406 { justify-self:center; }
+  .elementor-location-header .elementor-element-10c81406 .elementor-widget-wrap { display:grid;place-items:center; }
+  .elementor-location-header .elementor-widget-fibosearch { display:none!important; }
+  .elementor-location-header .elementor-widget-elementskit-header-search { display:block!important; }
+  .elementor-location-header .ekit_navsearch-button { width:44px!important;height:44px!important;min-width:44px!important;display:grid!important;place-items:center!important;border-radius:8px; }
+  .elementor-location-header .elementor-element-6d5afd18 { justify-self:center; }
+  .elementor-location-header .elementor-menu-cart__toggle_button { width:44px;min-width:44px;display:grid!important;place-items:center; }
+  .elementor-location-header .elementor-element-51f52a2f { justify-self:center; }
+  .elementor-location-header .elementor-element-51f52a2f .elementor-widget-button { display:none!important; }
+  .elementor-location-header .elementor-element-18fc2656 { display:flex!important;align-items:center;justify-content:center; }
+  .elementor-location-header .elementor-element-18fc2656 .elementor-icon { width:44px;height:44px;display:grid;place-items:center; }
+  .elementor-location-header .elementor-element-18fc2656 svg,
+  .elementor-location-header .elementor-menu-cart__toggle_button svg { width:24px!important;height:24px!important;color:#26384b!important;fill:currentColor!important; }
 }
 /* Keep the collapsed Elementor menu in document flow when opened. */
 @media (max-width:1024px) {
