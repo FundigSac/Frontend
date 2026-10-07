@@ -143,3 +143,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
 }
+.mirror-catalog-note {
+  max-width: 1180px;
+  margin: 28px auto;
+  padding: clamp(20px, 3vw, 32px);
+  border-left: 4px solid #e96330;
+  background: #f7f8fa;
+  color: #26384b;
+}
+.mirror-catalog-note h2 { margin: 0 0 8px; font-size: clamp(21px, 2.1vw, 28px); }
+.mirror-catalog-note p { margin: 0 0 12px; line-height: 1.6; }
+.mirror-catalog-note a { color: #a63126; font-weight: 700; text-underline-offset: 3px; }
+.mirror-metric-value { display:inline-block; font-variant-numeric:tabular-nums; }
+/* The legacy promotion timer and default WordPress post do not represent current offers or news. */
+.elementor-element-7c5c9f74,
+section[data-id="74e7fbe9"] { display:none!important; }
+/* Legacy team cards use template names and portraits; keep their source in the archive. */
+section[data-id="74c9e041"] { display:none!important; }
