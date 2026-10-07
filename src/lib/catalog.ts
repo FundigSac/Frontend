@@ -1,13 +1,16 @@
 export type Variant = { label: string; price?: number; sdr?: string; needsTechnicalReview?: boolean };
 export type Product = { slug: string; name: string; category: string; image?: string; imageIllustrative?: boolean; summary: string; source: string; variants?: Variant[]; specs?: [string,string][]; needsReplacement?: boolean; needsTechnicalReview?: boolean };
+import { extraProducts, productOverrides } from "./catalog-pdf";
 export const categories = [
   { slug: "valvulas", name: "Válvulas industriales" },
   { slug: "hdpe", name: "Accesorios HDPE" },
   { slug: "equipos", name: "Equipos de termofusión" },
   { slug: "acoples", name: "Acoples y uniones" },
+  { slug: "hierro-ductil", name: "Hierro dúctil" },
+  { slug: "medidores", name: "Medidores" },
 ];
 const valve = (slug:string,name:string,image:string,summary:string):Product => ({slug,name,category:"valvulas",image:`/media/${image}.jpg`,summary,source:"Catálogo público legacy de FUNDIGSAC",needsReplacement:true});
-export const products: Product[] = [
+const baseProducts: Product[] = [
   valve("valvula-check-flex","Válvula check flex","valvula-check-flex","Válvula de retención para redes de conducción."),
   valve("valvula-check-swing","Válvula check swing","valvula-check-swing","Válvula de retención tipo swing."),
   valve("valvula-compuerta-acerrojada","Válvula compuerta acerrojada","valvula-compuerta-acerrojada","Válvula de compuerta con unión acerrojada."),
@@ -23,5 +26,6 @@ export const products: Product[] = [
   {slug:"acople-gran-rango-agr",name:"Acople gran rango AGR",category:"acoples",summary:"Acople de gran rango para uniones de tuberías.",source:"PRECIO MARZO2026.pdf, página 1",needsReplacement:true,variants:[{label:"DN50 · 57–74 mm",price:59},{label:"DN65 · 68–86 mm",price:55},{label:"DN80 · 88–103 mm",price:66},{label:"DN100 · 105–125 mm",price:82},{label:"DN125 · 132–146 mm",price:98},{label:"DN150 · 155–175 mm",price:102},{label:"DN200 · 192–210 mm",price:130},{label:"DN200 · 198–225 mm",price:169}],needsTechnicalReview:true},
   {slug:"maquina-termofusion-hdl-160-2m",name:"Máquina de termofusión HDL 160-2M",category:"equipos",summary:"Máquina manual de soldar PE con dos mordazas y timón.",source:"PRECIO Y STOCK REAL - IMPORTACION 1511.pdf, página 1 (15/11/2025)",needsReplacement:true,needsTechnicalReview:true,specs:[["Modelo","HDL 160-2M"],["Voltaje","220 V"],["Rango operativo","40–160 mm"],["Peso","42.5 kg"],["Placa calefactora máxima","270 °C"]]},
 ];
+export const products: Product[] = [...baseProducts.map(p=>({...p,...productOverrides[p.slug]})),...extraProducts];
 export const getProduct = (slug:string) => products.find(p=>p.slug===slug);
 export const formatPrice = (price:number) => new Intl.NumberFormat("es-PE",{style:"currency",currency:"PEN"}).format(price);

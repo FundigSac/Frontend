@@ -4,8 +4,8 @@ Aplicación pública B2B en Next.js para explorar productos y preparar consultas
 
 ## Estado
 
-- Home con cinco accesos visuales a familias y soluciones, sectores, guía de cotización; catálogo con cuatro filtros, 14 fichas iniciales, páginas corporativas, contacto y cotizador local.
-- Diez productos de válvulas provienen del sitio legacy. Dos codos HDPE, un acople y una máquina se incorporaron como referencias verificables de los tres PDF.
+- Home con cinco accesos visuales a familias y soluciones, sectores y guía de cotización; catálogo con seis familias y 69 fichas, páginas corporativas, contacto y cotizador local.
+- Las fichas iniciales del sitio legacy se complementaron con referencias extraídas de los tres PDF. Los nombres, códigos y medidas del catálogo ampliado requieren revisión comercial antes de presentarse como especificaciones definitivas.
 - Los precios y el stock de los PDF no se presentan como disponibilidad actual.
 - La cotización prepara un mensaje de WhatsApp. El cliente debe enviarlo manualmente.
 - Hay un modelo Prisma validado para productos, variantes, cotizaciones y reclamos; no hay todavía conexión a PostgreSQL, identidad, panel administrativo ni registro digital de reclamos.
@@ -52,8 +52,8 @@ La suite completa incluye Firefox y WebKit. En este Windows faltan dependencias 
 
 - `legacy/mirror/`: copia navegable histórica de WordPress.
 - `legacy/html/`, `legacy/screenshots/`, `reports/`: artefactos del crawl.
-- `public/media/`: imágenes reutilizadas como referencia temporal.
-- `src/lib/catalog.ts`: catálogo inicial con fuente por producto.
+- `public/media/`: fotografías históricas, recortes de los PDF e ilustraciones identificadas como referencia temporal.
+- `src/lib/catalog.ts` y `src/lib/catalog-pdf.ts`: catálogo con fuente por producto.
 - `docs/MEDIA_REVIEW.md`: material que requiere reemplazo.
 - `scripts/capture-local.ts`: capturas de desktop/mobile que cargan y comprueban todas las imágenes antes de guardarse.
 - `docs/BACKUP_PRE_REDESIGN.md`: copia completa previa a los cambios.
