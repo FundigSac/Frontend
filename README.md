@@ -4,7 +4,7 @@ Aplicación pública B2B en Next.js para explorar productos y preparar consultas
 
 ## Estado
 
-- Home, catálogo, cuatro familias, 14 fichas iniciales, páginas corporativas, contacto y cotizador local.
+- Home con cinco accesos visuales a familias y soluciones, sectores, guía de cotización; catálogo con cuatro filtros, 14 fichas iniciales, páginas corporativas, contacto y cotizador local.
 - Diez productos de válvulas provienen del sitio legacy. Dos codos HDPE, un acople y una máquina se incorporaron como referencias verificables de los tres PDF.
 - Los precios y el stock de los PDF no se presentan como disponibilidad actual.
 - La cotización prepara un mensaje de WhatsApp. El cliente debe enviarlo manualmente.
@@ -55,6 +55,7 @@ La suite completa incluye Firefox y WebKit. En este Windows faltan dependencias 
 - `public/media/`: imágenes reutilizadas como referencia temporal.
 - `src/lib/catalog.ts`: catálogo inicial con fuente por producto.
 - `docs/MEDIA_REVIEW.md`: material que requiere reemplazo.
+- `scripts/capture-local.ts`: capturas de desktop/mobile que cargan y comprueban todas las imágenes antes de guardarse.
 - `docs/BACKUP_PRE_REDESIGN.md`: copia completa previa a los cambios.
 - `prisma/schema.prisma`: modelo de datos preparado para la etapa de backend.
 - `sources/catalogs/`: destino de los PDF fuente. Los originales recibidos se encuentran en el directorio padre `Diego Software` y no se han modificado.

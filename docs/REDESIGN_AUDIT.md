@@ -25,6 +25,15 @@
 - Axe en siete rutas representativas a 390 × 844: cero violaciones tras corregir el contraste del bloque de termofusión.
 - Chrome DevTools: la revisión de la consola de `/productos` no mostró errores ni advertencias; las 32 solicitudes observadas respondieron 200 o 304.
 
+## Ampliación visual de inicio
+
+- La portada incluye cinco accesos visuales a familias, cinco tarjetas destacadas, sectores de aplicación y una guía breve para preparar la cotización.
+- Las imágenes nuevas de tuberías, accesorios, bridas e infraestructura son ilustraciones. Se identifican como tales y no sustituyen las fichas técnicas ni acreditan stock.
+- La fotografía heredada de válvulas conserva su archivo original; el encuadre en pantalla evita mostrar la marca y el teléfono incrustados en sus bordes sin deformar el producto.
+- `pnpm lint`, `pnpm typecheck` y `pnpm build` terminaron correctamente. El recorrido E2E en Chromium desktop, tablet y móvil aprobó 24 pruebas; la captura local comprobó la carga de imágenes en inicio, catálogo y HDPE en desktop y móvil.
+- La primera revisión axe de esta portada ampliada señaló contraste 4,35:1 en la sección de pasos. Se oscureció ese color; falta repetir axe después del ajuste.
+- El navegador visible de Codex rechazó abrir `localhost:3000` por su política de URL. La validación visible en esa superficie queda pendiente.
+
 ## Pendiente para la siguiente etapa
 
 - Importar y validar exhaustivamente todas las familias, variantes, precios y códigos de los tres PDF con revisión humana.
