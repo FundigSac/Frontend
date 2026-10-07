@@ -1,0 +1,98 @@
+/* Local-only responsive and accessibility layer for the archived reference. */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: clip; }
+img, video, iframe { max-width: 100%; }
+.mirror-map-fallback { min-height: 180px; display: grid; place-content: center; gap: 8px; padding: 20px; background: #f3f4f6; text-align: center; }
+.mirror-accessible-title--sr-only { position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #f2a900 !important; outline-offset: 3px !important; }
+
+/* Keep the original account, cart and contact content visible in the mirror. */
+.elementor-location-header .elementor-menu-cart__wrapper,
+.elementor-location-header .elementor-menu-cart__toggle_button { display: block !important; }
+.elementor-location-header .elementor-menu-cart__toggle_button { min-width: 44px; min-height: 44px; }
+.elementor-location-header .elementor-menu-cart__toggle_button:hover,
+.elementor-location-header .elementor-icon:hover,
+.elementor-location-header .elementor-button:hover { transition: color .2s ease, background-color .2s ease, transform .2s ease; }
+
+@media (max-width: 767px) {
+  /* The legacy four-column header was flexing to 25% columns, scattering the
+     cart and profile across the row on narrow/zoomed browser windows. */
+  .elementor-location-header .elementor-element-4ad863ec > .elementor-container {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 40px 40px 40px;
+    gap:8px;
+    align-items:center;
+  }
+  .elementor-location-header .elementor-element-4ad863ec > .elementor-container > .elementor-column {
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    flex:none!important;
+    margin:0!important;
+  }
+  .elementor-location-header .elementor-element-4ad863ec .elementor-element-60bda77b { justify-self:start; }
+  .elementor-location-header .elementor-element-4ad863ec .elementor-element-10c81406,
+  .elementor-location-header .elementor-element-4ad863ec .elementor-element-6d5afd18,
+  .elementor-location-header .elementor-element-4ad863ec .elementor-element-51f52a2f { justify-self:center; }
+  .elementor-location-header .elementor-widget-fibosearch { display: none !important; }
+  .elementor-location-header .elementor-widget-elementskit-header-search { display: block !important; }
+  .elementor-location-header .ekit_navsearch-button { width:44px!important;height:44px!important;min-width:44px!important;display:grid!important;place-items:center!important;border-radius:8px; }
+  /* The mobile template intentionally uses the person icon in place of the
+     wider Login/Signup buttons. Keep the cloned buttons for larger layouts. */
+  .elementor-location-header .elementor-element-18fc2656 { display:flex!important; align-items:center; justify-content:center; }
+  .elementor-location-header .elementor-element-18fc2656 .elementor-icon { width:44px; height:44px; display:grid; place-items:center; }
+  .elementor-location-header .elementor-element-18fc2656 svg,
+  .elementor-location-header .elementor-menu-cart__toggle_button svg { width:24px!important; height:24px!important; color:#26384b!important; fill:currentColor!important; }
+  .elementor-location-header .elementor-element-737110e1 { display:flex!important; width:auto!important; max-width:100%!important; flex:1 1 180px!important; order:2; min-height:48px; align-items:center; justify-content:flex-end; }
+  .elementor-location-header .elementor-element-737110e1 .elementor-widget-wrap { width:100%; min-height:48px; display:flex; align-items:center; justify-content:flex-end; position:static!important; }
+  .elementor-location-header .elementor-element-737110e1 .elementor-element-1cef4aec,
+  .elementor-location-header .elementor-element-737110e1 .elementor-element-5c232903 { position:static!important; margin:0 0 0 8px!important; }
+  .elementor-location-header .elementor-element-737110e1 .elementor-element-1cef4aec { order:2; }
+  .elementor-location-header .elementor-element-737110e1 .elementor-element-5c232903 { order:1; }
+  .elementor-location-header .elementor-element-1bd37e4f .elementor-container { display:flex!important; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; padding-top:4px; padding-bottom:4px; }
+  .elementor-location-header .elementor-element-1bd37e4f .elementor-element-6702e003 { width:44px!important; flex:0 0 44px!important; order:1; }
+  .elementor-location-header .elementor-element-1bd37e4f .elementor-element-737110e1 { order:2; }
+  .elementor-location-header .elementor-element-1bd37e4f .elementor-container:has(.elementor-menu-toggle[aria-expanded="true"]) .elementor-element-6702e003 { width:100%!important; flex:0 0 100%!important; order:2; }
+  .elementor-location-header .elementor-element-1bd37e4f .elementor-container:has(.elementor-menu-toggle[aria-expanded="true"]) .elementor-element-737110e1 { order:1; }
+  .elementor-location-header .elementor-element-60bda77b,.elementor-location-header .elementor-element-10c81406,.elementor-location-header .elementor-widget-elementskit-header-search { min-width:0!important; }
+  .elementor-location-header .elementor-element-60bda77b { width:auto!important;max-width:100%!important; }
+  .elementor-location-header .elementor-element-60bda77b img { width:min(190px,100%)!important;height:auto!important; }
+  .elementor-location-header .elementor-element-60bda77b a { max-width:100%!important; }
+  .elementor-location-header .elementor-element-10c81406 { width:auto!important; }
+  .elementor-location-header .elementor-element-60bda77b { flex:0 1 auto!important; }
+  .elementor-location-header .elementor-section .elementor-container,.elementor-location-header .e-con-inner { min-width:0!important;max-width:100%!important; }
+  .elementor-section,.elementor-container,.elementor-column,.elementor-widget-wrap,.e-con,.e-con-inner,.elementor-widget,.elementor-widget-container { min-width:0; }
+  .elementor-section .elementor-container { width:100%; }
+  .swiper,.swiper-container,.elementor-swiper { max-width:100vw; }
+  .swiper-slide { min-width:0; }
+  .elementor-widget-wrap>*,.elementor-widget-container>* { max-width:100%; }
+  h1,h2,h3,p { overflow-wrap:anywhere; }
+  .elementor-button,button,input[type=submit] { min-height:44px; }
+  .elementor-widget-text-editor table,table { display:block;max-width:100%;overflow-x:auto; }
+}
+@media (max-width:420px) { .elementor-location-header .elementor-element-60bda77b img { width:min(165px,100%)!important; } }
+@media (min-width:768px) and (max-width:1024px) {
+  .elementor-location-header .elementor-widget-fibosearch { display:none!important; }
+  .elementor-location-header .elementor-widget-elementskit-header-search { display:block!important; }
+  .elementor-location-header .ekit_navsearch-button { width:44px!important;height:44px!important;display:grid!important;place-items:center!important; }
+  .elementor-widget-wrap,.e-con-inner { max-width:100%; }
+  .elementor-location-header .elementor-element-737110e1 { flex-basis:240px!important; }
+  .elementor-location-header .elementor-element-1cef4aec { font-size:18px; }
+}
+/* Keep the collapsed Elementor menu in document flow when opened. */
+@media (max-width:1024px) {
+  .elementor-location-header .elementor-menu-toggle { width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;color:#26384b!important;cursor:pointer; }
+  .elementor-location-header .elementor-menu-toggle > i { display:none!important; }
+  .elementor-location-header .elementor-menu-toggle::before { content:"☰";font:24px/1 Arial,sans-serif; }
+  .elementor-location-header .elementor-menu-toggle[aria-expanded="true"]::before { content:"×";font-size:32px; }
+  .elementor-location-header .elementor-nav-menu--dropdown { position:static!important;width:calc(100vw - 30px)!important;max-width:calc(100vw - 30px)!important;margin-left:0!important; }
+}
+/* Preserve existing transitions while making them shorter and less abrupt. */
+.elementor-location-header a, .elementor-location-header button, .elementor-button,
+.elementor-widget-icon .elementor-icon, .elementor-nav-menu a {
+  transition-duration: .2s;
+  transition-timing-function: cubic-bezier(.22,.61,.36,1);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
+}
