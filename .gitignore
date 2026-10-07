@@ -57,3 +57,12 @@ node_modules/
 .e2e/failures/
 .e2e/logs/
 .e2e/videos/
+/src/generated/prisma/
+/docs/visual-review/
+/reports/lighthouse/
+/reports/a11y/
+/.agents/
+/.claude/
+/.cursor/
+/.mcp.json
+/CLAUDE.md

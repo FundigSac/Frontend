@@ -1,0 +1,4 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+export const metadata:Metadata={title:"Recursos",description:"Información técnica y recursos del catálogo FUNDIGSAC.",alternates:{canonical:"/recursos"}};
+export default function Resources(){return <main className="container inner-page narrow-page"><nav className="breadcrumb"><Link href="/">Inicio</Link><span>/</span><span>Recursos</span></nav><div className="page-heading"><h1>Recursos técnicos</h1><p>Las fichas y manuales se publicarán cuando sus versiones y permisos de distribución estén verificados.</p></div><div className="empty-state"><h2>¿Necesitas una ficha técnica?</h2><p>Indícanos el producto y la medida. Te ayudaremos a solicitar la documentación correspondiente.</p><Link className="button" href="/contacto">Solicitar información</Link></div></main>}

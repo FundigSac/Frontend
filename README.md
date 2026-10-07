@@ -1,83 +1,75 @@
-# FUNDIGSAC 2.0 — baseline de migración
+# FUNDIGSAC 2.0
 
-Proyecto para congelar e inventariar el sitio público actual de FUNDIGSAC y preparar una aplicación moderna independiente de WordPress. Esta fase no rediseña el sitio ni implementa catálogo, autenticación, administración o base de datos.
+Aplicación pública B2B en Next.js para explorar productos y preparar consultas comerciales. El mirror WordPress se conserva como referencia histórica separada.
+
+## Estado
+
+- Home, catálogo, cuatro familias, 14 fichas iniciales, páginas corporativas, contacto y cotizador local.
+- Diez productos de válvulas provienen del sitio legacy. Dos codos HDPE, un acople y una máquina se incorporaron como referencias verificables de los tres PDF.
+- Los precios y el stock de los PDF no se presentan como disponibilidad actual.
+- La cotización prepara un mensaje de WhatsApp. El cliente debe enviarlo manualmente.
+- Hay un modelo Prisma validado para productos, variantes, cotizaciones y reclamos; no hay todavía conexión a PostgreSQL, identidad, panel administrativo ni registro digital de reclamos.
+- La home y las fichas siguen la dirección visual aprobada. El hero y la sección de termofusión usan ilustraciones conceptuales, documentadas en `docs/MEDIA_REVIEW.md`; no se presentan como fotos de un SKU.
 
 ## Requisitos
 
-- Node.js 20.9 o posterior (recomendado: Node 24 LTS).
-- pnpm 9 o posterior.
-- Git.
-- Chromium de Playwright (se instala con el comando de abajo).
+- Node.js 24 LTS
+- pnpm 11
+- Git
 
-## Instalación
+## Instalar y ejecutar
 
 ```powershell
+cd "C:\Users\Productora Zamar\Downloads\Diego Software\FUNDIGSAC"
 pnpm install
-pnpm exec playwright install chromium
-```
-
-## Aplicación nueva
-
-```powershell
 pnpm dev
 ```
 
-Abre <http://localhost:3000>. Verificaciones:
-
-```powershell
-pnpm lint
-pnpm build
-```
-
-## Capturar el sitio legacy (lecturas HTTP públicas)
-
-```powershell
-pnpm site:crawl
-pnpm site:patch
-pnpm site:capture
-pnpm site:audit
-```
-
-El crawler está limitado al dominio `fundigsac.com`, con máximo de páginas, pausas entre navegaciones y sin enviar formularios ni ejecutar acciones de compra. Ajusta `CRAWL_MAX_PAGES` o `CRAWL_DELAY_MS` solo si necesitas cambiar esos límites.
-
-## Servir y verificar el mirror
+Abrir [http://localhost:3000](http://localhost:3000). El mirror histórico se abre por separado:
 
 ```powershell
 pnpm legacy:serve
 ```
 
-Abre <http://localhost:4173>. En otra terminal:
+Abrir [http://localhost:4173](http://localhost:4173).
+
+## Verificar
 
 ```powershell
+pnpm lint
+pnpm typecheck
+pnpm test:unit
+pnpm test:a11y
+pnpm build
+pnpm exec e2e run --target desktop-chromium,mobile-chromium,tablet-chromium
+pnpm db:validate
+pnpm db:generate
+```
+
+La suite completa incluye Firefox y WebKit. En este Windows faltan dependencias de esos motores; ver [auditoría](docs/REDESIGN_AUDIT.md).
+
+## Referencias y fuentes
+
+- `legacy/mirror/`: copia navegable histórica de WordPress.
+- `legacy/html/`, `legacy/screenshots/`, `reports/`: artefactos del crawl.
+- `public/media/`: imágenes reutilizadas como referencia temporal.
+- `src/lib/catalog.ts`: catálogo inicial con fuente por producto.
+- `docs/MEDIA_REVIEW.md`: material que requiere reemplazo.
+- `docs/BACKUP_PRE_REDESIGN.md`: copia completa previa a los cambios.
+- `prisma/schema.prisma`: modelo de datos preparado para la etapa de backend.
+- `sources/catalogs/`: destino de los PDF fuente. Los originales recibidos se encuentran en el directorio padre `Diego Software` y no se han modificado.
+
+## Scripts heredados
+
+```powershell
+pnpm site:crawl
+pnpm site:capture
+pnpm site:audit
 pnpm legacy:verify
 ```
 
-El mirror de Playwright es estático y best-effort. No ejecuta PHP ni reproduce funciones dinámicas de WordPress/WooCommerce. Consulta [docs/MIRROR_LIMITATIONS.md](docs/MIRROR_LIMITATIONS.md).
+No versionar `node_modules`, `.next`, archivos `.env`, secretos ni cachés. El rediseño no utiliza el HTML, CSS ni JavaScript de WordPress en la app nueva.
 
-## Catálogos PDF para una fase posterior
+## Siguiente fase
 
-Los tres PDF esperados ya existen en `C:\Users\Productora Zamar\Downloads\Diego Software\`; sus originales no se modificaron ni copiaron. Cuando se inicie esa fase, trabaja con copias en `sources/catalogs/`. La extracción queda pendiente.
-
-## Artefactos
-
-- `legacy/html/`: HTML renderizado de cada página.
-- `legacy/mirror/`: páginas y recursos estáticos disponibles localmente.
-- `legacy/screenshots/{desktop,tablet,mobile}/`: capturas full-page.
-- `legacy/assets/`: inventario de imágenes descargables/observadas.
-- `reports/crawl/`: páginas, URLs, imágenes y enlaces detectados.
-- `reports/seo/`: CSV SEO actual.
-- `reports/network/`: recursos externos/fallos observados.
-- `reports/mirror/`: verificación del mirror y logs.
-- `docs/`: auditoría y limitaciones.
-
-## Versionado
-
-No versionar `node_modules`, `.next`, `.env*`, caches, temporales, logs grandes ni secretos. Se pueden versionar código, documentos, inventarios pequeños y capturas de referencia razonables. Los artefactos obtenidos del sitio deben revisarse antes del commit por tamaño y contenido.
-
-## Limitaciones conocidas
-
-HTTrack y GNU wget no estaban disponibles en el entorno. El mirror lo genera Playwright a partir de páginas renderizadas y recursos que cargue el navegador. Esto no permite afirmar que se clonó toda la lógica server-side; los límites se documentarán con la verificación.
-
-## Próxima fase recomendada
-
-Revisar inventario, contenido, URLs y capturas con el propietario; confirmar qué rutas deben conservarse y aportar los PDF originales antes de modelar el catálogo nuevo.
+Validar las variantes y precios con el responsable comercial; obtener imágenes limpias y fichas técnicas; configurar PostgreSQL y desarrollar persistencia, recepción de cotizaciones y reclamos, identidad y administración sobre el modelo preparado. No se deben simular esas funciones con estado local.

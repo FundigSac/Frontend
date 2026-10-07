@@ -1,15 +1,17 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Boxes, CircleCheck, FileText, Gauge, ShieldCheck, Wrench } from "lucide-react";
+import { categories, products } from "@/lib/catalog";
+import { ProductCard } from "@/components/product-card";
+
 export default function Home() {
-  return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 py-16 text-zinc-900">
-      <h1 className="text-3xl font-semibold tracking-tight">FUNDIGSAC 2.0</h1>
-      <p className="mt-3 text-lg text-zinc-600">Baseline de migración preparado</p>
-      <nav aria-label="Artefactos de migración" className="mt-8 flex flex-col gap-3">
-        <a className="underline underline-offset-4" href="http://localhost:4173/">
-          Abrir mirror legacy (localhost:4173)
-        </a>
-        <p>Informes del crawl: consulta la carpeta <code>reports/</code>.</p>
-        <p>Screenshots: consulta <code>legacy/screenshots/</code>.</p>
-      </nav>
-    </main>
-  );
+  const featured = [products[3], products[0], products[8], products[1]];
+  return <main>
+    <section className="hero hero-reference"><Image src="/media/hero-industrial.webp" alt="Composición ilustrativa de válvulas y tuberías para infraestructura hidráulica" fill priority sizes="100vw" className="hero-image"/><div className="container hero-copy"><div className="hero-text"><span className="eyebrow hero-eyebrow">SOLUCIONES PARA INFRAESTRUCTURA HIDRÁULICA</span><h1>Componentes para redes que tienen que funcionar.</h1><p>Válvulas, sistemas HDPE y equipos para infraestructura hidráulica.</p><div className="actions"><Link className="button" href="/productos">Explorar productos <ArrowRight size={18}/></Link><Link className="button button-outline" href="/cotizar">Solicitar cotización</Link></div></div></div></section>
+    <section className="container home-families" aria-label="Familias del catálogo">{categories.map(category => <Link prefetch={false} className="family-tile" href={`/productos?categoria=${category.slug}`} key={category.slug}><span className="family-icon" aria-hidden="true">{category.slug==="hdpe"?<Gauge size={31}/>:category.slug==="equipos"?<Wrench size={31}/>:<Boxes size={31}/>}</span><strong>{category.name}</strong><ArrowRight size={17}/></Link>)}</section>
+    <section className="container home-featured section"><div className="home-featured-intro"><span className="eyebrow">PRODUCTOS DESTACADOS</span><h2>Referencias para encontrar el componente adecuado.</h2><p>Explora el catálogo publicado y confirma los detalles técnicos al cotizar.</p><Link className="text-link" href="/productos">Ver catálogo completo <ArrowRight size={18}/></Link></div><div className="home-featured-grid">{featured.map(product=><ProductCard key={product.slug} product={product}/>)}</div></section>
+    <section className="home-technical"><div className="container home-technical-grid"><div className="home-technical-copy"><span className="eyebrow">EQUIPOS DE TERMOFUSIÓN</span><h2>Equipamiento para uniones de tuberías PE.</h2><p>Consulta los modelos publicados y sus datos disponibles antes de elegir el equipo para tu instalación.</p><Link className="button button-outline" href="/productos?categoria=equipos">Ver equipos <ArrowRight size={17}/></Link></div><div className="home-technical-visual"><Image src="/media/termofusion-illustration.webp" alt="Imagen ilustrativa de un equipo para unión de tuberías PE" fill sizes="(max-width: 800px) 100vw, 50vw"/></div><div className="home-technical-points"><div><ShieldCheck/><strong>Referencias documentadas</strong><span>Productos tomados del catálogo y los documentos disponibles.</span></div><div><Wrench/><strong>Consulta técnica</strong><span>Confirma medidas y compatibilidad antes del pedido.</span></div><div><FileText/><strong>Cotización clara</strong><span>Reúne productos y cantidades en una sola consulta.</span></div></div></div></section>
+    <section className="home-about"><div className="home-about-photo"><Image src="/media/hero-valvulas.jpg" alt="Válvulas instaladas en un entorno industrial" fill sizes="(max-width: 800px) 100vw, 45vw"/></div><div className="home-about-copy"><span className="eyebrow">FUNDIGSAC</span><h2>Componentes para proyectos de infraestructura en el Perú.</h2><p>Explora las familias de productos y comparte las medidas de tu proyecto para preparar una consulta comercial.</p><Link className="text-link" href="/nosotros">Conoce FUNDIGSAC <ArrowRight size={18}/></Link></div><div className="home-about-points"><div><CircleCheck/><span>Catálogo con procedencia documentada.</span></div><div><CircleCheck/><span>Información técnica señalada cuando requiere confirmación.</span></div><div><CircleCheck/><span>Contacto directo para resolver tu consulta.</span></div></div></section>
+    <section className="quote-band"><div className="container quote-band-inner"><FileText size={32} aria-hidden="true"/><div><span className="eyebrow">COTIZA TU PROYECTO</span><h2>Cuéntanos qué componentes necesitas.</h2><p>Reúne productos, medidas y cantidades para hacer tu consulta.</p></div><Link className="button quote-band-action" href="/cotizar">Solicitar cotización <ArrowRight size={18}/></Link></div></section>
+  </main>;
 }

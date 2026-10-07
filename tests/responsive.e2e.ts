@@ -3,7 +3,7 @@ import { expect } from 'e2e';
 
 test('home page has no horizontal overflow at the configured viewport', async ({ app, browser, screen }) => {
   await app.open('/');
-  await expect(screen.getByRole('heading', 'FUNDIGSAC 2.0')).toBeVisible();
+  await expect(screen.getByRole('heading', 'Componentes para redes que tienen que funcionar.')).toBeVisible();
 
   const hasOverflow = await browser.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -16,7 +16,7 @@ test('layout recomposes after desktop to mobile resize', async ({ app, browser, 
   await app.open('/');
   await browser.setViewport({ width: 390, height: 844 });
 
-  await expect(screen.getByRole('heading', 'FUNDIGSAC 2.0')).toBeVisible();
+  await expect(screen.getByRole('heading', 'Componentes para redes que tienen que funcionar.')).toBeVisible();
   const dimensions = await browser.evaluate(() => ({
     width: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth,

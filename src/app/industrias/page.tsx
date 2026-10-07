@@ -1,0 +1,4 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+export const metadata:Metadata={title:"Industrias",description:"Componentes FUNDIGSAC para proyectos de saneamiento, minería, agricultura e industria.",alternates:{canonical:"/industrias"}};
+export default function Industries(){return <main className="container inner-page"><nav className="breadcrumb"><Link href="/">Inicio</Link><span>/</span><span>Industrias</span></nav><div className="page-heading"><h1>Para redes de distintos sectores</h1><p>El catálogo histórico de FUNDIGSAC menciona saneamiento, minería, agricultura e industria.</p></div><div className="topic-list">{["Saneamiento","Minería","Agricultura","Industria"].map((name,i)=><article key={name}><span>0{i+1}</span><div><h2>{name}</h2><p>Consulta los componentes disponibles según medidas, material y condiciones de tu proyecto.</p><Link className="text-link" href="/cotizar">Consultar componentes →</Link></div></article>)}</div></main>}
