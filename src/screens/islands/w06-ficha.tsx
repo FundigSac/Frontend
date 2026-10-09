@@ -181,11 +181,12 @@ export function W06Ficha() {
         <section className={styles.panel} aria-label="Descripción y documentación">
           <div className={styles.col}>
             <h2>Descripción</h2>
+            <p className={styles.descLead}>Accionamiento sencillo y paso completo: una compuerta que sube y baja perpendicular al flujo.</p>
             <p>Las válvulas de compuerta se destacan por su accionamiento sencillo, compuesto principalmente por una compuerta o cuchilla que se eleva y baja perpendicularmente al flujo del fluido. La eficiencia de este diseño reside en su capacidad para proporcionar un paso completo y sin obstrucciones cuando está completamente abierta, minimizando la resistencia al flujo y reduciendo las pérdidas de presión.</p>
             <ul className={styles.features}>
-              <li><ShieldCheck size={18} aria-hidden="true" /><span><strong>Mantenimiento bajo presión</strong>Con la válvula completamente abierta; 3 juntas tóricas protegen el husillo de las impurezas del agua.</span></li>
-              <li><Settings size={18} aria-hidden="true" /><span><strong>Bajo par de cierre</strong>La rosca del vástago se forma por compresión de rodillos, con bordes redondeados.</span></li>
-              <li><Layers size={18} aria-hidden="true" /><span><strong>Epoxi azul RAL 5005, mín. 250 micras</strong>Revestimientos y gomas aptos para agua potable.</span></li>
+              <li><span className={styles.fIcon}><ShieldCheck size={20} aria-hidden="true" /></span><span><strong>Mantenimiento bajo presión</strong>Con la válvula completamente abierta; 3 juntas tóricas protegen el husillo de las impurezas del agua.</span></li>
+              <li><span className={styles.fIcon}><Settings size={20} aria-hidden="true" /></span><span><strong>Bajo par de cierre</strong>La rosca del vástago se forma por compresión de rodillos, con bordes redondeados.</span></li>
+              <li><span className={styles.fIcon}><Layers size={20} aria-hidden="true" /></span><span><strong>Epoxi azul RAL 5005, mín. 250 micras</strong>Revestimientos y gomas aptos para agua potable.</span></li>
             </ul>
           </div>
           <div className={styles.col} id="documentacion">

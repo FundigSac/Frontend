@@ -12,7 +12,7 @@ type Group = "todas" | GroupId;
 type SortMode = "destacados" | "az" | "za";
 
 const GROUPS: readonly { id: GroupId; label: string; image: string }[] = [
-  { id: "compuerta", label: "Compuerta", image: "/media/valvulas-page/compuerta.webp" },
+  { id: "compuerta", label: "Compuerta", image: "/media/valvula-hd/v-03.webp" },
   { id: "mariposa", label: "Mariposa", image: "/media/valvulas-page/mariposa.webp" },
   { id: "reduccion", label: "Reducción", image: "/media/valvulas-page/valvula-reductora.webp" },
   { id: "aire", label: "Aire", image: "/media/valvulas-page/valvula-aire.webp" },
@@ -20,7 +20,7 @@ const GROUPS: readonly { id: GroupId; label: string; image: string }[] = [
 ];
 
 const VALVES: readonly { id: string; group: GroupId; name: string; description: string; image: string; href: string }[] = [
-  { id: "compuerta", group: "compuerta", name: "Válvula de compuerta bridada", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga para redes de agua.", image: "/media/valvulas-page/compuerta.webp", href: "/productos/valvulas/valvula-compuerta" },
+  { id: "compuerta", group: "compuerta", name: "Válvula de compuerta bridada", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga para redes de agua.", image: "/media/valvula-hd/v-03.webp", href: "/productos/valvulas/valvula-compuerta" },
   { id: "mariposa", group: "mariposa", name: "Válvula mariposa", description: "Diseño compacto y de bajo torque para grandes diámetros, ideal para regular o cerrar el flujo.", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
   { id: "check-swing", group: "control", name: "Válvula check swing", description: "Evita el retorno de flujo en sistemas de conducción y protege bombas y tuberías de inversiones de caudal.", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
   { id: "check-flex", group: "control", name: "Válvula check flex", description: "Solución confiable para redes de agua y alcantarillado, que impide el retorno del flujo y protege el sistema.", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },
@@ -72,7 +72,7 @@ export function W03Valvulas() {
         <div className={styles.contentWidth}>
           <div className={styles.tabs} role="tablist" aria-label="Tipos de válvula">
             <button type="button" role="tab" aria-selected={group === "todas"} className={group === "todas" ? styles.tabActive : styles.tab} onClick={() => setGroup("todas")}>
-              <span className={styles.tabThumb}><Image src="/media/valvulas-page/compuerta.webp" alt="" width={56} height={56} /></span>
+              <span className={styles.tabThumb}><Image src="/media/valvula-hd/v-03.webp" alt="" width={56} height={56} /></span>
               <span className={styles.tabText}><strong>Todas</strong><small>las válvulas</small></span>
             </button>
             {GROUPS.map((entry) => {
