@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import { W03Valvulas } from "@/screens/islands/w03-valvulas";
 import { W04Tuberias } from "@/screens/islands/w04-tuberias";
 import { W05Marcos } from "@/screens/islands/w05-marcos";
-import { ScreenW06 } from "@/screens/w06";
+import { W06Ficha } from "@/screens/islands/w06-ficha";
 import { ScreenW07 } from "@/screens/w07";
 import { ScreenW08 } from "@/screens/w08";
 import { ScreenW09 } from "@/screens/w09";
@@ -30,7 +30,7 @@ export const CATEGORIES: readonly CategoryEntry[] = [
 ];
 
 export const PRODUCTS: readonly ProductEntry[] = [
-  { category: "valvulas", slug: "valvula-compuerta", name: "Referencia visual de válvula", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW06, Viewer3D: ScreenW23 },
+  { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Screen: W06Ficha, Viewer3D: ScreenW23 },
   { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW07 },
   { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW08 },
   { category: "marcos-y-tapas", slug: "marco-tapa-d400", name: "Referencia visual de marco y tapa", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW09 },
