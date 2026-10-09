@@ -26,7 +26,7 @@
   --c-success: #206B48;
   --c-outline-variant: #c0c7cc;
   --c-surface-container: #e3f0f9;
-  --c-surface-container-low: #e9f5ff;
+  --c-surface-container-low: #f7f5f1;
   --c-surface-dim: #cfdce5;
   --c-warning: #8B5A15;
   --c-on-surface: #111d24;
@@ -39,7 +39,7 @@
   --c-surface-bright: #f5faff;
   --c-tertiary-container: #764a20;
   --c-secondary-container: #d5e5f1;
-  --c-surface: #F6F8F9;
+  --c-surface: #fbfaf7;
   --c-surface-container-high: #ddeaf4;
   --c-inverse-primary: #9bcee7;
   --c-tertiary: #5b330a;
@@ -48,7 +48,7 @@
   --c-danger: #AF3540;
   --c-on-tertiary-fixed-variant: #663d14;
   --c-on-surface-variant: #41484c;
-  --c-background: #f5faff;
+  --c-background: #fbfaf7;
   --c-on-secondary-container: #576670;
   --c-secondary: #51606a;
   --c-text-muted: #61707A;
