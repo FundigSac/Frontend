@@ -625,3 +625,7 @@
 .view3dOn { width: auto; height: 36px; gap: 6px; padding: 0 14px 0 11px; border-radius: 999px; grid-auto-flow: column; place-items: center; font-size: 13px; font-weight: 600; right: 60px; }
 .view3d span,
 .view3dOn span { line-height: 1; }
+
+.relImage { background: transparent; aspect-ratio: 1.15 / 1; }
+.relImage img { object-fit: contain; padding: 14px 10px 0; filter: drop-shadow(0 14px 14px rgba(17, 28, 33, .16)); transition: transform .35s ease; }
+.relCard:hover .relImage img { transform: scale(1.04); }

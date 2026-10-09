@@ -56,10 +56,10 @@ const THUMBS = [
 ];
 
 const RELATED = [
-  { src: "mariposa.webp", title: "Válvula mariposa", text: "Diseño compacto y de bajo torque para grandes diámetros.", href: "/productos/valvulas/valvula-mariposa" },
-  { src: "check.webp", title: "Válvula check", text: "Evita el retorno de flujo en sistemas de conducción.", href: "/productos/valvulas" },
-  { src: "aire.webp", title: "Válvula de aire", text: "Elimina y admite aire en redes de agua, mejorando la eficiencia.", href: "/productos/valvulas" },
-  { src: "reductora.webp", title: "Válvula reductora de presión", text: "Controla y estabiliza la presión en la red de distribución.", href: "/productos/valvulas" },
+  { src: "mariposa-cut.webp", title: "Válvula mariposa", text: "Diseño compacto y de bajo torque para grandes diámetros.", href: "/productos/valvulas/valvula-mariposa" },
+  { src: "check-cut.webp", title: "Válvula check", text: "Evita el retorno de flujo en sistemas de conducción.", href: "/productos/valvulas" },
+  { src: "aire-cut.webp", title: "Válvula de aire", text: "Elimina y admite aire en redes de agua, mejorando la eficiencia.", href: "/productos/valvulas" },
+  { src: "reductora-cut.webp", title: "Válvula reductora de presión", text: "Controla y estabiliza la presión en la red de distribución.", href: "/productos/valvulas" },
 ];
 
 const SPECS = [
