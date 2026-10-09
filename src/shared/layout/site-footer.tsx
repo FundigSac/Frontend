@@ -36,7 +36,7 @@ const FOOTER_GROUPS = [
 export function SiteFooter() {
   const pathname = usePathname();
   if (pathname === "/") return <HomeFooter />;
-  if (pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas") return <ProductsFooter />;
+  if (pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas" || pathname === "/productos/valvulas/valvula-compuerta") return <ProductsFooter />;
 
   return (
     <footer className="w-full border-t border-border bg-surface-container-low">

@@ -1,7 +1,7 @@
 .home-page {
   --home-ink: #111c21;
   --home-muted: #464b4d;
-  --home-paper: #f5f2ed;
+  --home-paper: #fbfaf7;
   --home-orange: #ef7b22;
   color: var(--home-ink);
   background: var(--home-paper);
@@ -163,7 +163,7 @@
 .home-site-header--inner {
   position: fixed;
   border-bottom: 1px solid rgb(17 25 30 / 7%);
-  background: rgb(247 246 242 / 86%);
+  background: rgb(251 250 247 / 86%);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
@@ -1071,7 +1071,7 @@
 .home-footer.home-footer--light {
   padding: clamp(36px, 3.4vw, 54px) clamp(24px, 6.2vw, 95px) 0;
   border-top: 1px solid #e6e4df;
-  background: #f7f6f2;
+  background: #fbfaf7;
   color: #182329;
 }.home-footer--light .home-footer__main {
   display: grid;
