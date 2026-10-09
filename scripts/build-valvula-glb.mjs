@@ -19,6 +19,25 @@ const decal = (name) => doc.createMaterial(name).setBaseColorFactor([1, 1, 1, 0.
 const ETIQUETA = decal("etiqueta");
 const MARCADO = decal("marcado");
 
+// Relieve fino de fundición con pintura epoxi (piel de naranja), generado por código.
+const N = 512;
+const rnd = Buffer.alloc(N * N); for (let i = 0; i < rnd.length; i++) rnd[i] = Math.floor(Math.random() * 256);
+const h1 = await sharp(rnd, { raw: { width: N, height: N, channels: 1 } }).blur(1.3).raw().toBuffer();
+const h2 = await sharp(rnd, { raw: { width: N, height: N, channels: 1 } }).blur(6).raw().toBuffer();
+const nrm = Buffer.alloc(N * N * 3);
+const H = (x, y) => { const i = ((y + N) % N) * N + ((x + N) % N); return h1[i] * 0.7 + h2[i] * 2.2; };
+for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+  const dx = (H(x + 1, y) - H(x - 1, y)) / 255, dy = (H(x, y + 1) - H(x, y - 1)) / 255;
+  const n = [-dx * 2.2, -dy * 2.2, 1], l = Math.hypot(...n), o = (y * N + x) * 3;
+  nrm[o] = Math.round((n[0] / l * 0.5 + 0.5) * 255); nrm[o + 1] = Math.round((n[1] / l * 0.5 + 0.5) * 255); nrm[o + 2] = Math.round((n[2] / l * 0.5 + 0.5) * 255);
+}
+const nrmPng = await sharp(nrm, { raw: { width: N, height: N, channels: 3 } }).png().toBuffer();
+fs.mkdirSync("public/models", { recursive: true });
+fs.writeFileSync("public/models/relieve-fundicion.png", nrmPng);
+const NORMAL_TEX = doc.createTexture("relieve-fundicion").setImage(nrmPng).setMimeType("image/png");
+BLUE.setNormalTexture(NORMAL_TEX).setNormalScale(0.9);
+STEEL.setNormalTexture(NORMAL_TEX).setNormalScale(0.15);
+
 const norm = (v) => { const l = Math.hypot(...v) || 1; return v.map((x) => x / l); };
 
 function lathe(profile, seg = 72) {
@@ -38,34 +57,36 @@ function lathe(profile, seg = 72) {
       else { push(profile[i], a, true); push(profile[i], b, false); }
     }
   }
-  const pos = [], nor = [], idx = [], W = seg + 1;
+  const pos = [], nor = [], idx = [], uv = [], W = seg + 1;
   for (const row of rows) for (let j = 0; j <= seg; j++) {
     const a = (j / seg) * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
     pos.push(row.r * c, row.y, row.r * s); nor.push(row.n[0] * c, row.n[1], row.n[0] * s);
+    uv.push((j / seg) * Math.max(1, Math.round(row.r * 6)), row.y * 4);
   }
   for (let k = 1; k < rows.length; k++) {
     if (!rows[k].link) continue;
     for (let j = 0; j < seg; j++) { const a = (k - 1) * W + j, b = k * W + j; idx.push(a, b, a + 1, a + 1, b, b + 1); }
   }
-  return { pos, nor, idx };
+  return { pos, nor, idx, uv };
 }
 
 function box(w, h, d) {
-  const pos = [], nor = [], idx = [];
+  const pos = [], nor = [], idx = [], uv = [];
   const f = [[[1,0,0],[0,1,0],[0,0,1]],[[-1,0,0],[0,1,0],[0,0,-1]],[[0,1,0],[0,0,1],[1,0,0]],[[0,-1,0],[0,0,1],[-1,0,0]],[[0,0,1],[1,0,0],[0,1,0]],[[0,0,-1],[-1,0,0],[0,1,0]]];
   const sz = [w / 2, h / 2, d / 2];
   for (const [n, u, v] of f) {
     const b = pos.length / 3;
     for (const [su, sv] of [[-1,-1],[1,-1],[1,1],[-1,1]]) { pos.push(...[0,1,2].map((k) => (n[k] + su * u[k] + sv * v[k]) * sz[k])); nor.push(...n); }
+    uv.push(0,0, w*3,0, w*3,h*3, 0,h*3);
     idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
   }
-  return { pos, nor, idx };
+  return { pos, nor, idx, uv };
 }
 
 /** Tronco de pirámide (base w0×d0 abajo, w1×d1 arriba). */
 function frustum(w0, d0, w1, d1, h) {
   const B = [[-w0/2,0,-d0/2],[w0/2,0,-d0/2],[w0/2,0,d0/2],[-w0/2,0,d0/2]], T = [[-w1/2,h,-d1/2],[w1/2,h,-d1/2],[w1/2,h,d1/2],[-w1/2,h,d1/2]];
-  const pos = [], nor = [], idx = [];
+  const pos = [], nor = [], idx = [], uv = [];
   const quad = (a, b, c, d) => {
     const k = pos.length / 3; pos.push(...a, ...b, ...c, ...d);
     const u = [b[0]-a[0], b[1]-a[1], b[2]-a[2]], v = [d[0]-a[0], d[1]-a[1], d[2]-a[2]];
@@ -74,10 +95,11 @@ function frustum(w0, d0, w1, d1, h) {
     const out = n[0]*cx + n[1]*cy + n[2]*cz > 0;
     if (!out) n = n.map((x) => -x);
     for (let i = 0; i < 4; i++) nor.push(...n);
+    for (const p of [a, b, c, d]) uv.push((p[0] + p[2]) * 3, p[1] * 3);
     idx.push(...(out ? [k, k+1, k+2, k, k+2, k+3] : [k, k+2, k+1, k, k+3, k+2]));
   };
   quad(B[0], B[1], T[1], T[0]); quad(B[1], B[2], T[2], T[1]); quad(B[2], B[3], T[3], T[2]); quad(B[3], B[0], T[0], T[3]); quad(T[0], T[1], T[2], T[3]);
-  return { pos, nor, idx };
+  return { pos, nor, idx, uv };
 }
 
 const nut = (r, h) => lathe([[0, 0], [r, 0], [r * 1.02, h * 0.12], [r * 1.02, h * 0.88], [r, h], [0, h]], 6);

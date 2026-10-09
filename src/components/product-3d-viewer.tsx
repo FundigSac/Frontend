@@ -43,7 +43,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
 
   useEffect(() => {
     const el = ref.current as (HTMLElement & {
-      model?: { materials: { name: string; pbrMetallicRoughness: { baseColorTexture: { setTexture(t: unknown): void }; setBaseColorFactor(c: number[]): void } }[] };
+      model?: { materials: { name: string; normalTexture?: { setTexture(t: unknown): void }; pbrMetallicRoughness: { baseColorTexture: { setTexture(t: unknown): void }; setBaseColorFactor(c: number[]): void; setRoughnessFactor(r: number): void } }[] };
       createTexture?: (uri: string) => Promise<unknown>;
     }) | null;
     if (!el) return;
@@ -56,7 +56,9 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
       try {
         if (!el.createTexture) return;
         const decals: Record<string, string> = { etiqueta: "/models/etiqueta-hitaly.png", marcado: "/models/marcado-cuerpo.png", logo: "/models/logo-fundigsac.png" };
+        const relief = await el.createTexture("/models/relieve-fundicion.png");
         for (const m of el.model?.materials ?? []) {
+          if (m.name === "epoxi-azul") { m.normalTexture?.setTexture(relief); m.pbrMetallicRoughness.setRoughnessFactor(0.46); }
           const src = decals[m.name];
           if (!src) continue;
           const tex = await el.createTexture(src);
@@ -89,10 +91,10 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
         alt,
         "camera-controls": "",
         "touch-action": "pan-y",
-        "shadow-intensity": "1",
-        "shadow-softness": "0.8",
-        exposure: "1.05",
-        "environment-image": "neutral",
+        "shadow-intensity": "1.3",
+        "shadow-softness": "1",
+        exposure: "1.15",
+        "environment-image": "/models/estudio.hdr",
         "interaction-prompt": "auto",
         ...(reduce ? {} : { "auto-rotate": "", "auto-rotate-delay": "1500" }),
         style: { width: "100%", height: "100%", background: "transparent", "--poster-color": "transparent" },
