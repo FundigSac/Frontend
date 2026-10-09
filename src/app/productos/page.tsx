@@ -8,14 +8,14 @@ export const metadata: Metadata = {
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
-type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas";
+type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
 
 function firstValue(value: string | string[] | undefined) {
   return (Array.isArray(value) ? value[0] : value) ?? "";
 }
 
 function validFamily(value: string): FamilyFilter {
-  return value === "valvulas" || value === "tuberias" || value === "marcos-y-tapas"
+  return value === "valvulas" || value === "tuberias" || value === "marcos-y-tapas" || value === "accesorios-hdpe" || value === "conexiones-y-fittings"
     ? value
     : "todas";
 }
