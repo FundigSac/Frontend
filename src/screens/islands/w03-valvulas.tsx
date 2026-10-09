@@ -20,7 +20,7 @@ const GROUPS: readonly { id: GroupId; label: string; image: string }[] = [
 ];
 
 const VALVES: readonly { id: string; group: GroupId; name: string; description: string; image: string; href: string }[] = [
-  { id: "compuerta", group: "compuerta", name: "Válvula de compuerta", description: "Válvulas de cierre total para redes de agua y aplicaciones industriales, con paso libre y baja pérdida de carga.", image: "/media/valvulas-page/compuerta.webp", href: "/productos/valvulas/valvula-compuerta" },
+  { id: "compuerta", group: "compuerta", name: "Válvula de compuerta bridada", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga para redes de agua.", image: "/media/valvulas-page/compuerta.webp", href: "/productos/valvulas/valvula-compuerta" },
   { id: "mariposa", group: "mariposa", name: "Válvula mariposa", description: "Diseño compacto y de bajo torque para grandes diámetros, ideal para regular o cerrar el flujo.", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
   { id: "check-swing", group: "control", name: "Válvula check swing", description: "Evita el retorno de flujo en sistemas de conducción y protege bombas y tuberías de inversiones de caudal.", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
   { id: "check-flex", group: "control", name: "Válvula check flex", description: "Solución confiable para redes de agua y alcantarillado, que impide el retorno del flujo y protege el sistema.", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },

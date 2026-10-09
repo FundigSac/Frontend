@@ -4,7 +4,7 @@ import { LeadError, LeadForm, LeadSubmit } from "@/modules/leads/lead-form";
 import { QUOTE_PRODUCTS, type QuoteProductSlug } from "@/modules/quote/products";
 
 const PRODUCT_LABELS: Record<QuoteProductSlug, string> = {
-  "valvula-compuerta": "Válvula de compuerta",
+  "valvula-compuerta": "Válvula de compuerta bridada",
   "valvula-mariposa": "Válvula mariposa",
   "tuberia-tyton": "Tubería de hierro dúctil",
   "marco-tapa-d400": "Marco y tapa",
