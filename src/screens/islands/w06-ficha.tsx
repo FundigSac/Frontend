@@ -149,6 +149,13 @@ export function W06Ficha() {
             <h1 id="ficha-title">Válvula de compuerta bridada</h1>
             <p className={styles.lead}>Válvula de compuerta de cierre elástico con extremos bridados, F4 serie 14 / F5 serie 15, según EN1074-2. Paso completo sin obstrucciones cuando está abierta: menor resistencia al flujo y menos pérdidas de presión.</p>
 
+            <dl className={styles.facts}>
+              <div><dt>Presión máx.</dt><dd>16 bar</dd></div>
+              <div><dt>Temp. máx.</dt><dd>110 °C</dd></div>
+              <div><dt>Medio</dt><dd>Agua</dd></div>
+              <div><dt>Norma</dt><dd>EN1074-2</dd></div>
+            </dl>
+
             <fieldset className={styles.sizes}>
               <legend><span>Diámetro nominal (DN)</span><small>DN40 – DN600</small></legend>
               <div className={styles.sizeGrid}>
