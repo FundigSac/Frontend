@@ -25,9 +25,10 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     const canvas = document.createElement("canvas");
     const hasGl = !!(canvas.getContext("webgl2") || canvas.getContext("webgl"));
     if (!hasGl) {
-      setFailed(true);
-      onFail?.();
-      return;
+      queueMicrotask(() => {
+        if (alive) { setFailed(true); onFail?.(); }
+      });
+      return () => { alive = false; };
     }
     import("@google/model-viewer")
       .then(() => alive && setReady(true))
@@ -43,37 +44,33 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
 
   useEffect(() => {
     const el = ref.current as (HTMLElement & {
-      model?: { materials: { name: string; normalTexture?: { setTexture(t: unknown): void }; pbrMetallicRoughness: { baseColorTexture: { setTexture(t: unknown): void }; setBaseColorFactor(c: number[]): void; setRoughnessFactor(r: number): void } }[] };
       createTexture?: (uri: string) => Promise<unknown>;
+      model?: { materials: { name: string; normalTexture?: { setTexture(texture: unknown): void }; pbrMetallicRoughness: { baseColorTexture: { setTexture(texture: unknown): void } } }[] };
     }) | null;
     if (!el) return;
     const onError = () => {
       setFailed(true);
       onFail?.();
     };
-    // El logotipo grabado es una imagen aparte: se aplica al terminar de cargar el modelo.
-    const onLoad = async () => {
-      try {
-        if (!el.createTexture) return;
-        const decals: Record<string, string> = { etiqueta: "/models/etiqueta-real.png", marcado: "/models/marcado-cuerpo.png", logo: "/models/logo-fundigsac.png" };
-        const relief = await el.createTexture("/models/relieve-fundicion.png");
-        for (const m of el.model?.materials ?? []) {
-          if (m.name === "epoxi-azul") { m.normalTexture?.setTexture(relief); m.pbrMetallicRoughness.setRoughnessFactor(0.46); }
-          const src = decals[m.name];
-          if (!src) continue;
-          const tex = await el.createTexture(src);
-          m.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
-          m.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
-        }
-      } catch {
-        /* sin logotipo: el modelo sigue siendo válido */
-      }
-    };
+    // Los materiales pertenecen al GLB; las texturas usan URLs del mismo origen.
     el.addEventListener("error", onError);
+    let active = true;
+    const onLoad = async () => {
+      if (!el.createTexture) return;
+      try {
+        const [texture, normal] = await Promise.all([
+          el.createTexture("/models/etiqueta-real.png"),
+          el.createTexture("/models/valvula-textura-1.png"),
+        ]);
+        if (!active) return;
+        el.model?.materials.find(material => material.name === "etiqueta")?.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+        el.model?.materials.find(material => material.name === "epoxi-azul")?.normalTexture?.setTexture(normal);
+      } catch { /* Keep the model usable if the image cannot be decoded. */ }
+    };
     el.addEventListener("load", onLoad);
-    if ((el as unknown as { loaded?: boolean }).loaded) void onLoad();
     return () => {
       el.removeEventListener("error", onError);
+      active = false;
       el.removeEventListener("load", onLoad);
     };
   }, [ready, onFail]);
@@ -83,21 +80,31 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
   const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   return ready
+    // React forwards this callback to the custom element; it never reads the ref during render.
+    // eslint-disable-next-line react-hooks/refs
     ? createElement("model-viewer", {
-        ref,
+        ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src,
+        src: `${src}?v=photo-rebuild-hitaly-central-ribs-11`,
         poster,
         alt,
         "camera-controls": "",
         "touch-action": "pan-y",
-        "shadow-intensity": "1.3",
+        "shadow-intensity": "0.65",
         "shadow-softness": "1",
-        exposure: "1.15",
-        "environment-image": "/models/estudio.hdr",
-        "interaction-prompt": "auto",
-        ...(reduce ? {} : { "auto-rotate": "", "auto-rotate-delay": "1500" }),
+        exposure: "0.95",
+        "camera-orbit": "55deg 78deg auto",
+        "field-of-view": "30deg",
+        "environment-image": "neutral",
+        "interaction-prompt": "none",
+        ...(reduce ? {} : { "auto-rotate": "", "auto-rotate-delay": "6000", "rotation-per-second": "12deg" }),
         style: { width: "100%", height: "100%", background: "transparent", "--poster-color": "transparent" },
       })
     : createElement("div", { className, role: "status", "aria-live": "polite", style: { display: "grid", placeItems: "center", color: "#6f797e", fontSize: 14 } }, "Cargando modelo 3D…");
 }
+
+
+
+
+
+
