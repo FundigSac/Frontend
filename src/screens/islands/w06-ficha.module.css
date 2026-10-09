@@ -610,3 +610,13 @@
 
 /* Crema suave unificado */
 .page { --paper: #fbfaf7; background: linear-gradient(180deg, #faf8f4 0%, #fbfaf7 45%, #fbfaf7 100%); }
+
+/* Fotos reales sobre fondo blanco */
+.mainImage { aspect-ratio: 1 / 1; max-height: 560px; background: #fff; border: 1px solid #ece8e0; }
+.mainImage img { object-fit: contain; padding: 0; }
+.thumbs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.thumb,
+.thumbActive { flex: 0 0 calc((100% - 40px) / 5); aspect-ratio: 1 / 1; scroll-snap-align: start; background: #fff; }
+.thumb img,
+.thumbActive img { object-fit: contain; padding: 4px; }
+@media (max-width: 760px) { .thumb, .thumbActive { flex-basis: calc((100% - 24px) / 4); } }

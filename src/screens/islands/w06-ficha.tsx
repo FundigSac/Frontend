@@ -2,23 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Box, ChevronLeft, ChevronRight, Download, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Download, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
 import styles from "./w06-ficha.module.css";
 
 const BASE = "/media/valvula-ficha/";
-
-const Product3DViewer = dynamic(() => import("@/components/product-3d-viewer"), {
-  ssr: false,
-  loading: () => <div className={styles.loading3d} role="status">Cargando modelo 3D…</div>,
-});
-
-const MODEL = {
-  src: "/models/valvula-compuerta.glb",
-  poster: BASE + "compuerta-vista34.webp",
-  alt: "Modelo 3D interactivo de la válvula de compuerta bridada",
-};
 
 const SIZES = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
 
@@ -47,11 +35,17 @@ const FLANGE = {
   },
 } as const;
 
+const REAL = "/media/valvula-real/";
 const THUMBS = [
-  { src: "compuerta-vista34.webp", alt: "Válvula de compuerta bridada, vista general" },
-  { src: "compuerta-frente.webp", alt: "Válvula de compuerta, vista frontal" },
-  { src: "compuerta-extremo.webp", alt: "Válvula de compuerta, vista del extremo bridado" },
-  { src: "compuerta-plano.webp", alt: "Plano dimensional de la válvula de compuerta" },
+  { dir: REAL, src: "valvula-01.webp", alt: "Válvula de compuerta bridada DN100, vista 3/4" },
+  { dir: REAL, src: "valvula-02.webp", alt: "Válvula de compuerta bridada DN100, vista frontal con etiqueta" },
+  { dir: REAL, src: "valvula-03.webp", alt: "Válvula de compuerta bridada DN100, vista 3/4 con etiqueta" },
+  { dir: REAL, src: "valvula-04.webp", alt: "Válvula de compuerta bridada, vista lateral" },
+  { dir: REAL, src: "valvula-05.webp", alt: "Válvula de compuerta bridada, vista de perfil" },
+  { dir: REAL, src: "valvula-06.webp", alt: "Válvula de compuerta bridada, vista lateral desde abajo" },
+  { dir: REAL, src: "valvula-07.webp", alt: "Válvula de compuerta bridada, vista frontal" },
+  { dir: REAL, src: "valvula-08.webp", alt: "Válvula de compuerta bridada, vista frontal con etiqueta" },
+  { dir: REAL, src: "valvula-09.webp", alt: "Volante de la válvula visto desde arriba" },
 ];
 
 const RELATED = [
@@ -81,16 +75,14 @@ const SPECS = [
 
 export function W06Ficha() {
   const [active, setActive] = useState(0);
-  const [mode3d, setMode3d] = useState(false);
   const [lightbox, setLightbox] = useState(false);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState("DN50");
   const total = THUMBS.length;
   const current = THUMBS[active];
 
-  const pick = useCallback((i: number) => { setMode3d(false); setActive(i); }, []);
-  const step = useCallback((d: number) => { setMode3d(false); setActive((i) => (i + d + total) % total); }, [total]);
-  const fail3d = useCallback(() => setMode3d(false), []);
+  const pick = useCallback((i: number) => setActive(i), []);
+  const step = useCallback((d: number) => setActive((i) => (i + d + total) % total), [total]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -108,7 +100,7 @@ export function W06Ficha() {
   const photo = (sizes: string, priority = false) => (
     <Image
       key={current.src}
-      src={BASE + current.src}
+      src={current.dir + current.src}
       alt={current.alt}
       fill
       sizes={sizes}
@@ -117,8 +109,6 @@ export function W06Ficha() {
       onError={() => setBroken((s) => ({ ...s, [current.src]: true }))}
     />
   );
-
-  const viewer = <Product3DViewer src={MODEL.src} poster={MODEL.poster} alt={MODEL.alt} className={styles.viewer} onFail={fail3d} />;
 
   return (
     <main className={styles.page}>
@@ -133,15 +123,13 @@ export function W06Ficha() {
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              {mode3d ? viewer : photo("(min-width: 1024px) 640px, 100vw", true)}
-              {mode3d && <span className={styles.badge3d}>Modelo 3D · arrastra para girar</span>}
-              <button type="button" className={mode3d ? styles.view3dOn : styles.view3d} aria-label={mode3d ? "Volver a las fotos" : "Ver la válvula en 3D"} aria-pressed={mode3d} title={mode3d ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setMode3d((v) => !v)}><Box size={18} aria-hidden="true" /></button>
+              {photo("(min-width: 1024px) 640px, 100vw", true)}
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
             <div className={styles.thumbs} role="list">
               {THUMBS.map((t, i) => (
-                <button key={t.src} type="button" role="listitem" className={!mode3d && i === active ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} aria-current={!mode3d && i === active}>
-                  <Image src={BASE + t.src} alt="" fill sizes="120px" />
+                <button key={t.src} type="button" role="listitem" className={i === active ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} aria-current={i === active}>
+                  <Image src={t.dir + t.src} alt="" fill sizes="120px" />
                 </button>
               ))}
             </div>
@@ -265,14 +253,13 @@ export function W06Ficha() {
           <button type="button" className={styles.lbClose} aria-label="Cerrar" onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label="Imagen anterior" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
-            {mode3d ? viewer : photo("100vw")}
+            {photo("100vw")}
           </div>
           <button type="button" className={styles.lbNext} aria-label="Imagen siguiente" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
             {THUMBS.map((t, i) => (
-              <button key={t.src} type="button" className={!mode3d && i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} />
+              <button key={t.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} />
             ))}
-            <button type="button" className={mode3d ? styles.lbDotActive : styles.lbDot} onClick={() => setMode3d(true)} aria-label="Ver en 3D" />
           </div>
         </div>
       )}
