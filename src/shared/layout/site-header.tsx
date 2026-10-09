@@ -1,13 +1,53 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { ArrowRight, ChevronDown, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { AccountLink } from "@/modules/auth/account-link";
 import { MAIN_NAV, isActivePath } from "@/shared/config/site";
 
 const NAV_ACTIVE = "transition-colors flex items-center h-full pt-0.5 text-primary font-semibold border-b-2 border-primary";
 const NAV_IDLE = "font-button-text text-button-text text-on-surface-variant hover:text-primary transition-colors flex items-center h-full pt-0.5";
+const HOME_NAV = [
+  { href: "/", label: "Inicio" },
+  { href: "/productos", label: "Productos" },
+  { href: "/soluciones", label: "Soluciones" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/recursos", label: "Recursos" },
+  { href: "/contacto", label: "Contacto" },
+] as const;
+
+function HomeBrand() {
+  return (
+    <Link className="home-brand-lockup" href="/" aria-label="FUNDIGSAC, inicio">
+      <Image className="home-brand-lockup__logo" src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC · Soluciones en hierro dúctil" />
+    </Link>
+  );
+}
+
+function HomeHeader({ current, menuOpen, menuId, onToggle, onNavigate }: { current: string; menuOpen: boolean; menuId: string; onToggle: () => void; onNavigate: () => void }) {
+  return (
+    <header className={`home-site-header${current === "/" ? "" : " home-site-header--inner"}`}>
+      <div className="home-header-shell">
+        <HomeBrand />
+        <nav className={`home-header-nav${menuOpen ? " is-open" : ""}`} id={menuId} aria-label="Navegación principal">
+          {HOME_NAV.map(({ href, label }) => <Link href={href} key={href} aria-current={href === current || (href !== "/" && current.startsWith(href + "/")) ? "page" : undefined} onClick={onNavigate}>{label}</Link>)}
+        </nav>
+        <div className="home-header-actions">
+          <Link className="home-header-search" href="/buscar" aria-label="Buscar"><Search size={17} /></Link>
+          <span className="home-header-theme" aria-hidden="true"><Sun size={16} /><Moon size={16} fill="currentColor" /></span>
+          <span className="home-header-language">ES <ChevronDown size={12} /></span>
+          <Link href="/cotizar" className="home-header-quote">Solicitar cotización <ArrowRight size={14} /></Link>
+        </div>
+        <button className="home-header-menu" type="button" aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"} aria-expanded={menuOpen} aria-controls={menuId} onClick={onToggle}>
+          {menuOpen ? <X size={23} /> : <Menu size={23} />}
+        </button>
+      </div>
+    </header>
+  );
+}
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -23,13 +63,14 @@ export function SiteHeader() {
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
+  if (pathname === "/" || pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas") return <HomeHeader current={pathname} menuOpen={menuOpen} menuId={menuId} onToggle={() => setMenuOpenedOn(menuOpen ? null : pathname)} onNavigate={() => setMenuOpenedOn(null)} />;
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest border-b border-border">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-[76px] flex items-center justify-between gap-2 lg:gap-6">
         <div className="flex items-center shrink-0">
-          <Link className="flex flex-col" href="/" aria-label="FUNDIGSAC, ir al inicio">
-            <span className="text-primary font-headline-card text-headline-card tracking-tight font-bold">FUNDIGSAC</span>
-            <span className="max-[360px]:hidden font-ui-label text-ui-label tracking-widest text-text-muted uppercase font-bold leading-3">HIERRO DÚCTIL · PERÚ</span>
+          <Link className="flex items-center" href="/" aria-label="FUNDIGSAC, ir al inicio">
+            <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC · Soluciones en hierro dúctil" className="h-auto w-[168px] sm:w-[178px]" />
           </Link>
         </div>
         <nav aria-label="Principal" className="hidden xl:flex items-center gap-8 h-full">
