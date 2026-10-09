@@ -3,7 +3,7 @@
   --ink-soft: #536067;
   --ink-muted: #737c80;
   --line: #e2e2df;
-  --paper: #f7f6f2;
+  --paper: #fbfaf7;
   --white: #fff;
   --orange: #ed762b;
   --blue: #dfeaf0;
@@ -1269,4 +1269,8 @@
   .categoryCard:last-child .categoryImage {
     aspect-ratio: 2.1 / 1;
   }
+}
+
+.featuredSection {
+  scroll-margin-top: 96px;
 }

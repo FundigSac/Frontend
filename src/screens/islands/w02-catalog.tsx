@@ -140,6 +140,16 @@ export function W02Catalog({
     });
   }
 
+  function pickFamily(next: FamilyFilter) {
+    setFamily(next);
+    window.setTimeout(() => {
+      document.getElementById("productos-destacados")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 60);
+  }
+
   const catalogDocument = documentHref("Catálogo general de productos FUNDIGSAC");
 
   return (
@@ -162,9 +172,9 @@ export function W02Catalog({
             </form>
             <div className={styles.filters} aria-label="Filtrar por familia">
               <span className={styles.filterLabel}>Filtrar por familia:</span>
-              <button type="button" aria-pressed={family === "todas"} onClick={() => setFamily("todas")} className={family === "todas" ? styles.filterActive : styles.filterPill}>Todas</button>
+              <button type="button" aria-pressed={family === "todas"} onClick={() => pickFamily("todas")} className={family === "todas" ? styles.filterActive : styles.filterPill}>Todas</button>
               {FAMILIES.map((entry) => (
-                <button key={entry.id} type="button" aria-pressed={family === entry.id} onClick={() => setFamily(family === entry.id ? "todas" : entry.id)} className={family === entry.id ? styles.filterActive : styles.filterPill}>{entry.label}</button>
+                <button key={entry.id} type="button" aria-pressed={family === entry.id} onClick={() => pickFamily(family === entry.id ? "todas" : entry.id)} className={family === entry.id ? styles.filterActive : styles.filterPill}>{entry.label}</button>
               ))}
             </div>
           </div>
