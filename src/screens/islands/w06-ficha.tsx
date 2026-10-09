@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Download, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Rotate3d, ChevronLeft, ChevronRight, Download, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
 import styles from "./w06-ficha.module.css";
 
 const BASE = "/media/valvula-ficha/";
@@ -35,7 +36,14 @@ const FLANGE = {
   },
 } as const;
 
+const Spin360 = dynamic(() => import("@/components/product-360-viewer"), {
+  ssr: false,
+  loading: () => <div className={styles.loading3d} role="status">Cargando vista 360°…</div>,
+});
+
 const REAL = "/media/valvula-real/";
+// Fotos reales ordenadas de vista lateral a frontal, para girar con el arrastre.
+const SPIN = ["05", "06", "04", "01", "08", "07", "02", "03"].map((n) => REAL + "valvula-" + n + ".webp");
 const THUMBS = [
   { dir: REAL, src: "valvula-01.webp", alt: "Válvula de compuerta bridada DN100, vista 3/4" },
   { dir: REAL, src: "valvula-02.webp", alt: "Válvula de compuerta bridada DN100, vista frontal con etiqueta" },
@@ -76,13 +84,14 @@ const SPECS = [
 export function W06Ficha() {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const [spin, setSpin] = useState(false);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState("DN50");
   const total = THUMBS.length;
   const current = THUMBS[active];
 
-  const pick = useCallback((i: number) => setActive(i), []);
-  const step = useCallback((d: number) => setActive((i) => (i + d + total) % total), [total]);
+  const pick = useCallback((i: number) => { setSpin(false); setActive(i); }, []);
+  const step = useCallback((d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); }, [total]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -123,7 +132,8 @@ export function W06Ficha() {
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              {photo("(min-width: 1024px) 640px, 100vw", true)}
+              {spin ? <Spin360 images={SPIN} alt="Vista 360° de la válvula de compuerta bridada" /> : photo("(min-width: 1024px) 640px, 100vw", true)}
+              <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver vista 360°"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Vista 360°"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /></button>
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
             <div className={styles.thumbs} role="list">
@@ -253,7 +263,7 @@ export function W06Ficha() {
           <button type="button" className={styles.lbClose} aria-label="Cerrar" onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label="Imagen anterior" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
-            {photo("100vw")}
+            {spin ? <Spin360 images={SPIN} alt="Vista 360° de la válvula de compuerta bridada" /> : photo("100vw")}
           </div>
           <button type="button" className={styles.lbNext} aria-label="Imagen siguiente" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
