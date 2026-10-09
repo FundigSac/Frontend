@@ -54,11 +54,15 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     // El logotipo grabado es una imagen aparte: se aplica al terminar de cargar el modelo.
     const onLoad = async () => {
       try {
-        const logo = el.model?.materials.find((m) => m.name === "logo");
-        if (!logo || !el.createTexture) return;
-        const tex = await el.createTexture("/models/logo-fundigsac.png");
-        logo.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
-        logo.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
+        if (!el.createTexture) return;
+        const decals: Record<string, string> = { etiqueta: "/models/etiqueta-hitaly.png", marcado: "/models/marcado-cuerpo.png", logo: "/models/logo-fundigsac.png" };
+        for (const m of el.model?.materials ?? []) {
+          const src = decals[m.name];
+          if (!src) continue;
+          const tex = await el.createTexture(src);
+          m.pbrMetallicRoughness.baseColorTexture.setTexture(tex);
+          m.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
+        }
       } catch {
         /* sin logotipo: el modelo sigue siendo válido */
       }

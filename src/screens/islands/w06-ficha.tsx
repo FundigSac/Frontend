@@ -36,14 +36,12 @@ const FLANGE = {
   },
 } as const;
 
-const Spin360 = dynamic(() => import("@/components/product-360-viewer"), {
+const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
   ssr: false,
-  loading: () => <div className={styles.loading3d} role="status">Cargando vista 360°…</div>,
+  loading: () => <div className={styles.loading3d} role="status">Cargando modelo 3D…</div>,
 });
 
 const REAL = "/media/valvula-hd/";
-// Vistas ordenadas de lateral a frontal, para el giro 360°.
-const SPIN = ["01", "02", "03", "04", "05", "06", "07", "08"].map((n) => REAL + "v-" + n + ".webp");
 const THUMBS = [
   { dir: REAL, src: "v-03.webp", alt: "Válvula de compuerta bridada, vista 3/4 lateral" },
   { dir: REAL, src: "v-01.webp", alt: "Válvula de compuerta bridada, vista frontal del cuerpo" },
@@ -133,8 +131,8 @@ export function W06Ficha() {
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              {spin ? <Spin360 images={SPIN} alt="Vista 360° de la válvula de compuerta bridada" /> : photo("(min-width: 1024px) 640px, 100vw", true)}
-              <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver vista 360°"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Vista 360°"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /><span>{spin ? "Fotos" : "Vista 360°"}</span></button>
+              {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={REAL + "v-03.webp"} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 640px, 100vw", true)}
+              <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver en 3D"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /><span>{spin ? "Fotos" : "Ver en 3D"}</span></button>
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
             <div className={styles.thumbs} role="list">
@@ -264,7 +262,7 @@ export function W06Ficha() {
           <button type="button" className={styles.lbClose} aria-label="Cerrar" onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label="Imagen anterior" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
-            {spin ? <Spin360 images={SPIN} alt="Vista 360° de la válvula de compuerta bridada" /> : photo("100vw")}
+            {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={REAL + "v-03.webp"} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
           </div>
           <button type="button" className={styles.lbNext} aria-label="Imagen siguiente" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
