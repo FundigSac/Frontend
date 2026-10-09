@@ -35,7 +35,7 @@ const nrmPng = await sharp(nrm, { raw: { width: N, height: N, channels: 3 } }).p
 fs.mkdirSync("public/models", { recursive: true });
 fs.writeFileSync("public/models/relieve-fundicion.png", nrmPng);
 const NORMAL_TEX = doc.createTexture("relieve-fundicion").setImage(nrmPng).setMimeType("image/png");
-BLUE.setNormalTexture(NORMAL_TEX).setNormalScale(0.9);
+BLUE.setNormalTexture(NORMAL_TEX).setNormalScale(1.8);
 STEEL.setNormalTexture(NORMAL_TEX).setNormalScale(0.15);
 
 const norm = (v) => { const l = Math.hypot(...v) || 1; return v.map((x) => x / l); };
@@ -138,7 +138,7 @@ const yaw = (a) => [0, Math.sin(a / 2), 0, Math.cos(a / 2)];
 addMesh(root, "tubo", lathe([[0, -1], [0.64, -1], [0.64, 1], [0, 1]]), BLUE, [0, 0, 0], rotZ90);
 for (const sx of [-1, 1]) {
   const rot = sx > 0 ? rotZm90 : rotZ90;
-  addMesh(root, "brida", lathe([[0, -0.11], [1.1, -0.11], [1.1, 0.11], [0, 0.11]]), BLUE, [sx * 0.97, 0, 0], rotZ90);
+  addMesh(root, "brida", lathe([[0, -0.11], [1.05, -0.11], [1.1, -0.06], [1.1, 0.06], [1.05, 0.11], [0, 0.11]]), BLUE, [sx * 0.97, 0, 0], rotZ90);
   addMesh(root, "realce", lathe([[0, 0], [0.78, 0], [0.78, 0.035], [0, 0.035]]), BLUE, [sx * 1.08, 0, 0], rot);
   addMesh(root, "paso", lathe([[0, 0], [0.5, 0], [0.5, 0.012]]), DARK, [sx * 1.118, 0, 0], rot);
   for (let i = 0; i < 8; i++) {
@@ -156,6 +156,8 @@ for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
   addMesh(root, "perno", nut(0.1, 0.07), STEEL, [sx * 0.62, 1.74, sz * 0.42]);
 }
 addMesh(root, "bonete", frustum(1.0, 0.8, 0.6, 0.55, 0.5), BLUE, [0, 1.6, 0]);
+addMesh(root, "nervio-bonete", frustum(0.12, 0.55, 0.1, 0.12, 0.14), BLUE, [0, 2.07, 0.12]);
+for (const sx of [-1, 1]) addMesh(root, "escuadra", frustum(0.08, 0.5, 0.03, 0.2, 0.45), BLUE, [sx * 0.52, 1.6, 0]);
 addMesh(root, "cuello", lathe([[0, 0], [0.32, 0], [0.32, 0.3], [0.26, 0.42], [0, 0.42]], 48), BLUE, [0, 2.1, 0]);
 addMesh(root, "tuerca-laton", nut(0.2, 0.15), BRASS, [0, 2.5, 0]);
 addMesh(root, "vastago", lathe([[0, 2.45], [0.105, 2.45], [0.105, 3.15], [0, 3.15]], 32), STEEL);

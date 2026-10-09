@@ -55,7 +55,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     const onLoad = async () => {
       try {
         if (!el.createTexture) return;
-        const decals: Record<string, string> = { etiqueta: "/models/etiqueta-hitaly.png", marcado: "/models/marcado-cuerpo.png", logo: "/models/logo-fundigsac.png" };
+        const decals: Record<string, string> = { etiqueta: "/models/etiqueta-real.png", marcado: "/models/marcado-cuerpo.png", logo: "/models/logo-fundigsac.png" };
         const relief = await el.createTexture("/models/relieve-fundicion.png");
         for (const m of el.model?.materials ?? []) {
           if (m.name === "epoxi-azul") { m.normalTexture?.setTexture(relief); m.pbrMetallicRoughness.setRoughnessFactor(0.46); }
