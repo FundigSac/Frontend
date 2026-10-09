@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
-import { ScreenW03 } from "@/screens/w03";
-import { ScreenW04 } from "@/screens/w04";
-import { ScreenW05 } from "@/screens/w05";
+import { W03Valvulas } from "@/screens/islands/w03-valvulas";
+import { W04Tuberias } from "@/screens/islands/w04-tuberias";
+import { W05Marcos } from "@/screens/islands/w05-marcos";
 import { ScreenW06 } from "@/screens/w06";
 import { ScreenW07 } from "@/screens/w07";
 import { ScreenW08 } from "@/screens/w08";
@@ -24,9 +24,9 @@ export type ProductEntry = {
 };
 
 export const CATEGORIES: readonly CategoryEntry[] = [
-  { slug: "valvulas", name: "Válvulas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: ScreenW03 },
-  { slug: "tuberias", name: "Tuberías", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: ScreenW04 },
-  { slug: "marcos-y-tapas", name: "Marcos y tapas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: ScreenW05 },
+  { slug: "valvulas", name: "Válvulas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: W03Valvulas },
+  { slug: "tuberias", name: "Tuberías", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: W04Tuberias },
+  { slug: "marcos-y-tapas", name: "Marcos y tapas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: W05Marcos },
 ];
 
 export const PRODUCTS: readonly ProductEntry[] = [
