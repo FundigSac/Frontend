@@ -102,9 +102,3 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
       })
     : createElement("div", { className, role: "status", "aria-live": "polite", style: { display: "grid", placeItems: "center", color: "#6f797e", fontSize: 14 } }, "Cargando modelo 3D…");
 }
-
-
-
-
-
-

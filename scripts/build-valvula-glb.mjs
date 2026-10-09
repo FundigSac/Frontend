@@ -121,7 +121,3 @@ const rawJson=Buffer.from(JSON.stringify(manifest)), paddedJson=Buffer.alloc(Mat
 const header=Buffer.alloc(20);header.writeUInt32LE(0x46546c67,0);header.writeUInt32LE(2,4);header.writeUInt32LE(20+paddedJson.length+binaryChunk.length,8);header.writeUInt32LE(paddedJson.length,12);header.writeUInt32LE(0x4e4f534a,16);
 fs.writeFileSync(glbPath,Buffer.concat([header,paddedJson,binaryChunk]));
 console.log('Modelo reconstruido:',fs.statSync('public/models/valvula-compuerta.glb').size,'bytes');
-
-
-
-
