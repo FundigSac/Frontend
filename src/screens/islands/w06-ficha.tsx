@@ -41,19 +41,20 @@ const Spin360 = dynamic(() => import("@/components/product-360-viewer"), {
   loading: () => <div className={styles.loading3d} role="status">Cargando vista 360°…</div>,
 });
 
-const REAL = "/media/valvula-real/";
-// Fotos reales ordenadas de vista lateral a frontal, para girar con el arrastre.
-const SPIN = ["05", "06", "04", "01", "08", "07", "02", "03"].map((n) => REAL + "valvula-" + n + ".webp");
+const REAL = "/media/valvula-hd/";
+// Vistas ordenadas de lateral a frontal, para el giro 360°.
+const SPIN = ["01", "02", "03", "04", "05", "06", "07", "08"].map((n) => REAL + "v-" + n + ".webp");
 const THUMBS = [
-  { dir: REAL, src: "valvula-01.webp", alt: "Válvula de compuerta bridada DN100, vista 3/4" },
-  { dir: REAL, src: "valvula-02.webp", alt: "Válvula de compuerta bridada DN100, vista frontal con etiqueta" },
-  { dir: REAL, src: "valvula-03.webp", alt: "Válvula de compuerta bridada DN100, vista 3/4 con etiqueta" },
-  { dir: REAL, src: "valvula-04.webp", alt: "Válvula de compuerta bridada, vista lateral" },
-  { dir: REAL, src: "valvula-05.webp", alt: "Válvula de compuerta bridada, vista de perfil" },
-  { dir: REAL, src: "valvula-06.webp", alt: "Válvula de compuerta bridada, vista lateral desde abajo" },
-  { dir: REAL, src: "valvula-07.webp", alt: "Válvula de compuerta bridada, vista frontal" },
-  { dir: REAL, src: "valvula-08.webp", alt: "Válvula de compuerta bridada, vista frontal con etiqueta" },
-  { dir: REAL, src: "valvula-09.webp", alt: "Volante de la válvula visto desde arriba" },
+  { dir: REAL, src: "v-03.webp", alt: "Válvula de compuerta bridada, vista 3/4 lateral" },
+  { dir: REAL, src: "v-01.webp", alt: "Válvula de compuerta bridada, vista frontal del cuerpo" },
+  { dir: REAL, src: "v-02.webp", alt: "Válvula de compuerta bridada, marcado DN100 PN16 en el cuerpo" },
+  { dir: REAL, src: "v-04.webp", alt: "Válvula de compuerta bridada, vista 3/4 con brida frontal" },
+  { dir: REAL, src: "v-05.webp", alt: "Válvula de compuerta bridada, vista 3/4 desde la derecha" },
+  { dir: REAL, src: "v-06.webp", alt: "Válvula de compuerta bridada, vista 3/4 desde arriba" },
+  { dir: REAL, src: "v-07.webp", alt: "Válvula de compuerta bridada, vista 3/4 con volante" },
+  { dir: REAL, src: "v-08.webp", alt: "Válvula de compuerta bridada, vista frontal de la brida" },
+  { dir: REAL, src: "v-09.webp", alt: "Volante visto desde arriba, sentido de giro" },
+  { dir: REAL, src: "v-10.webp", alt: "Volante visto desde arriba, abrir y cerrar" },
 ];
 
 const RELATED = [
@@ -133,7 +134,7 @@ export function W06Ficha() {
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
               {spin ? <Spin360 images={SPIN} alt="Vista 360° de la válvula de compuerta bridada" /> : photo("(min-width: 1024px) 640px, 100vw", true)}
-              <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver vista 360°"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Vista 360°"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /></button>
+              <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver vista 360°"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Vista 360°"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /><span>{spin ? "Fotos" : "Vista 360°"}</span></button>
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
             <div className={styles.thumbs} role="list">
