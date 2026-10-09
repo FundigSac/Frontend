@@ -1,76 +1,52 @@
-# FUNDIGSAC 2.0
+# FUNDIGSAC · Web corporativa B2B (Next.js 16)
 
-Aplicación pública B2B en Next.js para explorar productos y preparar consultas comerciales. El mirror WordPress se conserva como referencia histórica separada.
+Sitio corporativo industrial B2B de FUNDIGSAC (hierro dúctil: válvulas, tuberías, marcos y tapas).
+Implementa fielmente las 24 pantallas aprobadas en Google Stitch (W01–W24) más el módulo de autenticación de clientes.
 
-## Estado
-
-- Home con cinco accesos visuales a familias y soluciones, sectores y guía de cotización; catálogo con seis familias y 69 fichas, páginas corporativas, contacto y cotizador local.
-- Las fichas iniciales del sitio legacy se complementaron con referencias extraídas de los tres PDF. Los nombres, códigos y medidas del catálogo ampliado requieren revisión comercial antes de presentarse como especificaciones definitivas.
-- Los precios y el stock de los PDF no se presentan como disponibilidad actual.
-- La cotización prepara un mensaje de WhatsApp. El cliente debe enviarlo manualmente.
-- Hay un modelo Prisma validado para productos, variantes, cotizaciones y reclamos; no hay todavía conexión a PostgreSQL, identidad, panel administrativo ni registro digital de reclamos.
-- La home y las fichas siguen la dirección visual aprobada. El hero y la sección de termofusión usan ilustraciones conceptuales, documentadas en `docs/MEDIA_REVIEW.md`; no se presentan como fotos de un SKU.
+- Arquitectura y decisiones: `../FUNDIGSAC_ADR-001_Arquitectura_Web.md` · Sistema de diseño: `../DESIGN.md`
+- Fuente visual: `../stitch_design_system_studio/` (`code.html` + `screen.png` por pantalla). **No se modifica ni se borra.**
 
 ## Requisitos
+Node.js 24 LTS (probado con 24.14) · pnpm 11 (`corepack enable` o `corepack pnpm …`) · Google Chrome (para QA visual).
 
-- Node.js 24 LTS
-- pnpm 11
-- Git
+> El proyecto vive en un disco externo USB: los primeros arranques, instalaciones y compilaciones son lentos.
 
-## Instalar y ejecutar
+## Comandos
+```bash
+corepack pnpm install --frozen-lockfile     # dependencias (versiones exactas)
+node_modules/.bin/next dev --hostname 127.0.0.1 --port 3101   # desarrollo
+node_modules/.bin/next build && node_modules/.bin/next start   # producción local
+node_modules/.bin/tsc --noEmit              # tipos (strict)
+node_modules/.bin/eslint .                  # lint
+node_modules/.bin/vitest run                # unitarias
+PW_BASE_URL=http://127.0.0.1:3101 node_modules/.bin/playwright test   # e2e (sin PW_BASE_URL construye y arranca :3100)
+```
+Varios `next dev` a la vez: `NEXT_DIST_DIR=.next-otro node_modules/.bin/next dev --port 31xx`.
 
-```powershell
-cd "C:\Users\Productora Zamar\Downloads\Diego Software\FUNDIGSAC"
-pnpm install
-pnpm dev
+## Variables de entorno
+Ver `.env.example` y `docs/auth/AUTH_SETUP.md`. Sin `DATABASE_URL` en desarrollo se usa PGlite (Postgres embebido en `.data/pglite`);
+en producción `DATABASE_URL` (PostgreSQL), `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` y `LEAD_HASH_SECRET` son obligatorios.
+`SITE_INDEXABLE=true` habilita indexación (por defecto todo es `noindex`, ADR-001, hasta aprobar contenido real).
+
+## Estructura
+```
+src/app/               rutas (App Router), metadata, robots, sitemap
+src/screens/wNN.tsx    pantallas Stitch convertidas (mantenidas a mano; ver src/screens/README.md)
+src/screens/islands/   componentes cliente con las interacciones de cada pantalla
+src/modules/*          dominio por módulo (catalog, leads, products, resources, consent, auth)
+src/server/*           acceso a datos (Drizzle + PostgreSQL/PGlite), auth
+src/shared/*           layout (header/footer/tema), UI compartida (toast, doc-link), SEO
+scripts/stitch/        conversor Stitch→JSX, subset de iconos, compat Tailwind v3→v4
+scripts/qa/            captura/diferencia visual contra Stitch, comparadores de estilo
+docs/                  auditoría Stitch, QA, seguridad, rendimiento, contenido pendiente, auth
 ```
 
-Abrir [http://localhost:3000](http://localhost:3000). El mirror histórico se abre por separado:
+## Fidelidad a Stitch
+El export de Stitch usa Tailwind v3 (CDN) y Material Symbols; el proyecto usa Tailwind v4 (ADR-001). Los tokens se portan 1:1
+(`src/app/globals.css`) y se compensan las diferencias v3→v4 (radios, sombras, borde por defecto, `space-*`, orden de utilidades de
+tamaño de texto). La paridad se mide con `scripts/qa/capture.mjs` + `scripts/qa/diff.py` (resultados en `docs/qa/results/`).
 
-```powershell
-pnpm legacy:serve
-```
-
-Abrir [http://localhost:4173](http://localhost:4173).
-
-## Verificar
-
-```powershell
-pnpm lint
-pnpm typecheck
-pnpm test:unit
-pnpm test:a11y
-pnpm build
-pnpm exec e2e run --target desktop-chromium,mobile-chromium,tablet-chromium
-pnpm db:validate
-pnpm db:generate
-```
-
-La suite completa incluye Firefox y WebKit. En este Windows faltan dependencias de esos motores; ver [auditoría](docs/REDESIGN_AUDIT.md).
-
-## Referencias y fuentes
-
-- `legacy/mirror/`: copia navegable histórica de WordPress.
-- `legacy/html/`, `legacy/screenshots/`, `reports/`: artefactos del crawl.
-- `public/media/`: fotografías históricas, recortes de los PDF e ilustraciones identificadas como referencia temporal.
-- `src/lib/catalog.ts` y `src/lib/catalog-pdf.ts`: catálogo con fuente por producto.
-- `docs/MEDIA_REVIEW.md`: material que requiere reemplazo.
-- `scripts/capture-local.ts`: capturas de desktop/mobile que cargan y comprueban todas las imágenes antes de guardarse.
-- `docs/BACKUP_PRE_REDESIGN.md`: copia completa previa a los cambios.
-- `prisma/schema.prisma`: modelo de datos preparado para la etapa de backend.
-- `sources/catalogs/`: destino de los PDF fuente. Los originales recibidos se encuentran en el directorio padre `Diego Software` y no se han modificado.
-
-## Scripts heredados
-
-```powershell
-pnpm site:crawl
-pnpm site:capture
-pnpm site:audit
-pnpm legacy:verify
-```
-
-No versionar `node_modules`, `.next`, archivos `.env`, secretos ni cachés. El rediseño no utiliza el HTML, CSS ni JavaScript de WordPress en la app nueva.
-
-## Siguiente fase
-
-Validar las variantes y precios con el responsable comercial; obtener imágenes limpias y fichas técnicas; configurar PostgreSQL y desarrollar persistencia, recepción de cotizaciones y reclamos, identidad y administración sobre el modelo preparado. No se deben simular esas funciones con estado local.
+## Datos y contenido
+- Las imágenes de `public/images/stitch/` son las **generadas por Stitch** (referencias visuales). Pendiente: fotografía oficial/licenciada (`docs/content/MISSING_ASSETS.md`).
+- No hay precios, stock en tiempo real, pagos ni documentos PDF reales: las descargas se ofrecen "bajo solicitud" hacia el formulario de contacto.
+- Formularios públicos → servidor (validación, rate limit, folio) → tabla `lead_submissions`. No hay envío de correo hasta configurar proveedor.

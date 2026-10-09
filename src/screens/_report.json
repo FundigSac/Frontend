@@ -1,0 +1,266 @@
+{
+  "w01": {
+    "dir": "w01_inicio_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 577,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w02": {
+    "dir": "w02_cat_logo_general_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 1060,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w03": {
+    "dir": "w03_categor_a_v_lvulas_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 823,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w04": {
+    "dir": "w04_categor_a_tuber_as_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 741,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w05": {
+    "dir": "w05_categor_a_marcos_y_tapas_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 825,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w06": {
+    "dir": "w06_ficha_t_cnica_v_lvula_de_compuerta_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 1227,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w07": {
+    "dir": "w07_ficha_t_cnica_v_lvula_mariposa_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 1222,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w08": {
+    "dir": "w08_ficha_t_cnica_tuber_a_tyton_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 1184,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w09": {
+    "dir": "w09_ficha_t_cnica_marco_y_tapa_d400_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 985,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w10": {
+    "dir": "w10_soluciones_y_aplicaciones_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 568,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w11": {
+    "dir": "w11_detalle_de_soluci_n_redes_matrices_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 623,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w12": {
+    "dir": "w12_nosotros_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 538,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w13": {
+    "dir": "w13_recursos_t_cnicos_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 561,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w14": {
+    "dir": "w14_detalle_de_recurso_t_cnico_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 528,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w15": {
+    "dir": "w15_contacto_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 651,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w16": {
+    "dir": "w16_solicitar_cotizaci_n_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 611,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w17": {
+    "dir": "w17_cotizaci_n_de_producto_precargado_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 680,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w18": {
+    "dir": "w18_libro_de_reclamaciones_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 397,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w19": {
+    "dir": "w19_pol_tica_de_privacidad_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 809,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w20": {
+    "dir": "w20_pol_tica_de_cookies_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 740,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w21": {
+    "dir": "w21_error_404_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 251,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w22": {
+    "dir": "w22_resultados_de_b_squeda_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 1053,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w23": {
+    "dir": "w23_visualizaci_n_3d_de_producto_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 650,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  },
+  "w24": {
+    "dir": "w24_confirmaci_n_de_cotizaci_n_fundigsac_2026",
+    "dropped": [
+      "header",
+      "footer"
+    ],
+    "missing_links": [],
+    "external_images": [],
+    "lines": 498,
+    "title": "FUNDIGSAC | Hierro Dúctil · Saneamiento e Infraestructura"
+  }
+}

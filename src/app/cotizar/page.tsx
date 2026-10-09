@@ -1,35 +1,25 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { QuoteForm } from "@/components/quote-form";
-import { PageHero } from "@/components/ui/page-hero";
-import { Reveal } from "@/components/ui/reveal";
+import { findQuoteProduct } from "@/modules/quote/products";
+import { ScreenW16 } from "@/screens/w16";
+import { ScreenW17 } from "@/screens/w17";
 
-export const metadata: Metadata = {
-  title: "Solicitar cotización",
-  description: "Prepara tu consulta de productos FUNDIGSAC con medidas y cantidades y envíala por WhatsApp.",
-  alternates: { canonical: "/cotizar" },
-};
+type Props = { searchParams: Promise<{ producto?: string | string[] }> };
 
-export default function QuotePage() {
-  return <main>
-    <PageHero
-      compact
-      crumbs={[{ label: "Solicitar cotización" }]}
-      eyebrow="Cotización"
-      title="Solicitar cotización"
-      lead="Revisa los productos de tu lista, completa tus datos y abre una consulta por WhatsApp con todo listo."
-      actions={<Link className="button button-outline" href="/productos">Agregar más productos <ArrowRight size={18} /></Link>}
-    />
-    <section className="x-section x-quote">
-      <div className="container">
-        <ol className="x-quote-steps">
-          <li><div><strong>Elige productos</strong><span>Desde cada ficha, con su medida.</span></div></li>
-          <li><div><strong>Revisa cantidades</strong><span>Ajusta unidades o quita lo que no necesites.</span></div></li>
-          <li><div><strong>Envía por WhatsApp</strong><span>Te confirmamos precio y disponibilidad.</span></div></li>
-        </ol>
-        <Reveal><QuoteForm /></Reveal>
-      </div>
-    </section>
-  </main>;
+const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const product = findQuoteProduct(first((await searchParams).producto));
+  return {
+    title: product ? `Cotizar ${product.shortName}` : "Solicitar cotización",
+    description: "Solicita una cotización técnica de productos de hierro dúctil FUNDIGSAC.",
+    // La variante con producto precargado es una vista del mismo trámite: la canónica es /cotizar.
+    alternates: { canonical: "/cotizar" },
+  };
+}
+
+export default async function QuotePage({ searchParams }: Props) {
+  const slug = first((await searchParams).producto);
+  // Contrato tipado: sólo slugs del catálogo; cualquier otro valor se ignora y se muestra la cotización general.
+  const product = findQuoteProduct(slug);
+  return product ? <ScreenW17 slug={product.slug} /> : <ScreenW16 />;
 }

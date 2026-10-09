@@ -1,36 +1,3 @@
-# FUNDIGSAC Engineering Rules
-
-FUNDIGSAC es un catálogo industrial B2B.
-
-El WordPress actual es solo una fuente legacy.
-
-Nunca copiar:
-- CSS legacy
-- HTML de Elementor como código de la nueva aplicación
-- PHP
-- WooCommerce templates
-- shortcodes
-
-Sí conservar como información:
-- productos
-- contenido empresarial
-- fotografías
-- documentos
-- URLs
-- metadata SEO
-- información técnica válida
-
-La nueva aplicación debe:
-- ser mobile-first
-- utilizar TypeScript estricto
-- priorizar accesibilidad
-- priorizar SEO
-- utilizar componentes reutilizables
-- evitar dependencias innecesarias
-- evitar sobrearquitectura
-
-No inventar especificaciones técnicas ni productos.
-
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
