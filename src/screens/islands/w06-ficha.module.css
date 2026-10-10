@@ -704,3 +704,43 @@
 }
 @media (max-width: 1024px) { .mainImage { height: auto; max-height: none; aspect-ratio: 1 / 1; width: 100%; } }
 @media (max-width: 760px) { .mainImage { height: auto; aspect-ratio: 1 / 1.1; } }
+
+/* Documentación: portada con previsualización y visor del PDF */
+.docCover { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #fff; cursor: zoom-in; overflow: hidden; border-radius: 10px; }
+.docCover img { object-fit: cover; object-position: 50% 0; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
+.docCover:hover img { transform: scale(1.02); }
+.docCover:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.docPreviewHint { position: absolute; left: 50%; bottom: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(17, 28, 33, .82); color: #fff; font-size: 13px; font-weight: 600; transform: translateX(-50%); opacity: 0; transition: opacity .2s ease; pointer-events: none; }
+.docCover:hover .docPreviewHint, .docCover:focus-visible .docPreviewHint { opacity: 1; }
+@media (hover: none) { .docPreviewHint { opacity: 1; } }
+
+.docModal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; background: rgba(10, 16, 20, .72); backdrop-filter: blur(4px); animation: docFade .18s ease-out; }
+@keyframes docFade { from { opacity: 0; } to { opacity: 1; } }
+.docPanel { display: flex; flex-direction: column; width: min(940px, 100%); height: min(92vh, 1100px); border-radius: 16px; background: #f4f2ec; box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .5); overflow: hidden; }
+.docBar { display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 20px; background: #fff; border-bottom: 1px solid #e6e1d6; }
+.docBarTitle { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 2px; }
+.docBarTitle strong { overflow: hidden; color: var(--ink); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.docBarTitle span { color: var(--ink-muted); font-size: 12px; }
+.docBarBtn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid #d9d4c8; border-radius: 999px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; transition: border-color .2s ease, color .2s ease; }
+.docBarBtn:hover { border-color: var(--blue); color: var(--blue); }
+.docBarClose { display: grid; width: 36px; height: 36px; place-items: center; border: 0; border-radius: 50%; background: #efece4; color: var(--ink); cursor: pointer; }
+.docBarClose:hover { background: #e4e0d5; }
+.docBody { position: relative; flex: 1; min-height: 0; }
+.docScroll { height: 100%; overflow: auto; padding: 18px 56px; overscroll-behavior: contain; scroll-behavior: smooth; animation: docFade .2s ease-out; }
+.docPage { display: block; width: 100%; max-width: 820px; height: auto; margin: 0 auto; border-radius: 4px; background: #fff; box-shadow: 0 6px 24px -10px rgba(17, 28, 33, .35); }
+.docNavPrev, .docNavNext { position: absolute; top: 50%; z-index: 2; display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid #e3e7ea; border-radius: 50%; background: rgba(255, 255, 255, .95); color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, .14); cursor: pointer; transform: translateY(-50%); }
+.docNavPrev { left: 8px; }
+.docNavNext { right: 8px; }
+.docNavPrev:hover, .docNavNext:hover { color: var(--blue); }
+.docDots { display: flex; justify-content: center; gap: 8px; padding: 10px; background: #fff; border-top: 1px solid #e6e1d6; }
+.docDot, .docDotOn { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 999px; background: #cfc9bb; cursor: pointer; transition: width .2s ease, background .2s ease; }
+.docDotOn { width: 26px; background: var(--blue); }
+@media (max-width: 760px) {
+  .docModal { padding: 0; }
+  .docPanel { width: 100%; height: 100dvh; border-radius: 0; }
+  .docScroll { padding: 12px 10px; }
+  .docBarBtn span { display: none; }
+  .docBarBtn { width: 36px; padding: 0; justify-content: center; }
+  .docNavPrev { left: 4px; }
+  .docNavNext { right: 4px; }
+}

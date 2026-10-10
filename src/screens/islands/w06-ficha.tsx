@@ -4,10 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Rotate3d, ChevronLeft, ChevronRight, Download, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Rotate3d, ChevronLeft, ChevronRight, Download, ExternalLink, Eye, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
 import styles from "./w06-ficha.module.css";
 
 const BASE = "/media/valvula-ficha/";
+const PDF_HREF = "/docs/ficha-tecnica-valvula-compuerta-bridada.pdf";
+const PDF_PAGES = [1, 2, 3].map((n) => ({ src: `${BASE}ficha-p${n}.webp`, alt: `Ficha técnica FT-HI-100 Rev. 13, página ${n} de 3` }));
 
 const SIZES = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
 
@@ -78,6 +80,8 @@ const SPECS = [
 export function W06Ficha() {
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
+  const [docOpen, setDocOpen] = useState(false);
+  const [docPage, setDocPage] = useState(0);
   const [spin, setSpin] = useState(false);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState("DN50");
@@ -86,6 +90,21 @@ export function W06Ficha() {
 
   const pick = useCallback((i: number) => { setSpin(false); setActive(i); }, []);
   const step = useCallback((d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); }, [total]);
+
+  const stepDoc = useCallback((d: number) => setDocPage((i) => (i + d + PDF_PAGES.length) % PDF_PAGES.length), []);
+
+  useEffect(() => {
+    if (!docOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDocOpen(false);
+      if (e.key === "ArrowLeft") stepDoc(-1);
+      if (e.key === "ArrowRight") stepDoc(1);
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+  }, [docOpen, stepDoc]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -162,7 +181,7 @@ export function W06Ficha() {
 
             <div className={styles.ctas}>
               <Link href="/cotizar" className={styles.primary}>Solicitar cotización <ArrowRight size={16} aria-hidden="true" /></Link>
-              <a href="/docs/ficha-tecnica-valvula-compuerta-bridada.pdf" download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
+              <a href={PDF_HREF} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
             </div>
 
             <ul className={styles.badges}>
@@ -187,10 +206,13 @@ export function W06Ficha() {
           <div className={styles.col} id="documentacion">
             <h2>Documentación</h2>
             <div className={styles.doc}>
-              <div className={styles.docCover}><Image src={BASE + "ficha-portada.webp"} alt="Portada de la ficha técnica de la válvula de compuerta bridada" fill sizes="(min-width: 1024px) 360px, 90vw" /></div>
-              <p className={styles.docTitle}>Ficha técnica FT-HD N° 002-2024</p>
-              <p className={styles.docMeta}>PDF · 0.5 MB · 4 páginas</p>
-              <a href="/docs/ficha-tecnica-valvula-compuerta-bridada.pdf" download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
+              <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
+                <Image src={PDF_PAGES[0].src} alt={PDF_PAGES[0].alt} fill sizes="(min-width: 1024px) 360px, 90vw" />
+                <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
+              </button>
+              <p className={styles.docTitle}>Ficha técnica FT-HI-100 · Rev. 13</p>
+              <p className={styles.docMeta}>PDF · 5.4 MB · 3 páginas</p>
+              <a href={PDF_HREF} download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
             </div>
           </div>
         </section>
@@ -272,6 +294,34 @@ export function W06Ficha() {
             {THUMBS.map((t, i) => (
               <button key={t.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} />
             ))}
+          </div>
+        </div>
+      )}
+
+      {docOpen && (
+        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label="Previsualización de la ficha técnica" onClick={() => setDocOpen(false)}>
+          <div className={styles.docPanel} onClick={(e) => e.stopPropagation()}>
+            <header className={styles.docBar}>
+              <div className={styles.docBarTitle}>
+                <strong>Ficha técnica FT-HI-100 · Rev. 13</strong>
+                <span aria-live="polite">Página {docPage + 1} de {PDF_PAGES.length}</span>
+              </div>
+              <a href={PDF_HREF} target="_blank" rel="noopener noreferrer" className={styles.docBarBtn}><ExternalLink size={15} aria-hidden="true" /><span>Abrir PDF</span></a>
+              <a href={PDF_HREF} download className={styles.docBarBtn}><Download size={15} aria-hidden="true" /><span>Descargar</span></a>
+              <button type="button" className={styles.docBarClose} aria-label="Cerrar previsualización" onClick={() => setDocOpen(false)}><X size={20} aria-hidden="true" /></button>
+            </header>
+            <div className={styles.docBody}>
+              <button type="button" className={styles.docNavPrev} aria-label="Página anterior" onClick={() => stepDoc(-1)}><ChevronLeft size={22} aria-hidden="true" /></button>
+              <div className={styles.docScroll} key={docPage}>
+                <Image src={PDF_PAGES[docPage].src} alt={PDF_PAGES[docPage].alt} width={1500} height={2121} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
+              </div>
+              <button type="button" className={styles.docNavNext} aria-label="Página siguiente" onClick={() => stepDoc(1)}><ChevronRight size={22} aria-hidden="true" /></button>
+            </div>
+            <div className={styles.docDots}>
+              {PDF_PAGES.map((pg, i) => (
+                <button key={pg.src} type="button" className={i === docPage ? styles.docDotOn : styles.docDot} onClick={() => setDocPage(i)} aria-label={`Ir a la página ${i + 1}`} aria-current={i === docPage} />
+              ))}
+            </div>
           </div>
         </div>
       )}
