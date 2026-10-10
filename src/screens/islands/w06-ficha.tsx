@@ -13,7 +13,7 @@ const PDF_PAGES = [1, 2, 3].map((n) => ({ src: `${BASE}ficha-p${n}.webp`, alt: `
 
 const SIZES = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
 
-// Datos de la ficha técnica oficial FT-HD N° 002-2024 (mm). L: DIN 3202 F4 (serie 14) / F5 (serie 15).
+// Datos de la ficha técnica FT-HI-100 Rev. 13 (mm), valores de referencia. L: DIN 3202 F4 (serie 14) / F5 (serie 15).
 const DN_LIST = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
 const L_F4 = [140, 150, 170, 180, 190, 200, 210, 230, 250, 270, 290, 310, 350, 390];
 const L_F5 = [240, 250, 270, 280, 300, 325, 350, 400, 450, 500, null, 600, 700, 800];
@@ -60,17 +60,20 @@ const RELATED = [
 ];
 
 const SPECS = [
+  ["Marca", "H-ITALY"],
   ["Tipo", "Compuerta de cierre elástico, extremos bridados"],
-  ["Cuerpo y tapa", "GJS500-7 (hierro dúctil)"],
-  ["Cuña", "GJS500-7 / EPDM"],
-  ["Vástago", "2Cr13 (SS420)"],
+  ["Cuerpo y tapa", "GJS-500-7 (GGG-50), hierro dúctil"],
+  ["Cuña", "Núcleo GJS-500-7 con recubrimiento EPDM"],
+  ["Vástago", "Inox. 1.4021 (2Cr13 / SS420)"],
   ["Tuerca del vástago", "Latón"],
   ["Sellos", "EPDM · NBR · PTFE"],
+  ["Tornillería", "Inoxidable A2 / SS304"],
   ["Revestimiento", "Epoxi azul RAL 5005, mín. 250 micras"],
-  ["Brida", "EN1092-2, doble perforación PN10/PN16"],
-  ["Longitud entre caras", "DIN3202 F4 (serie 14) / F5 (serie 15)"],
-  ["Prueba", "EN1171 y EN1074"],
-  ["Norma de producto", "EN1074-2"],
+  ["Diseño", "ISO 7259 · AWWA C509 / C515"],
+  ["Brida", "ISO 7005-2 · EN 1092-2, doble perforación PN10/PN16"],
+  ["Longitud entre caras", "ISO 5752 series 14 y 15 · DIN3202 F4 / F5"],
+  ["Prueba", "EN 1171 y EN 1074"],
+  ["Norma de producto", "EN 1074-2"],
   ["Presión máxima de trabajo", "16 bar"],
   ["Temperatura máxima", "110 °C"],
   ["Medio", "Agua"],
@@ -225,6 +228,7 @@ export function W06Ficha() {
                 {SPECS.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
               </tbody>
             </table>
+            <p className={styles.muted}>Valores de referencia de la ficha FT-HI-100 Rev. 13; verificar con H-ITALY según la variante.</p>
           </div>
           <div className={styles.col}>
             <h2>Dimensiones</h2>
