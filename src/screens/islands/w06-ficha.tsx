@@ -43,16 +43,11 @@ const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
 
 const REAL = "/media/valvula-hd/";
 const THUMBS = [
-  { dir: REAL, src: "v-03.webp", alt: "Válvula de compuerta bridada, vista 3/4 lateral" },
-  { dir: REAL, src: "v-01.webp", alt: "Válvula de compuerta bridada, vista frontal del cuerpo" },
-  { dir: REAL, src: "v-02.webp", alt: "Válvula de compuerta bridada, marcado DN100 PN16 en el cuerpo" },
-  { dir: REAL, src: "v-04.webp", alt: "Válvula de compuerta bridada, vista 3/4 con brida frontal" },
-  { dir: REAL, src: "v-05.webp", alt: "Válvula de compuerta bridada, vista 3/4 desde la derecha" },
-  { dir: REAL, src: "v-06.webp", alt: "Válvula de compuerta bridada, vista 3/4 desde arriba" },
-  { dir: REAL, src: "v-07.webp", alt: "Válvula de compuerta bridada, vista 3/4 con volante" },
-  { dir: REAL, src: "v-08.webp", alt: "Válvula de compuerta bridada, vista frontal de la brida" },
-  { dir: REAL, src: "v-09.webp", alt: "Volante visto desde arriba, sentido de giro" },
-  { dir: REAL, src: "v-10.webp", alt: "Volante visto desde arriba, abrir y cerrar" },
+  { dir: REAL, src: "v-01.webp", alt: "Válvula de compuerta bridada, vista frontal" },
+  { dir: REAL, src: "v-02.webp", alt: "Válvula de compuerta bridada DN100 PN16, vista frontal con volante y marcado en el cuerpo" },
+  { dir: REAL, src: "v-03.webp", alt: "Vista superior del volante azul con indicación CLOSE y OPEN" },
+  { dir: REAL, src: "v-04.webp", alt: "Válvula de compuerta bridada, vista en perspectiva con etiqueta DN100 en la brida" },
+  { dir: REAL, src: "v-05.webp", alt: "Válvula de compuerta bridada, vista frontal de la brida con etiqueta DN100" },
 ];
 
 const RELATED = [

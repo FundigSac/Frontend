@@ -374,10 +374,10 @@ export function W23Viewport() {
           style={transform ? { transform } : undefined}
         >
           <Image
-            src="/images/stitch/2633b42224.jpg"
+            src="/media/valvula-hd/v-01.webp"
             alt="Render ilustrativo de una válvula de compuerta bridada de hierro dúctil con volante y recubrimiento epoxi azul RAL 5005"
-            width={1408}
-            height={768}
+            width={900}
+            height={1200}
             sizes="500px"
             priority
             className="w-full h-full object-contain filter drop-shadow-md transition-all duration-500 motion-reduce:transition-none select-none pointer-events-none"

@@ -6,16 +6,16 @@ import { useState } from "react";
 type View = { src: string; label: string; alt: string };
 
 const MAIN: View = {
-  src: "/images/stitch/e040dd773f.jpg",
+  src: "/media/valvula-hd/v-01.webp",
   label: "Imagen referencial",
   alt: "Imagen referencial de una válvula industrial.",
 };
 
 const VIEWS: readonly View[] = [
-  { src: "/images/stitch/a3ab792d88.jpg", label: "Vista referencial 1", alt: "Vista referencial de una válvula industrial." },
-  { src: "/images/stitch/622f180f9a.jpg", label: "Vista referencial 2", alt: "Vista referencial de una válvula industrial." },
-  { src: "/images/stitch/8f911a83cf.jpg", label: "Vista referencial 3", alt: "Vista referencial de una válvula industrial." },
-  { src: "/images/stitch/67191e3db2.jpg", label: "Vista referencial 4", alt: "Vista referencial de una válvula industrial." },
+  { src: "/media/valvula-hd/v-02.webp", label: "Vista referencial 1", alt: "Vista referencial de una válvula industrial." },
+  { src: "/media/valvula-hd/v-03.webp", label: "Vista referencial 2", alt: "Vista referencial de una válvula industrial." },
+  { src: "/media/valvula-hd/v-04.webp", label: "Vista referencial 3", alt: "Vista referencial de una válvula industrial." },
+  { src: "/media/valvula-hd/v-05.webp", label: "Vista referencial 4", alt: "Vista referencial de una válvula industrial." },
 ];
 
 const MAIN_SIZES = "(min-width: 1024px) 600px, 100vw";
@@ -35,8 +35,8 @@ export function W06Gallery() {
           key={view.src}
           src={view.src}
           alt={view.alt}
-          width={1408}
-          height={768}
+          width={900}
+          height={1200}
           sizes={MAIN_SIZES}
           priority
           className="w-full h-full object-contain mix-blend-multiply"

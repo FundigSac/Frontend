@@ -30,7 +30,7 @@ type FeaturedProduct = {
 };
 
 const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
-  { id: "compuerta", family: "valvulas", name: "Válvula de compuerta bridada", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/productos-page/featured-compuerta.jpg", alt: "Válvula de compuerta azul", href: "/productos/valvulas/valvula-compuerta", terms: "válvula compuerta cierre agua hierro dúctil" },
+  { id: "compuerta", family: "valvulas", name: "Válvula de compuerta bridada", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta azul", href: "/productos/valvulas/valvula-compuerta", terms: "válvula compuerta cierre agua hierro dúctil" },
   { id: "mariposa", family: "valvulas", name: "Válvula mariposa", descriptor: "DN 50 – DN 1200  |  PN 10/16", image: "/media/productos-page/featured-mariposa.jpg", alt: "Válvula mariposa azul con accionamiento manual", href: "/productos/valvulas/valvula-mariposa", terms: "válvula mariposa palanca control" },
   { id: "hdpe-pipe", family: "tuberias", name: "Tubería HDPE PE100", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tuberia.jpg", alt: "Tuberías HDPE negras con franja azul", href: "/productos/tuberias", terms: "tubería hdpe pe100 pead conducción" },
   { id: "tapa-d400", family: "marcos-y-tapas", name: "Tapa circular", descriptor: "Clase B125 – D400", image: "/media/productos-page/featured-tapa.jpg", alt: "Tapa circular de hierro dúctil", href: "/productos/marcos-y-tapas/marco-tapa-d400", terms: "tapa circular marco calzada hierro dúctil" },

@@ -251,7 +251,7 @@ export function ScreenW01() {
               <div className="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-surface mb-4">
-                    <Image src="/images/stitch/24121a8d22.jpg" alt="Imagen referencial Stitch de una válvula de compuerta" width={1408} height={768} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="w-full h-full object-cover" />
+                    <Image src="/media/valvula-hd/v-01.webp" alt="Imagen referencial de una válvula de compuerta" width={900} height={1200} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw" className="w-full h-full object-contain p-6" />
                     <span className="absolute bottom-3 left-3 rounded bg-surface-container-lowest/95 px-2 py-1 font-ui-label text-ui-label text-on-surface">Imagen referencial</span>
                   </div>
                   <div className="flex items-center justify-between mb-1">

@@ -45,7 +45,7 @@ export const QUOTE_PRODUCTS: Record<QuoteProductSlug, QuoteProduct> = {
     category: { name: "Válvulas de Hierro Dúctil", href: "/productos/valvulas" },
     productHref: "/productos/valvulas/valvula-compuerta",
     badge: "Homologado SEDAPAL / OTASS",
-    image: { src: "/images/stitch/9647c88ae7.jpg", alt: "Válvula de compuerta de hierro dúctil DN 150 PN 16 con recubrimiento epóxico azul y volante" },
+    image: { src: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta de hierro dúctil DN 150 PN 16 con recubrimiento epóxico azul y volante" },
     material: "Hierro Dúctil GGG-50 / EN-GJS-500-7",
     title: "Válvula de Compuerta Bridada con Asiento Elástico F4 PN 16",
     summary: "Cierre estanco bidireccional mediante cuña vulcanizada y paso recto total sin retención de sedimentos.",

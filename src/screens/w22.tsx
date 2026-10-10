@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 const families = [
-  { label: "Válvulas", href: "/productos/valvulas", image: "/images/stitch/9647c88ae7.jpg", alt: "Imagen referencial de válvula", terms: ["valvula", "valvulas", "compuerta", "mariposa"] },
+  { label: "Válvulas", href: "/productos/valvulas", image: "/media/valvula-hd/v-01.webp", alt: "Imagen referencial de válvula", terms: ["valvula", "valvulas", "compuerta", "mariposa"] },
   { label: "Tuberías", href: "/productos/tuberias", image: "/images/stitch/b018bc2b92.jpg", alt: "Imagen referencial de tubería", terms: ["tuberia", "tuberias", "tubo", "tubos", "cano", "canos"] },
   { label: "Marcos y tapas", href: "/productos/marcos-y-tapas", image: "/images/stitch/245160faac.jpg", alt: "Imagen referencial de marco y tapa", terms: ["marco", "marcos", "tapa", "tapas", "buzon", "buzones"] },
 ] as const;
 const valveReferences = [
-  "/images/stitch/7873b1b0bb.jpg", "/images/stitch/26332aa838.jpg", "/images/stitch/a0bce053e2.jpg",
-  "/images/stitch/831c7d829e.jpg", "/images/stitch/a569f32617.jpg", "/images/stitch/5d3998f978.jpg",
+  "/media/valvula-hd/v-01.webp", "/media/valvula-hd/v-02.webp", "/media/valvula-hd/v-03.webp",
+  "/media/valvula-hd/v-04.webp", "/media/valvula-hd/v-05.webp",
 ];
 function normalize(value: string) { return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es-PE").trim(); }
 

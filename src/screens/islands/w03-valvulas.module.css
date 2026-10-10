@@ -328,15 +328,15 @@
 .cardImage {
   position: relative;
   display: block;
-  aspect-ratio: 1.26 / 1;
+  aspect-ratio: 1.14 / 1;
   overflow: hidden;
   background: #f1f1ef;
 }
 
 .cardImage img {
   object-fit: contain;
-  padding: 6px;
-  mix-blend-mode: multiply;
+  padding: 12px 20px;
+  mix-blend-mode: normal;
   transition: transform .5s ease;
 }
 
@@ -723,7 +723,7 @@
 
 @media (max-width: 760px) {
   .cardImage {
-    aspect-ratio: 1.5 / 1;
+    aspect-ratio: 1.2 / 1;
   }
 
   .cardBody {
