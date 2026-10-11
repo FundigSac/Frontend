@@ -68,7 +68,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=cast-refinement-30`,
+        src: `${src}?v=epdm-lowered-34`,
         poster,
         alt,
         "camera-controls": "",

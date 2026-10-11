@@ -20,8 +20,41 @@ const digest = node => {
   }
   return hash.digest('hex');
 };
-assert.equal(digest(find(after, 'cuna-elastomero-EPDM')), digest(find(before, 'cuna-elastomero-EPDM')),
-  'Previously corrected wedge geometry and pose must be preserved');
+const lowerWedge = process.argv.includes('--lower-wedge');
+let descent;
+if (!lowerWedge) {
+  assert.equal(digest(find(after, 'cuna-elastomero-EPDM')), digest(find(before, 'cuna-elastomero-EPDM')),
+    'Previously corrected wedge geometry and pose must be preserved');
+} else {
+  const previous = await io.read('../output/valvula-descenso/antes.glb');
+  const lowest = document => {
+    const node = find(document, 'cuna-elastomero-EPDM'), p = node.getMesh().listPrimitives()[0].getAttribute('POSITION');
+    let min = Infinity;
+    for (let i = 0; i < p.getCount(); i++) min = Math.min(min, p.getElement(i, [])[1] + node.getTranslation()[1]);
+    return min;
+  };
+  const oldBottom = lowest(previous), newBottom = lowest(after);
+  assert(newBottom < oldBottom - .10, 'Wedge must actually descend by more than 10% of the bore diameter');
+  let exteriorNodes = 0;
+  for (const node of previous.getRoot().listNodes()) {
+    if (!node.getMesh() || node.getName() === 'cuna-elastomero-EPDM') continue;
+    // Names repeat for bolts/spokes, so compare the same ordered occurrence.
+    const index = previous.getRoot().listNodes().indexOf(node), actual = nodes[index];
+    assert.equal(actual.getName(), node.getName());
+    assert.equal(digest(actual), digest(node), `Exterior changed: ${node.getName()}`); exteriorNodes++;
+  }
+  for (const original of previous.getRoot().listMaterials()) {
+    if (original.getName() === 'cuna-EPDM-negro') continue;
+    const actual = after.getRoot().listMaterials().find(m => m.getName() === original.getName());
+    assert.deepEqual(actual.getBaseColorFactor(), original.getBaseColorFactor());
+    assert.equal(actual.getRoughnessFactor(), original.getRoughnessFactor());
+    assert.equal(actual.getMetallicFactor(), original.getMetallicFactor());
+    for (const getter of ['getBaseColorTexture', 'getNormalTexture', 'getMetallicRoughnessTexture']) {
+      assert.deepEqual(actual[getter]()?.getImage(), original[getter]()?.getImage(), `Exterior texture changed: ${original.getName()}`);
+    }
+  }
+  descent = { oldBottom, newBottom, fractionOfBoreDiameter: oldBottom - newBottom, exteriorNodesUnchanged: exteriorNodes };
+}
 for (const [name, expected] of [['brazo-curvo-volante', 3], ['brida-taladrada--1', 1],
   ['brida-taladrada-1', 1], ['perno-hexagonal', 6], ['vastago-pulido', 1]]) {
   assert.equal(nodes.filter(n => n.getName() === name).length, expected, `Product identity: ${name}`);
@@ -94,7 +127,7 @@ assert(blue.getNormalTexture() && blue.getMetallicRoughnessTexture(), 'Paint sur
 assert(blue.getExtension('KHR_materials_clearcoat').getClearcoatNormalTexture(), 'Paint clearcoat must follow casting relief');
 const result = { valid: true, triangleCount, vertexCount, zeroNormals,
   product: { spokes: 3, flangeHoles: [10, 10], bonnetBolts: 6, previousExtent, currentExtent },
-  wedgeGeometryAndPoseUnchanged: true, allTextureFilesResolved: true, positiveVolumes: volumes,
+  wedgeGeometryAndPoseUnchanged: !lowerWedge, ...(descent ? { descent } : {}), allTextureFilesResolved: true, positiveVolumes: volumes,
   glbBytes: fs.statSync('public/models/valvula-compuerta.glb').size };
-fs.writeFileSync('../output/valvula-realismo/model-checks.json', JSON.stringify(result, null, 2));
+fs.writeFileSync(`${lowerWedge ? '../output/valvula-descenso' : '../output/valvula-realismo'}/model-checks.json`, JSON.stringify(result, null, 2));
 console.log(JSON.stringify(result, null, 2));

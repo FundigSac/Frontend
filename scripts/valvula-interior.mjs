@@ -3,17 +3,29 @@ import * as T from 'three';
 // Visual proportions relative to the existing bore, not millimetres or certified CAD.
 // PHOTO-2026-10-10-11-28-26.jpg: raised middle, sloping cheeks, curved lower lip,
 // partially raised wedge. The unseen rear face is a symmetric reconstruction.
-// lift=.155 leaves a partially open bore after comparison with the real photo.
-export function sampleWedge(s, t, { radius = .5, lift = .155, thickness = .13,
+// The latest requested pose lowers the heel by 11% of the bore diameter.
+// Side shoulders adapt to the cylindrical bore instead of crossing its walls.
+export function sampleWedge(s, t, { radius = .5, lift = .045, thickness = .13,
   relief = .092 } = {}) {
-  const width = radius * (.98 - .13 * T.MathUtils.smoothstep(t, .65, 1));
-  const z = s * width;
+  let width = radius * (.98 - .13 * T.MathUtils.smoothstep(t, .65, 1));
   const bottom = lift - radius;
   // Nearly straight diagonal cheeks join a short rounded heel, as in the photo.
   // This is a rounded V profile, not an elliptical disc perimeter.
   const heelRadius = radius * .32;
-  const lower = bottom + .74 * (Math.sqrt(z * z + heelRadius * heelRadius) - heelRadius);
-  // Lift translates the entire wedge rigidly; it must not stretch its profile.
+  const lowerAt = z => bottom + .74 * (Math.sqrt(z * z + heelRadius * heelRadius) - heelRadius);
+  const edgeY = z => T.MathUtils.lerp(lowerAt(z), radius * 1.82 + lift - .38, t);
+  const fits = z => edgeY(z) >= .05 || Math.hypot(edgeY(z), z) < radius * .994;
+  if (!fits(width)) {
+    let lo = 0, hi = width;
+    for (let i = 0; i < 24; i++) {
+      const mid = (lo + hi) / 2;
+      if (fits(mid)) lo = mid; else hi = mid;
+    }
+    width = lo;
+  }
+  const z = s * width;
+  const lower = lowerAt(z);
+  // Lift moves both top and heel vertically; fitting only trims lateral shoulders.
   const upper = radius * 1.82 + lift - .38 + .055 * (1 - s * s);
   const y = T.MathUtils.lerp(lower, upper, t);
   const distanceToLip = y - lower;
