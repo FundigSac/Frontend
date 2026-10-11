@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
+import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { createResilientWedge, borePlanes, chamberPlanes } from './valvula-interior.mjs';
 
 const output = '../output/valvula-interior';
@@ -84,17 +85,30 @@ for (let i = 0; i < p.count; i++) {
   if (p.getY(i) < .05) assert(p.getY(i) ** 2 + p.getZ(i) ** 2 < .5 ** 2, 'Lower wedge must fit waterway');
 }
 const material = current.getRoot().listMaterials().find(m => m.getName() === 'cuna-EPDM-negro');
-assert(material && material.getMetallicFactor() === 0 && material.getRoughnessFactor() === .82);
+assert(material && material.getMetallicFactor() === 0 && material.getRoughnessFactor() === .72);
+assert(material.getNormalTexture()?.getImage()?.length > 0, 'Rubber normal map must resolve');
+assert(material.getMetallicRoughnessTexture()?.getImage()?.length > 0, 'Rubber surface map must resolve');
+assert(material.getNormalTexture() !== current.getRoot().listMaterials().find(m=>m.getName()==='epoxi-azul').getNormalTexture(), 'Rubber must have its own surface finish');
+const hdrBytes=fs.readFileSync('public/models/valvula-estudio.hdr');
+const hdr=new HDRLoader().parse(hdrBytes.buffer.slice(hdrBytes.byteOffset,hdrBytes.byteOffset+hdrBytes.byteLength));
+assert(hdr.width===512&&hdr.height===256&&hdr.data.length===512*256*4,'Studio environment must decode at expected resolution');
 const result = {
   exteriorNodesUnchanged: before.length, retainedExteriorTriangles, originalMaterialsUnchanged: true,
   wedge: { vertices: p.count, triangles: index.count / 3, closedManifold: true, positiveVolume: signedVolume, fitsChamber: true },
   glbBytes: fs.statSync('public/models/valvula-compuerta.glb').size,
+  studio: { width: hdr.width, height: hdr.height, bytes: hdrBytes.length, decoded: true },
+  epdm: { normalMapLoaded: true, roughnessMapLoaded: true, metallic: material.getMetallicFactor(), roughness: material.getRoughnessFactor() },
   note: 'Visual reconstruction; no certified dimensions. Rear face and thickness are inferred.',
 };
 fs.writeFileSync(`${output}/geometry-checks.json`, JSON.stringify(result, null, 2));
 const isolated = new Document(), buffer = isolated.createBuffer();
-const primitive = isolated.createPrimitive().setMaterial(isolated.createMaterial('EPDM-negro')
-  .setBaseColorFactor(material.getBaseColorFactor()).setMetallicFactor(0).setRoughnessFactor(.82));
+const isolatedMaterial=isolated.createMaterial('EPDM-negro')
+  .setBaseColorFactor(material.getBaseColorFactor()).setMetallicFactor(0).setRoughnessFactor(.72)
+  .setNormalTexture(isolated.createTexture('EPDM-microrelieve').setImage(material.getNormalTexture().getImage()).setMimeType('image/png'))
+  .setNormalScale(material.getNormalScale());
+const isolatedOrm=isolated.createTexture('EPDM-occlusion-rugosidad').setImage(material.getMetallicRoughnessTexture().getImage()).setMimeType('image/png');
+isolatedMaterial.setMetallicRoughnessTexture(isolatedOrm).setOcclusionTexture(isolatedOrm).setOcclusionStrength(material.getOcclusionStrength());
+const primitive = isolated.createPrimitive().setMaterial(isolatedMaterial);
 for (const [semantic, attribute, type] of [['POSITION', 'position', 'VEC3'], ['NORMAL', 'normal', 'VEC3'], ['TEXCOORD_0', 'uv', 'VEC2']])
   primitive.setAttribute(semantic, isolated.createAccessor().setType(type).setArray(g.attributes[attribute].array).setBuffer(buffer));
 primitive.setIndices(isolated.createAccessor().setType('SCALAR').setArray(index.array).setBuffer(buffer));

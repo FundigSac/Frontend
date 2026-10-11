@@ -3,8 +3,36 @@ import * as T from 'three';
 // Visual proportions relative to the existing bore, not millimetres or certified CAD.
 // PHOTO-2026-10-10-11-28-26.jpg: raised middle, sloping cheeks, curved lower lip,
 // partially raised wedge. The unseen rear face is a symmetric reconstruction.
-export function createResilientWedge({ radius = .5, lift = .38, thickness = .15,
-  relief = .068, segments = 48 } = {}) {
+export function sampleWedge(s, t, { radius = .5, lift = .38, thickness = .13,
+  relief = .082 } = {}) {
+  const width = radius * (.98 - .13 * T.MathUtils.smoothstep(t, .65, 1));
+  const z = s * width;
+  const bottom = lift - radius;
+  // The photograph has a shallow, broad sealing arc, not a semicircular cap.
+  const lower = bottom + radius * .62 * (1 - Math.sqrt(1 - (z / radius) ** 2));
+  const upper = radius * 1.82 + .055 * (1 - s * s);
+  const y = T.MathUtils.lerp(lower, upper, t);
+  const distanceToLip = y - lower;
+  const edge = Math.min(1 - Math.abs(s), t * 5, (1 - t) * 5);
+  const rounded = T.MathUtils.smoothstep(edge, 0, .14);
+  const bossWidth = radius * .45;
+  const bossCrossSection = Math.sqrt(Math.max(0, 1 - (z / bossWidth) ** 2));
+  const bossBottom = bottom + radius * .22 + radius * .13 * (1 - bossCrossSection);
+  const bossSide = 1 - T.MathUtils.smoothstep(Math.abs(z), radius * .34, bossWidth);
+  const boss = bossSide * T.MathUtils.smoothstep(y - bossBottom, -.02, .028);
+  // Full inclined cheek surfaces meet the vertical boss and the lower seal.
+  // Their upper edge follows the oblique shoulders visible in the supplied photo.
+  const diagonal = bottom + radius * .24 + .68 * Math.abs(z);
+  const flank = T.MathUtils.smoothstep(Math.abs(z), radius * .30, radius * .56);
+  const cheek = flank * (1 - T.MathUtils.smoothstep(y - diagonal, -.035, .035))
+    * T.MathUtils.smoothstep(distanceToLip, .025, .105);
+  const lip = Math.exp(-Math.pow((distanceToLip - radius * .06) / (radius * .045), 2));
+  const halfDepth = thickness * (.36 + .12 * t) + rounded *
+    (.010 + relief * boss * (.72 + .28 * bossCrossSection) + .034 * cheek + .020 * lip);
+  return { z, y, halfDepth, boss, bossSide, cheek, distanceToLip, diagonal };
+}
+
+export function createResilientWedge({ segments = 64, ...proportions } = {}) {
   const positions = [], indices = [], uv = [];
   const stride = segments + 1, faceSize = stride * stride;
   for (const side of [1, -1]) {
@@ -12,22 +40,7 @@ export function createResilientWedge({ radius = .5, lift = .38, thickness = .15,
       const t = j / segments;
       for (let i = 0; i <= segments; i++) {
         const s = 2 * i / segments - 1;
-        const width = radius * (.96 - .12 * T.MathUtils.smoothstep(t, .65, 1));
-        const z = s * width;
-        const lower = lift - Math.sqrt(radius * radius - z * z);
-        const upper = radius * 1.82 + .055 * (1 - s * s);
-        const y = T.MathUtils.lerp(lower, upper, t);
-        const edge = Math.min(1 - Math.abs(s), t * 5, (1 - t) * 5);
-        const rounded = T.MathUtils.smoothstep(edge, 0, .12);
-        const centre = Math.exp(-Math.pow(z / (radius * .36), 4));
-        const lowerBlend = T.MathUtils.smoothstep(t, .025, .20);
-        // Broad stem boss blends into inclined cheeks; two shallow diagonal shoulders
-        // follow the real photograph, without copying external branding or guide shoes.
-        const diagonal = lower + .13 + .42 * Math.abs(s);
-        const shoulder = Math.exp(-Math.pow((y - diagonal) / .04, 2))
-          * T.MathUtils.smoothstep(Math.abs(s), .22, .55);
-        const halfDepth = thickness * (.36 + .14 * t) + rounded *
-          (.012 + relief * centre * lowerBlend + .018 * shoulder);
+        const { z, y, halfDepth } = sampleWedge(s, t, proportions);
         positions.push(side * halfDepth, y, z);
         uv.push(i / segments, t);
       }
@@ -65,7 +78,7 @@ export const chamberPlanes = [
 ];
 
 export function borePlanes(radius = .5, segments = 96) {
-  // Circumscribed polygon aligned to the existing 96-segment lathed waterway.
+  // Polygon follows the chords of the existing 96-segment lathed waterway.
   return Array.from({ length: segments }, (_, i) => {
     const angle = (i + .5) * Math.PI * 2 / segments;
     return [0, Math.cos(angle), Math.sin(angle), radius * Math.cos(Math.PI / segments)];

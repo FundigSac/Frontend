@@ -78,6 +78,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
   if (failed) return null;
 
   const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const valveStudio = src.includes("valvula-compuerta.glb");
 
   return ready
     // React forwards this callback to the custom element; it never reads the ref during render.
@@ -85,17 +86,17 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=photo-rebuild-epdm-interior-12`,
+        src: `${src}?v=photo-rebuild-epdm-studio-15`,
         poster,
         alt,
         "camera-controls": "",
         "touch-action": "pan-y",
-        "shadow-intensity": "0.65",
-        "shadow-softness": "1",
-        exposure: "0.95",
+        "shadow-intensity": valveStudio ? "0.8" : "0.65",
+        "shadow-softness": valveStudio ? "0.85" : "1",
+        exposure: valveStudio ? "1.1" : "0.95",
         "camera-orbit": "55deg 78deg auto",
         "field-of-view": "30deg",
-        "environment-image": "neutral",
+        "environment-image": valveStudio ? "/models/valvula-estudio.hdr" : "neutral",
         "interaction-prompt": "none",
         ...(reduce ? {} : { "auto-rotate": "", "auto-rotate-delay": "6000", "rotation-per-second": "12deg" }),
         style: { width: "100%", height: "100%", background: "transparent", "--poster-color": "transparent" },
