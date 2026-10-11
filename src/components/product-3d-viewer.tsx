@@ -43,35 +43,17 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
   }, [onFail]);
 
   useEffect(() => {
-    const el = ref.current as (HTMLElement & {
-      createTexture?: (uri: string) => Promise<unknown>;
-      model?: { materials: { name: string; normalTexture?: { setTexture(texture: unknown): void }; pbrMetallicRoughness: { baseColorTexture: { setTexture(texture: unknown): void } } }[] };
-    }) | null;
+    const el = ref.current;
     if (!el) return;
     const onError = () => {
       setFailed(true);
       onFail?.();
     };
-    // Los materiales pertenecen al GLB; las texturas usan URLs del mismo origen.
+    // El GLB referencia sus mapas PBR mediante URLs relativas del mismo origen.
+    // El visor los carga una sola vez, incluidos etiqueta y relieve del barniz.
     el.addEventListener("error", onError);
-    let active = true;
-    const onLoad = async () => {
-      if (!el.createTexture) return;
-      try {
-        const [texture, normal] = await Promise.all([
-          el.createTexture("/models/etiqueta-real.png"),
-          el.createTexture("/models/valvula-textura-1.png"),
-        ]);
-        if (!active) return;
-        el.model?.materials.find(material => material.name === "etiqueta")?.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-        el.model?.materials.find(material => material.name === "epoxi-azul")?.normalTexture?.setTexture(normal);
-      } catch { /* Keep the model usable if the image cannot be decoded. */ }
-    };
-    el.addEventListener("load", onLoad);
     return () => {
       el.removeEventListener("error", onError);
-      active = false;
-      el.removeEventListener("load", onLoad);
     };
   }, [ready, onFail]);
 
@@ -86,14 +68,15 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=photo-rebuild-epdm-studio-21`,
+        src: `${src}?v=cast-refinement-30`,
         poster,
         alt,
         "camera-controls": "",
         "touch-action": "pan-y",
         "shadow-intensity": valveStudio ? "0.8" : "0.65",
         "shadow-softness": valveStudio ? "0.85" : "1",
-        exposure: valveStudio ? "1.1" : "0.95",
+        exposure: valveStudio ? "1" : "0.95",
+        ...(valveStudio ? { "tone-mapping": "neutral" } : {}),
         "camera-orbit": valveStudio ? "-90deg 85deg auto" : "55deg 78deg auto",
         "field-of-view": "30deg",
         "environment-image": valveStudio ? "/models/valvula-estudio.hdr" : "neutral",

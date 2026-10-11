@@ -6,6 +6,7 @@ import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { createResilientWedge, borePlanes, chamberPlanes } from './valvula-interior.mjs';
 
+const fullModel = process.argv.includes('--full-model');
 const output = '../output/valvula-interior';
 const io = new NodeIO().registerExtensions([KHRMaterialsClearcoat]);
 const original = await io.read(`${output}/valvula-compuerta-original.glb`);
@@ -28,7 +29,7 @@ const nodeSignature = node => {
 };
 const before = original.getRoot().listNodes().filter(n => !modified.has(n.getName()));
 const after = current.getRoot().listNodes().filter(n => !modified.has(n.getName()) && !added.has(n.getName()));
-assert.deepEqual(after.map(nodeSignature), before.map(nodeSignature), 'Exterior nodes must remain byte-identical');
+if (!fullModel) assert.deepEqual(after.map(nodeSignature), before.map(nodeSignature), 'Exterior nodes must remain byte-identical');
 let retainedExteriorTriangles = 0;
 function triangles(node) {
   const result = [], translation = node.getTranslation();
@@ -44,7 +45,7 @@ function triangles(node) {
   return result;
 }
 const triangleKey = vertices => vertices.map(v => v.map(x => Math.round(x * 1e4)).join(',')).sort().join(';');
-for (const [name, planes] of [['carcasa-fundida', borePlanes()], ['cuerpo-paso-real', chamberPlanes]]) {
+if (!fullModel) for (const [name, planes] of [['carcasa-fundida', borePlanes()], ['cuerpo-paso-real', chamberPlanes]]) {
   const old = original.getRoot().listNodes().find(n => n.getName() === name);
   const updated = current.getRoot().listNodes().find(n => n.getName() === name);
   const preserved = new Set(triangles(updated).map(triangleKey));
@@ -55,7 +56,7 @@ for (const [name, planes] of [['carcasa-fundida', borePlanes()], ['cuerpo-paso-r
     }
   }
 }
-for (const m of original.getRoot().listMaterials()) {
+if (!fullModel) for (const m of original.getRoot().listMaterials()) {
   const actual = current.getRoot().listMaterials().find(v => v.getName() === m.getName());
   assert(actual);
   assert.deepEqual(actual.getBaseColorFactor(), m.getBaseColorFactor());
@@ -94,14 +95,15 @@ const hdrBytes=fs.readFileSync('public/models/valvula-estudio.hdr');
 const hdr=new HDRLoader().parse(hdrBytes.buffer.slice(hdrBytes.byteOffset,hdrBytes.byteOffset+hdrBytes.byteLength));
 assert(hdr.width===512&&hdr.height===256&&hdr.data.length===512*256*4,'Studio environment must decode at expected resolution');
 const result = {
-  exteriorNodesUnchanged: before.length, retainedExteriorTriangles, originalMaterialsUnchanged: true,
+  ...(fullModel ? { exteriorUpdated: true, scope: 'Full model realism update authorized by the user' } :
+    { exteriorNodesUnchanged: before.length, retainedExteriorTriangles, originalMaterialsUnchanged: true }),
   wedge: { vertices: p.count, triangles: index.count / 3, closedManifold: true, positiveVolume: signedVolume, fitsChamber: true },
   glbBytes: fs.statSync('public/models/valvula-compuerta.glb').size,
   studio: { width: hdr.width, height: hdr.height, bytes: hdrBytes.length, decoded: true },
   epdm: { normalMapLoaded: true, roughnessMapLoaded: true, metallic: material.getMetallicFactor(), roughness: material.getRoughnessFactor() },
   note: 'Visual reconstruction; no certified dimensions. Rear face and thickness are inferred.',
 };
-fs.writeFileSync(`${output}/geometry-checks.json`, JSON.stringify(result, null, 2));
+fs.writeFileSync(`${fullModel ? '../output/valvula-realismo' : output}/geometry-checks.json`, JSON.stringify(result, null, 2));
 const isolated = new Document(), buffer = isolated.createBuffer();
 const isolatedMaterial=isolated.createMaterial('EPDM-negro')
   .setBaseColorFactor(material.getBaseColorFactor()).setMetallicFactor(0).setRoughnessFactor(.72)

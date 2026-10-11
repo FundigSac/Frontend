@@ -5,11 +5,11 @@ import * as T from 'three';
 // Neutral white softboxes preserve the blue epoxy's existing PBR base colour.
 export function writeValveStudio(file, width = 512, height = 256) {
   const panels = [
-    { direction: [-.72, .48, .5], horizontal: .55, vertical: .35, radiance: 7.5 },
-    { direction: [.72, .48, -.5], horizontal: .55, vertical: .35, radiance: 7.5 },
-    { direction: [-.65, .22, -.72], horizontal: .32, vertical: .57, radiance: 1.3 },
-    { direction: [.65, .22, .72], horizontal: .32, vertical: .57, radiance: 1.3 },
-    { direction: [0, 1, .01], horizontal: .72, vertical: .45, radiance: 4.5 },
+    { direction: [-.8, .78, .4], horizontal: .18, vertical: .27, radiance: 10 },
+    { direction: [.8, .78, -.4], horizontal: .18, vertical: .27, radiance: 10 },
+    { direction: [-.65, .22, -.72], horizontal: .16, vertical: .52, radiance: 3 },
+    { direction: [.65, .22, .72], horizontal: .16, vertical: .52, radiance: 3 },
+    { direction: [0, 1, .01], horizontal: .35, vertical: .23, radiance: 3.5 },
   ].map(panel => {
     const direction = new T.Vector3(...panel.direction).normalize();
     const right = new T.Vector3(0, 1, 0).cross(direction).normalize();
@@ -23,7 +23,7 @@ export function writeValveStudio(file, width = 512, height = 256) {
     for (let x = 0; x < width; x++) {
       const longitude = ((x + .5) / width - .5) * Math.PI * 2;
       const direction = new T.Vector3(Math.cos(longitude) * Math.sin(latitude), Math.cos(latitude), Math.sin(longitude) * Math.sin(latitude));
-      let radiance = .10 + .08 * T.MathUtils.smoothstep(direction.y, -.7, .5);
+      let radiance = .28 + .12 * T.MathUtils.smoothstep(direction.y, -.7, .5);
       for (const panel of panels) {
         const facing = direction.dot(panel.direction);
         if (facing <= 0) continue;
