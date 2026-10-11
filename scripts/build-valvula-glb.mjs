@@ -16,7 +16,7 @@ const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0.002,0.055,0.48
 const steel=doc.createMaterial('acero').setBaseColorFactor([.68,.71,.75,1]).setMetallicFactor(1).setRoughnessFactor(.25);
 const brass=doc.createMaterial('laton').setBaseColorFactor([.65,.43,.10,1]).setMetallicFactor(1).setRoughnessFactor(.28);
 const dark=doc.createMaterial('junta-EPDM').setBaseColorFactor([.008,.009,.012,1]).setRoughnessFactor(.8);
-const wedgeMaterial=doc.createMaterial('cuna-EPDM-negro').setBaseColorFactor([.035,.036,.037,1]).setMetallicFactor(0).setRoughnessFactor(.72);
+const wedgeMaterial=doc.createMaterial('cuna-EPDM-negro').setBaseColorFactor([.045,.046,.047,1]).setMetallicFactor(0).setRoughnessFactor(.72);
 const label=doc.createMaterial('etiqueta').setBaseColorFactor([1,1,1,1]).setRoughnessFactor(.6);
 label.setBaseColorTexture(doc.createTexture('H-ITALY').setImage(fs.readFileSync('public/models/etiqueta-real.png')).setMimeType('image/png'));
 // Deterministic, isotropic fine casting texture; never stretch a one-channel buffer as RGB.
@@ -44,13 +44,13 @@ for(let y=0;y<n;y++)for(let x=0;x<n;x++){
  rubberOrm[i+1]=Math.round(255*(.92+.08*rubberH(x,y)-.05*Math.exp(-Math.pow((surface.distanceToLip-.035)/.03,2))));
  rubberOrm[i+2]=0;
  // Subtle moulded-finish variation; no photographs, lettering or fabricated wear.
- const tone=.94+.035*Math.sin(x*.055)*Math.sin(y*.043)+.02*rubberH(x,y);
+ const tone=.93+.05*Math.sin(x*.055)*Math.sin(y*.043)+.02*rubberH(x,y);
  for(let channel=0;channel<3;channel++)rubberAlbedo[i+channel]=Math.round(255*tone);
 }
 const rubberNormalImage=await sharp(rubberNormal,{raw:{width:n,height:n,channels:3}}).png().toBuffer();
 const rubberAlbedoImage=await sharp(rubberAlbedo,{raw:{width:n,height:n,channels:3}}).png().toBuffer();
 const rubberOrmImage=await sharp(rubberOrm,{raw:{width:n,height:n,channels:3}}).png().toBuffer();
-wedgeMaterial.setNormalTexture(doc.createTexture('EPDM-microrelieve').setImage(rubberNormalImage).setMimeType('image/png')).setNormalScale(.12);
+wedgeMaterial.setNormalTexture(doc.createTexture('EPDM-microrelieve').setImage(rubberNormalImage).setMimeType('image/png')).setNormalScale(.18);
 const orm=doc.createTexture('EPDM-occlusion-rugosidad').setImage(rubberOrmImage).setMimeType('image/png');
 wedgeMaterial.setMetallicRoughnessTexture(orm).setOcclusionTexture(orm).setOcclusionStrength(.65);
 wedgeMaterial.setBaseColorTexture(doc.createTexture('EPDM-acabado-moldeado').setImage(rubberAlbedoImage).setMimeType('image/png'));

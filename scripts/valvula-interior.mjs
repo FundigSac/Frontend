@@ -3,14 +3,16 @@ import * as T from 'three';
 // Visual proportions relative to the existing bore, not millimetres or certified CAD.
 // PHOTO-2026-10-10-11-28-26.jpg: raised middle, sloping cheeks, curved lower lip,
 // partially raised wedge. The unseen rear face is a symmetric reconstruction.
-// lift=.285 leaves a partially open bore after comparison with the real photo.
-export function sampleWedge(s, t, { radius = .5, lift = .285, thickness = .13,
-  relief = .082 } = {}) {
+// lift=.155 leaves a partially open bore after comparison with the real photo.
+export function sampleWedge(s, t, { radius = .5, lift = .155, thickness = .13,
+  relief = .092 } = {}) {
   const width = radius * (.98 - .13 * T.MathUtils.smoothstep(t, .65, 1));
   const z = s * width;
   const bottom = lift - radius;
-  // The photograph has a shallow, broad sealing arc, not a semicircular cap.
-  const lower = bottom + radius * .80 * (1 - Math.sqrt(1 - (z / radius) ** 2));
+  // Nearly straight diagonal cheeks join a short rounded heel, as in the photo.
+  // This is a rounded V profile, not an elliptical disc perimeter.
+  const heelRadius = radius * .32;
+  const lower = bottom + .74 * (Math.sqrt(z * z + heelRadius * heelRadius) - heelRadius);
   // Lift translates the entire wedge rigidly; it must not stretch its profile.
   const upper = radius * 1.82 + lift - .38 + .055 * (1 - s * s);
   const y = T.MathUtils.lerp(lower, upper, t);
@@ -18,19 +20,21 @@ export function sampleWedge(s, t, { radius = .5, lift = .285, thickness = .13,
   const edge = Math.min(1 - Math.abs(s), t * 5, (1 - t) * 5);
   const rounded = T.MathUtils.smoothstep(edge, 0, .14);
   const bossWidth = radius * .45;
-  const bossCrossSection = Math.sqrt(Math.max(0, 1 - (z / bossWidth) ** 2));
+  const bossCrossSection = 1 - T.MathUtils.smoothstep(Math.abs(z), radius * .25, bossWidth);
   const bossBottom = bottom + radius * .22 + radius * .13 * (1 - bossCrossSection);
-  const bossSide = 1 - T.MathUtils.smoothstep(Math.abs(z), radius * .26, bossWidth);
-  const boss = bossSide * T.MathUtils.smoothstep(y - bossBottom, -.02, .028);
+  const bossSide = bossCrossSection;
+  const boss = bossSide * T.MathUtils.smoothstep(y - bossBottom, -.04, .055);
   // Full inclined cheek surfaces meet the vertical boss and the lower seal.
   // Their upper edge follows the oblique shoulders visible in the supplied photo.
   const diagonal = bottom + radius * .24 + .68 * Math.abs(z);
   const flank = T.MathUtils.smoothstep(Math.abs(z), radius * .30, radius * .56);
-  const cheek = flank * (1 - T.MathUtils.smoothstep(y - diagonal, -.035, .035))
+  const cheek = flank * (1 - T.MathUtils.smoothstep(y - diagonal, -.05, .05))
     * T.MathUtils.smoothstep(distanceToLip, .025, .105);
   const lip = Math.exp(-Math.pow((distanceToLip - radius * .06) / (radius * .045), 2));
+  // Broad sloping faces, with a flat central land and softened transitions.
+  const sideFace = .042 * flank * (1 - Math.abs(s));
   const halfDepth = thickness * (.36 + .12 * t) + rounded *
-    (.010 + relief * boss * (.72 + .28 * bossCrossSection) + .034 * cheek + .012 * lip);
+    (.010 + relief * boss + sideFace + .020 * cheek + .008 * lip);
   return { z, y, halfDepth, boss, bossSide, cheek, distanceToLip, diagonal };
 }
 
