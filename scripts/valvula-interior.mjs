@@ -3,8 +3,8 @@ import * as T from 'three';
 // Visual proportions relative to the existing bore, not millimetres or certified CAD.
 // PHOTO-2026-10-10-11-28-26.jpg: raised middle, sloping cheeks, curved lower lip,
 // partially raised wedge. The unseen rear face is a symmetric reconstruction.
-// lift=.315 is calibrated visually against the full frontal bore: lower lip ~63%.
-export function sampleWedge(s, t, { radius = .5, lift = .315, thickness = .13,
+// lift=.285 leaves a partially open bore after comparison with the real photo.
+export function sampleWedge(s, t, { radius = .5, lift = .285, thickness = .13,
   relief = .082 } = {}) {
   const width = radius * (.98 - .13 * T.MathUtils.smoothstep(t, .65, 1));
   const z = s * width;
@@ -20,7 +20,7 @@ export function sampleWedge(s, t, { radius = .5, lift = .315, thickness = .13,
   const bossWidth = radius * .45;
   const bossCrossSection = Math.sqrt(Math.max(0, 1 - (z / bossWidth) ** 2));
   const bossBottom = bottom + radius * .22 + radius * .13 * (1 - bossCrossSection);
-  const bossSide = 1 - T.MathUtils.smoothstep(Math.abs(z), radius * .34, bossWidth);
+  const bossSide = 1 - T.MathUtils.smoothstep(Math.abs(z), radius * .26, bossWidth);
   const boss = bossSide * T.MathUtils.smoothstep(y - bossBottom, -.02, .028);
   // Full inclined cheek surfaces meet the vertical boss and the lower seal.
   // Their upper edge follows the oblique shoulders visible in the supplied photo.
@@ -30,7 +30,7 @@ export function sampleWedge(s, t, { radius = .5, lift = .315, thickness = .13,
     * T.MathUtils.smoothstep(distanceToLip, .025, .105);
   const lip = Math.exp(-Math.pow((distanceToLip - radius * .06) / (radius * .045), 2));
   const halfDepth = thickness * (.36 + .12 * t) + rounded *
-    (.010 + relief * boss * (.72 + .28 * bossCrossSection) + .034 * cheek + .020 * lip);
+    (.010 + relief * boss * (.72 + .28 * bossCrossSection) + .034 * cheek + .012 * lip);
   return { z, y, halfDepth, boss, bossSide, cheek, distanceToLip, diagonal };
 }
 

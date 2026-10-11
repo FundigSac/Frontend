@@ -86,7 +86,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=photo-rebuild-epdm-studio-17`,
+        src: `${src}?v=photo-rebuild-epdm-studio-18`,
         poster,
         alt,
         "camera-controls": "",
@@ -94,7 +94,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
         "shadow-intensity": valveStudio ? "0.8" : "0.65",
         "shadow-softness": valveStudio ? "0.85" : "1",
         exposure: valveStudio ? "1.1" : "0.95",
-        "camera-orbit": "55deg 78deg auto",
+        "camera-orbit": valveStudio ? "-90deg 85deg auto" : "55deg 78deg auto",
         "field-of-view": "30deg",
         "environment-image": valveStudio ? "/models/valvula-estudio.hdr" : "neutral",
         "interaction-prompt": "none",

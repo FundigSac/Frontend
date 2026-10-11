@@ -16,7 +16,7 @@ const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0.002,0.055,0.48
 const steel=doc.createMaterial('acero').setBaseColorFactor([.68,.71,.75,1]).setMetallicFactor(1).setRoughnessFactor(.25);
 const brass=doc.createMaterial('laton').setBaseColorFactor([.65,.43,.10,1]).setMetallicFactor(1).setRoughnessFactor(.28);
 const dark=doc.createMaterial('junta-EPDM').setBaseColorFactor([.008,.009,.012,1]).setRoughnessFactor(.8);
-const wedgeMaterial=doc.createMaterial('cuna-EPDM-negro').setBaseColorFactor([.026,.028,.029,1]).setMetallicFactor(0).setRoughnessFactor(.72);
+const wedgeMaterial=doc.createMaterial('cuna-EPDM-negro').setBaseColorFactor([.035,.036,.037,1]).setMetallicFactor(0).setRoughnessFactor(.72);
 const label=doc.createMaterial('etiqueta').setBaseColorFactor([1,1,1,1]).setRoughnessFactor(.6);
 label.setBaseColorTexture(doc.createTexture('H-ITALY').setImage(fs.readFileSync('public/models/etiqueta-real.png')).setMimeType('image/png'));
 // Deterministic, isotropic fine casting texture; never stretch a one-channel buffer as RGB.
@@ -30,7 +30,7 @@ blue.setNormalTexture(doc.createTexture('fundicion-fina').setImage(normal).setMi
 // Procedural moulded-rubber microtexture, never a photograph or a flat fake wedge.
 // The same map works on both faces; full-scale form is always mesh geometry.
 let rubberSeed=36417;
-const rubberHeights=new Float32Array(n*n), rubberNormal=Buffer.alloc(n*n*3), rubberOrm=Buffer.alloc(n*n*3);
+const rubberHeights=new Float32Array(n*n), rubberNormal=Buffer.alloc(n*n*3), rubberOrm=Buffer.alloc(n*n*3), rubberAlbedo=Buffer.alloc(n*n*3);
 for(let i=0;i<rubberHeights.length;i++){rubberSeed=(Math.imul(rubberSeed,1664525)+1013904223)>>>0;rubberHeights[i]=rubberSeed/4294967296;}
 const rubberH=(x,y)=>rubberHeights[((y+n)%n)*n+(x+n)%n];
 for(let y=0;y<n;y++)for(let x=0;x<n;x++){
@@ -43,12 +43,17 @@ for(let y=0;y<n;y++)for(let x=0;x<n;x++){
  rubberOrm[i]=Math.round(255*(1-.20*bossCrease-.10*cheekCrease));
  rubberOrm[i+1]=Math.round(255*(.92+.08*rubberH(x,y)-.05*Math.exp(-Math.pow((surface.distanceToLip-.035)/.03,2))));
  rubberOrm[i+2]=0;
+ // Subtle moulded-finish variation; no photographs, lettering or fabricated wear.
+ const tone=.94+.035*Math.sin(x*.055)*Math.sin(y*.043)+.02*rubberH(x,y);
+ for(let channel=0;channel<3;channel++)rubberAlbedo[i+channel]=Math.round(255*tone);
 }
 const rubberNormalImage=await sharp(rubberNormal,{raw:{width:n,height:n,channels:3}}).png().toBuffer();
+const rubberAlbedoImage=await sharp(rubberAlbedo,{raw:{width:n,height:n,channels:3}}).png().toBuffer();
 const rubberOrmImage=await sharp(rubberOrm,{raw:{width:n,height:n,channels:3}}).png().toBuffer();
-wedgeMaterial.setNormalTexture(doc.createTexture('EPDM-microrelieve').setImage(rubberNormalImage).setMimeType('image/png')).setNormalScale(.22);
+wedgeMaterial.setNormalTexture(doc.createTexture('EPDM-microrelieve').setImage(rubberNormalImage).setMimeType('image/png')).setNormalScale(.12);
 const orm=doc.createTexture('EPDM-occlusion-rugosidad').setImage(rubberOrmImage).setMimeType('image/png');
 wedgeMaterial.setMetallicRoughnessTexture(orm).setOcclusionTexture(orm).setOcclusionStrength(.65);
+wedgeMaterial.setBaseColorTexture(doc.createTexture('EPDM-acabado-moldeado').setImage(rubberAlbedoImage).setMimeType('image/png'));
 function mesh(name,g,mat=blue,p=[0,0,0],r=[0,0,0]){
  g.rotateX(r[0]);g.rotateY(r[1]);g.rotateZ(r[2]);
  const primitive=doc.createPrimitive().setMaterial(mat);
@@ -142,7 +147,7 @@ const packed=fs.readFileSync(glbPath), jsonSize=packed.readUInt32LE(12);
 const manifest=JSON.parse(packed.subarray(20,20+jsonSize).toString());
 const binaryStart=20+jsonSize+8, binaryChunk=packed.subarray(20+jsonSize);
 const rubberMaterial=manifest.materials.find(m=>m.name==='cuna-EPDM-negro');
-const keepTextureIds=[...new Set([rubberMaterial.normalTexture.index,rubberMaterial.occlusionTexture.index,rubberMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index])];
+const keepTextureIds=[...new Set([rubberMaterial.pbrMetallicRoughness.baseColorTexture.index,rubberMaterial.normalTexture.index,rubberMaterial.occlusionTexture.index,rubberMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index])];
 const keepImageIds=[...new Set(keepTextureIds.map(i=>manifest.textures[i].source))];
 for(const [i,img] of (manifest.images??[]).entries()){
 
@@ -151,11 +156,12 @@ for(const [i,img] of (manifest.images??[]).entries()){
  fs.writeFileSync(`public/models/${filename}`,packed.subarray(binaryStart+(view.byteOffset??0),binaryStart+(view.byteOffset??0)+view.byteLength));
  delete img.bufferView;img.uri=filename;
 }
-for(const material of manifest.materials){if(material!==rubberMaterial)delete material.normalTexture;delete material.pbrMetallicRoughness.baseColorTexture;}
+for(const material of manifest.materials){if(material!==rubberMaterial){delete material.normalTexture;delete material.pbrMetallicRoughness.baseColorTexture;}}
 // Same-origin images avoid blob image decoding failures in the bundled viewer.
 // Exterior texture loading remains exactly as in the original viewer.
 manifest.images=keepImageIds.map(i=>manifest.images[i]);
 manifest.textures=keepTextureIds.map(i=>({...manifest.textures[i],source:keepImageIds.indexOf(manifest.textures[i].source)}));
+rubberMaterial.pbrMetallicRoughness.baseColorTexture.index=keepTextureIds.indexOf(rubberMaterial.pbrMetallicRoughness.baseColorTexture.index);
 rubberMaterial.normalTexture.index=keepTextureIds.indexOf(rubberMaterial.normalTexture.index);
 rubberMaterial.occlusionTexture.index=keepTextureIds.indexOf(rubberMaterial.occlusionTexture.index);
 rubberMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index=keepTextureIds.indexOf(rubberMaterial.pbrMetallicRoughness.metallicRoughnessTexture.index);

@@ -86,6 +86,7 @@ for (let i = 0; i < p.count; i++) {
 }
 const material = current.getRoot().listMaterials().find(m => m.getName() === 'cuna-EPDM-negro');
 assert(material && material.getMetallicFactor() === 0 && material.getRoughnessFactor() === .72);
+assert(material.getBaseColorTexture()?.getImage()?.length > 0, 'Rubber finish map must resolve');
 assert(material.getNormalTexture()?.getImage()?.length > 0, 'Rubber normal map must resolve');
 assert(material.getMetallicRoughnessTexture()?.getImage()?.length > 0, 'Rubber surface map must resolve');
 assert(material.getNormalTexture() !== current.getRoot().listMaterials().find(m=>m.getName()==='epoxi-azul').getNormalTexture(), 'Rubber must have its own surface finish');
@@ -104,6 +105,7 @@ fs.writeFileSync(`${output}/geometry-checks.json`, JSON.stringify(result, null, 
 const isolated = new Document(), buffer = isolated.createBuffer();
 const isolatedMaterial=isolated.createMaterial('EPDM-negro')
   .setBaseColorFactor(material.getBaseColorFactor()).setMetallicFactor(0).setRoughnessFactor(.72)
+  .setBaseColorTexture(isolated.createTexture('EPDM-acabado-moldeado').setImage(material.getBaseColorTexture().getImage()).setMimeType('image/png'))
   .setNormalTexture(isolated.createTexture('EPDM-microrelieve').setImage(material.getNormalTexture().getImage()).setMimeType('image/png'))
   .setNormalScale(material.getNormalScale());
 const isolatedOrm=isolated.createTexture('EPDM-occlusion-rugosidad').setImage(material.getMetallicRoughnessTexture().getImage()).setMimeType('image/png');
