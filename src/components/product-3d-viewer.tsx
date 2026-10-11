@@ -85,7 +85,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=photo-rebuild-hitaly-central-ribs-11`,
+        src: `${src}?v=photo-rebuild-epdm-interior-12`,
         poster,
         alt,
         "camera-controls": "",

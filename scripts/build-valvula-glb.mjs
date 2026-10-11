@@ -7,6 +7,7 @@ import { Document, NodeIO } from '@gltf-transform/core';
 import { KHRMaterialsClearcoat } from '@gltf-transform/extensions';
 import fs from 'node:fs';
 import sharp from 'sharp';
+import { createResilientWedge, subtractInterior, borePlanes, chamberPlanes, createChamber } from './valvula-interior.mjs';
 const doc = new Document(), buffer = doc.createBuffer(), scene = doc.createScene('DN100');
 const root = doc.createNode('valvula').setTranslation([0,-1.02,0]); scene.addChild(root);
 const cc=doc.createExtension(KHRMaterialsClearcoat);
@@ -14,6 +15,7 @@ const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0.002,0.055,0.48
 const steel=doc.createMaterial('acero').setBaseColorFactor([.68,.71,.75,1]).setMetallicFactor(1).setRoughnessFactor(.25);
 const brass=doc.createMaterial('laton').setBaseColorFactor([.65,.43,.10,1]).setMetallicFactor(1).setRoughnessFactor(.28);
 const dark=doc.createMaterial('junta-EPDM').setBaseColorFactor([.008,.009,.012,1]).setRoughnessFactor(.8);
+const wedgeMaterial=doc.createMaterial('cuna-EPDM-negro').setBaseColorFactor([.012,.014,.016,1]).setMetallicFactor(0).setRoughnessFactor(.82);
 const label=doc.createMaterial('etiqueta').setBaseColorFactor([1,1,1,1]).setRoughnessFactor(.6);
 label.setBaseColorTexture(doc.createTexture('H-ITALY').setImage(fs.readFileSync('public/models/etiqueta-real.png')).setMimeType('image/png'));
 // Deterministic, isotropic fine casting texture; never stretch a one-channel buffer as RGB.
@@ -37,7 +39,9 @@ const lathe=(points)=>new T.LatheGeometry(points.map(([r,y])=>new T.Vector2(r,y)
 function roundedShape(w,d,r){const s=new T.Shape(),x=-w/2,y=-d/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+d-r);s.quadraticCurveTo(x+w,y+d,x+w-r,y+d);s.lineTo(x+r,y+d);s.quadraticCurveTo(x,y+d,x,y+d-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;}
 function plate(name,w,d,depth,y,mat=blue){const g=new T.ExtrudeGeometry(roundedShape(w,d,.13),{depth,bevelEnabled:true,bevelSegments:3,steps:1,bevelSize:.014,bevelThickness:.014,curveSegments:12});mesh(name,g,mat,[0,y,0],[-Math.PI/2,0,0]);}
 // Hollow pipe and blended sockets.
-mesh('cuerpo-paso-real',lathe([[.50,-.88],[.64,-.88],[.68,-.78],[.66,-.65],[.62,-.53],[.62,.53],[.66,.65],[.68,.78],[.64,.88],[.50,.88],[.50,-.88]]),blue,[0,0,0],[0,0,Math.PI/2]);
+const waterway=lathe([[.50,-.88],[.64,-.88],[.68,-.78],[.66,-.65],[.62,-.53],[.62,.53],[.66,.65],[.68,.78],[.64,.88],[.50,.88],[.50,-.88]]);
+waterway.rotateZ(Math.PI/2);
+mesh('cuerpo-paso-real',subtractInterior(waterway,chamberPlanes));
 for(const side of [-1,1]){
  const shape=new T.Shape();shape.absarc(0,0,1.05,0,Math.PI*2,false);
  const bore=new T.Path();bore.absarc(0,0,.50,0,Math.PI*2,true);shape.holes.push(bore);
@@ -55,7 +59,11 @@ const labelGeometry=new T.CircleGeometry(.495,96); const labelUV=labelGeometry.a
 mesh('etiqueta',labelGeometry,label,[1.085,0,0],[0,Math.PI/2,0]);
 // Rounded vertical casting, narrowing at the bottom, seamlessly sunk into pipe.
 const body=round(.78,1.66,1.40,.12);const bp=body.attributes.position;
-for(let i=0;i<bp.count;i++){const y=bp.getY(i);bp.setX(i,bp.getX(i)*( .64+.36*T.MathUtils.smoothstep(y,-.83,.50)));}body.computeVertexNormals();mesh('carcasa-fundida',body,blue,[0,.28,0]);
+for(let i=0;i<bp.count;i++){const y=bp.getY(i);bp.setX(i,bp.getX(i)*( .64+.36*T.MathUtils.smoothstep(y,-.83,.50)));}body.computeVertexNormals();
+body.translate(0,.28,0);
+mesh('carcasa-fundida',subtractInterior(body,borePlanes()));
+mesh('camara-interior-cuna',createChamber());
+mesh('cuna-elastomero-EPDM',createResilientWedge(),wedgeMaterial);
 plate('junta-bonete',1.38,1.14,.028,1.16,dark);plate('brida-inferior-bonete',1.38,1.14,.085,1.07);plate('tapa-bonete',1.38,1.14,.085,1.205);
 // Rounded tapered bonnet built with dense softened edge loops.
 const bonnet=round(.99,.64,.84,.085), pos=bonnet.attributes.position;
