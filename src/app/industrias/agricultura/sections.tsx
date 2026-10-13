@@ -2,11 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Droplet, FileText, MessageCircle, Settings, ShieldCheck } from "lucide-react";
+import { ArrowRight, Droplet, FileText, Settings, ShieldCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useAgri } from "./copy";
+import { BLUR } from "@/shared/media/blur";
 
-const WHATSAPP_NUMBER = "51908849664";
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
 const LINE_ITEMS = [
   { href: "/productos?q=ventosa", image: "/media/agricultura/ventosa.webp" },
@@ -50,7 +50,7 @@ export function AgricultureSections() {
     <main className="lp ag" ref={root}>
       {/* Hero */}
       <section className="ag-hero" aria-labelledby="ag-title">
-        <Image className="ag-hero__photo" src="/media/agricultura/hero.webp" alt={t.hero.alt} fill priority sizes="100vw" />
+        <Image className="ag-hero__photo" src="/media/agricultura/hero.webp" alt={t.hero.alt} fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/hero.webp"]} sizes="100vw" />
         <div className="ag-hero__veil" aria-hidden="true" />
         <div className="lp-shell ag-hero__inner">
           <nav className="ag-crumbs" aria-label="breadcrumb">
@@ -77,7 +77,7 @@ export function AgricultureSections() {
       {/* Producto destacado */}
       <section className="ag-featured" aria-labelledby="ag-featured-title">
         <div className="ag-featured__media" data-reveal="left">
-          <Image src="/media/agricultura/valvula-compuerta.webp" alt={t.featured.alt} fill sizes="(max-width: 860px) 100vw, 50vw" />
+          <Image src="/media/agricultura/valvula-compuerta.webp" alt={t.featured.alt} fill loading="eager" fetchPriority="low" quality={72} placeholder="blur" blurDataURL={BLUR["/media/agricultura/valvula-compuerta.webp"]} sizes="(max-width: 860px) 100vw, 50vw" />
         </div>
         <div className="ag-featured__copy" data-reveal="right">
           <p className="ag-eyebrow"><span aria-hidden="true" />{t.featured.eyebrow}</p>
@@ -125,7 +125,7 @@ export function AgricultureSections() {
               <li key={item.href} data-reveal="up" style={{ ["--d" as string]: `${i * 90}ms` }}>
                 <Link href={item.href} className="lp-card">
                   <span className="lp-card__media">
-                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} sizes="(max-width: 640px) 90vw, (max-width: 1100px) 45vw, 280px" />
+                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} loading="eager" fetchPriority="low" quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 640px) 90vw, (max-width: 1100px) 45vw, 280px" />
                   </span>
                   <span className="lp-card__label">
                     {t.line.items[i].title}
@@ -151,10 +151,10 @@ export function AgricultureSections() {
           </div>
           <Link href="/recursos" className="ag-docs__media" data-reveal="right" aria-label={t.docs.cta}>
             <span className="ag-docs__plan">
-              <Image src="/media/agricultura/plano.webp" alt={t.docs.drawingAlt} width={1448} height={1086} sizes="(max-width: 860px) 70vw, 28vw" />
+              <Image src="/media/agricultura/plano.webp" alt={t.docs.drawingAlt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/plano.webp"]} sizes="(max-width: 860px) 70vw, 28vw" />
             </span>
             <span className="ag-docs__book">
-              <Image src="/media/agricultura/catalogo.webp" alt={t.docs.catalogAlt} width={1448} height={1086} sizes="(max-width: 860px) 70vw, 30vw" />
+              <Image src="/media/agricultura/catalogo.webp" alt={t.docs.catalogAlt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/catalogo.webp"]} sizes="(max-width: 860px) 70vw, 30vw" />
             </span>
           </Link>
         </div>
@@ -162,7 +162,7 @@ export function AgricultureSections() {
 
       {/* Cierre */}
       <section className="ag-cta" aria-labelledby="ag-cta-title">
-        <Image className="ag-cta__photo" src="/media/agricultura/hero.webp" alt="" fill sizes="100vw" />
+        <Image className="ag-cta__photo" src="/media/agricultura/hero.webp" alt="" fill quality={60} placeholder="blur" blurDataURL={BLUR["/media/agricultura/hero.webp"]} sizes="100vw" />
         <div className="ag-cta__veil" aria-hidden="true" />
         <div className="lp-shell ag-cta__inner" data-reveal="up">
           <div>
@@ -170,9 +170,6 @@ export function AgricultureSections() {
             <p>{t.cta.text}</p>
           </div>
           <div className="ag-cta__actions">
-            <a className="ag-wa" href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(t.cta.message)}`} target="_blank" rel="noopener noreferrer">
-              <MessageCircle aria-hidden="true" size={20} strokeWidth={1.9} /> {t.cta.whatsapp}
-            </a>
             <Link className="lp-btn lp-btn--solid" href="/cotizar">
               {t.cta.quote} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarRange, Mail, MapPin } from "lucide-react";
 import { SITE } from "@/shared/config/site";
 import { useHome } from "@/shared/layout/home-copy";
+import { BLUR } from "@/shared/media/blur";
 
 const BACKING_LINKS = ["/industrias", "/recursos", "/contacto"] as const;
 
@@ -13,7 +14,7 @@ export function BackingSection() {
   return (
     <section className="lp-backing" aria-labelledby="lp-backing-title">
       <div className="lp-backing__media">
-        <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} fill sizes="(max-width: 860px) 100vw, 46vw" />
+        <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} fill quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/respaldo-ingeniero.webp"]} sizes="(max-width: 860px) 100vw, 46vw" />
       </div>
       <div className="lp-backing__copy">
         <p className="lp-eyebrow">{t.eyebrow}</p>
@@ -56,7 +57,7 @@ export function DocsSection() {
         </div>
 
         <Link href="/recursos" className="lp-docs__media" aria-label={t.mediaLabel}>
-          <Image src="/media/home-v3/ficha-plano.webp" alt={t.alt} width={1448} height={1086} sizes="(max-width: 860px) 100vw, 55vw" />
+          <Image src="/media/home-v3/ficha-plano.webp" alt={t.alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/ficha-plano.webp"]} sizes="(max-width: 860px) 100vw, 55vw" />
         </Link>
       </div>
     </section>

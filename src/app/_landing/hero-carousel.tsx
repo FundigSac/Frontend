@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import { COPY, useLang } from "@/shared/layout/landing-prefs";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { BLUR } from "@/shared/media/blur";
 
 // Ambas variantes comparten lienzo (578×1030): el cuerpo de la válvula queda alineado al píxel
 // y solo cambia el accionamiento superior.
@@ -66,7 +67,7 @@ export function HeroCarousel() {
         if (e.key === "ArrowLeft") go(-1);
       }}
     >
-      <Image className="lp-hero__photo" src="/media/home-v3/hero-planta.webp" alt="" fill priority sizes="100vw" />
+      <Image className="lp-hero__photo" src="/media/home-v3/hero-planta.webp" alt="" fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/hero-planta.webp"]} sizes="100vw" />
       <div className="lp-hero__veil" aria-hidden="true" />
 
       <div className="lp-shell lp-hero__grid">

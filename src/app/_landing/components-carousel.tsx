@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import { useHome } from "@/shared/layout/home-copy";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { BLUR } from "@/shared/media/blur";
 
 const ITEMS = [
   { href: "/productos/valvulas", image: "/media/home-v2/card-valvulas-hd.webp" },
@@ -103,7 +104,7 @@ export function ComponentsCarousel() {
           <li key={item.href}>
             <Link href={item.href} className="lp-card">
               <span className="lp-card__media">
-                <Image src={item.image} alt={t.items[i].alt} width={1000} height={617} sizes="(max-width: 640px) 78vw, 340px" />
+                <Image src={item.image} alt={t.items[i].alt} width={1000} height={617} loading={i < 4 ? "eager" : "lazy"} fetchPriority="low" quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 640px) 78vw, 340px" />
               </span>
               <span className="lp-card__label">
                 {t.items[i].title}

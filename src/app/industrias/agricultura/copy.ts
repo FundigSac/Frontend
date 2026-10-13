@@ -44,9 +44,7 @@ export const AGRI = {
     cta: {
       title: "Hagamos más eficiente tu sistema de riego.",
       text: "Nuestro equipo te asesora para encontrar la mejor solución.",
-      whatsapp: "Cotizar por WhatsApp",
       quote: "Solicitar cotización",
-      message: "Hola FUNDIGSAC, quisiera cotizar componentes para un sistema de riego.",
     },
     crumbs: { home: "Inicio", sectors: "Sectores", current: "Agricultura" },
   },
@@ -91,9 +89,7 @@ export const AGRI = {
     cta: {
       title: "Let's make your irrigation system more efficient.",
       text: "Our team advises you to find the best solution.",
-      whatsapp: "Quote via WhatsApp",
       quote: "Request a quote",
-      message: "Hello FUNDIGSAC, I would like a quote for irrigation system components.",
     },
     crumbs: { home: "Home", sectors: "Industries", current: "Agriculture" },
   },

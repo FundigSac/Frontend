@@ -554,3 +554,93 @@ html[data-lp-theme="dark"] .ag-cta__veil {
     transition: none;
   }
 }
+
+/* ===== Documentación y cierre: collage grande sin fondo que se monta sobre la franja ===== */
+.ag-docs {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
+.ag-docs__inner {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  min-height: 400px;
+  padding-block: 56px 24px;
+}
+
+.ag-docs__media {
+  min-height: 420px;
+  margin-bottom: -84px;
+}
+
+.ag-docs__plan,
+.ag-docs__book {
+  border-radius: 0;
+  box-shadow: none;
+  mix-blend-mode: multiply;
+  overflow: visible;
+}
+
+.ag-docs__plan {
+  top: -4px;
+  right: -2%;
+  width: 58%;
+  transform: rotate(2deg);
+}
+
+.ag-docs__book {
+  bottom: 0;
+  left: 2%;
+  width: 60%;
+  transform: rotate(-1.5deg);
+}
+
+.ag-docs__media:hover .ag-docs__plan {
+  transform: rotate(3deg) translate(8px, -6px);
+}
+
+.ag-docs__media:hover .ag-docs__book {
+  transform: rotate(-2.5deg) translate(-6px, 4px) scale(1.02);
+}
+
+.ag-cta {
+  z-index: 1;
+  padding: clamp(56px, 6vw, 84px) 0 clamp(44px, 5vw, 64px);
+}
+
+.ag-cta__photo {
+  object-position: 50% 70%;
+}
+
+/* En oscuro el blend no sirve sobre fondo oscuro: se muestran como tarjetas claras. */
+html[data-lp-theme="dark"] .ag-docs__plan,
+html[data-lp-theme="dark"] .ag-docs__book {
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 30px 50px -22px rgb(0 0 0 / 80%);
+  mix-blend-mode: normal;
+}
+
+@media (max-width: 860px) {
+  .ag-docs__inner {
+    grid-template-columns: 1fr;
+    padding-block: 40px 8px;
+  }
+
+  .ag-docs__media {
+    min-height: 330px;
+    margin-bottom: -40px;
+  }
+
+  .ag-docs__plan {
+    width: 64%;
+  }
+
+  .ag-docs__book {
+    width: 66%;
+  }
+
+  .ag-cta {
+    padding-top: 72px;
+  }
+}
