@@ -159,3 +159,13 @@ export function useHome() {
   const [lang] = useLang();
   return HOME[lang];
 }
+
+export const FLOAT = {
+  es: { whatsapp: "Escríbenos por WhatsApp", top: "Volver arriba", message: "Hola FUNDIGSAC, quisiera información sobre sus productos." },
+  en: { whatsapp: "Chat with us on WhatsApp", top: "Back to top", message: "Hello FUNDIGSAC, I would like information about your products." },
+};
+
+export function useFloat() {
+  const [lang] = useLang();
+  return FLOAT[lang];
+}
