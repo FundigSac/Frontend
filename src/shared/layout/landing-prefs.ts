@@ -61,6 +61,8 @@ export const COPY = {
     searchPlaceholder: "Buscar productos, fichas…",
     searchLabel: "Buscar en el sitio",
     language: "Idioma",
+    account: { label: "Cuenta", login: "Iniciar sesión", signup: "Crear cuenta", hint: "Accede a tu cuenta de FUNDIGSAC" },
+    cart: "Mi cotización",
     theme: { toDark: "Activar modo oscuro", toLight: "Activar modo claro" },
     menuOpen: "Abrir menú",
     menuClose: "Cerrar menú",
@@ -82,6 +84,8 @@ export const COPY = {
     searchPlaceholder: "Search products, data sheets…",
     searchLabel: "Search the site",
     language: "Language",
+    account: { label: "Account", login: "Log in", signup: "Sign up", hint: "Access your FUNDIGSAC account" },
+    cart: "My quote",
     theme: { toDark: "Switch to dark mode", toLight: "Switch to light mode" },
     menuOpen: "Open menu",
     menuClose: "Close menu",
@@ -94,3 +98,26 @@ export const COPY = {
     },
   },
 } as const;
+
+/** Cantidad total de productos en la cotización (localStorage "fundigsac-quote"). */
+function readQuoteCount(): number {
+  try {
+    const items = JSON.parse(window.localStorage.getItem("fundigsac-quote") || "[]") as { quantity?: number }[];
+    return items.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0);
+  } catch {
+    return 0;
+  }
+}
+
+function subscribeQuote(onChange: () => void) {
+  window.addEventListener("quote-updated", onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener("quote-updated", onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+export function useQuoteCount(): number {
+  return useSyncExternalStore(subscribeQuote, readQuoteCount, () => 0);
+}

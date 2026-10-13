@@ -1108,7 +1108,7 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 1100px) {
+@media (max-width: 1260px) {
   .lp-nav,
   .lp-header__quote {
     display: none;
@@ -2251,4 +2251,206 @@ html[data-lp-theme="dark"] .lp-lang__menu button:hover {
 html[data-lp-theme="dark"] .lp-nav__menu,
 html[data-lp-theme="dark"] .lp-lang__menu {
   background: linear-gradient(160deg, rgb(20 34 58 / 50%), rgb(9 18 33 / 34%));
+}
+
+/* ===== Cuenta y carrito de cotización ===== */
+.lp-account {
+  position: relative;
+}
+
+.lp-account__menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  display: grid;
+  min-width: 230px;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid rgb(255 255 255 / 65%);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgb(255 255 255 / 62%), rgb(244 248 253 / 42%));
+  -webkit-backdrop-filter: blur(24px) saturate(1.9);
+  backdrop-filter: blur(24px) saturate(1.9);
+  box-shadow: 0 26px 50px -24px rgb(11 34 68 / 45%), inset 0 1px 0 rgb(255 255 255 / 70%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top right;
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 220ms;
+  visibility: hidden;
+}
+
+.lp-account__menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+.lp-account__menu p {
+  padding: 4px 8px 8px;
+  color: var(--lp-text);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.lp-account__menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  color: var(--lp-ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.lp-account__menu a:hover {
+  background: rgb(255 255 255 / 55%);
+  color: var(--lp-orange-dark);
+}
+
+.lp-account__menu .lp-account__primary {
+  background: var(--lp-orange);
+  color: #fff;
+  justify-content: center;
+}
+
+.lp-account__menu .lp-account__primary:hover {
+  background: var(--lp-orange-dark);
+  color: #fff;
+}
+
+.lp-cart {
+  position: relative;
+  width: 40px;
+  padding: 0;
+  text-decoration: none;
+}
+
+.lp-cart__badge {
+  position: absolute;
+  top: 1px;
+  right: 0;
+  display: grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--lp-orange);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  box-shadow: 0 0 0 2px #fff;
+  animation: lp-badge-pop 360ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+@keyframes lp-badge-pop {
+  from { transform: scale(0.4); }
+  to { transform: scale(1); }
+}
+
+html[data-lp-theme="dark"] .lp-account__menu {
+  border-color: rgb(255 255 255 / 14%);
+  background: linear-gradient(160deg, rgb(20 34 58 / 55%), rgb(9 18 33 / 38%));
+  box-shadow: 0 26px 50px -22px rgb(0 0 0 / 75%), inset 0 1px 0 rgb(255 255 255 / 10%);
+}
+
+html[data-lp-theme="dark"] .lp-account__menu a:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+html[data-lp-theme="dark"] .lp-account__menu .lp-account__primary:hover {
+  background: var(--lp-orange-dark);
+}
+
+html[data-lp-theme="dark"] .lp-cart__badge {
+  box-shadow: 0 0 0 2px #0b1626;
+}
+
+/* Preferencias dentro del menú móvil. */
+.lp-mobile__prefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-block: 14px 6px;
+}
+
+.lp-mobile__prefs button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--lp-line);
+  border-radius: 999px;
+  background: none;
+  color: var(--lp-ink);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lp-mobile__prefs button.is-active {
+  border-color: var(--lp-orange);
+  color: var(--lp-orange-dark);
+}
+
+@media (max-width: 860px) {
+  .lp-header__actions > .lp-lang,
+  .lp-header__actions > .lp-theme {
+    display: none;
+  }
+
+  .lp-account__menu {
+    position: fixed;
+    top: 72px;
+    right: 12px;
+    left: 12px;
+  }
+}
+
+@media (min-width: 861px) {
+  .lp-mobile__prefs {
+    display: none;
+  }
+}
+
+.lp-account__menu,
+.lp-cart {
+  transition-property: opacity, transform, visibility, background;
+}
+
+/* Cabecera compacta: íconos juntos y botón de cotización con aire propio. */
+.lp-header__actions {
+  gap: 2px;
+}
+
+.lp-header__actions .lp-header__quote {
+  margin-left: 14px;
+}
+
+.lp-header__bar {
+  gap: clamp(12px, 1.6vw, 24px);
+}
+
+.lp-nav {
+  gap: clamp(14px, 2.2vw, 40px);
+}
+
+@media (max-width: 1320px) {
+  .lp-lang__btn span {
+    display: none;
+  }
+
+  .lp-lang__btn {
+    min-width: 40px;
+    padding: 0;
+  }
 }
