@@ -1,10 +1,28 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Droplets, Factory, Info, Mountain, Sprout } from "lucide-react";
 import { CatalogCard } from "@/components/ui/catalog-card";
 import { CtaBand, PageHero, SectionHead } from "@/components/ui/page-hero";
 import { Reveal } from "@/components/ui/reveal";
 import { productsBySlug } from "@/lib/site-info";
+import "./industrias.css";
+
+/** Ficha de la válvula de compuerta bridada H-ITALY (configurador + visor 3D). */
+const GATE_VALVE_HREF = "/productos/valvulas/valvula-compuerta";
+
+/** Cada familia mencionada en un sector lleva directo a su parte del catálogo. */
+const NEED_LINKS: Record<string, string> = {
+  "Ventosas y válvulas de aire": "/productos?q=ventosa",
+  "Filtros tipo Y y válvulas de control": "/productos?q=filtro",
+  "Tubería y accesorios HDPE": "/productos?categoria=hdpe",
+  "Válvulas de retención y compuerta": GATE_VALVE_HREF,
+  "Válvulas de compuerta, mariposa y retención": "/productos/valvulas",
+  "Tubería y accesorios de hierro dúctil": "/productos?categoria=hierro-ductil",
+  "Marcos y tapas para buzones": "/productos/marcos-y-tapas",
+  "Válvulas y juntas para líneas de proceso": "/productos/valvulas",
+  "Válvulas mariposa y de retención": "/productos/valvulas",
+};
 
 export const metadata: Metadata = {
   title: "Industrias",
@@ -39,11 +57,24 @@ export default function Industries() {
               <span className="x-icon" style={{ marginBottom: 16 }}><Icon size={24} aria-hidden="true" /></span>
               <SectionHead title={s.name} lead={s.text} />
               <h3 className="x-minor">Familias que suelen consultarse</h3>
-              <ul className="x-check">{s.needs.map(n => <li key={n}>{n}</li>)}</ul>
+              <ul className="x-check">{s.needs.map(n => <li key={n}>{NEED_LINKS[n] ? <Link className="x-need" href={NEED_LINKS[n]}>{n}<ArrowRight size={14} aria-hidden="true" /></Link> : n}</li>)}</ul>
               <p className="x-after"><Link className="text-link" href={s.href}>Ver productos para {s.name.toLowerCase()} <ArrowRight size={16} /></Link></p>
             </Reveal>
-            <div className={`x-pgrid x-pgrid--${Math.min(items.length, 3)}`}>
+            <div className="x-split__main">
+              {s.id === "agricultura" && <Reveal>
+                <Link href={GATE_VALVE_HREF} className="x-featured" aria-label="Ver la ficha de la válvula de compuerta bridada H-ITALY">
+                  <span className="x-featured__badge">Destacado · H-ITALY</span>
+                  <span className="x-featured__media"><Image src="/media/home-v2/compuerta-con-timon-v4.webp" alt="Válvula de compuerta bridada H-ITALY con timón" width={578} height={1030} sizes="(max-width: 860px) 60vw, 240px" /></span>
+                  <span className="x-featured__body">
+                    <strong>Válvula de compuerta bridada</strong>
+                    <span>Cierre elástico, extremos bridados, DN40 a DN600, PN10/PN16 según EN 1074-2. Para control de línea en riego y distribución de agua.</span>
+                    <span className="x-featured__cta">Ver ficha, configurador y visor 3D <ArrowRight size={16} aria-hidden="true" /></span>
+                  </span>
+                </Link>
+              </Reveal>}
+              <div className={`x-pgrid x-pgrid--${Math.min(items.length, 3)}`}>
               {items.map((p, k) => <Reveal key={p.slug} delay={k * 90}><CatalogCard product={p} compact /></Reveal>)}
+              </div>
             </div>
           </div>
         </div>

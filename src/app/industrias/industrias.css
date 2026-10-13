@@ -1,0 +1,165 @@
+/* Industrias: familias clicables, tarjeta destacada de la válvula H-ITALY y sección objetivo resaltada. */
+.x-need {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 160ms ease, border-color 160ms ease, gap 160ms ease;
+}
+
+.x-need svg {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.x-need:hover,
+.x-need:focus-visible {
+  gap: 9px;
+  border-bottom-color: currentColor;
+  color: #d9560c;
+}
+
+.x-need:hover svg,
+.x-need:focus-visible svg {
+  opacity: 1;
+  transform: none;
+}
+
+.x-featured {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 18px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid rgb(242 106 27 / 28%);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff, #f3f7fc 60%, #fff4ec);
+  box-shadow: 0 22px 46px -30px rgb(11 34 68 / 50%);
+  color: #13233d;
+  text-decoration: none;
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 260ms ease, border-color 260ms ease;
+}
+
+.x-featured:hover {
+  transform: translateY(-4px);
+  border-color: #f26a1b;
+  box-shadow: 0 30px 56px -28px rgb(242 106 27 / 45%);
+}
+
+.x-featured:focus-visible {
+  outline: 2px solid #f26a1b;
+  outline-offset: 3px;
+}
+
+.x-featured__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f26a1b;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.x-featured__media {
+  display: block;
+  padding-top: 18px;
+}
+
+.x-featured__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 18px rgb(11 34 68 / 28%));
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.x-featured:hover .x-featured__media img {
+  transform: scale(1.05) translateY(-3px);
+}
+
+.x-featured__body {
+  display: grid;
+  gap: 10px;
+}
+
+.x-featured__body strong {
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.x-featured__body > span:not(.x-featured__cta) {
+  color: #4a5568;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.x-featured__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #d9560c;
+  font-size: 14px;
+  font-weight: 700;
+  transition: gap 200ms ease;
+}
+
+.x-featured:hover .x-featured__cta {
+  gap: 13px;
+}
+
+/* Al llegar desde un enlace #sector, la sección se ilumina un instante. */
+section[id]:target {
+  animation: x-target 1800ms ease-out 1;
+}
+
+@keyframes x-target {
+  0% { box-shadow: inset 0 0 0 3px rgb(242 106 27 / 55%); background-color: rgb(242 106 27 / 8%); }
+  100% { box-shadow: inset 0 0 0 3px rgb(242 106 27 / 0%); background-color: transparent; }
+}
+
+@media (max-width: 560px) {
+  .x-featured {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .x-featured__media {
+    max-width: 150px;
+    margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .x-featured,
+  .x-featured__media img,
+  .x-need,
+  .x-need svg {
+    transition: none;
+  }
+
+  section[id]:target {
+    animation: none;
+  }
+}
+
+/* La página usa `.container` de Tailwind, que no centra ni da margen lateral: se lo damos aquí. */
+main:has(#agricultura) .container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 48px);
+}
