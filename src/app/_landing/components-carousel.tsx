@@ -3,9 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
+import { useHome } from "@/shared/layout/home-copy";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-type Item = { title: string; href: string; image: string; alt: string; width: number; height: number };
+const ITEMS = [
+  { href: "/productos/valvulas", image: "/media/home-v2/card-valvulas-hd.webp" },
+  { href: "/productos/marcos-y-tapas", image: "/media/home-v3/card-marcos.webp" },
+  { href: "/productos?q=grifo", image: "/media/home-v3/card-grifos.webp" },
+  { href: "/productos?q=acople", image: "/media/home-v3/card-acoples.webp" },
+  { href: "/productos/tuberias", image: "/media/home-v3/card-tuberias.webp" },
+] as const;
 
 const INTERVAL = 4500;
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
@@ -16,7 +23,8 @@ function subscribeMotion(onChange: () => void) {
   return () => mq.removeEventListener("change", onChange);
 }
 
-export function ComponentsCarousel({ items }: { items: Item[] }) {
+export function ComponentsCarousel() {
+  const t = useHome().components;
   const track = useRef<HTMLUListElement>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
   const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
@@ -61,21 +69,21 @@ export function ComponentsCarousel({ items }: { items: Item[] }) {
     <>
       <div className="lp-shell lp-components__head">
         <div>
-          <p className="lp-eyebrow">Componentes y accesorios</p>
-          <h2 id="lp-components-title">Todo para la continuidad de tu proyecto.</h2>
+          <p className="lp-eyebrow">{t.eyebrow}</p>
+          <h2 id="lp-components-title">{t.title}</h2>
         </div>
-        <div className="lp-arrows" role="group" aria-label="Desplazar componentes">
-          <button type="button" className="lp-arrow" onClick={() => manual(-1)} disabled={edges.start} aria-label="Anterior">
+        <div className="lp-arrows" role="group" aria-label={t.group}>
+          <button type="button" className="lp-arrow" onClick={() => manual(-1)} disabled={edges.start} aria-label={t.prev}>
             <ArrowLeft aria-hidden="true" size={17} strokeWidth={2} />
           </button>
-          <button type="button" className="lp-arrow" onClick={() => manual(1)} disabled={edges.end} aria-label="Siguiente">
+          <button type="button" className="lp-arrow" onClick={() => manual(1)} disabled={edges.end} aria-label={t.next}>
             <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
           </button>
           <button
             type="button"
             className="lp-arrow lp-arrow--quiet"
             onClick={() => setUserPlaying(!playing)}
-            aria-label={playing ? "Pausar desplazamiento automático" : "Reanudar desplazamiento automático"}
+            aria-label={playing ? t.pause : t.resume}
           >
             {playing ? <Pause aria-hidden="true" size={14} strokeWidth={2.2} /> : <Play aria-hidden="true" size={14} strokeWidth={2.2} />}
           </button>
@@ -91,14 +99,14 @@ export function ComponentsCarousel({ items }: { items: Item[] }) {
         onBlur={() => setHovered(false)}
         onTouchStart={() => setUserPlaying(false)}
       >
-        {items.map((item) => (
-          <li key={item.title}>
+        {ITEMS.map((item, i) => (
+          <li key={item.href}>
             <Link href={item.href} className="lp-card">
               <span className="lp-card__media">
-                <Image src={item.image} alt={item.alt} width={item.width} height={item.height} sizes="(max-width: 640px) 78vw, 340px" />
+                <Image src={item.image} alt={t.items[i].alt} width={1000} height={617} sizes="(max-width: 640px) 78vw, 340px" />
               </span>
               <span className="lp-card__label">
-                {item.title}
+                {t.items[i].title}
                 <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
               </span>
             </Link>

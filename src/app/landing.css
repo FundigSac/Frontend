@@ -1768,3 +1768,94 @@ html[data-lp-theme="dark"] .lp-hero__valve {
 .lp-nav__link {
   white-space: nowrap;
 }
+
+/* ===== Modo oscuro: resto de la portada ===== */
+html[data-lp-theme="dark"] .lp {
+  --lp-navy: #f2f6fc;
+  --lp-ink: #eef3fa;
+  --lp-text: #aebccd;
+  --lp-line: rgb(255 255 255 / 12%);
+  --lp-soft: rgb(255 255 255 / 8%);
+  --lp-orange-dark: #ff8a4d;
+  background: #08121f;
+}
+
+html[data-lp-theme="dark"] .lp-components {
+  background: linear-gradient(180deg, #0b1626, #08121f);
+}
+
+html[data-lp-theme="dark"] .lp-card {
+  background: #101d31;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 10px 24px -18px rgb(0 0 0 / 70%);
+}
+
+html[data-lp-theme="dark"] .lp-card__media {
+  background: #0b1626;
+}
+
+html[data-lp-theme="dark"] .lp-components .lp-arrow {
+  border-color: rgb(255 255 255 / 18%);
+  background: #101d31;
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .lp-components .lp-arrow:hover:not(:disabled) {
+  border-color: var(--lp-orange);
+  background: var(--lp-orange);
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .lp-components .lp-arrow--quiet {
+  border-color: transparent;
+  background: transparent;
+  color: #aebccd;
+}
+
+html[data-lp-theme="dark"] .lp-arrows--light .lp-arrow:hover {
+  color: #0b2244;
+}
+
+html[data-lp-theme="dark"] .lp-backing {
+  background: #08121f;
+}
+
+html[data-lp-theme="dark"] .lp-backing__media img {
+  filter: brightness(0.82);
+}
+
+html[data-lp-theme="dark"] .lp-docs {
+  background: #0a1424;
+}
+
+html[data-lp-theme="dark"] .lp-btn--outline {
+  background: transparent;
+  color: #ff8a4d;
+}
+
+html[data-lp-theme="dark"] .lp-btn--outline:hover {
+  background: var(--lp-orange);
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .lp-docs__campaigns-icon {
+  border-color: rgb(255 255 255 / 18%);
+  background: #101d31;
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .lp-docs__media img {
+  filter: brightness(0.9);
+}
+
+html[data-lp-theme="dark"] .lp-footer {
+  background: #060d18;
+}
+
+/* Cambio de tema sin saltos bruscos. */
+.lp,
+.lp-components,
+.lp-card,
+.lp-backing,
+.lp-docs {
+  transition: background-color 320ms ease, color 320ms ease;
+}

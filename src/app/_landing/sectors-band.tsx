@@ -3,15 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useHome } from "@/shared/layout/home-copy";
 import { useRef, useState } from "react";
 
 const sectors = [
-  { n: "01", title: "Saneamiento", text: ["Agua potable y", "alcantarillado."], href: "/industrias#saneamiento", img: "/media/home-v3/sector-saneamiento.webp", alt: "Planta de tratamiento de agua con montañas al fondo" },
-  { n: "02", title: "Agricultura", text: ["Soluciones para", "sistemas de riego."], href: "/industrias#agricultura", img: "/media/home-v3/sector-agricultura.webp", alt: "Cultivo con riego por aspersión" },
-  { n: "03", title: "Minería", text: ["Componentes para", "operaciones exigentes."], href: "/industrias#mineria", img: "/media/home-v3/sector-mineria.webp", alt: "Planta minera con fajas transportadoras al atardecer" },
+  { n: "01", href: "/industrias#saneamiento", img: "/media/home-v3/sector-saneamiento.webp" },
+  { n: "02", href: "/industrias#agricultura", img: "/media/home-v3/sector-agricultura.webp" },
+  { n: "03", href: "/industrias#mineria", img: "/media/home-v3/sector-mineria.webp" },
 ];
 
 export function SectorsBand() {
+  const t = useHome().sectors;
   const [active, setActive] = useState(0);
   const list = useRef<HTMLUListElement>(null);
 
@@ -32,14 +34,14 @@ export function SectorsBand() {
       </svg>
       <div className="lp-shell lp-sectors__head">
         <div>
-          <h2 id="lp-sectors-title">Soluciones para cada sector.</h2>
-          <p>Componentes para los desafíos de cada proyecto.</p>
+          <h2 id="lp-sectors-title">{t.title}</h2>
+          <p>{t.lead}</p>
         </div>
-        <div className="lp-arrows lp-arrows--light" role="group" aria-label="Recorrer sectores">
-          <button type="button" className="lp-arrow" onClick={() => go(-1)} aria-label="Sector anterior">
+        <div className="lp-arrows lp-arrows--light" role="group" aria-label={t.group}>
+          <button type="button" className="lp-arrow" onClick={() => go(-1)} aria-label={t.prev}>
             <ArrowLeft aria-hidden="true" size={16} strokeWidth={2} />
           </button>
-          <button type="button" className="lp-arrow" onClick={() => go(1)} aria-label="Sector siguiente">
+          <button type="button" className="lp-arrow" onClick={() => go(1)} aria-label={t.next}>
             <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </button>
         </div>
@@ -52,8 +54,8 @@ export function SectorsBand() {
             </span>
             <Link href={s.href} onFocus={() => setActive(i)} onMouseEnter={() => setActive(i)}>
               <span className="lp-sector__num">{s.n} /</span>
-              <strong className="lp-sector__title">{s.title}</strong>
-              <span className="lp-sector__text">{s.text[0]}<br />{s.text[1]}</span>
+              <strong className="lp-sector__title">{t.items[i].title}</strong>
+              <span className="lp-sector__text">{t.items[i].text[0]}<br />{t.items[i].text[1]}</span>
               <ArrowRight className="lp-sector__arrow" aria-hidden="true" size={26} strokeWidth={1.6} />
             </Link>
           </li>

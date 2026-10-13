@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
+import { useHome } from "./home-copy";
 import { COPY, useLang, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
 
@@ -226,7 +227,9 @@ export function LandingHeader() {
 }
 
 export function LandingFooter() {
-  const [PRODUCTS, SECTORS, RESOURCES] = buildNav(COPY.es).filter((n) => n.children).map((n) => n.children!);
+  const [lang] = useLang();
+  const f = useHome().footer;
+  const [PRODUCTS, SECTORS, RESOURCES] = buildNav(COPY[lang]).filter((n) => n.children).map((n) => n.children!);
   return (
     <footer className="lp-footer">
       <div className="lp-shell lp-footer__main">
@@ -234,38 +237,38 @@ export function LandingFooter() {
           <Link className="lp-footer__brand" href="/" aria-label="FUNDIGSAC, inicio">
             <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
           </Link>
-          <p>Soluciones en hierro dúctil para agua, alcantarillado e infraestructura urbana. Impulsando el desarrollo del país.</p>
+          <p>{f.about}</p>
         </div>
         <nav aria-labelledby="lp-f-productos">
-          <h2 id="lp-f-productos">Productos</h2>
+          <h2 id="lp-f-productos">{f.products}</h2>
           <ul>{PRODUCTS.map((l) => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
         </nav>
         <nav aria-labelledby="lp-f-sectores">
-          <h2 id="lp-f-sectores">Sectores</h2>
+          <h2 id="lp-f-sectores">{f.sectors}</h2>
           <ul>{SECTORS.map((l) => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
         </nav>
         <nav aria-labelledby="lp-f-recursos">
-          <h2 id="lp-f-recursos">Recursos</h2>
+          <h2 id="lp-f-recursos">{f.resources}</h2>
           <ul>{RESOURCES.map((l) => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
         </nav>
         <div>
-          <h2>Contacto</h2>
+          <h2>{f.contact}</h2>
           <address>
             <ul>
-              <li>Lima, Perú</li>
+              <li>{f.place}</li>
               <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-              <li><Link href="/contacto">Formulario de contacto</Link></li>
+              <li><Link href="/contacto">{f.form}</Link></li>
             </ul>
           </address>
         </div>
       </div>
       <div className="lp-shell lp-footer__bottom">
-        <span>© {new Date().getFullYear()} {SITE.name}. Todos los derechos reservados.</span>
+        <span>© {new Date().getFullYear()} {SITE.name}. {f.rights}</span>
         <div className="lp-footer__legal">
-          <Link href="/terminos-b2b">Términos de uso</Link>
-          <Link href="/privacidad">Política de privacidad</Link>
-          <Link href="/reclamaciones">Libro de reclamaciones</Link>
-          <a href="/sitemap.xml">Mapa del sitio</a>
+          <Link href="/terminos-b2b">{f.terms}</Link>
+          <Link href="/privacidad">{f.privacy}</Link>
+          <Link href="/reclamaciones">{f.complaints}</Link>
+          <a href="/sitemap.xml">{f.sitemap}</a>
         </div>
       </div>
     </footer>
