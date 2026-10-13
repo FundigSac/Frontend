@@ -11,7 +11,6 @@ const components = [
   { title: "Grifos", href: "/productos?q=grifo", image: "/media/home-v3/card-grifos.webp", alt: "Grifo de bronce con palanca azul", width: 1000, height: 617 },
   { title: "Acoples", href: "/productos?q=acople", image: "/media/home-v3/card-acoples.webp", alt: "Acople de hierro dúctil con pernos de acero inoxidable", width: 1000, height: 617 },
   { title: "Tuberías", href: "/productos/tuberias", image: "/media/home-v3/card-tuberias.webp", alt: "Tuberías azules apiladas", width: 1000, height: 617 },
-  { title: "Válvulas", href: "/productos/valvulas", image: "/media/home-v2/card-valvulas-hd.webp", alt: "Válvula compuerta FUNDIGSAC de hierro dúctil", width: 1000, height: 617 },
 ];
 
 export default function HomePage() {
