@@ -197,6 +197,8 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
   const playingRef = useRef(true);
   const [playing, setPlaying] = useState(true);
   const [live, setLive] = useState(false);
+  const [armed, setArmed] = useState(false);
+  const [ready, setReady] = useState(false);
   const [reduced, setReduced] = useState(true);
 
   useEffect(() => {
@@ -207,12 +209,46 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
+  // Video real: se monta solo cuando la página terminó de cargar y el navegador está libre (no afecta el LCP),
+  // y no se descarga con "ahorro de datos". Hasta entonces se ve la foto.
+  useEffect(() => {
+    if (!video || reduced) return;
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean } }).connection;
+    if (conn?.saveData) return;
+    let cancelled = false;
+    const arm = () => {
+      const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+      const go = () => !cancelled && setArmed(true);
+      if (idle) idle(go, { timeout: 2500 });
+      else window.setTimeout(go, 600);
+    };
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", arm);
+    };
+  }, [video, reduced]);
+
+  // Reproduce solo si está en pantalla, la pestaña visible y el usuario no lo pausó.
   useEffect(() => {
     const v = videoEl.current;
-    if (!v || reduced) return;
-    if (playing) void v.play().catch(() => undefined);
-    else v.pause();
-  }, [playing, reduced, video]);
+    const box = wrap.current;
+    if (!v || !box || reduced) return;
+    let visible = true;
+    const sync = () => {
+      if (playing && visible && !document.hidden) void v.play().catch(() => undefined);
+      else v.pause();
+    };
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }, { threshold: 0 });
+    io.observe(box);
+    document.addEventListener("visibilitychange", sync);
+    sync();
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, [playing, reduced, armed]);
 
   useEffect(() => {
     if (video || reduced) return;
@@ -357,12 +393,24 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
 
   return (
     <>
-      <div ref={wrap} className={`ag-hero__motion${live || video ? " is-live" : ""}`} aria-hidden="true">
+      <div ref={wrap} className={`ag-hero__motion${live || (video && ready) ? " is-live" : ""}`} aria-hidden="true">
         {video ? (
-          <video ref={videoEl} muted loop playsInline autoPlay preload="metadata" poster="/media/agricultura/hero.webp" disablePictureInPicture>
-            {video.webm && <source src={video.webm} type="video/webm" />}
-            {video.mp4 && <source src={video.mp4} type="video/mp4" />}
-          </video>
+          armed && (
+            <video
+              ref={videoEl}
+              muted
+              loop
+              playsInline
+              autoPlay
+              preload="auto"
+              disablePictureInPicture
+              disableRemotePlayback
+              onPlaying={() => setReady(true)}
+            >
+              {video.webm && <source src={video.webm} type="video/webm" />}
+              {video.mp4 && <source src={video.mp4} type="video/mp4" />}
+            </video>
+          )
         ) : (
           <>
             <canvas ref={canvas} />
