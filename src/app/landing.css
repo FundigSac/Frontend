@@ -2200,3 +2200,9 @@ html[data-lp-theme="dark"] .lp-float__top:hover {
     width: auto;
   }
 }
+
+@media (max-width: 860px) {
+  .lp-location__inner {
+    grid-template-columns: 1fr;
+  }
+}
