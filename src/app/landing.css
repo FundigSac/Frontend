@@ -1859,3 +1859,28 @@ html[data-lp-theme="dark"] .lp-footer {
 .lp-docs {
   transition: background-color 320ms ease, color 320ms ease;
 }
+
+/* Controles del hero en modo oscuro: cristal oscuro con flechas claras. */
+html[data-lp-theme="dark"] .lp-hero__controls {
+  background: rgb(8 18 33 / 62%);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 10%);
+}
+
+html[data-lp-theme="dark"] .lp-hero__ctrl {
+  background: rgb(255 255 255 / 14%);
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .lp-hero__ctrl:hover {
+  background: var(--lp-orange);
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .lp-hero__ctrl--ghost {
+  border: 1px solid rgb(255 255 255 / 55%);
+  background: transparent;
+}
+
+html[data-lp-theme="dark"] .lp-hero__ctrl--ghost:hover {
+  border-color: var(--lp-orange);
+}
