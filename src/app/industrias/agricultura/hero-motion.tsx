@@ -16,7 +16,7 @@ import { useAgri } from "./copy";
  *   Todo es periódico (16 s): no hay salto al reiniciar. Con `prefers-reduced-motion`, sin WebGL o antes de
  *   cargar, se queda la foto estática (el LCP no se ve afectado).
  */
-export type HeroVideo = { webm?: string; mp4?: string };
+export type HeroVideo = { webm?: string; mp4?: string; small?: { webm?: string; mp4?: string } };
 
 const LOOP = 16;
 const FPS = 30;
@@ -197,7 +197,9 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
   const playingRef = useRef(true);
   const [playing, setPlaying] = useState(true);
   const [live, setLive] = useState(false);
-  const [armed, setArmed] = useState(false);
+  // Fuente elegida al montar (liviana en pantallas pequeñas); null hasta que la página esté lista.
+  const [src, setSrc] = useState<{ webm?: string; mp4?: string } | null>(null);
+  const armed = src !== null;
   const [ready, setReady] = useState(false);
   const [reduced, setReduced] = useState(true);
 
@@ -218,7 +220,7 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     let cancelled = false;
     const arm = () => {
       const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-      const go = () => !cancelled && setArmed(true);
+      const go = () => !cancelled && setSrc(window.innerWidth < 860 && video.small ? video.small : video);
       if (idle) idle(go, { timeout: 2500 });
       else window.setTimeout(go, 600);
     };
@@ -407,8 +409,8 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
               disableRemotePlayback
               onPlaying={() => setReady(true)}
             >
-              {video.webm && <source src={video.webm} type="video/webm" />}
-              {video.mp4 && <source src={video.mp4} type="video/mp4" />}
+              {src?.webm && <source src={src.webm} type="video/webm" />}
+              {src?.mp4 && <source src={src.mp4} type="video/mp4" />}
             </video>
           )
         ) : (

@@ -8,7 +8,11 @@ import { useAgri } from "./copy";
 import { HeroMotion, type HeroVideo } from "./hero-motion";
 
 /** Cuando exista un video real del riego (WebM/MP4), indícalo aquí y reemplaza al shader: { webm: "/media/agricultura/hero-loop.webm", mp4: "/media/agricultura/hero-loop.mp4" } */
-const HERO_VIDEO: HeroVideo | undefined = { webm: "/media/agricultura/hero-loop.webm", mp4: "/media/agricultura/hero-loop.mp4" };
+const HERO_VIDEO: HeroVideo | undefined = {
+  webm: "/media/agricultura/hero-loop.webm",
+  mp4: "/media/agricultura/hero-loop.mp4",
+  small: { webm: "/media/agricultura/hero-loop-sm.webm", mp4: "/media/agricultura/hero-loop-sm.mp4" },
+};
 import { BLUR } from "@/shared/media/blur";
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
