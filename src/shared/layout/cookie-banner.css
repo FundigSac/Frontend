@@ -1,0 +1,197 @@
+/* Aviso de cookies: tarjeta de vidrio anclada abajo, con la misma paleta de la portada. */
+.ck {
+  --ck-ink: #13233d;
+  --ck-text: #4a5568;
+  --ck-orange: #f26a1b;
+  --ck-orange-dark: #d9560c;
+  position: fixed;
+  right: 0;
+  bottom: 18px;
+  left: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px 22px;
+  width: min(100% - 32px, 880px);
+  margin-inline: auto;
+  padding: 18px 22px;
+  border: 1px solid rgb(255 255 255 / 65%);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgb(255 255 255 / 84%), rgb(244 248 253 / 66%));
+  -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  backdrop-filter: blur(22px) saturate(1.8);
+  box-shadow: 0 30px 60px -26px rgb(11 34 68 / 55%), inset 0 1px 0 rgb(255 255 255 / 75%);
+  color: var(--ck-ink);
+  font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  animation: ck-in 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.ck * {
+  box-sizing: border-box;
+}
+
+.ck__icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ffb27a, var(--ck-orange));
+  box-shadow: 0 10px 20px -10px rgb(242 106 27 / 80%);
+  color: #fff;
+}
+
+.ck__body h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  color: var(--ck-ink);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ck__body h2 svg {
+  color: var(--ck-orange-dark);
+}
+
+.ck__body p {
+  margin: 0;
+  color: var(--ck-text);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.ck__body a {
+  color: var(--ck-orange-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ck__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ck__btn {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.ck__btn--solid {
+  background: var(--ck-orange);
+  box-shadow: 0 10px 22px -12px rgb(242 106 27 / 80%);
+  color: #fff;
+}
+
+.ck__btn--solid:hover {
+  background: var(--ck-orange-dark);
+  transform: translateY(-1px);
+}
+
+.ck__btn--outline {
+  border-color: rgb(19 35 61 / 22%);
+  background: rgb(255 255 255 / 40%);
+  color: var(--ck-ink);
+}
+
+.ck__btn--outline:hover {
+  border-color: var(--ck-ink);
+  background: rgb(255 255 255 / 75%);
+}
+
+.ck__link {
+  padding: 0 4px;
+  color: var(--ck-text);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ck__link:hover {
+  color: var(--ck-orange-dark);
+}
+
+.ck a:focus-visible,
+.ck button:focus-visible {
+  outline: 2px solid var(--ck-orange);
+  outline-offset: 3px;
+}
+
+html[data-lp-theme="dark"] .ck {
+  --ck-ink: #eef3fa;
+  --ck-text: #b4c1d2;
+  --ck-orange-dark: #ff8a4d;
+  border-color: rgb(255 255 255 / 14%);
+  background: linear-gradient(160deg, rgb(20 34 58 / 78%), rgb(9 18 33 / 66%));
+  box-shadow: 0 30px 60px -24px rgb(0 0 0 / 80%), inset 0 1px 0 rgb(255 255 255 / 10%);
+}
+
+html[data-lp-theme="dark"] .ck__btn--outline {
+  border-color: rgb(255 255 255 / 28%);
+  background: rgb(255 255 255 / 8%);
+}
+
+html[data-lp-theme="dark"] .ck__btn--outline:hover {
+  border-color: #fff;
+  background: rgb(255 255 255 / 16%);
+}
+
+@keyframes ck-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .ck {
+    bottom: 12px;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 14px;
+    width: min(100% - 24px, 560px);
+    padding: 16px;
+  }
+
+  .ck__actions {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+  }
+
+  .ck__btn--solid,
+  .ck__btn--outline {
+    flex: 1 1 140px;
+  }
+
+  .ck__link {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ck {
+    animation: none;
+  }
+
+  .ck__btn {
+    transition: none;
+  }
+}

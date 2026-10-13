@@ -311,6 +311,7 @@ export function LandingFooter() {
         <div className="lp-footer__legal">
           <Link href="/terminos-b2b">{f.terms}</Link>
           <Link href="/privacidad">{f.privacy}</Link>
+          <Link href="/cookies">{f.cookies}</Link>
           <Link href="/reclamaciones">{f.complaints}</Link>
           <a href="/sitemap.xml">{f.sitemap}</a>
         </div>

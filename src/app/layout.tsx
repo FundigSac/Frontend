@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { SITE_INDEXABLE } from "@/shared/config/env";
 import { SITE } from "@/shared/config/site";
 import { SiteFooter } from "@/shared/layout/site-footer";
+import { CookieBanner } from "@/shared/layout/cookie-banner";
 import { SiteHeader } from "@/shared/layout/site-header";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { ToastProvider } from "@/shared/ui/toast";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <SiteHeader />
           <div id="contenido">{children}</div>
           <SiteFooter />
+          <CookieBanner />
         </ToastProvider>
       </body>
     </html>
