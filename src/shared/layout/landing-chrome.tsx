@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, ChevronDown, Menu, Search, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
@@ -44,7 +45,11 @@ export function LandingHeader() {
   const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const navRef = useRef<HTMLElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const mobileId = useId();
 
   useEffect(() => {
@@ -52,6 +57,7 @@ export function LandingHeader() {
       if (e.key !== "Escape") return;
       setOpen(null);
       setMobileOpen(false);
+      setSearchOpen(false);
     };
     const onClick = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(null);
@@ -111,9 +117,49 @@ export function LandingHeader() {
         </nav>
 
         <div className="lp-header__actions">
-          <Link className="lp-header__search" href="/buscar" aria-label="Buscar">
-            <Search aria-hidden="true" size={20} strokeWidth={2} />
-          </Link>
+          <form
+            className={`lp-search${searchOpen ? " is-open" : ""}`}
+            role="search"
+            onMouseEnter={() => setSearchOpen(true)}
+            onMouseLeave={() => {
+              if (!query && document.activeElement !== searchRef.current) setSearchOpen(false);
+            }}
+            onBlur={(e) => {
+              if (!query && !e.currentTarget.contains(e.relatedTarget as Node)) setSearchOpen(false);
+            }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = query.trim();
+              setSearchOpen(false);
+              setQuery("");
+              router.push(q ? `/buscar?q=${encodeURIComponent(q)}` : "/buscar");
+            }}
+          >
+            <input
+              ref={searchRef}
+              type="search"
+              name="q"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar productos, fichas…"
+              aria-label="Buscar en el sitio"
+              autoComplete="off"
+              tabIndex={searchOpen ? 0 : -1}
+            />
+            <button
+              type={searchOpen && query.trim() ? "submit" : "button"}
+              className="lp-header__search"
+              aria-label="Buscar"
+              onClick={() => {
+                if (!searchOpen || !query.trim()) {
+                  setSearchOpen(true);
+                  searchRef.current?.focus();
+                }
+              }}
+            >
+              <Search aria-hidden="true" size={20} strokeWidth={2} />
+            </button>
+          </form>
           <Link href="/cotizar" className="lp-btn lp-btn--solid lp-header__quote">
             Solicitar cotización <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
