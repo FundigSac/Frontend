@@ -405,7 +405,7 @@
 .lp-hero {
   position: relative;
   display: flex;
-  min-height: clamp(640px, 100svh, 880px);
+  min-height: clamp(560px, calc(100svh - 190px), 740px);
   flex-direction: column;
   overflow: hidden;
   isolation: isolate;
@@ -495,7 +495,7 @@
 .lp-hero__stage {
   position: relative;
   align-self: end;
-  height: clamp(420px, calc(min(100svh, 880px) - 84px - 140px), 680px);
+  height: clamp(380px, calc(min(100svh, 930px) - 190px - 84px - 100px), 580px);
   max-width: 100%;
   aspect-ratio: 578 / 1030;
   margin: 0 auto 92px;
