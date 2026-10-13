@@ -5,18 +5,32 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAgri } from "./copy";
 
 /**
- * Movimiento del hero de agricultura.
+ * Movimiento del hero de agricultura (la foto no cambia de encuadre).
  *
- * - Si se entrega `video` (WebM/MP4), se reproduce ese video en bucle (silenciado, inline, con la foto como poster).
- * - Si no, la MISMA foto se anima con un shader WebGL propio (sin librerías): el agua de los aspersores
- *   ondula y una neblina fina se desplaza, pero solo dentro de la zona de rocío; el encuadre no se mueve.
- *   El bucle es continuo: dos capas de ruido se funden en contrafase, así no hay salto al reiniciar.
- * - Con `prefers-reduced-motion`, sin WebGL o antes de cargar, se queda la foto estática (LCP intacto).
+ * - Si se entrega `video` (WebM/MP4), se reproduce ese video en bucle (silenciado, inline, foto como poster).
+ * - Si no, la MISMA foto se anima con dos capas ligeras, sin librerías:
+ *   1) un shader WebGL hace que el rocío de la foto viaje a lo largo de cada chorro (flujo radial desde cada
+ *      aspersor) y que la neblina se desplace, solo dentro de la zona de rocío;
+ *   2) un lienzo 2D dibuja gotas con trayectoria parabólica y estela saliendo de cada aspersor, con un leve
+ *      barrido de la boquilla.
+ *   Todo es periódico (16 s): no hay salto al reiniciar. Con `prefers-reduced-motion`, sin WebGL o antes de
+ *   cargar, se queda la foto estática (el LCP no se ve afectado).
  */
 export type HeroVideo = { webm?: string; mp4?: string };
 
-const LOOP_SECONDS = 16;
+const LOOP = 16;
 const FPS = 30;
+const IMG_W = 1672;
+const IMG_H = 941;
+
+/** Boquillas visibles en la foto (px sobre la imagen 1672×941), con su fuerza relativa. */
+const HEADS = [
+  { x: 1300, y: 548, power: 1, angle: -0.62 },
+  { x: 960, y: 566, power: 0.9, angle: -0.58 },
+  { x: 647, y: 566, power: 0.8, angle: -0.55 },
+  { x: 468, y: 566, power: 0.65, angle: -0.5 },
+] as const;
+const DROPS_PER_HEAD = 38;
 
 const VERT = `attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}`;
 
@@ -42,14 +56,29 @@ float fbm(vec2 p){
   for(int i=0;i<3;i++){v+=a*vnoise(p);p=p*2.03+vec2(7.1,3.7);a*=.5;}
   return v;
 }
-// Zona de rocío: píxeles casi blancos y poco saturados, entre el horizonte y los surcos.
 float spray(vec2 uv){
   vec3 c=texture2D(uTex,uv).rgb;
   float mn=min(c.r,min(c.g,c.b)),mx=max(c.r,max(c.g,c.b));
   float sat=(mx-mn)/(mx+.001);
-  float white=smoothstep(.42,.78,mn)*(1.-smoothstep(.18,.45,sat));
-  float band=smoothstep(.30,.40,uv.y)*(1.-smoothstep(.70,.78,uv.y));
+  float white=smoothstep(.40,.76,mn)*(1.-smoothstep(.20,.48,sat));
+  float band=smoothstep(.28,.38,uv.y)*(1.-smoothstep(.70,.78,uv.y));
   return white*band;
+}
+// Dirección del chorro: radial desde la boquilla más cercana.
+void head(vec2 h,vec2 uv,float asp,inout vec2 best,inout float bd){
+  vec2 d=(uv-h)*vec2(asp,1.);
+  float dist=length(d);
+  if(dist<bd&&dist>.0001){bd=dist;best=d/dist;}
+}
+// xy = dirección del chorro, z = distancia a la boquilla más cercana (para apagar el efecto junto a ella).
+vec3 flowDir(vec2 uv){
+  float asp=uImg.x/uImg.y;
+  vec2 best=vec2(.85,-.5);float bd=9.;
+  head(vec2(.777,.583),uv,asp,best,bd);
+  head(vec2(.574,.601),uv,asp,best,bd);
+  head(vec2(.387,.601),uv,asp,best,bd);
+  head(vec2(.280,.601),uv,asp,best,bd);
+  return vec3(best,bd);
 }
 void main(){
   vec2 p=vec2(gl_FragCoord.x,uRes.y-gl_FragCoord.y);
@@ -57,28 +86,44 @@ void main(){
   vec2 size=uImg*sc;
   vec2 off=(uRes-size)*uPos;
   vec2 uv=(p-off)/size;
+  float asp=uImg.x/uImg.y;
 
   float m=(spray(uv)*2.+spray(uv+vec2(.012,0.))+spray(uv-vec2(.012,0.))+spray(uv+vec2(0.,.012))+spray(uv-vec2(0.,.012)))/6.;
-  m=smoothstep(.0,.45,m*1.8);
+  m=smoothstep(.0,.40,m*2.);
 
-  vec3 col=texture2D(uTex,uv).rgb;
+  vec3 base=texture2D(uTex,uv).rgb;
+  vec3 col=base;
   if(m>.01){
+    // 1) El rocío de la foto viaja a lo largo del chorro (4 ciclos por bucle → periódico).
+    vec3 fd=flowDir(uv);
+    vec2 fl=fd.xy/vec2(asp,1.);
+    m*=smoothstep(.03,.16,fd.z);
+    vec3 adv=vec3(0.);
+    for(int k=0;k<2;k++){
+      float ph=fract(uPhase*4.+float(k)*.5);
+      float w=1.-abs(2.*ph-1.);
+      adv+=w*texture2D(uTex,uv-fl*ph*.11).rgb;
+    }
+    col=mix(base,adv,m*.85);
+
+    // 2) Ondulación y neblina que se desplazan.
     vec2 q=uv*vec2(6.,3.4);
     vec2 dir=vec2(1.,.5);
     vec2 disp=vec2(0.);
     float mist=0.;
     for(int k=0;k<2;k++){
-      float ph=fract(uPhase+float(k)*.5);
+      float ph=fract(uPhase*2.+float(k)*.5);
       float w=1.-abs(2.*ph-1.);
       float s=float(k);
       disp+=w*vec2(fbm(q*1.3-dir*ph*1.6+s*17.3)-.5,fbm(q*2.2+vec2(-.7,.4)*ph*2.1+s*9.1)-.5);
       mist+=w*fbm(q*.8-dir*ph*1.2+s*31.7);
     }
-    disp*=.0034*m;
-    col=texture2D(uTex,uv+disp).rgb;
-    float haze=smoothstep(.40,.80,mist)*m;
-    col=mix(col,vec3(.93,.96,1.),haze*.26);
-    col+=(mist-.5)*.06*m;
+    disp*=.0075*m;
+    vec3 rip=texture2D(uTex,uv+disp+fl*.004).rgb;
+    col=mix(col,rip,.5);
+    float haze=smoothstep(.36,.78,mist)*m;
+    col=mix(col,vec3(.94,.97,1.),haze*.34);
+    col+=(mist-.5)*.08*m;
   }
   gl_FragColor=vec4(col,1.);
 }`;
@@ -96,10 +141,58 @@ function parsePos(value: string): [number, number] {
   return [Number.isFinite(x) ? x : 0.5, Number.isFinite(y) ? y : 0.5];
 }
 
+const rnd = (i: number, s: number) => {
+  const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+/** Gotas con trayectoria parabólica; cada gota se repite un número entero de veces por bucle. */
+function drawDrops(ctx: CanvasRenderingContext2D, w: number, h: number, pos: [number, number], clock: number, small: boolean) {
+  ctx.clearRect(0, 0, w, h);
+  const scale = Math.max(w / IMG_W, h / IMG_H);
+  const ox = (w - IMG_W * scale) * pos[0];
+  const oy = (h - IMG_H * scale) * pos[1];
+  const loopT = clock / LOOP;
+  const perHead = small ? Math.round(DROPS_PER_HEAD * 0.6) : DROPS_PER_HEAD;
+  ctx.globalCompositeOperation = "lighter";
+  ctx.lineCap = "round";
+
+  for (let hIdx = 0; hIdx < HEADS.length; hIdx++) {
+    const hd = HEADS[hIdx];
+    const sway = Math.sin(2 * Math.PI * (loopT * 2 + hIdx * 0.21)) * 0.07;
+    for (let i = 0; i < perHead; i++) {
+      const id = hIdx * 100 + i;
+      const cycles = 10 + Math.floor(rnd(id, 1) * 5); // 10–14 ciclos por bucle → vida 1.1–1.6 s
+      const life = LOOP / cycles;
+      const t = (loopT * cycles + rnd(id, 2)) % 1;
+      const tau = t * life;
+      const ang = hd.angle + sway + (rnd(id, 3) - 0.5) * 0.5;
+      const speed = (380 + rnd(id, 4) * 360) * hd.power;
+      const g = 520;
+      const x = hd.x + Math.cos(ang) * speed * tau;
+      const y = hd.y + Math.sin(ang) * speed * tau + 0.5 * g * tau * tau;
+      const tail = 0.045;
+      const x0 = hd.x + Math.cos(ang) * speed * (tau - tail);
+      const y0 = hd.y + Math.sin(ang) * speed * (tau - tail) + 0.5 * g * (tau - tail) * (tau - tail);
+      const fade = Math.sin(Math.PI * Math.min(1, t * 1.15)) * (1 - t * 0.35);
+      const a = Math.max(0, fade) * (0.35 + rnd(id, 5) * 0.45);
+      if (a < 0.02) continue;
+      ctx.strokeStyle = `rgba(236,246,255,${a.toFixed(3)})`;
+      ctx.lineWidth = (0.9 + rnd(id, 6) * 1.7) * Math.max(0.7, scale * 1.15);
+      ctx.beginPath();
+      ctx.moveTo(ox + x0 * scale, oy + y0 * scale);
+      ctx.lineTo(ox + x * scale, oy + y * scale);
+      ctx.stroke();
+    }
+  }
+  ctx.globalCompositeOperation = "source-over";
+}
+
 export function HeroMotion({ video }: { video?: HeroVideo }) {
   const t = useAgri();
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const drops = useRef<HTMLCanvasElement>(null);
   const videoEl = useRef<HTMLVideoElement>(null);
   const playingRef = useRef(true);
   const [playing, setPlaying] = useState(true);
@@ -114,7 +207,6 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Video real (si existe): bucle, silenciado y respetando la pausa del usuario.
   useEffect(() => {
     const v = videoEl.current;
     if (!v || reduced) return;
@@ -122,13 +214,13 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     else v.pause();
   }, [playing, reduced, video]);
 
-  // Shader WebGL sobre la misma foto.
   useEffect(() => {
     if (video || reduced) return;
     const cv = canvas.current;
+    const dv = drops.current;
     const box = wrap.current;
     const photo = box?.parentElement?.querySelector<HTMLImageElement>(".ag-hero__photo");
-    if (!cv || !box || !photo) return;
+    if (!cv || !dv || !box || !photo) return;
 
     let raf = 0;
     let stopped = false;
@@ -138,7 +230,8 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     const start = () => {
       if (stopped) return;
       const gl = cv.getContext("webgl", { alpha: false, antialias: false, powerPreference: "low-power" });
-      if (!gl) return;
+      const ctx = dv.getContext("2d");
+      if (!gl || !ctx) return;
       const vs = compile(gl, gl.VERTEX_SHADER, VERT);
       const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
       const prog = gl.createProgram();
@@ -159,10 +252,11 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
       const u = (n: string) => gl.getUniformLocation(prog, n);
       const uRes = u("uRes"), uImg = u("uImg"), uPos = u("uPos"), uPhase = u("uPhase");
       const tex = gl.createTexture();
+      let small = false;
 
       const resize = () => {
         const w = box.clientWidth, h = box.clientHeight;
-        const small = w < 800;
+        small = w < 800;
         const dpr = Math.min(window.devicePixelRatio || 1, small ? 1 : 1.25);
         let cw = w * dpr, ch = h * dpr;
         const cap = small ? 0.9e6 : 1.8e6;
@@ -172,6 +266,10 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
         if (cv.width !== cw || cv.height !== ch) {
           cv.width = cw;
           cv.height = ch;
+        }
+        if (dv.width !== cw || dv.height !== ch) {
+          dv.width = cw;
+          dv.height = ch;
         }
         gl.viewport(0, 0, cw, ch);
       };
@@ -194,11 +292,12 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
         if (acc < 1 / FPS) return;
         clock += acc;
         acc = 0;
-        const [px, py] = parsePos(getComputedStyle(photo).objectPosition);
+        const pos = parsePos(getComputedStyle(photo).objectPosition);
         gl.uniform2f(uRes, cv.width, cv.height);
-        gl.uniform2f(uPos, px, py);
-        gl.uniform1f(uPhase, (clock / LOOP_SECONDS) % 1);
+        gl.uniform2f(uPos, pos[0], pos[1]);
+        gl.uniform1f(uPhase, (clock / LOOP) % 1);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        drawDrops(ctx, dv.width, dv.height, pos, clock, small);
       };
 
       const img = new Image();
@@ -216,7 +315,6 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
         gl.uniform1i(u("uTex"), 0);
         last = performance.now();
         raf = requestAnimationFrame(frame);
-        // primer fotograma pintado antes de mostrar el lienzo → fundido sin parpadeo
         requestAnimationFrame(() => requestAnimationFrame(() => !stopped && setLive(true)));
       };
       const w = window.innerWidth < 800 ? 1080 : 1920;
@@ -234,7 +332,6 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
       };
     };
 
-    // No compite con el LCP: arranca cuando la página terminó de cargar y el navegador está libre.
     const kick = () => {
       const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
       if (idle) idle(start, { timeout: 2500 });
@@ -267,7 +364,10 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
             {video.mp4 && <source src={video.mp4} type="video/mp4" />}
           </video>
         ) : (
-          <canvas ref={canvas} />
+          <>
+            <canvas ref={canvas} />
+            <canvas ref={drops} className="ag-hero__drops" />
+          </>
         )}
       </div>
       <button type="button" className="ag-motion-toggle" onClick={toggle} aria-pressed={!playing} aria-label={playing ? t.motion.pause : t.motion.play} title={playing ? t.motion.pause : t.motion.play}>

@@ -749,3 +749,10 @@ html[data-lp-theme="dark"] .ag-hero__motion {
     display: none;
   }
 }
+
+/* Gotas: lienzo 2D encima del shader, mismo encuadre. */
+.ag-hero__motion .ag-hero__drops {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+}
