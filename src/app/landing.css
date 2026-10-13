@@ -1662,3 +1662,109 @@ html[data-lp-theme="dark"] .lp-hero__valve {
     transition: none;
   }
 }
+
+/* ===== Respaldo técnico y comercial ===== */
+.lp-backing {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: stretch;
+  background: #fff;
+}
+
+.lp-backing__media {
+  position: relative;
+  min-height: 420px;
+}
+
+.lp-backing__media img {
+  object-fit: cover;
+  object-position: 30% 40%;
+}
+
+.lp-backing__copy {
+  padding: clamp(40px, 5vw, 72px) var(--lp-gutter) clamp(40px, 5vw, 72px) clamp(32px, 5vw, 80px);
+}
+
+.lp-backing__copy .lp-hero__rule {
+  margin: 16px 0 22px;
+}
+
+.lp-backing h2 {
+  max-width: 560px;
+  color: var(--lp-navy);
+  font-size: clamp(28px, 2.9vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.lp-backing__lead {
+  max-width: 560px;
+  margin-top: 18px !important;
+  color: var(--lp-text);
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.55;
+}
+
+.lp-backing__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 32px);
+  margin-top: 36px !important;
+}
+
+.lp-backing__list a {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--lp-line);
+  color: var(--lp-text);
+  font-size: 14px;
+  line-height: 1.45;
+  text-decoration: none;
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+
+.lp-backing__list a:hover {
+  border-top-color: var(--lp-orange);
+  transform: translateY(-3px);
+}
+
+.lp-backing__n {
+  color: var(--lp-orange);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.lp-backing__list strong {
+  color: var(--lp-navy);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+@media (max-width: 860px) {
+  .lp-backing {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-backing__media {
+    min-height: 0;
+    aspect-ratio: 3 / 2;
+  }
+
+  .lp-backing__copy {
+    padding: 36px var(--lp-gutter) 44px;
+  }
+
+  .lp-backing__list {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+.lp-nav__link {
+  white-space: nowrap;
+}

@@ -14,6 +14,12 @@ const components = [
   { title: "Tuberías", href: "/productos/tuberias", image: "/media/home-v3/card-tuberias.webp", alt: "Tuberías azules apiladas", width: 1000, height: 617 },
 ];
 
+const backing = [
+  { n: "01", title: "Catálogo por sectores", text: "Encuentra rápidamente las soluciones para tu industria.", href: "/industrias" },
+  { n: "02", title: "Documentación técnica", text: "Fichas, planos y especificaciones actualizadas.", href: "/recursos" },
+  { n: "03", title: "Atención comercial directa", text: "Asesoría especializada para tu proyecto.", href: "/contacto" },
+];
+
 export default function HomePage() {
   return (
     <main className="lp">
@@ -24,6 +30,29 @@ export default function HomePage() {
       </section>
 
       <SectorsBand />
+
+      <section className="lp-backing" aria-labelledby="lp-backing-title">
+        <div className="lp-backing__media">
+          <Image src="/media/home-v3/respaldo-ingeniero.webp" alt="Ingeniero de FUNDIGSAC revisando planos técnicos en una planta industrial" fill sizes="(max-width: 860px) 100vw, 46vw" />
+        </div>
+        <div className="lp-backing__copy">
+          <p className="lp-eyebrow">Nuestro respaldo</p>
+          <span className="lp-hero__rule" aria-hidden="true" />
+          <h2 id="lp-backing-title">Respaldo técnico y comercial para tus proyectos.</h2>
+          <p className="lp-backing__lead">Más que productos, brindamos información, asesoría y acompañamiento en cada etapa de tu proyecto.</p>
+          <ul className="lp-backing__list">
+            {backing.map((b) => (
+              <li key={b.n}>
+                <Link href={b.href}>
+                  <span className="lp-backing__n">{b.n}</span>
+                  <strong>{b.title}</strong>
+                  <span>{b.text}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       <section className="lp-docs" aria-labelledby="lp-docs-title">
         <div className="lp-shell lp-docs__inner">
