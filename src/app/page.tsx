@@ -1,6 +1,6 @@
 import { ComponentsCarousel } from "./_landing/components-carousel";
 import { HeroCarousel } from "./_landing/hero-carousel";
-import { BackingSection, DocsSection } from "./_landing/home-sections";
+import { BackingSection, DocsSection, LocationSection } from "./_landing/home-sections";
 import { SectorsBand } from "./_landing/sectors-band";
 import "./landing.css";
 
@@ -16,6 +16,7 @@ export default function HomePage() {
       <SectorsBand />
       <BackingSection />
       <DocsSection />
+      <LocationSection />
     </main>
   );
 }

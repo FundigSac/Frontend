@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CalendarRange } from "lucide-react";
+import { ArrowRight, CalendarRange, Mail, MapPin } from "lucide-react";
+import { SITE } from "@/shared/config/site";
 import { useHome } from "@/shared/layout/home-copy";
 
 const BACKING_LINKS = ["/industrias", "/recursos", "/contacto"] as const;
@@ -57,6 +58,52 @@ export function DocsSection() {
         <Link href="/recursos" className="lp-docs__media" aria-label={t.mediaLabel}>
           <Image src="/media/home-v3/ficha-plano.webp" alt={t.alt} width={1448} height={1086} sizes="(max-width: 860px) 100vw, 55vw" />
         </Link>
+      </div>
+    </section>
+  );
+}
+
+const MAP_QUERY = "Jirón Acomayo 199, Cercado de Lima, Lima, Perú";
+const MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&z=16&hl=es&output=embed`;
+const MAP_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAP_QUERY)}`;
+
+export function LocationSection() {
+  const t = useHome().location;
+  return (
+    <section className="lp-location" aria-labelledby="lp-location-title">
+      <div className="lp-shell lp-location__inner">
+        <div className="lp-location__copy">
+          <p className="lp-eyebrow">{t.eyebrow}</p>
+          <h2 id="lp-location-title">{t.title}</h2>
+          <p className="lp-location__lead">{t.lead}</p>
+          <ul className="lp-location__list">
+            <li>
+              <span className="lp-location__icon"><MapPin aria-hidden="true" size={18} strokeWidth={1.8} /></span>
+              <span>
+                <strong>{t.addressLabel}</strong>
+                {t.address[0]}<br />{t.address[1]}
+              </span>
+            </li>
+            <li>
+              <span className="lp-location__icon"><Mail aria-hidden="true" size={18} strokeWidth={1.8} /></span>
+              <span>
+                <strong>{t.emailLabel}</strong>
+                <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+              </span>
+            </li>
+          </ul>
+          <a className="lp-btn lp-btn--outline" href={MAP_DIRECTIONS} target="_blank" rel="noopener noreferrer">
+            {t.directions} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
+          </a>
+        </div>
+
+        <div className="lp-location__map">
+          <iframe src={MAP_EMBED} title={t.mapTitle} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+          <div className="lp-location__pin">
+            <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
+            <span>{t.pin[0]}<br />{t.pin[1]}</span>
+          </div>
+        </div>
       </div>
     </section>
   );
