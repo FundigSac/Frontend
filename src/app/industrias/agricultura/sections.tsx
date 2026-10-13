@@ -5,6 +5,10 @@ import Link from "next/link";
 import { ArrowRight, Droplet, FileText, Settings, ShieldCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useAgri } from "./copy";
+import { HeroMotion, type HeroVideo } from "./hero-motion";
+
+/** Cuando exista un video real del riego (WebM/MP4), indícalo aquí y reemplaza al shader: { webm: "/media/agricultura/hero-loop.webm", mp4: "/media/agricultura/hero-loop.mp4" } */
+const HERO_VIDEO: HeroVideo | undefined = undefined;
 import { BLUR } from "@/shared/media/blur";
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
@@ -51,6 +55,7 @@ export function AgricultureSections() {
       {/* Hero */}
       <section className="ag-hero" aria-labelledby="ag-title">
         <Image className="ag-hero__photo" src="/media/agricultura/hero.webp" alt={t.hero.alt} fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/hero.webp"]} sizes="100vw" />
+        <HeroMotion video={HERO_VIDEO} />
         <div className="ag-hero__veil" aria-hidden="true" />
         <div className="lp-shell ag-hero__inner">
           <nav className="ag-crumbs" aria-label="breadcrumb">

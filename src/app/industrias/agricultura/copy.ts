@@ -46,6 +46,7 @@ export const AGRI = {
       text: "Nuestro equipo te asesora para encontrar la mejor solución.",
       quote: "Solicitar cotización",
     },
+    motion: { pause: "Pausar animación del fondo", play: "Reproducir animación del fondo" },
     crumbs: { home: "Inicio", sectors: "Sectores", current: "Agricultura" },
   },
   en: {
@@ -91,6 +92,7 @@ export const AGRI = {
       text: "Our team advises you to find the best solution.",
       quote: "Request a quote",
     },
+    motion: { pause: "Pause background animation", play: "Play background animation" },
     crumbs: { home: "Home", sectors: "Industries", current: "Agriculture" },
   },
 };
