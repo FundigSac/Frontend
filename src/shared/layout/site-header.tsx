@@ -7,6 +7,7 @@ import { useEffect, useId, useState } from "react";
 import { ArrowRight, ChevronDown, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { AccountLink } from "@/modules/auth/account-link";
 import { MAIN_NAV, isActivePath } from "@/shared/config/site";
+import { LandingHeader } from "./landing-chrome";
 
 const NAV_ACTIVE = "transition-colors flex items-center h-full pt-0.5 text-primary font-semibold border-b-2 border-primary";
 const NAV_IDLE = "font-button-text text-button-text text-on-surface-variant hover:text-primary transition-colors flex items-center h-full pt-0.5";
@@ -63,7 +64,8 @@ export function SiteHeader() {
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  if (pathname === "/" || pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas" || pathname === "/productos/valvulas/valvula-compuerta") return <HomeHeader current={pathname} menuOpen={menuOpen} menuId={menuId} onToggle={() => setMenuOpenedOn(menuOpen ? null : pathname)} onNavigate={() => setMenuOpenedOn(null)} />;
+  if (pathname === "/") return <LandingHeader />;
+  if (pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas" || pathname === "/productos/valvulas/valvula-compuerta") return <HomeHeader current={pathname} menuOpen={menuOpen} menuId={menuId} onToggle={() => setMenuOpenedOn(menuOpen ? null : pathname)} onNavigate={() => setMenuOpenedOn(null)} />;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest border-b border-border">

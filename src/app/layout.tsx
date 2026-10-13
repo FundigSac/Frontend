@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { SITE_INDEXABLE } from "@/shared/config/env";
 import { SITE } from "@/shared/config/site";
 import { SiteFooter } from "@/shared/layout/site-footer";
@@ -10,6 +10,7 @@ import "./globals.css";
 
 // Pesos 400/600/700, igual que el export de Stitch (font-medium cae a 400 como en el diseño original).
 const inter = Inter({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-inter", display: "swap", adjustFontFallback: false });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -28,7 +29,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-PE" className={inter.variable} suppressHydrationWarning>
+    <html lang="es-PE" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
       <body className="bg-background font-body-default text-body-default text-on-surface antialiased">
         <ToastProvider>
           <JsonLd
