@@ -2233,3 +2233,22 @@ html[data-lp-theme="dark"] .lp-nav__menu a:hover,
 html[data-lp-theme="dark"] .lp-lang__menu button:hover {
   background: rgb(255 255 255 / 10%);
 }
+
+/* Vidrio más transparente: menos relleno, más desenfoque y saturación. */
+.lp-nav__menu,
+.lp-lang__menu {
+  background: linear-gradient(160deg, rgb(255 255 255 / 52%), rgb(244 248 253 / 34%));
+  -webkit-backdrop-filter: blur(24px) saturate(1.9);
+  backdrop-filter: blur(24px) saturate(1.9);
+  border-color: rgb(255 255 255 / 65%);
+}
+
+.lp-nav__menu a,
+.lp-lang__menu button {
+  font-weight: 500;
+}
+
+html[data-lp-theme="dark"] .lp-nav__menu,
+html[data-lp-theme="dark"] .lp-lang__menu {
+  background: linear-gradient(160deg, rgb(20 34 58 / 50%), rgb(9 18 33 / 34%));
+}
