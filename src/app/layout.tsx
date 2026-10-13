@@ -18,7 +18,6 @@ export const metadata: Metadata = {
   description: "Válvulas, tuberías, marcos y tapas de hierro dúctil para redes de agua potable, saneamiento y minería en el Perú.",
   robots: { index: SITE_INDEXABLE, follow: SITE_INDEXABLE },
   openGraph: { type: "website", locale: "es_PE", siteName: SITE.name, url: SITE.url },
-  icons: { icon: "/brand/fundigsac.svg" },
 };
 
 export const viewport: Viewport = {
