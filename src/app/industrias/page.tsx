@@ -58,7 +58,7 @@ export default function Industries() {
               <SectionHead title={s.name} lead={s.text} />
               <h3 className="x-minor">Familias que suelen consultarse</h3>
               <ul className="x-check">{s.needs.map(n => <li key={n}>{NEED_LINKS[n] ? <Link className="x-need" href={NEED_LINKS[n]}>{n}<ArrowRight size={14} aria-hidden="true" /></Link> : n}</li>)}</ul>
-              <p className="x-after"><Link className="text-link" href={s.href}>Ver productos para {s.name.toLowerCase()} <ArrowRight size={16} /></Link></p>
+              <p className="x-after">{s.id === "agricultura" && <><Link className="text-link" href="/industrias/agricultura">Ver la página de agricultura <ArrowRight size={16} /></Link>{" · "}</>}<Link className="text-link" href={s.href}>Ver productos para {s.name.toLowerCase()} <ArrowRight size={16} /></Link></p>
             </Reveal>
             <div className="x-split__main">
               {s.id === "agricultura" && <Reveal>

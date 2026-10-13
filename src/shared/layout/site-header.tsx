@@ -64,7 +64,7 @@ export function SiteHeader() {
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  if (pathname === "/") return <LandingHeader />;
+  if (pathname === "/" || pathname === "/industrias/agricultura") return <LandingHeader />;
   if (pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas" || pathname === "/productos/valvulas/valvula-compuerta") return <HomeHeader current={pathname} menuOpen={menuOpen} menuId={menuId} onToggle={() => setMenuOpenedOn(menuOpen ? null : pathname)} onNavigate={() => setMenuOpenedOn(null)} />;
 
   return (
