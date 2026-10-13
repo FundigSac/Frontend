@@ -3,48 +3,38 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ChevronDown, Menu, Search, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
+import { COPY, useLang, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
 
 type NavLink = { href: string; label: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
 
-const PRODUCTS: readonly NavLink[] = [
-  { href: "/productos", label: "Catálogo general" },
-  { href: "/productos/valvulas", label: "Válvulas" },
-  { href: "/productos/marcos-y-tapas", label: "Marcos y tapas" },
-  { href: "/productos?q=grifo", label: "Grifos" },
-  { href: "/productos?q=acople", label: "Acoples" },
-  { href: "/productos/tuberias", label: "Tuberías" },
-];
+const PRODUCT_HREFS = ["/productos", "/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=grifo", "/productos?q=acople", "/productos/tuberias"];
+const SECTOR_HREFS = ["/industrias#saneamiento", "/industrias#agricultura", "/industrias#mineria"];
 
-const SECTORS: readonly NavLink[] = [
-  { href: "/industrias#saneamiento", label: "Saneamiento" },
-  { href: "/industrias#agricultura", label: "Agricultura" },
-  { href: "/industrias#mineria", label: "Minería" },
-];
-
-const RESOURCES: readonly NavLink[] = [
-  { href: "/recursos", label: "Fichas técnicas" },
-  { href: "/recursos", label: "Documentación" },
-  { href: "/recursos", label: "Catálogo digital" },
-  { href: "/recursos", label: "Campañas y sobrestock" },
-];
-
-const NAV: readonly NavEntry[] = [
-  { href: "/productos", label: "Productos", children: PRODUCTS },
-  { href: "/industrias", label: "Sectores", children: SECTORS },
-  { href: "/nosotros", label: "Nosotros" },
-  { href: "/recursos", label: "Recursos", children: RESOURCES },
-  { href: "/contacto", label: "Contacto" },
-];
+function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
+  const link = (hrefs: readonly string[], labels: readonly string[]): NavLink[] => labels.map((label, i) => ({ href: hrefs[i], label }));
+  return [
+    { href: "/productos", label: t.nav.products, children: link(PRODUCT_HREFS, t.products) },
+    { href: "/industrias", label: t.nav.sectors, children: link(SECTOR_HREFS, t.sectors) },
+    { href: "/nosotros", label: t.nav.about },
+    { href: "/recursos", label: t.nav.resources, children: link(["/recursos", "/recursos", "/recursos", "/recursos"], t.resources) },
+    { href: "/contacto", label: t.nav.contact },
+  ];
+}
 
 export function LandingHeader() {
   const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [lang, setLang] = useLang();
+  const [theme, setTheme] = useTheme();
+  const [langOpen, setLangOpen] = useState(false);
+  const t = COPY[lang];
+  const NAV = buildNav(t);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navRef = useRef<HTMLElement>(null);
@@ -58,9 +48,11 @@ export function LandingHeader() {
       setOpen(null);
       setMobileOpen(false);
       setSearchOpen(false);
+      setLangOpen(false);
     };
     const onClick = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(null);
+      if (!(e.target as Element).closest?.(".lp-lang")) setLangOpen(false);
     };
     // Sobre el hero la cabecera es translúcida; al desplazarse pasa a blanco sólido.
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -141,15 +133,15 @@ export function LandingHeader() {
               name="q"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar productos, fichas…"
-              aria-label="Buscar en el sitio"
+              placeholder={t.searchPlaceholder}
+              aria-label={t.searchLabel}
               autoComplete="off"
               tabIndex={searchOpen ? 0 : -1}
             />
             <button
               type={searchOpen && query.trim() ? "submit" : "button"}
               className="lp-header__search"
-              aria-label="Buscar"
+              aria-label={t.search}
               onClick={() => {
                 if (!searchOpen || !query.trim()) {
                   setSearchOpen(true);
@@ -160,13 +152,45 @@ export function LandingHeader() {
               <Search aria-hidden="true" size={20} strokeWidth={2} />
             </button>
           </form>
+          <div className="lp-lang">
+            <button
+              type="button"
+              className="lp-icon-btn lp-lang__btn"
+              aria-label={t.language}
+              aria-haspopup="listbox"
+              aria-expanded={langOpen}
+              onClick={() => setLangOpen(!langOpen)}
+            >
+              <Globe aria-hidden="true" size={19} strokeWidth={1.8} />
+              <span aria-hidden="true">{lang.toUpperCase()}</span>
+            </button>
+            <ul className={`lp-lang__menu${langOpen ? " is-open" : ""}`} role="listbox" aria-label={t.language}>
+              {([["es", "Español"], ["en", "English"]] as const).map(([code, name]) => (
+                <li key={code} role="option" aria-selected={lang === code}>
+                  <button type="button" onClick={() => { setLang(code); setLangOpen(false); }}>
+                    <span>{name}</span>
+                    {lang === code && <Check aria-hidden="true" size={15} strokeWidth={2.4} />}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            type="button"
+            className="lp-icon-btn lp-theme"
+            aria-label={theme === "dark" ? t.theme.toLight : t.theme.toDark}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <Sun className="lp-theme__sun" aria-hidden="true" size={19} strokeWidth={1.8} />
+            <Moon className="lp-theme__moon" aria-hidden="true" size={19} strokeWidth={1.8} />
+          </button>
           <Link href="/cotizar" className="lp-btn lp-btn--solid lp-header__quote">
-            Solicitar cotización <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
+            {t.quote} <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
           <button
             type="button"
             className="lp-header__toggle"
-            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-label={mobileOpen ? t.menuClose : t.menuOpen}
             aria-expanded={mobileOpen}
             aria-controls={mobileId}
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -193,7 +217,7 @@ export function LandingHeader() {
             </div>
           ))}
           <Link href="/cotizar" className="lp-btn lp-btn--solid" onClick={() => setMobileOpen(false)}>
-            Solicitar cotización <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
+            {t.quote} <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
         </nav>
       </div>
@@ -202,6 +226,7 @@ export function LandingHeader() {
 }
 
 export function LandingFooter() {
+  const [PRODUCTS, SECTORS, RESOURCES] = buildNav(COPY.es).filter((n) => n.children).map((n) => n.children!);
   return (
     <footer className="lp-footer">
       <div className="lp-shell lp-footer__main">

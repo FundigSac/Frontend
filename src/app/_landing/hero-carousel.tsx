@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
+import { COPY, useLang } from "@/shared/layout/landing-prefs";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 // Ambas variantes comparten lienzo (578×1030): el cuerpo de la válvula queda alineado al píxel
@@ -22,6 +23,8 @@ function subscribeMotion(onChange: () => void) {
 }
 
 export function HeroCarousel() {
+  const [lang] = useLang();
+  const h = COPY[lang].hero;
   const [index, setIndex] = useState(0);
   // null = comportamiento por defecto (autoplay salvo movimiento reducido); boolean = elección del usuario.
   const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
@@ -68,16 +71,16 @@ export function HeroCarousel() {
 
       <div className="lp-shell lp-hero__grid">
         <div className="lp-hero__copy">
-          <p className="lp-eyebrow">Infraestructura<br />que conecta ciudades</p>
+          <p className="lp-eyebrow">{h.eyebrow[0]}<br />{h.eyebrow[1]}</p>
           <span className="lp-hero__rule" aria-hidden="true" />
-          <h1 id="lp-hero-title">Ingeniería confiable para redes que no se detienen.</h1>
-          <p className="lp-hero__lead">Componentes en hierro dúctil para agua, riego e industria.</p>
+          <h1 id="lp-hero-title">{h.title}</h1>
+          <p className="lp-hero__lead">{h.lead}</p>
           <div className="lp-hero__actions">
             <Link href="/productos" className="lp-btn lp-btn--solid">
-              Explorar productos <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
+              {h.explore} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>
             <Link href="/soluciones" className="lp-link">
-              <span>Ver soluciones</span> <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
+              <span>{h.solutions}</span> <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
             </Link>
           </div>
         </div>
