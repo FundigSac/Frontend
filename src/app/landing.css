@@ -2152,3 +2152,21 @@ html[data-lp-theme="dark"] .lp-float__top:hover {
     transition: none;
   }
 }
+
+/* La flecha de subir va en la esquina izquierda, separada del WhatsApp. */
+.lp-float__top {
+  position: fixed;
+  bottom: 22px;
+  left: 18px;
+  width: 48px;
+  height: 48px;
+}
+
+@media (max-width: 860px) {
+  .lp-float__top {
+    bottom: 16px;
+    left: 14px;
+    width: 46px;
+    height: 46px;
+  }
+}
