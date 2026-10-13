@@ -194,7 +194,7 @@ export function LandingFooter() {
           <Link href="/terminos-b2b">Términos de uso</Link>
           <Link href="/privacidad">Política de privacidad</Link>
           <Link href="/reclamaciones">Libro de reclamaciones</Link>
-          <Link href="/sitemap.xml">Mapa del sitio</Link>
+          <a href="/sitemap.xml">Mapa del sitio</a>
         </div>
       </div>
     </footer>
