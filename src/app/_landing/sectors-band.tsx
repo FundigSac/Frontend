@@ -8,7 +8,7 @@ import { useRef, useState } from "react";
 import { BLUR } from "@/shared/media/blur";
 
 const sectors = [
-  { n: "01", href: "/industrias#saneamiento", img: "/media/home-v3/sector-saneamiento.webp" },
+  { n: "01", href: "/industrias/saneamiento", img: "/media/home-v3/sector-saneamiento.webp" },
   { n: "02", href: "/industrias/agricultura", img: "/media/home-v3/sector-agricultura.webp" },
   { n: "03", href: "/industrias#mineria", img: "/media/home-v3/sector-mineria.webp" },
 ];

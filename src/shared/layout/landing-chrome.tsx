@@ -15,7 +15,7 @@ type NavLink = { href: string; label: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
 
 const PRODUCT_HREFS = ["/productos", "/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=grifo", "/productos?q=acople", "/productos/tuberias"];
-const SECTOR_HREFS = ["/industrias#saneamiento", "/industrias/agricultura", "/industrias#mineria"];
+const SECTOR_HREFS = ["/industrias/saneamiento", "/industrias/agricultura", "/industrias#mineria"];
 
 function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
   const link = (hrefs: readonly string[], labels: readonly string[]): NavLink[] => labels.map((label, i) => ({ href: hrefs[i], label }));

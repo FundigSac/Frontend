@@ -3,7 +3,7 @@ import { CATEGORIES, PRODUCTS, RESOURCES, SOLUTIONS } from "@/modules/catalog/re
 import { SITE } from "@/shared/config/site";
 import { SITE_INDEXABLE } from "@/shared/config/env";
 
-const STATIC = ["/", "/industrias", "/industrias/agricultura", "/productos", "/soluciones", "/nosotros", "/recursos", "/contacto", "/cotizar", "/reclamaciones", "/privacidad", "/cookies"];
+const STATIC = ["/", "/industrias", "/industrias/agricultura", "/industrias/saneamiento", "/productos", "/soluciones", "/nosotros", "/recursos", "/contacto", "/cotizar", "/reclamaciones", "/privacidad", "/cookies"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!SITE_INDEXABLE) return [];
