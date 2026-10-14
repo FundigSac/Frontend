@@ -40,7 +40,7 @@ export function castBonnet() {
   ].map(([y, x, z]) => new T.Vector3(x, y, z)), false, 'centripetal');
   const rings = curve.getPoints(40), sectors = 96, positions = [], uv = [], indices = [];
   for (let j = 0; j < rings.length; j++) {
-    const p = rings[j], exponent = 2.7 - .4 * j / (rings.length - 1);
+    const p = rings[j], exponent = 3.8 - 1.1 * j / (rings.length - 1);
     for (let i = 0; i <= sectors; i++) {
       const a = i / sectors * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
       positions.push(p.x * Math.sign(c) * Math.pow(Math.abs(c), 2 / exponent), p.y,
@@ -103,22 +103,26 @@ export function wheelRim() {
   shape.lineTo(1.270, .070); shape.quadraticCurveTo(1.270, .115, 1.225, .115);
   shape.lineTo(1.055, .115); shape.quadraticCurveTo(1.010, .115, 1.010, .070);
   shape.lineTo(1.010, -.065); shape.quadraticCurveTo(1.010, -.105, 1.045, -.105);
-  const g = new T.LatheGeometry(shape.getPoints(7), 144), p = g.attributes.position;
+  const g = new T.LatheGeometry(shape.getPoints(7), 144).scale(1, 1.25, 1), p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const y = p.getY(i), a = Math.atan2(p.getZ(i), p.getX(i));
-    if (y < 0) p.setY(i, y + .023 * (1 + Math.cos(a * 18)) * T.MathUtils.smoothstep(-y, 0, .09));
+    if (y < 0) p.setY(i, y + .028 * (1 + Math.cos(a * 18)) * T.MathUtils.smoothstep(-y, 0, .11));
   }
   g.computeVertexNormals(); return g;
 }
 
 export function wheelGrip() {
-  // Shallow moulded pads visible around the photographed wheel, in the same blue paint.
-  const s = new T.Shape(), outer = 1.225, inner = 1.055, halfAngle = .18;
+  // Moulded raised frame around each of the eight rim panels photographed from above (v-03).
+  const s = new T.Shape(), outer = 1.235, inner = 1.045, halfAngle = .355, line = .028;
   s.absarc(0, 0, outer, -halfAngle, halfAngle, false);
   s.lineTo(inner * Math.cos(halfAngle), inner * Math.sin(halfAngle));
   s.absarc(0, 0, inner, halfAngle, -halfAngle, true); s.closePath();
-  return new T.ExtrudeGeometry(s, { depth: .003, bevelEnabled: true,
-    bevelSize: .004, bevelThickness: .004, bevelSegments: 2, curveSegments: 8 });
+  const hole = new T.Path(), ha = halfAngle - line / 1.14;
+  hole.absarc(0, 0, outer - line, -ha, ha, false);
+  hole.lineTo((inner + line) * Math.cos(ha), (inner + line) * Math.sin(ha));
+  hole.absarc(0, 0, inner + line, ha, -ha, true); hole.closePath(); s.holes.push(hole);
+  return new T.ExtrudeGeometry(s, { depth: .008, bevelEnabled: true,
+    bevelSize: .005, bevelThickness: .005, bevelSegments: 2, curveSegments: 10 });
 }
 
 // ExtrudeGeometry's default bevel normals split each small triangle. Analytic normals

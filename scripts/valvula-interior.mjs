@@ -3,9 +3,9 @@ import * as T from 'three';
 // Visual proportions relative to the existing bore, not millimetres or certified CAD.
 // PHOTO-2026-10-10-11-28-26.jpg: raised middle, sloping cheeks, curved lower lip,
 // partially raised wedge. The unseen rear face is a symmetric reconstruction.
-// The latest requested pose lowers the heel by 11% of the bore diameter.
+// Latest requested pose: wedge raised ~10% of the bore diameter from the previous lowered pose.
 // Side shoulders adapt to the cylindrical bore instead of crossing its walls.
-export function sampleWedge(s, t, { radius = .5, lift = .045, thickness = .13,
+export function sampleWedge(s, t, { radius = .5, lift = .15, thickness = .13,
   relief = .092 } = {}) {
   let width = radius * (.98 - .13 * T.MathUtils.smoothstep(t, .65, 1));
   const bottom = lift - radius;
@@ -13,7 +13,7 @@ export function sampleWedge(s, t, { radius = .5, lift = .045, thickness = .13,
   // This is a rounded V profile, not an elliptical disc perimeter.
   const heelRadius = radius * .32;
   const lowerAt = z => bottom + .74 * (Math.sqrt(z * z + heelRadius * heelRadius) - heelRadius);
-  const edgeY = z => T.MathUtils.lerp(lowerAt(z), radius * 1.82 + lift - .38, t);
+  const edgeY = z => T.MathUtils.lerp(lowerAt(z), Math.min(radius * 1.82 + lift - .38, .70), t);
   const fits = z => edgeY(z) >= .05 || Math.hypot(edgeY(z), z) < radius * .994;
   if (!fits(width)) {
     let lo = 0, hi = width;
@@ -26,7 +26,7 @@ export function sampleWedge(s, t, { radius = .5, lift = .045, thickness = .13,
   const z = s * width;
   const lower = lowerAt(z);
   // Lift moves both top and heel vertically; fitting only trims lateral shoulders.
-  const upper = radius * 1.82 + lift - .38 + .055 * (1 - s * s);
+  const upper = Math.min(radius * 1.82 + lift - .38, .70) + .055 * (1 - s * s);
   const y = T.MathUtils.lerp(lower, upper, t);
   const distanceToLip = y - lower;
   const edge = Math.min(1 - Math.abs(s), t * 5, (1 - t) * 5);
@@ -91,7 +91,7 @@ export function createResilientWedge({ segments = 64, ...proportions } = {}) {
 }
 
 export const chamberPlanes = [
-  [1, 0, 0, .21], [-1, 0, 0, .21], [0, 1, 0, 1.025],
+  [1, 0, 0, .21], [-1, 0, 0, .21], [0, 1, 0, .75],
   [0, -1, 0, -.05], [0, 0, 1, .515], [0, 0, -1, .515],
 ];
 
@@ -155,8 +155,8 @@ export function subtractInterior(g, planes) {
 }
 
 export function createChamber() {
-  const g = new T.BoxGeometry(.42, .975, 1.03);
-  g.translate(0, .5375, 0);
+  const g = new T.BoxGeometry(.42, .70, 1.03);
+  g.translate(0, .40, 0);
   // Inner surfaces face the cavity; remove their intersection with the circular bore.
   const index = g.index;
   for (let i = 0; i < index.count; i += 3) {

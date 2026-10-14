@@ -14,13 +14,11 @@ import { roundedProfile, bevelHex, washer, castBonnet, castSpoke, wheelRim, whee
 const doc = new Document(), buffer = doc.createBuffer(), scene = doc.createScene('DN100');
 const root = doc.createNode('valvula').setTranslation([0,-1.02,0]); scene.addChild(root);
 const cc=doc.createExtension(KHRMaterialsClearcoat);
-const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0.002,0.055,0.48,1]).setMetallicFactor(0).setRoughnessFactor(.27).setExtension('KHR_materials_clearcoat',cc.createClearcoat().setClearcoatFactor(.82).setClearcoatRoughnessFactor(.17));
-const steel=doc.createMaterial('acero').setBaseColorFactor([.68,.71,.75,1]).setMetallicFactor(1).setRoughnessFactor(.25);
-const brass=doc.createMaterial('laton').setBaseColorFactor([.65,.43,.10,1]).setMetallicFactor(1).setRoughnessFactor(.28);
-const dark=doc.createMaterial('junta-EPDM').setBaseColorFactor([.008,.009,.012,1]).setRoughnessFactor(.8);
+const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0.004,0.08,0.6,1]).setMetallicFactor(0).setRoughnessFactor(.24).setExtension('KHR_materials_clearcoat',cc.createClearcoat().setClearcoatFactor(.9).setClearcoatRoughnessFactor(.09));
+const steel=doc.createMaterial('acero-zincado').setBaseColorFactor([.80,.81,.83,1]).setMetallicFactor(.85).setRoughnessFactor(.4);
+const brass=doc.createMaterial('laton').setBaseColorFactor([.70,.45,.13,1]).setMetallicFactor(1).setRoughnessFactor(.3);
+const dark=doc.createMaterial('junta-EPDM').setBaseColorFactor([.02,.022,.03,1]).setRoughnessFactor(.85);
 const wedgeMaterial=doc.createMaterial('cuna-EPDM-negro').setBaseColorFactor([.045,.046,.047,1]).setMetallicFactor(0).setRoughnessFactor(.72);
-const label=doc.createMaterial('etiqueta').setBaseColorFactor([1,1,1,1]).setRoughnessFactor(.6);
-label.setBaseColorTexture(doc.createTexture('H-ITALY').setImage(fs.readFileSync('public/models/etiqueta-real.png')).setMimeType('image/png'));
 // Painted cast iron: several spatial scales, not uniform sand or fabricated wear.
 // The larger waviness lives in the normal map; fillets and part shapes remain real mesh.
 const n=256, paintSize=512, paintHeights=new Float32Array(paintSize*paintSize);
@@ -30,7 +28,7 @@ for(let i=0;i<28;i++){
  const frequency=i<8?3+(seed%13):18+(seed%75);
  const angle=(seed/4294967296)*Math.PI*2;
  waves.push([Math.round(Math.cos(angle)*frequency),Math.round(Math.sin(angle)*frequency),
-   (seed%997)/997*Math.PI*2,i<8?.50:.05]);
+   (seed%997)/997*Math.PI*2,i<8?.16:.06]);
 }
 for(let y=0;y<paintSize;y++)for(let x=0;x<paintSize;x++){
  let height=0;for(const [fx,fy,phase,amplitude]of waves)height+=amplitude*Math.sin((fx*x+fy*y)*Math.PI*2/paintSize+phase);
@@ -43,8 +41,8 @@ for(let y=0;y<paintSize;y++)for(let x=0;x<paintSize;x++){
  paintNormal[i]=Math.round((v.x*.5+.5)*255);paintNormal[i+1]=Math.round((v.y*.5+.5)*255);paintNormal[i+2]=Math.round((v.z*.5+.5)*255);
  paintOrm[i]=255;paintOrm[i+1]=Math.round(255*(.9+.085*Math.tanh(paintH(x,y)*.7)));paintOrm[i+2]=0;
 }
-blue.setNormalTexture(doc.createTexture('fundicion-fina').setImage(await sharp(paintNormal,{raw:{width:paintSize,height:paintSize,channels:3}}).png({compressionLevel:9,adaptiveFiltering:true}).toBuffer()).setMimeType('image/png')).setNormalScale(.48);
-blue.getExtension('KHR_materials_clearcoat').setClearcoatNormalTexture(blue.getNormalTexture()).setClearcoatNormalScale(.38);
+blue.setNormalTexture(doc.createTexture('fundicion-fina').setImage(await sharp(paintNormal,{raw:{width:paintSize,height:paintSize,channels:3}}).png({compressionLevel:9,adaptiveFiltering:true}).toBuffer()).setMimeType('image/png')).setNormalScale(.28);
+blue.getExtension('KHR_materials_clearcoat').setClearcoatNormalTexture(blue.getNormalTexture()).setClearcoatNormalScale(.22);
 blue.setMetallicRoughnessTexture(doc.createTexture('epoxi-rugosidad').setImage(await sharp(paintOrm,{raw:{width:paintSize,height:paintSize,channels:3}}).png({compressionLevel:9,adaptiveFiltering:true}).toBuffer()).setMimeType('image/png'));
 // Procedural moulded-rubber microtexture, never a photograph or a flat fake wedge.
 // The same map works on both faces; full-scale form is always mesh geometry.
@@ -88,7 +86,7 @@ const lathe=(points)=>new T.LatheGeometry(points.map(([r,y])=>new T.Vector2(r,y)
 function roundedShape(w,d,r){const s=new T.Shape(),x=-w/2,y=-d/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+d-r);s.quadraticCurveTo(x+w,y+d,x+w-r,y+d);s.lineTo(x+r,y+d);s.quadraticCurveTo(x,y+d,x,y+d-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;}
 function plate(name,w,d,depth,y,mat=blue){const g=new T.ExtrudeGeometry(roundedShape(w,d,.13),{depth,bevelEnabled:true,bevelSegments:5,steps:1,bevelSize:.014,bevelThickness:.014,curveSegments:12});mesh(name,g,mat,[0,y,0],[-Math.PI/2,0,0]);}
 // Hollow pipe and blended sockets.
-const socketProfile=roundedProfile([[.64,-.88],[.68,-.78],[.66,-.65],[.62,-.53],[.62,.53],[.66,.65],[.68,.78],[.64,.88]],5);
+const socketProfile=roundedProfile([[.62,-.88],[.64,-.80],[.60,-.68],[.57,-.55],[.57,.55],[.60,.68],[.64,.80],[.62,.88]],5);
 const waterway=new T.LatheGeometry([new T.Vector2(.50,-.88),...socketProfile,new T.Vector2(.50,.88),new T.Vector2(.50,-.88)],128);
 waterway.rotateZ(Math.PI/2);
 mesh('cuerpo-paso-real',subtractInterior(waterway,chamberPlanes));
@@ -96,42 +94,42 @@ for(const side of [-1,1]){
  const holes=[];
  const shape=new T.Shape();shape.absarc(0,0,1.05,0,Math.PI*2,false);
  const bore=new T.Path();bore.absarc(0,0,.50,0,Math.PI*2,true);shape.holes.push(bore);
- // Three openings on either side, two at the top and two at the bottom.
- for(const angle of [0,35,70,110,145,180,215,250,290,325]){
+ // EN 1092-2 DN100 PN16: eight holes, evenly spaced and straddling the centre lines (as in the photos).
+ for(const angle of [22.5,67.5,112.5,157.5,202.5,247.5,292.5,337.5]){
   const a=angle*Math.PI/180, hole=new T.Path();
   hole.absarc(.86*Math.cos(a),.86*Math.sin(a),.094,0,Math.PI*2,true);shape.holes.push(hole);holes.push([.86*Math.cos(a),.86*Math.sin(a)]);
  }
- const g=new T.ExtrudeGeometry(shape,{depth:.145,bevelEnabled:true,bevelSize:.018,bevelThickness:.018,bevelSegments:5,curveSegments:32,steps:1});
- mesh('brida-taladrada-'+side,smoothFlange(g,holes),blue,[side*.88,0,0],[0,side*Math.PI/2,0]);
- mesh('asiento-brida-'+side,lathe([[.5,0],[.7,0],[.72,.018],[.72,.035],[.5,.035],[.5,0]]),blue,[side*1.045,0,0],[0,0,-side*Math.PI/2]);
+ const g=new T.ExtrudeGeometry(shape,{depth:.19,bevelEnabled:true,bevelSize:.018,bevelThickness:.018,bevelSegments:5,curveSegments:32,steps:1});
+ mesh('brida-taladrada-'+side,smoothFlange(g,holes,.19),blue,[side*.88,0,0],[0,side*Math.PI/2,0]);
+ mesh('asiento-brida-'+side,lathe([[.5,0],[.7,0],[.72,.018],[.72,.035],[.5,.035],[.5,0]]),blue,[side*1.088,0,0],[0,0,-side*Math.PI/2]);
 }
-// Shipping label only on one flange, opposite flange remains an open bore.
-const labelGeometry=new T.CircleGeometry(.495,96); const labelUV=labelGeometry.attributes.uv; for(let i=0;i<labelUV.count;i++)labelUV.setY(i,1-labelUV.getY(i));
-mesh('etiqueta',labelGeometry,label,[1.085,0,0],[0,Math.PI/2,0]);
+// Both flanges are open bores: no shipping label, the wedge is visible from either side.
 // Rounded vertical casting, narrowing at the bottom, seamlessly sunk into pipe.
-const body=round(.78,1.66,1.40,.16);const bp=body.attributes.position;
-for(let i=0;i<bp.count;i++){const y=bp.getY(i);bp.setX(i,bp.getX(i)*( .64+.36*T.MathUtils.smoothstep(y,-.83,.50)));}body.computeVertexNormals();
-body.translate(0,.28,0);
+const body=round(.74,1.22,1.40,.15);const bp=body.attributes.position;
+for(let i=0;i<bp.count;i++){const y=bp.getY(i);bp.setX(i,bp.getX(i)*( .64+.36*T.MathUtils.smoothstep(y,-.61,.30)));}body.computeVertexNormals();
+body.translate(0,.06,0);
 mesh('carcasa-fundida',subtractInterior(body,borePlanes()));
 mesh('camara-interior-cuna',createChamber());
 mesh('cuna-elastomero-EPDM',createResilientWedge(),wedgeMaterial);
-plate('junta-bonete',1.38,1.14,.028,1.16,dark);plate('brida-inferior-bonete',1.38,1.14,.085,1.07);plate('tapa-bonete',1.38,1.14,.085,1.205);
+const UP=-.45;
+plate('junta-bonete',1.212,1.132,.01,1.168+UP,dark);plate('brida-inferior-bonete',1.22,1.14,.085,1.07+UP);plate('tapa-bonete',1.22,1.14,.085,1.205+UP);
 // Continuous lofted cast bonnet, with broad shoulder transitions from the real photos.
-mesh('bonete-redondeado',castBonnet(),blue,[0,1.57,0]);
+mesh('bonete-redondeado',castBonnet().scale(1.04,1.32,1.12),blue,[0,1.255+UP+.32*1.32,0]);
 // Six bonnet bolts: three along each side, including the middle pair.
 for(const x of [-1,1])for(const z of [-1,0,1]){
- const p=[x*.53,1.29,z*.43];mesh('alojamiento-perno',new T.LatheGeometry([new T.Vector2(0,0),...roundedProfile([[.13,0],[.147,.01],[.15,.035],[.15,.17],[.14,.195],[.125,.20]],3),new T.Vector2(0,.20)],80),blue,p);
- mesh('arandela',washer(.113,.060,.019),steel,[p[0],1.493,p[2]]);mesh('perno-hexagonal',bevelHex(.092,.075,.008),steel,[p[0],1.533,p[2]]);
+ const p=[x*.47,1.29+UP,z*.43];mesh('alojamiento-perno',new T.LatheGeometry([new T.Vector2(0,0),...roundedProfile([[.13,0],[.147,.01],[.15,.035],[.15,.17],[.14,.195],[.125,.20]],3),new T.Vector2(0,.20)],80),blue,p);
+ mesh('arandela',washer(.113,.060,.019),steel,[p[0],1.493+UP,p[2]]);mesh('perno-hexagonal',bevelHex(.092,.075,.008),steel,[p[0],1.533+UP,p[2]]);
 }
-// Ribs align with the middle bolt of each three-bolt row (x sides, z = 0).
-for(const x of [-1,1])mesh('nervio-bonete',round(.18,.32,.07,.025),blue,[x*.43,1.42,0],[0,0,-x*.32]);
-mesh('cuello',new T.LatheGeometry([new T.Vector2(0,0),...roundedProfile([[.275,0],[.268,.018],[.25,.048],[.25,.22],[.24,.248],[.225,.26]],3),new T.Vector2(0,.26)],96),blue,[0,1.86,0]);
-for(let i=0;i<6;i++){const a=i*Math.PI/3;mesh('nervio-cuello',round(.055,.23,.065,.018),blue,[.24*Math.cos(a),1.98,.24*Math.sin(a)]);}
-mesh('tuerca-laton',bevelHex(.19,.105,.014),brass,[0,2.155,0]);mesh('vastago-pulido',lathe([[0,-.175],[.098,-.175],[.105,-.168],[.105,.168],[.098,.175],[0,.175]]),steel,[0,2.36,0]);
+// The photographed hood has no separate side ribs: its flats carry the shape.
+const neckTop=1.255+UP+.64*1.32+.24;
+mesh('cuello-prensaestopa',round(.50,.30,.44,.10),blue,[0,neckTop-.15,0]);
+for(const x of [-1,1])mesh('oreja-cuello',round(.09,.22,.16,.04),blue,[x*.26,neckTop-.17,0]);
+mesh('tuerca-laton',bevelHex(.19,.105,.014),brass,[0,neckTop+.05,0]);
 // Three curved, rounded cast spokes and continuous filleted grip rim.
-const wy=2.64;
+const wy=neckTop+.42;
+mesh('vastago-pulido',lathe([[0,-.175],[.098,-.175],[.105,-.168],[.105,.168],[.098,.175],[0,.175]]),steel,[0,wy-.30,0]);
 mesh('volante-aro-ondulado',wheelRim(),blue,[0,wy,0]);
-for(let i=0;i<6;i++)mesh('volante-apoyo-moldeado',wheelGrip(),blue,[0,wy+.119,0],[-Math.PI/2,i*Math.PI/3,0]);
+for(let i=0;i<8;i++)mesh('volante-marco-panel',wheelGrip(),blue,[0,wy+.143,0],[-Math.PI/2,i*Math.PI/4,0]);
 mesh('cubo-volante',lathe([[0,-.09],[.20,-.09],[.23,-.065],[.23,.06],[.21,.09],[0,.09]]),blue,[0,wy-.025,0]);
 for(let i=0;i<3;i++)mesh('brazo-curvo-volante',castSpoke(),blue,[0,wy-.015,0],[0,i*Math.PI*2/3+.2,0]);
 mesh('arandela-volante',washer(.13,.055,.017),steel,[0,wy+.079,0]);
@@ -139,8 +137,8 @@ mesh('tuerca-volante',bevelHex(.098,.065,.008),steel,[0,wy+.12,0]);
 // Real painted raised foundry lettering, same material as casting.
 const font=new FontLoader().parse(JSON.parse(fs.readFileSync(new URL('./helvetiker_regular.typeface.json',import.meta.url))));
 function text(str,size,p,r=[0,0,0]){const g=new TextGeometry(str,{font,size,depth:.008,curveSegments:5,bevelEnabled:true,bevelSize:.002,bevelThickness:.002,bevelSegments:2});g.computeBoundingBox();g.translate(-(g.boundingBox.max.x+g.boundingBox.min.x)/2,0,0);mesh('relieve-'+str,g,blue,p,r);}
-for(const [s,y] of [['DN100',.65],['PN16',.47],['GGG50',.29]])text(s,.135,[0,y,.702]);
-text('H-ITALY',.115,[0,.56,-.702],[0,Math.PI,0]);
+for(const [s,y] of [['DN100',.24],['PN16',.06],['GGG50',-.12]])text(s,.135,[0,y,.702]);
+for(const [s,y] of [['DN100',.24],['PN16',.06],['GGG50',-.12]])text(s,.135,[0,y,-.702],[0,Math.PI,0]);
 function ringText(word,center){
  const glyphs=[...word].map(char=>{
   const geometry=new TextGeometry(char,{font,size:.105,depth:.012,curveSegments:4,bevelEnabled:true,bevelSize:.0025,bevelThickness:.0025,bevelSegments:2});
@@ -150,11 +148,11 @@ function ringText(word,center){
  });
  const radius=1.135,total=glyphs.reduce((sum,g)=>sum+g.width+.012,0);let offset=-total/2;
  for(const {geometry,width} of glyphs){const a=center+(offset+width/2)/radius;
-  mesh('volante-relieve-'+word,geometry,blue,[radius*Math.sin(a),wy+.117,radius*Math.cos(a)],[-Math.PI/2,a,0]);offset+=width+.012;
+  mesh('volante-relieve-'+word,geometry,blue,[radius*Math.sin(a),wy+.146,radius*Math.cos(a)],[-Math.PI/2,a,0]);offset+=width+.012;
  }
  const arrow=new T.Shape();arrow.moveTo(-.075,-.008);arrow.lineTo(.025,-.008);arrow.lineTo(.025,-.035);arrow.lineTo(.078,0);arrow.lineTo(.025,.035);arrow.lineTo(.025,.008);arrow.lineTo(-.075,.008);arrow.closePath();
  const a=center+total/(2*radius)+.13;
- mesh('flecha-'+word,new T.ExtrudeGeometry(arrow,{depth:.008,bevelEnabled:false}),blue,[radius*Math.sin(a),wy+.117,radius*Math.cos(a)],[-Math.PI/2,a,0]);
+ mesh('flecha-'+word,new T.ExtrudeGeometry(arrow,{depth:.008,bevelEnabled:false}),blue,[radius*Math.sin(a),wy+.146,radius*Math.cos(a)],[-Math.PI/2,a,0]);
 }
 ringText('OPEN',-Math.PI/2);ringText('CLOSE',Math.PI/2);
 fs.mkdirSync('public/models',{recursive:true});
@@ -170,7 +168,7 @@ if(process.argv.includes('--standalone')){
 }
 const manifest=JSON.parse(packed.subarray(20,20+jsonSize).toString());
 const binaryStart=20+jsonSize+8;
-const names={'H-ITALY':'etiqueta-real.png','fundicion-fina':'valvula-textura-1.png',
+const names={'fundicion-fina':'valvula-textura-1.png',
  'epoxi-rugosidad':'valvula-pintura-orm.png','EPDM-acabado-moldeado':'valvula-epdm-0.png',
  'EPDM-microrelieve':'valvula-epdm-1.png','EPDM-occlusion-rugosidad':'valvula-epdm-2.png'};
 const imageViews=new Set();
