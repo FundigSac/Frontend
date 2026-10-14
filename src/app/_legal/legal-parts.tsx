@@ -6,7 +6,8 @@ import "./legal.css";
 export const LEGAL_UPDATED = "14 de octubre de 2026";
 
 /** Hero de las páginas legales: foto a la derecha, velo claro a la izquierda y migas de pan. */
-export function LegalHero({ crumb, title, lead, image, alt, wide, modifier, children }: {
+export function LegalHero({ home = "Inicio", crumb, title, lead, image, alt, wide, modifier, children }: {
+  home?: string;
   crumb: string;
   title: React.ReactNode;
   lead: React.ReactNode;
@@ -21,8 +22,8 @@ export function LegalHero({ crumb, title, lead, image, alt, wide, modifier, chil
       <Image className="lg-hero__photo" src={image} alt={alt ?? ""} fill priority fetchPriority="high" quality={85} sizes="100vw" />
       <div className="lg-hero__veil" aria-hidden="true" />
       <div className="lp-shell">
-        <nav className="lg-crumbs lg-rise" aria-label="Ruta de navegación">
-          <Link href="/">Inicio</Link>
+        <nav className="lg-crumbs lg-rise" aria-label="Breadcrumb">
+          <Link href="/">{home}</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{crumb}</span>
         </nav>

@@ -1,0 +1,65 @@
+"use client";
+
+import Image from "next/image";
+import { ChevronDown } from "lucide-react";
+import { COMMON, COOKIES } from "./copy";
+import { CookiePrefs } from "./cookie-prefs";
+import { LegalHero } from "./legal-parts";
+import { useCopy } from "./use-copy";
+
+const INFO_MEDIA = [
+  { image: "/media/home-v3/hero-planta.webp", position: "30% 60%" },
+  { image: "/media/mineria/acople-bridado.webp", position: "50% 50%" },
+  { image: "/media/saneamiento/hero.webp", position: "40% 60%" },
+] as const;
+
+export function CookiesView({ hero }: { hero: string }) {
+  const t = useCopy(COOKIES);
+  const home = useCopy(COMMON.home);
+
+  return (
+    <main className="lp lg">
+      <LegalHero home={home} crumb={t.crumb} title={t.title} lead={t.lead} image={hero} alt="" wide />
+
+      <div className="lp-shell lg-body" style={{ paddingBottom: 0 }}>
+        <CookiePrefs />
+
+        <ul className="lg-info-grid">
+          {t.info.map((item, i) => (
+            <li className="lg-info" key={item.title}>
+              <div className="lg-info__media">
+                <Image src={INFO_MEDIA[i].image} alt={item.alt} fill quality={75} sizes="(max-width: 720px) 92vw, 33vw" style={{ objectPosition: INFO_MEDIA[i].position }} />
+              </div>
+              <span className="lg-bar" aria-hidden="true" />
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <section className="lg-faq-wrap lg-body" style={{ marginTop: "clamp(40px, 6vw, 80px)" }} aria-labelledby="lg-faq-title">
+        <div className="lp-shell">
+          <div className="lg-faq-head">
+            <div>
+              <p className="lg-eyebrow">{t.faq.eyebrow}</p>
+              <h2 id="lg-faq-title" className="lg-section-title" style={{ marginTop: 14 }}>{t.faq.title}</h2>
+            </div>
+            <p className="lg-text">{t.faq.lead}</p>
+          </div>
+          <div className="lg-faq">
+            {t.faq.items.map((item) => (
+              <details key={item.q}>
+                <summary>
+                  {item.q}
+                  <ChevronDown aria-hidden="true" size={20} strokeWidth={2} />
+                </summary>
+                <div>{item.a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
