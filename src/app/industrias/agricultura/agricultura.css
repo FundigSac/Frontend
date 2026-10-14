@@ -621,6 +621,14 @@ html[data-lp-theme="dark"] .ag-docs__book {
   mix-blend-mode: normal;
 }
 
+.ag-docs__copy .ag-eyebrow {
+  margin-bottom: 22px;
+}
+
+.ag-docs__media {
+  transform: translateY(-36px);
+}
+
 /* Recorte al contorno real del papel: sin el fondo gris de la foto, con sombra propia. */
 .ag-docs__plan,
 .ag-docs__book {
