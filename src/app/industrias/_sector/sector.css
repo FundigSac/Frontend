@@ -1,5 +1,22 @@
 /* Sector saneamiento: reutiliza el sistema visual de agricultura (ag-*) y añade sus piezas propias (sa-*). */
 
+/* Misma cabecera que inicio/agricultura: transparente sobre el hero y vidrio al desplazarse. */
+.lp-header.lp-header--sector:not(.is-solid) {
+  background: transparent;
+}
+
+@media (max-width: 900px) {
+  .sa--sa .sa-hero__photo {
+    object-position: 20% 50%;
+    animation: none;
+    will-change: auto;
+  }
+
+  .sa--sa .sa-hero__veil {
+    background: linear-gradient(180deg, rgb(248 251 254 / 94%) 0%, rgb(248 251 254 / 84%) 52%, rgb(248 251 254 / 40%) 100%);
+  }
+}
+
 /* ===== Hero: deriva lenta anclada en la válvula y un barrido de luz ===== */
 .sa-hero__photo {
   object-position: 70% 50%;

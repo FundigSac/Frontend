@@ -25,7 +25,10 @@ export type SectorCopy = {
 export type SectorMedia = {
   id: string;
   hero: string;
+  blur?: Record<string, string>;
+  reveal?: boolean;
   featured: string;
+  featuredSizes?: string;
   features: readonly LucideIcon[];
   apps: readonly { href: string; image: string }[];
   line: readonly { href: string; image: string; position?: string }[];
@@ -35,11 +38,11 @@ export type SectorMedia = {
 };
 
 /** Revela cada elemento `[data-reveal]` al entrar en pantalla (respeta movimiento reducido). */
-function useReveal() {
+function useReveal(enabled = true) {
   const root = useRef<HTMLElement>(null);
   useEffect(() => {
     const el = root.current;
-    if (!el) return;
+    if (!el || !enabled) return;
     const nodes = el.querySelectorAll<HTMLElement>("[data-reveal]");
     el.classList.add("ag-js");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
@@ -57,19 +60,20 @@ function useReveal() {
     );
     nodes.forEach((n) => io.observe(n));
     return () => io.disconnect();
-  }, []);
+  }, [enabled]);
   return root;
 }
 
 export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) {
-  const root = useReveal();
+  const root = useReveal(media.reveal !== false);
   const id = media.id;
+  const blur = media.blur ?? BLUR;
 
   return (
     <main className={`lp ag sa sa--${id}`} ref={root}>
       {/* Hero */}
       <section className="ag-hero sa-hero" aria-labelledby={`${id}-title`}>
-        <Image className="ag-hero__photo sa-hero__photo" src={media.hero} alt={t.hero.alt} fill priority fetchPriority="high" quality={75} placeholder="blur" blurDataURL={BLUR[media.hero]} sizes="100vw" />
+        <Image className="ag-hero__photo sa-hero__photo" src={media.hero} alt={t.hero.alt} fill priority fetchPriority="high" quality={75} placeholder="blur" blurDataURL={blur[media.hero]} sizes="100vw" />
         <span className="sa-hero__glint" aria-hidden="true" />
         <div className="ag-hero__veil sa-hero__veil" aria-hidden="true" />
         <div className="lp-shell ag-hero__inner">
@@ -95,7 +99,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
       {/* Producto destacado */}
       <section className="ag-featured sa-featured" aria-labelledby={`${id}-featured-title`}>
         <div className="ag-featured__media" data-reveal="left">
-          <Image src={media.featured} alt={t.featured.alt} fill quality={75} placeholder="blur" blurDataURL={BLUR[media.featured]} sizes="(max-width: 860px) 100vw, 50vw" />
+          <Image src={media.featured} alt={t.featured.alt} fill quality={75} placeholder="blur" blurDataURL={blur[media.featured]} sizes={media.featuredSizes ?? "(max-width: 860px) 100vw, 50vw"} />
         </div>
         <div className="ag-featured__copy" data-reveal="right">
           <p className="ag-eyebrow"><span aria-hidden="true" />{t.featured.eyebrow}</p>
@@ -140,7 +144,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
           {media.apps.map((item, i) => (
             <li key={item.image} data-reveal="up" style={{ ["--d" as string]: `${i * 120}ms` }}>
               <Link href={item.href} className="sa-app">
-                <Image src={item.image} alt={t.apps.items[i].alt} fill quality={72} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 860px) 100vw, 50vw" />
+                <Image src={item.image} alt={t.apps.items[i].alt} fill quality={72} placeholder="blur" blurDataURL={blur[item.image]} sizes="(max-width: 860px) 100vw, 50vw" />
                 <span className="sa-app__veil" aria-hidden="true" />
                 <span className="sa-app__body">
                   <span className="sa-app__n">{String(i + 1).padStart(2, "0")}<i aria-hidden="true" /></span>
@@ -159,19 +163,19 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
         <div className="lp-shell">
           <div className="ag-line__head" data-reveal="up">
             <div>
-              <p className="ag-eyebrow"><span aria-hidden="true" />{t.line.eyebrow}</p>
-              <h2 id={`${id}-line-title`}>{t.line.title}</h2>
+              <p className="ag-eyebrow" id={!t.line.title ? `${id}-line-title` : undefined}><span aria-hidden="true" />{t.line.eyebrow}</p>
+              {t.line.title && <h2 id={`${id}-line-title`}>{t.line.title}</h2>}
             </div>
-            <Link href="/productos" className="lp-link">
+            {t.line.all && <Link href="/productos" className="lp-link">
               <span>{t.line.all}</span> <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
-            </Link>
+            </Link>}
           </div>
           <ul className="ag-line__grid">
             {media.line.map((item, i) => (
               <li key={item.image} data-reveal="up" style={{ ["--d" as string]: `${i * 90}ms` }}>
                 <Link href={item.href} className="lp-card">
                   <span className="lp-card__media">
-                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} style={item.position ? { objectPosition: item.position } : undefined} sizes="(max-width: 560px) 46vw, (max-width: 1100px) 45vw, 300px" />
+                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={blur[item.image]} style={item.position ? { objectPosition: item.position } : undefined} sizes="(max-width: 560px) 46vw, (max-width: 1100px) 45vw, 300px" />
                   </span>
                   <span className="lp-card__label">
                     {t.line.items[i].title}
@@ -210,7 +214,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
 
       {/* Cierre */}
       <section className="ag-cta sa-cta" aria-labelledby={`${id}-cta-title`}>
-        <Image className="ag-cta__photo sa-cta__photo" src={media.cta} alt="" fill quality={60} placeholder="blur" blurDataURL={BLUR[media.cta]} sizes="100vw" />
+        <Image className="ag-cta__photo sa-cta__photo" src={media.cta} alt="" fill quality={60} placeholder="blur" blurDataURL={blur[media.cta]} sizes="100vw" />
         <div className="ag-cta__veil sa-cta__veil" aria-hidden="true" />
         <div className="lp-shell ag-cta__inner" data-reveal="up">
           <div>
