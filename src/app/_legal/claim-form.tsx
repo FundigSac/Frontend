@@ -84,7 +84,7 @@ function Fields() {
         <legend><span aria-hidden="true">2</span> Datos del consumidor</legend>
         <div className="lg-grid2">
           <Field id={`${uid}-n`} label="Nombres y apellidos / razón social" required>
-            <input id={`${uid}-n`} name="nombresYApellidosRazon" required autoComplete="name" placeholder="Ingresa tus nombres y apellidos" />
+            <input id={`${uid}-n`} name="nombresYApellidosRazon" required autoComplete="name" placeholder="Ej. María Pérez Rojas…" />
           </Field>
           <Field id={`${uid}-td`} label="Tipo de documento" required>
             <select id={`${uid}-td`} name="tipoDeDocumento" required defaultValue="">
@@ -96,16 +96,16 @@ function Fields() {
             </select>
           </Field>
           <Field id={`${uid}-nd`} label="Número de documento" required>
-            <input id={`${uid}-nd`} name="numeroDeDocumento" required inputMode="numeric" autoComplete="off" placeholder="Ingresa tu número de documento" />
+            <input id={`${uid}-nd`} name="numeroDeDocumento" required inputMode="numeric" autoComplete="off" spellCheck={false} placeholder="Ej. 12345678…" />
           </Field>
           <Field id={`${uid}-c`} label="Correo electrónico" required>
-            <input id={`${uid}-c`} name="correoElectronico" type="email" required autoComplete="email" placeholder="ejemplo@correo.com" />
+            <input id={`${uid}-c`} name="correoElectronico" type="email" required autoComplete="email" spellCheck={false} placeholder="ejemplo@correo.com…" />
           </Field>
           <Field id={`${uid}-t`} label="Teléfono de contacto" required>
-            <input id={`${uid}-t`} name="telefonoDeContacto" type="tel" required autoComplete="tel" placeholder="Ingresa tu número de teléfono" />
+            <input id={`${uid}-t`} name="telefonoDeContacto" type="tel" required autoComplete="tel" placeholder="Ej. 987 654 321…" />
           </Field>
           <Field id={`${uid}-d`} label="Dirección" required>
-            <input id={`${uid}-d`} name="domicilioLegalOHabitual" required autoComplete="street-address" placeholder="Ingresa tu dirección" />
+            <input id={`${uid}-d`} name="domicilioLegalOHabitual" required autoComplete="street-address" placeholder="Ej. Av. Los Pinos 123, Lima…" />
           </Field>
         </div>
       </fieldset>
@@ -123,19 +123,19 @@ function Fields() {
             <input id={`${uid}-f`} name="fechaDelSuceso" type="date" required max={maxDate} />
           </Field>
           <Field id={`${uid}-o`} label="N° de orden de compra, factura u otro (opcional)" full>
-            <input id={`${uid}-o`} name="nDeCotizacionO" autoComplete="off" placeholder="Ingresa el número de documento" />
+            <input id={`${uid}-o`} name="nDeCotizacionO" autoComplete="off" spellCheck={false} placeholder="Ej. F001-000123…" />
           </Field>
         </div>
       </fieldset>
 
       <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">4</span> Detalle del {noun}</legend>
-        <CountedArea id={`${uid}-h`} name="detalleDeLosHechos" label="Describe lo ocurrido" placeholder={`Explica de manera clara y detallada tu ${noun}...`} />
+        <CountedArea id={`${uid}-h`} name="detalleDeLosHechos" label="Describe lo ocurrido" placeholder={`Explica de manera clara y detallada tu ${noun}…`} />
       </fieldset>
 
       <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">5</span> Pedido del consumidor</legend>
-        <CountedArea id={`${uid}-s`} name="pedidoConcretoOPretension" label="¿Qué solución solicitas?" placeholder="Indica de manera clara tu pedido o expectativa..." />
+        <CountedArea id={`${uid}-s`} name="pedidoConcretoOPretension" label="¿Qué solución solicitas?" placeholder="Indica de manera clara tu pedido o expectativa…" />
       </fieldset>
 
       <fieldset className="lg-fieldset">

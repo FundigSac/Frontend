@@ -20,6 +20,14 @@
   letter-spacing: -0.01em;
 }
 
+.lg :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.lg :where(a, button, label, summary) {
+  touch-action: manipulation;
+}
+
 .lg-bar {
   display: block;
   width: 44px;
@@ -1526,6 +1534,24 @@
   border-color: var(--lp-orange);
   color: #fff;
   transform: translateX(3px);
+}
+
+/* ===== Movimiento reducido: sin transiciones ni zoom en hover ===== */
+@media (prefers-reduced-motion: reduce) {
+  .lg *,
+  .lg *::before,
+  .lg *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .lg-info:hover .lg-info__media img,
+  .lg-pillar:hover,
+  .lg-nf__card:hover,
+  .lg-nf__card:hover .lg-nf__go {
+    transform: none;
+  }
 }
 
 /* ===== Revelado suave (sólo con JS y sin reducir movimiento) ===== */
