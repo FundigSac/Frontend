@@ -3,14 +3,14 @@
 import { MapPinned, ShieldCheck, Settings } from "lucide-react";
 import { SectorPage, type SectorMedia } from "../_sector/sector-page";
 import { useMining } from "./copy";
-import { MINING_BLUR } from "./media-blur";
+import { MINING_IMAGES } from "./media-responsive";
 
 const MEDIA: SectorMedia = {
   id: "mi",
   hero: "/media/mineria/hero-planta.webp",
   featured: "/media/mineria/valvula-planta.webp",
   featuredSizes: "(max-width: 900px) 100vw, 53vw",
-  blur: MINING_BLUR,
+  preparedImages: MINING_IMAGES,
   reveal: false,
   features: [MapPinned, ShieldCheck, Settings],
   apps: [

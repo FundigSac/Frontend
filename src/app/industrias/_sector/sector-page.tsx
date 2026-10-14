@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { SectorImage, type PreparedImage } from "./sector-image";
 import Link from "next/link";
 import { ArrowRight, FileText, LayoutGrid, type LucideIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -26,6 +26,7 @@ export type SectorMedia = {
   id: string;
   hero: string;
   blur?: Record<string, string>;
+  preparedImages?: Record<string, PreparedImage>;
   reveal?: boolean;
   featured: string;
   featuredSizes?: string;
@@ -73,7 +74,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
     <main className={`lp ag sa sa--${id}`} ref={root}>
       {/* Hero */}
       <section className="ag-hero sa-hero" aria-labelledby={`${id}-title`}>
-        <Image className="ag-hero__photo sa-hero__photo" src={media.hero} alt={t.hero.alt} fill priority fetchPriority="high" quality={75} placeholder="blur" blurDataURL={blur[media.hero]} sizes="100vw" />
+        <SectorImage prepared={media.preparedImages?.[media.hero]} className="ag-hero__photo sa-hero__photo" src={media.hero} alt={t.hero.alt} fill loading="eager" fetchPriority="high" quality={75} placeholder="blur" blurDataURL={blur[media.hero]} sizes="100vw" />
         <span className="sa-hero__glint" aria-hidden="true" />
         <div className="ag-hero__veil sa-hero__veil" aria-hidden="true" />
         <div className="lp-shell ag-hero__inner">
@@ -99,7 +100,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
       {/* Producto destacado */}
       <section className="ag-featured sa-featured" aria-labelledby={`${id}-featured-title`}>
         <div className="ag-featured__media" data-reveal="left">
-          <Image src={media.featured} alt={t.featured.alt} fill quality={75} placeholder="blur" blurDataURL={blur[media.featured]} sizes={media.featuredSizes ?? "(max-width: 860px) 100vw, 50vw"} />
+          <SectorImage prepared={media.preparedImages?.[media.featured]} src={media.featured} alt={t.featured.alt} fill loading={media.preparedImages ? "eager" : "lazy"} quality={75} placeholder="blur" blurDataURL={blur[media.featured]} sizes={media.featuredSizes ?? "(max-width: 860px) 100vw, 50vw"} />
         </div>
         <div className="ag-featured__copy" data-reveal="right">
           <p className="ag-eyebrow"><span aria-hidden="true" />{t.featured.eyebrow}</p>
@@ -144,7 +145,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
           {media.apps.map((item, i) => (
             <li key={item.image} data-reveal="up" style={{ ["--d" as string]: `${i * 120}ms` }}>
               <Link href={item.href} className="sa-app">
-                <Image src={item.image} alt={t.apps.items[i].alt} fill quality={72} placeholder="blur" blurDataURL={blur[item.image]} sizes="(max-width: 860px) 100vw, 50vw" />
+                <SectorImage prepared={media.preparedImages?.[item.image]} src={item.image} alt={t.apps.items[i].alt} fill quality={72} placeholder="blur" blurDataURL={blur[item.image]} sizes={media.preparedImages ? "(max-width: 900px) 100vw, 50vw" : "(max-width: 860px) 100vw, 50vw"} />
                 <span className="sa-app__veil" aria-hidden="true" />
                 <span className="sa-app__body">
                   <span className="sa-app__n">{String(i + 1).padStart(2, "0")}<i aria-hidden="true" /></span>
@@ -175,7 +176,7 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
               <li key={item.image} data-reveal="up" style={{ ["--d" as string]: `${i * 90}ms` }}>
                 <Link href={item.href} className="lp-card">
                   <span className="lp-card__media">
-                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={blur[item.image]} style={item.position ? { objectPosition: item.position } : undefined} sizes="(max-width: 560px) 46vw, (max-width: 1100px) 45vw, 300px" />
+                    <SectorImage prepared={media.preparedImages?.[item.image]} src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={blur[item.image]} style={item.position ? { objectPosition: item.position } : undefined} sizes={media.preparedImages ? "(max-width: 900px) calc((100vw - 54px) / 2), (max-width: 1753px) calc((89vw - 48px) / 4), 378px" : "(max-width: 560px) 46vw, (max-width: 1100px) 45vw, 300px"} />
                   </span>
                   <span className="lp-card__label">
                     {t.line.items[i].title}
@@ -207,14 +208,14 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
             )}
           </div>
           <Link href="/recursos" className={`sa-docs__media${media.docs.cutout ? "" : " sa-docs__media--sheet"}`} data-reveal="right" aria-label={t.docs.cta}>
-            <Image src={media.docs.image} alt={t.docs.alt} width={media.docs.width} height={media.docs.height} quality={75} sizes="(max-width: 860px) 92vw, 54vw" />
+            <SectorImage prepared={media.preparedImages?.[media.docs.image]} src={media.docs.image} alt={t.docs.alt} width={media.docs.width} height={media.docs.height} quality={75} sizes="(max-width: 860px) 92vw, 54vw" />
           </Link>
         </div>
       </section>
 
       {/* Cierre */}
       <section className="ag-cta sa-cta" aria-labelledby={`${id}-cta-title`}>
-        <Image className="ag-cta__photo sa-cta__photo" src={media.cta} alt="" fill quality={60} placeholder="blur" blurDataURL={blur[media.cta]} sizes="100vw" />
+        <SectorImage prepared={media.preparedImages?.[media.cta]} className="ag-cta__photo sa-cta__photo" src={media.cta} alt="" fill quality={60} placeholder="blur" blurDataURL={blur[media.cta]} sizes="100vw" />
         <div className="ag-cta__veil sa-cta__veil" aria-hidden="true" />
         <div className="lp-shell ag-cta__inner" data-reveal="up">
           <div>
