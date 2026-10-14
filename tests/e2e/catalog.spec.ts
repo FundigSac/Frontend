@@ -147,31 +147,135 @@ test.describe("W02 catálogo", () => {
   });
 });
 
-test.describe("W03 válvulas", () => {
-  test("los chips filtran la grilla y los contadores coinciden", async ({ page }) => {
-    await page.goto("/productos/valvulas");
-    const cards = page.locator("main article");
-    await expect(cards).toHaveCount(6);
-    const todas = page.getByRole("button", { name: /Todas las válvulas/ });
-    await expect(todas).toHaveAttribute("aria-pressed", "true");
-    await expect(todas).toContainText("6");
-    await page.getByRole("button", { name: /Retención \/ Check/ }).click();
-    await expect(cards).toHaveCount(2);
-    await expect(page.getByRole("status").filter({ hasText: "2 de 6 modelos mostrados" })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Retención \/ Check/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(todas).toHaveAttribute("aria-pressed", "false");
-    await page.getByRole("button", { name: /Aire y purga ventosas/ }).click();
-    await expect(cards).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Sin modelos publicados en esta línea" })).toBeVisible();
-    await page.getByRole("button", { name: "Ver todas las válvulas" }).click();
-    await expect(cards).toHaveCount(6);
+/** Los listados de línea (válvulas, tuberías, marcos y tapas) comparten estructura: pestañas por tipo, búsqueda, filtro, orden y tarjetas. */
+type Line = {
+  describe: string;
+  route: string;
+  region: string;
+  total: number;
+  search: { label: string; hit: string; hitCount: number };
+  filterLabel: string;
+  sortLabel: string;
+  multi: { tab: string; value: string; count: number };
+  single: { tab: string; value: string };
+  az: string;
+  za: string;
+  emptyHeading: string;
+  resetButton: string;
+  cards: readonly (readonly [string, string])[];
+};
+
+const plural = (n: number) => `${n} ${n === 1 ? "producto" : "productos"}`;
+
+function lineTests(line: Line) {
+  test.describe(line.describe, () => {
+    const cards = (page: Page) => page.locator(`section[aria-label="${line.region}"] article`);
+    const count = (page: Page) => page.locator(`section[aria-label="${line.region}"] p[aria-live="polite"]`);
+    const tab = (page: Page, text: string) => page.getByRole("tab").filter({ hasText: text });
+    const searchbox = (page: Page) => page.getByRole("searchbox", { name: line.search.label });
+
+    test("las pestañas filtran la grilla y los contadores coinciden", async ({ page }) => {
+      await page.goto(line.route);
+      await expect(cards(page)).toHaveCount(line.total);
+      await expect(count(page)).toHaveText(plural(line.total));
+      await expect(tab(page, "Todas")).toHaveAttribute("aria-selected", "true");
+      await tab(page, line.multi.tab).click();
+      await expect(tab(page, line.multi.tab)).toHaveAttribute("aria-selected", "true");
+      await expect(tab(page, line.multi.tab)).toContainText(plural(line.multi.count));
+      await expect(tab(page, "Todas")).toHaveAttribute("aria-selected", "false");
+      await expect(cards(page)).toHaveCount(line.multi.count);
+      await expect(count(page)).toHaveText(plural(line.multi.count));
+      await tab(page, line.single.tab).click();
+      await expect(cards(page)).toHaveCount(1);
+      await expect(count(page)).toHaveText("1 producto");
+      await tab(page, line.single.tab).click(); // segundo clic: vuelve a "Todas"
+      await expect(cards(page)).toHaveCount(line.total);
+      await expect(tab(page, "Todas")).toHaveAttribute("aria-selected", "true");
+    });
+
+    test("filtro, orden y búsqueda se combinan; el vacío ofrece restaurar", async ({ page }) => {
+      await page.goto(line.route);
+      await page.getByLabel(line.filterLabel).selectOption(line.multi.value);
+      await expect(cards(page)).toHaveCount(line.multi.count);
+      await expect(tab(page, line.multi.tab)).toHaveAttribute("aria-selected", "true");
+      await page.getByLabel(line.filterLabel).selectOption("todas");
+      await expect(cards(page)).toHaveCount(line.total);
+      await page.getByLabel(line.sortLabel).selectOption("az");
+      await expect(cards(page).first().getByRole("heading")).toHaveText(line.az);
+      await page.getByLabel(line.sortLabel).selectOption("za");
+      await expect(cards(page).first().getByRole("heading")).toHaveText(line.za);
+      await searchbox(page).fill(line.search.hit);
+      await expect(cards(page)).toHaveCount(line.search.hitCount);
+      await searchbox(page).fill("zzz-inexistente");
+      await expect(page.getByRole("heading", { name: line.emptyHeading })).toBeVisible();
+      await expect(cards(page)).toHaveCount(0);
+      await page.getByRole("button", { name: line.resetButton }).click();
+      await expect(cards(page)).toHaveCount(line.total);
+      await expect(searchbox(page)).toHaveValue("");
+    });
+
+    test("sin anclas vacías y CTAs reales", async ({ page }) => {
+      await page.goto(line.route);
+      expect(await page.locator("main a[href='#']").count()).toBe(0);
+      for (const [name, href] of line.cards) {
+        await expect(cards(page).filter({ hasText: name }).getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", href);
+      }
+      await expect(page.getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
+      await expect(page.getByRole("link", { name: "Ver todos los recursos" })).toHaveAttribute("href", "/recursos");
+      await expect(page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ })).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
+    });
   });
-  test("sin anclas vacías y CTAs reales", async ({ page }) => {
-    await page.goto("/productos/valvulas");
-    expect(await page.locator("main a[href='#']").count()).toBe(0);
-    await expect(page.getByRole("link", { name: /Cotizar Lote de Válvulas/ })).toHaveAttribute("href", "/cotizar");
-    await expect(page.locator("main article").first().getByRole("link", { name: /Ficha técnica/ })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
-  });
+}
+
+lineTests({
+  describe: "W03 válvulas",
+  route: "/productos/valvulas",
+  region: "Catálogo de válvulas",
+  total: 6,
+  search: { label: "Buscar válvula por nombre o referencia", hit: "mariposa", hitCount: 1 },
+  filterLabel: "Filtrar por tipo de válvula",
+  sortLabel: "Ordenar válvulas",
+  multi: { tab: "Control", value: "control", count: 2 },
+  single: { tab: "Aire", value: "aire" },
+  az: "Válvula check flex",
+  za: "Válvula reductora de presión",
+  emptyHeading: "No encontramos válvulas con esos datos",
+  resetButton: "Ver todas las válvulas",
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
+});
+
+lineTests({
+  describe: "W04 tuberías",
+  route: "/productos/tuberias",
+  region: "Catálogo de tuberías",
+  total: 6,
+  search: { label: "Buscar tubería por nombre, diámetro o referencia", hit: "mortero", hitCount: 1 },
+  filterLabel: "Filtrar por tipo de tubería",
+  sortLabel: "Ordenar tuberías",
+  multi: { tab: "Unión junta", value: "junta", count: 3 },
+  single: { tab: "Accesorios", value: "accesorios" },
+  az: "Tubería con bridas",
+  za: "Tubería HDPE",
+  emptyHeading: "No encontramos tuberías con esos datos",
+  resetButton: "Ver todos los productos",
+  cards: [["Tubería HDPE", "/productos/tuberias/tuberia-tyton"], ["Tubería con bridas", "/contacto"]],
+});
+
+lineTests({
+  describe: "W05 marcos y tapas",
+  route: "/productos/marcos-y-tapas",
+  region: "Catálogo de marcos y tapas",
+  total: 6,
+  search: { label: "Buscar tapa o marco por nombre o referencia", hit: "rejilla", hitCount: 1 },
+  filterLabel: "Filtrar por tipo de producto",
+  sortLabel: "Ordenar productos",
+  multi: { tab: "Tapas circulares", value: "circulares", count: 2 },
+  single: { tab: "Rejillas", value: "rejillas" },
+  az: "Marco rectangular",
+  za: "Tapa para válvula",
+  emptyHeading: "No encontramos productos con esos datos",
+  resetButton: "Ver todos los productos",
+  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/contacto"]],
 });
 
 test.describe("W04 / W05 / W10-W12 enlaces", () => {
