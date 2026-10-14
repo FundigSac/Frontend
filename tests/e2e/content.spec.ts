@@ -413,6 +413,30 @@ test.describe("Términos y condiciones", () => {
     await expect.poll(() => page.evaluate(() => Math.round(document.getElementById("propiedad")!.getBoundingClientRect().top))).toBeGreaterThanOrEqual(80);
     await expect(page.locator(".lg-term").getByRole("link", { name: "Política de Privacidad" })).toHaveAttribute("href", "/privacidad");
   });
+
+  test("texto justificado con guiones automáticos y tipografía de lectura", async ({ page }) => {
+    await go(page, "/terminos", ".lg-toc a");
+    const body = page.locator(".lg-term p").first();
+    // Justificado desde 640 px; en móvil queda alineado a la izquierda para evitar "ríos" entre palabras.
+    const wide = (page.viewportSize()?.width ?? 0) >= 640;
+    await expect(body).toHaveCSS("text-align", wide ? "justify" : "start");
+    await expect(body).toHaveCSS("font-family", /Inter/);
+  });
+
+  test("respeta el idioma y el modo oscuro elegidos en el sitio", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("fundigsac-lang", "en");
+      localStorage.setItem("fundigsac-theme", "dark");
+    });
+    for (const [route, h1] of [["/terminos", "Terms and conditions"], ["/privacidad", "Privacy policy"], ["/cookies", "Cookie policy"], ["/reclamaciones", "Complaints Book"]] as const) {
+      await go(page, route);
+      await expect(page.getByRole("heading", { level: 1 })).toContainText(h1);
+      await expect(page.locator("html")).toHaveAttribute("data-lp-theme", "dark");
+      await expect(page.locator("main.lg")).toHaveCSS("background-color", "rgb(8, 18, 31)");
+    }
+    await page.goto("/ruta-que-no-existe");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Oops, this page can’t be found.");
+  });
 });
 
 test.describe("T&C B2B y consola limpia", () => {
