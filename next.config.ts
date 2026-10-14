@@ -27,6 +27,8 @@ const nextConfig: NextConfig = {
   // Permite varios `next dev` en paralelo (agentes/QA): NEXT_DIST_DIR=.next-xyz
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
+  // PGlite (base de datos embebida de desarrollo) resuelve su WASM con rutas de archivo: no debe empaquetarse.
+  serverExternalPackages: ["@electric-sql/pglite"],
   reactStrictMode: true,
   images: { formats: ["image/avif", "image/webp"], qualities: [60, 70, 72, 75], minimumCacheTTL: 60 * 60 * 24 * 30 },
   async headers() {

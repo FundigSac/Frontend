@@ -30,7 +30,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-PE" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
+    <html lang="es-PE" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
       <body className="bg-background font-body-default text-body-default text-on-surface antialiased">
         <SourceGuard />
         <ToastProvider>
