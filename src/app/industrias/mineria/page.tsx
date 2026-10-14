@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { FloatingActions } from "@/app/_landing/floating-actions";
 import "@/app/landing.css";
 import "../agricultura/agricultura.css";
 import "../_sector/sector.css";
+import "./mineria.css";
 import { MiningSections } from "./sections";
 
 export const metadata: Metadata = {
@@ -15,7 +15,6 @@ export default function MiningPage() {
   return (
     <>
       <MiningSections />
-      <FloatingActions />
     </>
   );
 }

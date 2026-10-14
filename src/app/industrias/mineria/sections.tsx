@@ -1,26 +1,30 @@
 "use client";
 
-import { Mountain, ShieldCheck, Settings } from "lucide-react";
+import { MapPinned, ShieldCheck, Settings } from "lucide-react";
 import { SectorPage, type SectorMedia } from "../_sector/sector-page";
 import { useMining } from "./copy";
+import { MINING_BLUR } from "./media-blur";
 
 const MEDIA: SectorMedia = {
   id: "mi",
-  hero: "/media/mineria/hero-tajo.webp",
-  featured: "/media/mineria/destacada.webp",
-  features: [Mountain, ShieldCheck, Settings],
+  hero: "/media/mineria/hero-planta.webp",
+  featured: "/media/mineria/valvula-planta.webp",
+  featuredSizes: "(max-width: 900px) 100vw, 53vw",
+  blur: MINING_BLUR,
+  reveal: false,
+  features: [MapPinned, ShieldCheck, Settings],
   apps: [
-    { href: "/productos/tuberias", image: "/media/mineria/pulpas.webp" },
-    { href: "/productos/valvulas", image: "/media/mineria/procesos.webp" },
+    { href: "/productos/tuberias", image: "/media/mineria/agua-proceso.webp" },
+    { href: "/productos/valvulas", image: "/media/mineria/recirculacion.webp" },
   ],
   line: [
-    { href: "/productos/valvulas", image: "/media/mineria/valvulas.webp" },
-    { href: "/productos?q=acople", image: "/media/mineria/acoples.webp" },
-    { href: "/productos/tuberias", image: "/media/mineria/tuberias.webp" },
-    { href: "/productos?q=brida", image: "/media/mineria/bridas.webp" },
+    { href: "/productos/valvulas", image: "/media/mineria/valvula-mina.webp" },
+    { href: "/productos/tuberias", image: "/media/mineria/tuberias-hdpe.webp" },
+    { href: "/productos?q=acople", image: "/media/mineria/acople-bridado.webp" },
+    { href: "/productos?q=ventosa", image: "/media/mineria/valvula-proceso.webp" },
   ],
-  docs: { image: "/media/mineria/catalogo.webp", width: 1371, height: 792, cutout: false },
-  cta: "/media/mineria/cierre.webp",
+  docs: { image: "/media/mineria/catalogo-mineria.webp", width: 1448, height: 1086, cutout: false },
+  cta: "/media/mineria/planta-atardecer.webp",
 };
 
 export function MiningSections() {
