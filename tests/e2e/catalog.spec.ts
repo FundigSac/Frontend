@@ -50,73 +50,100 @@ test.describe("W01 inicio", () => {
 });
 
 test.describe("W02 catálogo", () => {
-  test("lista 8 de 19 productos, pagina y ordena", async ({ page }) => {
+  // Sin desplazamiento suave: al elegir una familia la página baja a los productos y los clics siguientes deben ser estables.
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  });
+  const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" });
+  const familyButton = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
+
+  test("muestra 5 familias y 10 productos destacados", async ({ page }) => {
     await page.goto("/productos");
-    const cards = page.locator("#resultados-catalogo article");
-    await expect(cards).toHaveCount(8);
-    await expect(page.getByRole("status").filter({ hasText: "Mostrando 19 productos" })).toBeVisible();
-    await page.getByRole("button", { name: "Página 3" }).click();
-    await expect(cards).toHaveCount(3);
-    await expect(page.getByText("Página 3 de 3 (3 de 19 ítems)")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Página siguiente" })).toBeDisabled();
-    await expect(page).toHaveURL(/pagina=3/);
-    await page.getByLabel("Ordenar por:").selectOption("dn-asc");
-    await expect(page.getByText("Página 1 de 3")).toBeVisible();
-    await expect(cards.first().getByRole("heading")).toContainText("Acometida");
-    await expect(page).toHaveURL(/orden=dn-asc/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
+    const families = page.locator('section[aria-label="Familias de productos"] article');
+    await expect(families).toHaveCount(5);
+    const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
+    await expect(page.locator("#productos-destacados article")).toHaveCount(10);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("la búsqueda filtra, actualiza el contador y la URL; limpiar restaura", async ({ page }) => {
+  test("la búsqueda filtra y actualiza la URL; el vacío ofrece restaurar", async ({ page }) => {
     await page.goto("/productos");
-    await page.getByRole("searchbox", { name: "Buscar en el catálogo" }).fill("tapa D400");
-    const cards = page.locator("#resultados-catalogo article");
-    await expect(cards).toHaveCount(3);
-    await expect(page.getByRole("status").filter({ hasText: "3 de 19 productos técnicos" })).toBeVisible();
-    await expect(page).toHaveURL(/q=tapa(\+|%20)D400/);
-    await page.getByRole("searchbox", { name: "Buscar en el catálogo" }).fill("zzz-inexistente");
-    await expect(page.getByRole("heading", { name: "No hay productos que coincidan con su búsqueda" })).toBeVisible();
+    const cards = page.locator("#productos-destacados article");
+    await searchbox(page).fill("tapa");
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first()).toContainText("Tapa circular");
+    await expect(page).toHaveURL(/q=tapa/);
+    await searchbox(page).fill("zzz-inexistente");
+    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
     await expect(cards).toHaveCount(0);
-    await page.getByRole("button", { name: "Limpiar filtros" }).click();
-    await expect(cards).toHaveCount(8);
+    await page.getByRole("button", { name: /Ver todos los productos/ }).click();
+    await expect(cards).toHaveCount(10);
+    await expect(searchbox(page)).toHaveValue("");
     await expect(page).not.toHaveURL(/q=/);
   });
 
-  test("filtros: familia, PN, unión y norma combinan; 'Limpiar' los quita", async ({ page }) => {
+  test("filtros por familia: cada botón filtra, repetir el clic lo quita y se combina con la búsqueda", async ({ page }) => {
     await page.goto("/productos");
-    const cards = page.locator("#resultados-catalogo article");
-    await page.getByLabel("Familia de producto").selectOption("tuberias");
-    await expect(cards).toHaveCount(4);
-    await expect(page).toHaveURL(/cat=tuberias/);
-    await page.getByLabel("PN 40").check();
+    const cards = page.locator("#productos-destacados article");
+    for (const [label, familia, total] of [["Válvulas", "valvulas", 3], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
+      await familyButton(page, label).click();
+      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
+      await expect(cards).toHaveCount(total);
+      await expect(page).toHaveURL(new RegExp(`familia=${familia}`));
+    }
+    await familyButton(page, "Conexiones y fittings").click(); // segundo clic: vuelve a "Todas"
+    await expect(cards).toHaveCount(10);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+    await expect(page).not.toHaveURL(/familia=/);
+
+    await familyButton(page, "Accesorios HDPE").click();
+    await searchbox(page).fill("codo 90");
     await expect(cards).toHaveCount(1);
-    await expect(cards.first()).toContainText("Tubería Hierro Dúctil Campana Tyton");
-    await page.getByRole("button", { name: "Limpiar", exact: true }).click();
-    await expect(cards).toHaveCount(8);
-    await page.getByLabel("Tipo de Unión").selectOption("tyton");
-    await expect(page.getByRole("status")).toContainText("de 19 productos");
-    await page.getByLabel("Tipo de Unión").selectOption("");
-    await page.getByLabel("EN 124-2 (D400 / C250)").check();
-    await expect(cards).toHaveCount(4);
-    await page.getByLabel("Diámetro Nominal (DN)").selectOption("700-1200");
-    await expect(page.getByRole("heading", { name: "No hay productos que coincidan con su búsqueda" })).toBeVisible();
+    await expect(cards.first()).toContainText("Codo 90° HDPE");
+    await familyButton(page, "Válvulas").click();
+    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
+    await familyButton(page, "Todas").click();
+    await expect(cards).toHaveCount(1);
   });
 
-  test("URL compartible: ?q=&cat= se aplica al cargar", async ({ page }) => {
-    await page.goto("/productos?cat=marcos-y-tapas&q=rejilla");
-    const cards = page.locator("#resultados-catalogo article");
-    await expect(cards).toHaveCount(1);
-    await expect(page.getByRole("searchbox", { name: "Buscar en el catálogo" })).toHaveValue("rejilla");
-    await expect(page.getByLabel("Familia de producto")).toHaveValue("marcos-y-tapas");
+  test("URL compartible: ?familia=&q= se aplica al cargar y una familia inválida se ignora", async ({ page }) => {
+    await page.goto("/productos?familia=marcos-y-tapas&q=tapa");
+    await expect(page.locator("#productos-destacados article")).toHaveCount(1);
+    await expect(searchbox(page)).toHaveValue("tapa");
+    await expect(familyButton(page, "Marcos y tapas")).toHaveAttribute("aria-pressed", "true");
+    await page.goto("/productos?familia=inexistente");
+    await expect(page.locator("#productos-destacados article")).toHaveCount(10);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("tarjetas: ficha en la página del producto, o solicitud de documento; cotizar precarga", async ({ page }) => {
+  test("tarjetas: ficha, cotizar y solicitud del catálogo apuntan a rutas reales", async ({ page }) => {
     await page.goto("/productos");
-    const first = page.locator("#resultados-catalogo article").first();
-    await expect(first.getByRole("link", { name: /Ficha técnica/ })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
-    await expect(first.getByRole("link", { name: /Cotizar/ })).toHaveAttribute("href", "/cotizar?producto=valvula-compuerta");
-    await page.goto("/productos?q=check");
-    const swing = page.locator("#resultados-catalogo article").first();
-    await expect(swing.getByRole("link", { name: "Ficha técnica" })).toHaveAttribute("href", /\/contacto\?motivo=documentacion&documento=/);
+    expect(await page.locator("main a[href='#']").count()).toBe(0);
+    const first = page.locator("#productos-destacados article").first();
+    await expect(first).toContainText("Válvula de compuerta bridada");
+    await expect(first.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
+    await expect(first.getByRole("link", { name: "Cotizar", exact: true })).toHaveAttribute("href", "/cotizar");
+    const tapa = page.locator("#productos-destacados article").filter({ hasText: "Tapa circular" });
+    await expect(tapa.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/marcos-y-tapas/marco-tapa-d400");
+    const catalogo = page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ });
+    await expect(catalogo).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
+  });
+
+  test("las familias de la cuadrícula navegan a su página", async ({ page }) => {
+    await page.goto("/productos");
+    await page.getByRole("link", { name: "Explorar Tuberías" }).click();
+    await expect(page).toHaveURL(/\/productos\/tuberias$/);
+  });
+
+  test("cotizar con producto precargado: /cotizar?producto= muestra el producto y un slug ajeno cae en la cotización general", async ({ page }) => {
+    await page.goto("/cotizar?producto=tuberia-tyton");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Tubería de hierro dúctil");
+    await expect(page.locator("#input-qty")).toBeVisible();
+    await page.goto("/cotizar?producto=no-existe");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Solicitar una cotización");
   });
 });
 
