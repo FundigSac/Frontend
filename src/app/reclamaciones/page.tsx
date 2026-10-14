@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/lib/site-info";
 import { SITE } from "@/shared/config/site";
-import { legalClosingImage, legalHeroImage } from "../_legal/images";
+import { claimsClosingImage, claimsHeroImage } from "../_legal/images";
 import { ClaimsView } from "../_legal/reclamaciones-view";
 
 export const metadata: Metadata = {
@@ -17,8 +17,8 @@ export default function ComplaintsPage() {
   const registryEnabled = Boolean(process.env.DATABASE_URL) || process.env.NODE_ENV !== "production";
   return (
     <ClaimsView
-      hero={legalHeroImage()}
-      closing={legalClosingImage()}
+      hero={claimsHeroImage()}
+      closing={claimsClosingImage()}
       enabled={registryEnabled}
       email={SITE.email}
       phone={site.phone}

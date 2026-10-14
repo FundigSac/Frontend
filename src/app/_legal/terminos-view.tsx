@@ -1,6 +1,7 @@
 "use client";
 
 import { FloatingActions } from "../_landing/floating-actions";
+import { LegalMotion } from "./motion";
 import Link from "next/link";
 import { COMMON, TERMS, UPDATED } from "./copy";
 import { LegalCta, LegalHero } from "./legal-parts";
@@ -24,7 +25,7 @@ export function TermsView({ hero, closing }: { hero: string; closing: string }) 
           <div>
             <ol className="lg-terms">
               {t.sections.map((s, i) => (
-                <li className="lg-term" id={s.id} key={s.id}>
+                <li className="lg-term" id={s.id} key={s.id} data-reveal="">
                   <span className="lg-term__n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                   <div className="lg-term__body">
                     <h2>{s.label}</h2>
@@ -45,6 +46,7 @@ export function TermsView({ hero, closing }: { hero: string; closing: string }) 
       </div>
 
       <LegalCta {...t.cta} href="/contacto" image={closing} />
+      <LegalMotion />
       <FloatingActions />
     </main>
   );

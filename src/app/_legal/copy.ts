@@ -247,9 +247,9 @@ type ClaimOption = { value: string; label: string };
 
 export const CLAIMS: Pair<{
   crumb: string;
+  eyebrow: string;
   title: string;
   lead: string;
-  panel: readonly [string, string, string];
   heroAlt: string;
   formTitle: string;
   formIntro: string;
@@ -294,10 +294,10 @@ export const CLAIMS: Pair<{
 }> = {
   es: {
     crumb: "Libro de reclamaciones",
+    eyebrow: "Atención al cliente",
     title: "Libro de Reclamaciones",
-    lead: "Tu opinión nos ayuda a mejorar. Registra aquí tu reclamo o queja y nos comprometemos a brindarte una pronta atención.",
-    panel: ["Tu voz nos importa", "Atención clara y transparente", "Comprometidos con la mejora continua"],
-    heroAlt: "Planta de tratamiento de agua frente a las montañas",
+    lead: "Tu opinión nos ayuda a seguir mejorando. Registra aquí tu reclamo o queja de manera rápida, segura y transparente.",
+    heroAlt: "Asesora de FUNDIGSAC atendiendo a un cliente en la oficina",
     formTitle: "Formulario de reclamos y quejas",
     formIntro: "Completa la siguiente información. Todos los campos marcados con * son obligatorios.",
     formAria: "Formulario de reclamos y quejas",
@@ -371,10 +371,10 @@ export const CLAIMS: Pair<{
   },
   en: {
     crumb: "Complaints book",
+    eyebrow: "Customer service",
     title: "Complaints Book",
-    lead: "Your feedback helps us improve. Register your claim or complaint here and we commit to attending to it promptly.",
-    panel: ["Your voice matters", "Clear and transparent service", "Committed to continuous improvement"],
-    heroAlt: "Water treatment plant in front of the mountains",
+    lead: "Your feedback helps us keep improving. Register your claim or complaint here quickly, securely and transparently.",
+    heroAlt: "FUNDIGSAC advisor assisting a customer in the office",
     formTitle: "Claims and complaints form",
     formIntro: "Please complete the information below. All fields marked with * are required.",
     formAria: "Claims and complaints form",

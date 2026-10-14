@@ -1,6 +1,7 @@
 "use client";
 
 import { FloatingActions } from "../_landing/floating-actions";
+import { LegalMotion } from "./motion";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { COMMON, COOKIES } from "./copy";
@@ -23,7 +24,7 @@ export function CookiesView({ hero, info }: { hero: string; info: readonly [stri
 
         <ul className="lg-info-grid">
           {t.info.map((item, i) => (
-            <li className="lg-info" key={item.title}>
+            <li className="lg-info" key={item.title} data-reveal="" style={{ ["--d" as string]: `${i * 110}ms` }}>
               <div className="lg-info__media">
                 <Image src={info[i]} alt={item.alt} fill quality={85} sizes="(max-width: 720px) 92vw, 33vw" style={{ objectPosition: INFO_POSITIONS[i] }} />
               </div>
@@ -44,7 +45,7 @@ export function CookiesView({ hero, info }: { hero: string; info: readonly [stri
             </div>
             <p className="lg-text">{t.faq.lead}</p>
           </div>
-          <div className="lg-faq">
+          <div className="lg-faq" data-reveal="">
             {t.faq.items.map((item) => (
               <details key={item.q}>
                 <summary>
@@ -57,6 +58,7 @@ export function CookiesView({ hero, info }: { hero: string; info: readonly [stri
           </div>
         </div>
       </section>
+      <LegalMotion />
       <FloatingActions />
     </main>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { FloatingActions } from "../_landing/floating-actions";
-import { ChevronRight, FileText, Info, Mail, MessageCircle, Phone, Search, ShieldCheck, Users } from "lucide-react";
+import { LegalMotion } from "./motion";
+import { ChevronRight, FileText, Info, Mail, MessageCircle, Phone, Search, ShieldCheck } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { CLAIMS, COMMON } from "./copy";
 import { LegalCta, LegalHero } from "./legal-parts";
@@ -30,20 +31,14 @@ export function ClaimsView({ hero, closing, enabled, email, phone, phoneHref, wh
 
   return (
     <main className="lp lg">
-      <LegalHero modifier="lg-hero--claims" home={home} crumb={t.crumb} title={t.title} lead={t.lead} image={hero} alt={t.heroAlt}>
-        <ul className="lg-hero__panel">
-          <li><ShieldCheck aria-hidden="true" size={30} strokeWidth={1.5} /> {t.panel[0]}</li>
-          <li><Users aria-hidden="true" size={30} strokeWidth={1.5} /> {t.panel[1]}</li>
-          <li><FileText aria-hidden="true" size={30} strokeWidth={1.5} /> {t.panel[2]}</li>
-        </ul>
-      </LegalHero>
+      <LegalHero modifier="lg-hero--claims" home={home} crumb={t.crumb} eyebrow={t.eyebrow} title={t.title} lead={t.lead} image={hero} alt={t.heroAlt} />
 
       <div className="lp-shell" style={{ paddingBottom: "clamp(40px, 6vw, 84px)" }}>
         <div className="lg-claims">
           <ClaimForm enabled={enabled} email={email} phone={phone} whatsappNumber={whatsappNumber} />
 
           <aside className="lg-side" aria-label={s.aria}>
-            <div className="lg-side__card lg-side__card--blue">
+            <div data-reveal="" style={{ ["--d" as string]: "0ms" }} className="lg-side__card lg-side__card--blue">
               <FileText aria-hidden="true" size={56} strokeWidth={1.3} />
               <div>
                 <h3>{s.blue.title}</h3>
@@ -51,7 +46,7 @@ export function ClaimsView({ hero, closing, enabled, email, phone, phoneHref, wh
               </div>
             </div>
 
-            <div className="lg-side__card">
+            <div data-reveal="" style={{ ["--d" as string]: "80ms" }} className="lg-side__card">
               <h3>{s.how.title}</h3>
               <ol className="lg-how">
                 {s.how.items.map((item, i) => {
@@ -66,14 +61,14 @@ export function ClaimsView({ hero, closing, enabled, email, phone, phoneHref, wh
               </ol>
             </div>
 
-            <div className="lg-side__card lg-side__card--amber">
+            <div data-reveal="" style={{ ["--d" as string]: "160ms" }} className="lg-side__card lg-side__card--amber">
               <h3><Info aria-hidden="true" size={20} strokeWidth={1.8} /> {s.important.title}</h3>
               <ul>
                 {s.important.items.map((item) => <li key={item}>{item}</li>)}
               </ul>
             </div>
 
-            <div className="lg-side__card">
+            <div data-reveal="" style={{ ["--d" as string]: "0ms" }} className="lg-side__card">
               <h3>{s.help.title}</h3>
               <p>{s.help.text}</p>
               <ul className="lg-help">
@@ -89,7 +84,7 @@ export function ClaimsView({ hero, closing, enabled, email, phone, phoneHref, wh
               </ul>
             </div>
 
-            <div className="lg-side__card lg-side__card--pledge">
+            <div data-reveal="" style={{ ["--d" as string]: "80ms" }} className="lg-side__card lg-side__card--pledge">
               <ShieldCheck aria-hidden="true" size={40} strokeWidth={1.5} />
               <div>
                 <h3>{s.pledge.title}</h3>
@@ -101,6 +96,7 @@ export function ClaimsView({ hero, closing, enabled, email, phone, phoneHref, wh
       </div>
 
       <LegalCta {...t.cta} href="/contacto" image={closing} />
+      <LegalMotion />
       <FloatingActions />
     </main>
   );

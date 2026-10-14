@@ -66,9 +66,9 @@ function FlangeZero() {
 }
 
 const CARD_MEDIA = [
-  { href: "/productos", image: "/media/saneamiento/destacada.webp" },
-  { href: "/industrias", image: "/media/home-v3/card-tuberias.webp" },
-  { href: "/recursos", image: "/media/home-v3/ficha-plano.webp" },
+  { href: "/productos", image: "/media/legal/404-productos.webp" },
+  { href: "/industrias", image: "/media/legal/404-sectores.webp" },
+  { href: "/recursos", image: "/media/legal/404-recursos.webp" },
 ] as const;
 
 export function NotFoundView() {
@@ -76,11 +76,13 @@ export function NotFoundView() {
 
   return (
     <main className="lp lg lg-nf">
-      <Image className="lg-nf__photo" src="/media/saneamiento/hero.webp" alt="" fill priority fetchPriority="high" quality={75} sizes="100vw" />
+      <Image className="lg-nf__photo" src="/media/legal/hero-404.webp" alt="" fill priority fetchPriority="high" quality={85} sizes="100vw" />
       <div className="lg-nf__veil" aria-hidden="true" />
 
       <div className="lp-shell lg-nf__main">
         <p className="lg-eyebrow lg-rise">{t.eyebrow}</p>
+        {/* Escritorio: el "404" viene dibujado en la foto; este espacio lo reserva. Móvil: se compone en vivo. */}
+        <div className="lg-nf__spacer" aria-hidden="true" />
         <p className="lg-nf__code lg-rise" style={{ ["--d" as string]: "80ms" }} aria-hidden="true">
           <span>4</span>
           <FlangeZero />
@@ -106,7 +108,7 @@ export function NotFoundView() {
             <li key={CARD_MEDIA[i].href}>
               <Link className="lg-nf__card" href={CARD_MEDIA[i].href}>
                 <span className="lg-nf__thumb">
-                  <Image src={CARD_MEDIA[i].image} alt={c.alt} fill quality={60} sizes="120px" />
+                  <Image src={CARD_MEDIA[i].image} alt={c.alt} fill quality={70} sizes="(max-width: 720px) 84px, 116px" />
                 </span>
                 <span>
                   <strong>{c.title}</strong>

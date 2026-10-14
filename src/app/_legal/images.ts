@@ -24,6 +24,12 @@ export const privacyHeroImage = () => pick("hero-privacidad.webp", legalHeroImag
 /** Manos sobre una laptop (tarjeta lateral de Privacidad). */
 export const privacyAsideImage = () => pick("aside-privacidad.webp", "/media/home-v3/respaldo-ingeniero.webp");
 
+/** Asesora atendiendo a un cliente (hero del Libro de reclamaciones). */
+export const claimsHeroImage = () => pick("hero-reclamaciones.webp", legalHeroImage());
+
+/** Edificio corporativo al anochecer (banda de cierre del Libro de reclamaciones). */
+export const claimsClosingImage = () => pick("cierre-reclamaciones.webp", legalClosingImage());
+
 /** Sala de control con monitores y operario (hero de Cookies). */
 export const cookiesHeroImage = () => pick("hero-cookies.webp", legalHeroImage());
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { FloatingActions } from "../_landing/floating-actions";
+import { LegalMotion } from "./motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, FileText, Lock, Mail, ScrollText, ShieldCheck, Users } from "lucide-react";
@@ -27,7 +28,7 @@ export function PrivacyView({ hero, aside, closing }: { hero: string; aside: str
             <h2 className="lg-section-title">{t.introTitle}</h2>
             <p className="lg-text">{t.intro}</p>
           </div>
-          <aside className="lg-callout" aria-label={t.callout.label}>
+          <aside className="lg-callout" aria-label={t.callout.label} data-reveal="">
             <span className="lg-callout__icon" aria-hidden="true"><ShieldCheck size={30} strokeWidth={1.6} /></span>
             <div>
               <small>{t.callout.small}</small>
@@ -41,7 +42,7 @@ export function PrivacyView({ hero, aside, closing }: { hero: string; aside: str
           {t.pillars.map((p, i) => {
             const Icon = PILLAR_ICONS[i];
             return (
-              <li className="lg-pillar" key={p.title}>
+              <li className="lg-pillar" key={p.title} data-reveal="" style={{ ["--d" as string]: `${i * 90}ms` }}>
                 <Icon aria-hidden="true" size={34} strokeWidth={1.5} />
                 <h3>{p.title}</h3>
                 <p>{p.text}</p>
@@ -53,7 +54,7 @@ export function PrivacyView({ hero, aside, closing }: { hero: string; aside: str
         <div className="lg-privacy">
           <ol className="lg-steps">
             {t.steps.map((s, i) => (
-              <li className="lg-step" key={s.title}>
+              <li className="lg-step" key={s.title} data-reveal="">
                 <span className="lg-step__n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                 <div>
                   <h3>{s.title}</h3>
@@ -63,7 +64,7 @@ export function PrivacyView({ hero, aside, closing }: { hero: string; aside: str
             ))}
           </ol>
 
-          <aside className="lg-aside" aria-labelledby="lg-aside-title">
+          <aside className="lg-aside" aria-labelledby="lg-aside-title" data-reveal="">
             <div className="lg-aside__media">
               <Image src={aside} alt={t.aside.alt} fill quality={75} sizes="(max-width: 900px) 92vw, 400px" />
             </div>
@@ -103,6 +104,7 @@ export function PrivacyView({ hero, aside, closing }: { hero: string; aside: str
       </div>
 
       <LegalCta {...t.cta} href="/cotizar" image={closing} />
+      <LegalMotion />
       <FloatingActions />
     </main>
   );
