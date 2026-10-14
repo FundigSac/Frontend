@@ -47,7 +47,7 @@ export default function TermsB2BPage() {
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <Link
                   href="/cotizar"
-                  className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-primary-container text-brand-on font-button-text text-button-text hover:bg-primary transition-all shadow-sm"
+                  className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-primary-container text-brand-on font-button-text text-button-text hover:bg-primary transition-[background-color,box-shadow] shadow-sm"
                 >
                   Solicitar cotización
                 </Link>

@@ -22,10 +22,10 @@ export default function RouteError({ error, reset }: { error: Error & { digest?:
           {error.digest ? <span className="block mt-2 font-ui-label text-ui-label text-text-muted">Código de referencia: {error.digest}</span> : null}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button type="button" onClick={reset} className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-primary-container text-brand-on font-button-text text-button-text hover:bg-primary transition-all shadow-sm">
+          <button type="button" onClick={reset} className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-primary-container text-brand-on font-button-text text-button-text hover:bg-primary transition-[background-color,box-shadow] shadow-sm">
             Reintentar
           </button>
-          <Link href="/" className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-surface-container-lowest text-on-surface border border-border font-button-text text-button-text hover:bg-surface-container transition-all shadow-sm">
+          <Link href="/" className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-surface-container-lowest text-on-surface border border-border font-button-text text-button-text hover:bg-surface-container transition-[background-color,box-shadow] shadow-sm">
             Ir al inicio
           </Link>
         </div>

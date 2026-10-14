@@ -27,7 +27,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div aria-live="polite" role="status" className="pointer-events-none fixed bottom-6 right-6 left-6 sm:left-auto z-[60] flex justify-end">
         <div
-          className={`bg-inverse-surface text-brand-on px-4 py-3 rounded-lg shadow-lg font-body-compact text-body-compact flex items-center gap-2 transition-all duration-300 ${visible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"}`}
+          className={`bg-inverse-surface text-brand-on px-4 py-3 rounded-lg shadow-lg font-body-compact text-body-compact flex items-center gap-2 transition-[transform,opacity] duration-300 ${visible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"}`}
         >
           {toast && (
             <>
