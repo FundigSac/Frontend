@@ -3,8 +3,8 @@ import * as T from 'three';
 
 // Small, deterministic HDR studio. Lighting only: no product pixels or geometry.
 // Neutral white softboxes preserve the blue epoxy's existing PBR base colour.
-export function writeValveStudio(file, width = 512, height = 256) {
-  const panels = [
+export function writeValveStudio(file, width = 512, height = 256, { ambient = [.28, .12], gain = 1, extra = [] } = {}) {
+  const panels = [...extra,
     { direction: [-.8, .78, .4], horizontal: .18, vertical: .27, radiance: 10 },
     { direction: [.8, .78, -.4], horizontal: .18, vertical: .27, radiance: 10 },
     { direction: [-.65, .22, -.72], horizontal: .16, vertical: .52, radiance: 3 },
@@ -23,13 +23,13 @@ export function writeValveStudio(file, width = 512, height = 256) {
     for (let x = 0; x < width; x++) {
       const longitude = ((x + .5) / width - .5) * Math.PI * 2;
       const direction = new T.Vector3(Math.cos(longitude) * Math.sin(latitude), Math.cos(latitude), Math.sin(longitude) * Math.sin(latitude));
-      let radiance = .28 + .12 * T.MathUtils.smoothstep(direction.y, -.7, .5);
+      let radiance = ambient[0] + ambient[1] * T.MathUtils.smoothstep(direction.y, -.7, .5);
       for (const panel of panels) {
         const facing = direction.dot(panel.direction);
         if (facing <= 0) continue;
         const horizontal = Math.abs(Math.atan2(direction.dot(panel.right), facing));
         const vertical = Math.abs(Math.atan2(direction.dot(panel.up), facing));
-        radiance += panel.radiance * (1 - T.MathUtils.smoothstep(horizontal, panel.horizontal * .72, panel.horizontal))
+        radiance += gain * panel.radiance * (1 - T.MathUtils.smoothstep(horizontal, panel.horizontal * .72, panel.horizontal))
           * (1 - T.MathUtils.smoothstep(vertical, panel.vertical * .72, panel.vertical));
       }
       peak = Math.max(peak, radiance);

@@ -91,7 +91,7 @@ assert(material.getBaseColorTexture()?.getImage()?.length > 0, 'Rubber finish ma
 assert(material.getNormalTexture()?.getImage()?.length > 0, 'Rubber normal map must resolve');
 assert(material.getMetallicRoughnessTexture()?.getImage()?.length > 0, 'Rubber surface map must resolve');
 assert(material.getNormalTexture() !== current.getRoot().listMaterials().find(m=>m.getName()==='epoxi-azul').getNormalTexture(), 'Rubber must have its own surface finish');
-const hdrBytes=fs.readFileSync('public/models/valvula-estudio.hdr');
+const hdrBytes=fs.readFileSync('public/models/valvula-estudio-esmalte.hdr');
 const hdr=new HDRLoader().parse(hdrBytes.buffer.slice(hdrBytes.byteOffset,hdrBytes.byteOffset+hdrBytes.byteLength));
 assert(hdr.width===512&&hdr.height===256&&hdr.data.length===512*256*4,'Studio environment must decode at expected resolution');
 const result = {

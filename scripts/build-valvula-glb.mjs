@@ -14,7 +14,7 @@ import { roundedProfile, bevelHex, washer, castBonnet, castSpoke, wheelRim, whee
 const doc = new Document(), buffer = doc.createBuffer(), scene = doc.createScene('DN100');
 const root = doc.createNode('valvula').setTranslation([0,-1.02,0]); scene.addChild(root);
 const cc=doc.createExtension(KHRMaterialsClearcoat);
-const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0.004,0.08,0.6,1]).setMetallicFactor(0).setRoughnessFactor(.24).setExtension('KHR_materials_clearcoat',cc.createClearcoat().setClearcoatFactor(.9).setClearcoatRoughnessFactor(.09));
+const blue=doc.createMaterial('epoxi-azul').setBaseColorFactor([0,0.036,0.34,1]).setMetallicFactor(0).setRoughnessFactor(.5).setExtension('KHR_materials_clearcoat',cc.createClearcoat().setClearcoatFactor(1).setClearcoatRoughnessFactor(.035));
 const steel=doc.createMaterial('acero-zincado').setBaseColorFactor([.80,.81,.83,1]).setMetallicFactor(.85).setRoughnessFactor(.4);
 const brass=doc.createMaterial('laton').setBaseColorFactor([.70,.45,.13,1]).setMetallicFactor(1).setRoughnessFactor(.3);
 const dark=doc.createMaterial('junta-EPDM').setBaseColorFactor([.02,.022,.03,1]).setRoughnessFactor(.85);
@@ -41,8 +41,8 @@ for(let y=0;y<paintSize;y++)for(let x=0;x<paintSize;x++){
  paintNormal[i]=Math.round((v.x*.5+.5)*255);paintNormal[i+1]=Math.round((v.y*.5+.5)*255);paintNormal[i+2]=Math.round((v.z*.5+.5)*255);
  paintOrm[i]=255;paintOrm[i+1]=Math.round(255*(.9+.085*Math.tanh(paintH(x,y)*.7)));paintOrm[i+2]=0;
 }
-blue.setNormalTexture(doc.createTexture('fundicion-fina').setImage(await sharp(paintNormal,{raw:{width:paintSize,height:paintSize,channels:3}}).png({compressionLevel:9,adaptiveFiltering:true}).toBuffer()).setMimeType('image/png')).setNormalScale(.28);
-blue.getExtension('KHR_materials_clearcoat').setClearcoatNormalTexture(blue.getNormalTexture()).setClearcoatNormalScale(.22);
+blue.setNormalTexture(doc.createTexture('fundicion-fina').setImage(await sharp(paintNormal,{raw:{width:paintSize,height:paintSize,channels:3}}).png({compressionLevel:9,adaptiveFiltering:true}).toBuffer()).setMimeType('image/png')).setNormalScale(.2);
+blue.getExtension('KHR_materials_clearcoat').setClearcoatNormalTexture(blue.getNormalTexture()).setClearcoatNormalScale(.4);
 blue.setMetallicRoughnessTexture(doc.createTexture('epoxi-rugosidad').setImage(await sharp(paintOrm,{raw:{width:paintSize,height:paintSize,channels:3}}).png({compressionLevel:9,adaptiveFiltering:true}).toBuffer()).setMimeType('image/png'));
 // Procedural moulded-rubber microtexture, never a photograph or a flat fake wedge.
 // The same map works on both faces; full-scale form is always mesh geometry.
@@ -156,7 +156,13 @@ function ringText(word,center){
 }
 ringText('OPEN',-Math.PI/2);ringText('CLOSE',Math.PI/2);
 fs.mkdirSync('public/models',{recursive:true});
-writeValveStudio('public/models/valvula-estudio.hdr');
+// Dark product studio: deep blue body, crisp white enamel highlights (measured against v-01/v-02/v-04).
+const studioKey={direction:[-.35,.55,.75],horizontal:.32,vertical:.30,radiance:9};
+const studioStrips=[
+ {direction:[.9,.35,.3],horizontal:.05,vertical:.45,radiance:40},{direction:[-.9,.35,-.3],horizontal:.05,vertical:.45,radiance:40},
+ {direction:[.2,.9,.6],horizontal:.45,vertical:.05,radiance:35},{direction:[-.5,.3,.8],horizontal:.04,vertical:.35,radiance:45},
+ {direction:[.6,.5,-.6],horizontal:.04,vertical:.35,radiance:30}];
+writeValveStudio('public/models/valvula-estudio-esmalte.hdr',1024,512,{ambient:[.025,.035],gain:1.6,extra:[studioKey,...studioStrips]});
 await new NodeIO().registerExtensions([KHRMaterialsClearcoat]).write('public/models/valvula-compuerta.glb',doc);
 // External same-origin PBR maps avoid blob decoding failures in the site's bundled viewer.
 // Geometry remains GLB; remove embedded image bytes to avoid downloading each texture twice.
