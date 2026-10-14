@@ -283,17 +283,26 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
     test(`${route}: ningún href="#" ni botón sin acción`, async ({ page }) => {
       await page.goto(route);
       expect(await page.locator("main a[href='#']").count()).toBe(0);
-      expect(await page.locator("main button[type='button']").count()).toBe(0);
+      // Los únicos botones de acción sin enviar nada son las pestañas de tipo de los listados.
+      expect(await page.locator("main button[type='button']:not([role='tab'])").count()).toBe(0);
     });
   }
-  test("W04: cotizar Tyton precarga el producto", async ({ page }) => {
+  test("W04: 'Ver ficha' de la tubería HDPE abre su ficha y esta lleva a cotizar", async ({ page }) => {
     await page.goto("/productos/tuberias");
-    await expect(page.getByRole("link", { name: "Cotizar metrado" }).first()).toHaveAttribute("href", "/cotizar?producto=tuberia-tyton");
+    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Ver ficha", exact: true }).click();
+    await expect(page).toHaveURL(/\/productos\/tuberias\/tuberia-tyton$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Tubería de hierro dúctil");
+    await page.getByRole("link", { name: "Solicitar cotización" }).first().click();
+    await expect(page).toHaveURL(/\/cotizar$/);
   });
-  test("W11: 'Solicitar Reunión Técnica' abre contacto con motivo", async ({ page }) => {
+  test("W11: 'Solicitar cotización' de redes y matrices abre la cotización", async ({ page }) => {
     await page.goto("/soluciones/redes-matrices");
-    await page.getByRole("link", { name: "Solicitar Reunión Técnica" }).click();
-    await expect(page).toHaveURL(/\/contacto\?motivo=reunion/);
+    const hrefs = await page.locator("main").getByRole("link", { name: "Solicitar cotización" }).evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs.length).toBeGreaterThan(0);
+    expect(new Set(hrefs)).toEqual(new Set(["/cotizar"]));
+    await expect(page.locator("main").getByRole("link", { name: "Explorar tuberías" })).toHaveAttribute("href", "/productos/tuberias");
+    await page.locator("main").getByRole("link", { name: "Solicitar cotización" }).first().click();
+    await expect(page).toHaveURL(/\/cotizar$/);
   });
 });
 
