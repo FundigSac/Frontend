@@ -414,13 +414,29 @@ test.describe("Términos y condiciones", () => {
     await expect(page.locator(".lg-term").getByRole("link", { name: "Política de Privacidad" })).toHaveAttribute("href", "/privacidad");
   });
 
-  test("texto justificado con guiones automáticos y tipografía de lectura", async ({ page }) => {
+  test("texto justificado sin cortar palabras con guiones y tipografía de lectura", async ({ page }) => {
     await go(page, "/terminos", ".lg-toc a");
     const body = page.locator(".lg-term p").first();
     // Justificado desde 640 px; en móvil queda alineado a la izquierda para evitar "ríos" entre palabras.
     const wide = (page.viewportSize()?.width ?? 0) >= 640;
     await expect(body).toHaveCSS("text-align", wide ? "justify" : "start");
+    if (wide) await expect(body).toHaveCSS("hyphens", "none");
     await expect(body).toHaveCSS("font-family", /Inter/);
+  });
+
+  test("las páginas legales y la 404 muestran el botón de WhatsApp y la flecha de volver arriba", async ({ page }) => {
+    for (const route of ["/terminos", "/privacidad", "/cookies", "/reclamaciones", "/ruta-que-no-existe"]) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+      await expect(page.locator("a.lp-float__wa")).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664/);
+      await expect(page.locator("button.lp-float__top")).toHaveCount(1);
+    }
+    await page.goto("/privacidad", { waitUntil: "domcontentloaded" });
+    await hydrated(page, "button.lp-float__top");
+    await page.evaluate(() => window.scrollTo(0, 1200));
+    await expect(page.locator("button.lp-float__top.is-visible")).toHaveCount(1);
+    // En desarrollo el indicador de Next cubre este rincón: se dispara el clic del propio botón.
+    await page.locator("button.lp-float__top").evaluate((el) => (el as HTMLButtonElement).click());
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(50);
   });
 
   test("respeta el idioma y el modo oscuro elegidos en el sitio", async ({ page }) => {
