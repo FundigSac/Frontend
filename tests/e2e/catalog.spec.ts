@@ -341,7 +341,8 @@ test.describe("W05 formulario de requerimiento", () => {
     await form.locator("#cantidadMetrado").fill("10 unidades");
     await form.locator("#consentimiento").check();
     await form.getByRole("button", { name: "Enviar solicitud" }).click();
-    const err = page.getByRole("alert");
+    // El anunciador de rutas de Next también usa role=alert: se acota al aviso de error del formulario.
+    const err = form.getByRole("alert");
     await Promise.race([page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-/, { timeout: 30_000 }), err.waitFor({ timeout: 30_000 })]);
     if (page.url().includes("/cotizar/confirmacion")) {
       const ref = new URL(page.url()).searchParams.get("ref");
@@ -349,6 +350,7 @@ test.describe("W05 formulario de requerimiento", () => {
       await expect(page.getByText(ref!).first()).toBeVisible();
     } else {
       await expect(err).toBeVisible();
+      await expect(err).not.toHaveText("");
     }
   });
 });
