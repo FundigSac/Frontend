@@ -4,7 +4,10 @@ import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
 function watchConsole(page: Page) {
   const problems: string[] = [];
   page.on("console", (m: ConsoleMessage) => {
-    if (m.type() === "error" || m.type() === "warning") problems.push(`${m.type()}: ${m.text()}`);
+    if (m.type() !== "error" && m.type() !== "warning") return;
+    // Chrome registra el 404 del propio documento en la ruta inexistente; no es un fallo de la página.
+    if (/Failed to load resource.*404/.test(m.text()) && page.url().includes("ruta-que-no-existe")) return;
+    problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
   return problems;
