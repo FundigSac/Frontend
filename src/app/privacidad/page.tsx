@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, FileText, Lock, Mail, ScrollText, ShieldCheck, Users } from "lucide-react";
 import { SITE } from "@/shared/config/site";
 import { LegalCta, LegalHero, LEGAL_UPDATED } from "../_legal/legal-parts";
+import { legalHeroImage } from "../_legal/images";
 
 export const metadata: Metadata = {
   title: "Política de privacidad",
@@ -35,7 +36,7 @@ export default function PrivacyPage() {
         crumb="Política de privacidad"
         title="Política de privacidad"
         lead="En FUNDIGSAC protegemos la información personal que nos confías, con un trato responsable, seguro y transparente."
-        image="/media/home-v3/hero-planta.webp"
+        image={legalHeroImage()}
         alt="Planta de tratamiento de agua frente a las montañas"
         wide
       />

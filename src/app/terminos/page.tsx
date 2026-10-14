@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalCta, LegalHero, LEGAL_UPDATED } from "../_legal/legal-parts";
+import { legalClosingImage, legalHeroImage } from "../_legal/images";
 import { LegalToc, type TocItem } from "../_legal/toc";
 
 export const metadata: Metadata = {
@@ -31,7 +32,7 @@ export default function TermsPage() {
         crumb="Términos y condiciones"
         title="Términos y condiciones"
         lead="A continuación, te presentamos los términos y condiciones que rigen el uso de nuestro sitio web y la información que ponemos a tu disposición."
-        image="/media/home-v3/hero-planta.webp"
+        image={legalHeroImage()}
         alt="Planta de tratamiento de agua frente a las montañas"
         wide
       />
@@ -68,7 +69,7 @@ export default function TermsPage() {
         text="Si tienes alguna pregunta sobre nuestros términos y condiciones o sobre el uso de nuestro sitio web, nuestro equipo está listo para atenderte."
         cta="Contactar con nosotros"
         href="/contacto"
-        image="/media/home-v3/hero-planta.webp"
+        image={legalClosingImage()}
       />
     </main>
   );

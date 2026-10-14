@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { CookiePrefs } from "../_legal/cookie-prefs";
 import { LegalHero } from "../_legal/legal-parts";
+import { legalHeroImage } from "../_legal/images";
 
 export const metadata: Metadata = {
   title: "Política de cookies",
@@ -31,7 +32,7 @@ export default function CookiesPage() {
         crumb="Política de cookies"
         title="Política de cookies"
         lead="En FUNDIGSAC utilizamos cookies para mejorar tu experiencia de navegación, analizar el uso del sitio y ofrecer contenidos relevantes."
-        image="/media/home-v3/hero-planta.webp"
+        image={legalHeroImage()}
         alt="Planta de tratamiento de agua frente a las montañas"
         wide
       />

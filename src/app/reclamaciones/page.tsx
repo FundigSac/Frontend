@@ -4,6 +4,7 @@ import { SITE } from "@/shared/config/site";
 import { site, whatsappLink } from "@/lib/site-info";
 import { ClaimForm } from "../_legal/claim-form";
 import { LegalCta, LegalHero } from "../_legal/legal-parts";
+import { legalClosingImage, legalHeroImage } from "../_legal/images";
 
 export const metadata: Metadata = {
   title: "Libro de reclamaciones",
@@ -36,7 +37,7 @@ export default function ComplaintsPage() {
         crumb="Libro de reclamaciones"
         title="Libro de Reclamaciones"
         lead="Tu opinión nos ayuda a mejorar. Registra aquí tu reclamo o queja y nos comprometemos a brindarte una pronta atención."
-        image="/media/home-v3/hero-planta.webp"
+        image={legalHeroImage()}
         alt="Planta de tratamiento de agua frente a las montañas"
       >
         <ul className="lg-hero__panel">
@@ -114,7 +115,7 @@ export default function ComplaintsPage() {
         text="Nuestro equipo de atención al cliente puede orientarte sobre el estado de tu reclamo o resolver tus consultas."
         cta="Contactar ahora"
         href="/contacto"
-        image="/media/home-v3/hero-planta.webp"
+        image={legalClosingImage()}
       />
     </main>
   );

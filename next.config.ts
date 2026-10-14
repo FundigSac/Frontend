@@ -29,6 +29,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // PGlite (base de datos embebida de desarrollo) resuelve su WASM con rutas de archivo: no debe empaquetarse.
   serverExternalPackages: ["@electric-sql/pglite"],
+  // /reclamaciones se renderiza por petición y comprueba si existen las fotos legales en /public.
+  outputFileTracingIncludes: { "/reclamaciones": ["./public/media/legal/**/*"] },
   reactStrictMode: true,
   images: { formats: ["image/avif", "image/webp"], qualities: [60, 70, 72, 75], minimumCacheTTL: 60 * 60 * 24 * 30 },
   async headers() {
