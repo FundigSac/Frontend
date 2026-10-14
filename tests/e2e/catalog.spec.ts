@@ -307,29 +307,49 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
 });
 
 test.describe("W05 formulario de requerimiento", () => {
-  test("valida campos obligatorios y no muestra éxito sin respuesta del servidor", async ({ page }) => {
-    await page.goto("/productos/marcos-y-tapas");
-    const form = page.locator("#procurement-form");
+  test("valida campos obligatorios y no envía sin completarlos", async ({ page }) => {
+    await page.goto("/cotizar");
+    const form = page.locator("#cotizacionForm");
     await form.scrollIntoViewIfNeeded();
-    await form.getByRole("button", { name: /Transmitir Solicitud/ }).click();
-    // Validación nativa: el primer campo requerido queda inválido y no hay éxito.
-    await expect(form.locator("#contact-name:invalid")).toHaveCount(1);
-    await expect(page.getByText("¡Requerimiento registrado con éxito!")).toHaveCount(0);
+    await form.getByRole("button", { name: "Enviar solicitud" }).click();
+    // Validación nativa: el primer campo requerido queda inválido y no se llega a la confirmación.
+    await expect(form.locator("#razonSocial:invalid")).toHaveCount(1);
+    await expect(page).toHaveURL(/\/cotizar$/);
   });
 
-  test("envío real: devuelve folio REQ-… o un error visible (nunca éxito falso)", async ({ page }) => {
-    await page.goto("/productos/marcos-y-tapas");
-    const form = page.locator("#procurement-form");
-    await form.getByLabel("Nombre y Apellidos").fill("Ing. Prueba E2E");
-    await form.getByLabel("Razón Social y RUC").fill("Consorcio Prueba (RUC 20601839281)");
-    await form.getByLabel("Correo Corporativo").fill("e2e@example.com");
-    await form.getByLabel("Teléfono Móvil / WhatsApp").fill("+51 987 654 321");
-    await form.getByLabel("Cantidad Estimada (Unidades)").fill("10");
-    await form.getByRole("button", { name: /Transmitir Solicitud/ }).click();
-    const ok = page.getByText(/Folio de seguimiento: REQ-/);
+  test("la cotización con producto precargado también valida antes de enviar", async ({ page }) => {
+    await page.goto("/cotizar?producto=tuberia-tyton");
+    const form = page.locator("main form");
+    await form.getByRole("button", { name: "Enviar solicitud de cotización" }).click();
+    expect(await form.locator("input:invalid, select:invalid, textarea:invalid").count()).toBeGreaterThan(0);
+    await expect(page).toHaveURL(/\/cotizar\?producto=tuberia-tyton$/);
+  });
+
+  test("envío real: lleva a la confirmación con folio COT-… o muestra un error (nunca éxito falso)", async ({ page }) => {
+    await page.goto("/cotizar");
+    const form = page.locator("#cotizacionForm");
+    await form.locator("#razonSocial").fill("Consorcio Prueba E2E");
+    await form.locator("#rucEmpresa").fill("20601839281");
+    await form.locator("#tipoProyecto").selectOption("saneamiento");
+    await form.locator("#departamentoDestino").fill("Lima");
+    await form.locator("#nombreSolicitante").fill("Ing. Prueba E2E");
+    await form.locator("#cargoSolicitante").fill("Jefe de compras");
+    await form.locator("#correoCorporativo").fill("e2e@example.com");
+    await form.locator("#celularContacto").fill("+51 987 654 321");
+    await form.locator("#familiaPrincipal").selectOption("marcos_tapas");
+    await form.locator("#diametrosNominales").fill("DN 600");
+    await form.locator("#cantidadMetrado").fill("10 unidades");
+    await form.locator("#consentimiento").check();
+    await form.getByRole("button", { name: "Enviar solicitud" }).click();
     const err = page.getByRole("alert");
-    await expect(ok.or(err)).toBeVisible({ timeout: 30_000 });
-    if (await ok.isVisible()) await expect(page.getByRole("button", { name: /Requerimiento registrado con éxito/ })).toBeVisible();
+    await Promise.race([page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-/, { timeout: 30_000 }), err.waitFor({ timeout: 30_000 })]);
+    if (page.url().includes("/cotizar/confirmacion")) {
+      const ref = new URL(page.url()).searchParams.get("ref");
+      expect(ref).toMatch(/^COT-/);
+      await expect(page.getByText(ref!).first()).toBeVisible();
+    } else {
+      await expect(err).toBeVisible();
+    }
   });
 });
 

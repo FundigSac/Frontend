@@ -455,6 +455,24 @@ test.describe("Términos y condiciones", () => {
   });
 });
 
+test.describe("Mapa del sitio", () => {
+  test("el enlace del pie abre una página real con todos los grupos y enlaces válidos", async ({ page }) => {
+    await go(page, "/");
+    await page.locator("footer.lp-footer").getByRole("link", { name: "Mapa del sitio" }).click();
+    await expect(page).toHaveURL(/\/mapa-del-sitio$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Mapa del sitio");
+    await expect(page.locator(".lg-map__card")).toHaveCount(5);
+    const hrefs = await page.locator(".lg-map__links a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs.length).toBeGreaterThan(20);
+    for (const href of hrefs) expect(href).toMatch(/^\//);
+    // cada enlace interno responde (sin 404)
+    for (const href of new Set(hrefs)) {
+      const res = await page.request.get(href as string);
+      expect(res.status(), href as string).toBeLessThan(400);
+    }
+  });
+});
+
 test.describe("T&C B2B y consola limpia", () => {
   test("términos B2B: texto pendiente, sin cláusulas inventadas", async ({ page }) => {
     await go(page, "/terminos-b2b");
@@ -462,7 +480,7 @@ test.describe("T&C B2B y consola limpia", () => {
     await expect(page.locator("main")).toContainText("pendiente de revisión");
   });
 
-  const routes = ["/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar?producto=valvula-compuerta", "/cotizar?producto=marco-tapa-d400", "/cotizar/confirmacion", "/reclamaciones", "/privacidad", "/cookies", "/terminos", "/terminos-b2b"];
+  const routes = ["/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar?producto=valvula-compuerta", "/cotizar?producto=marco-tapa-d400", "/cotizar/confirmacion", "/reclamaciones", "/privacidad", "/cookies", "/terminos", "/mapa-del-sitio", "/terminos-b2b"];
   for (const route of routes) {
     test(`sin errores ni advertencias de consola: ${route}`, async ({ page }) => {
       const problems: string[] = [];
