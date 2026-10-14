@@ -1,5 +1,6 @@
 "use client";
 
+import { FloatingActions } from "../_landing/floating-actions";
 import Link from "next/link";
 import { COMMON, TERMS, UPDATED } from "./copy";
 import { LegalCta, LegalHero } from "./legal-parts";
@@ -15,7 +16,7 @@ export function TermsView({ hero, closing }: { hero: string; closing: string }) 
 
   return (
     <main className="lp lg">
-      <LegalHero home={home} crumb={t.crumb} title={t.title} lead={t.lead} image={hero} alt="" wide />
+      <LegalHero home={home} crumb={t.crumb} title={t.title} lead={t.lead} image={hero} alt="" />
 
       <div className="lp-shell lg-body">
         <div className="lg-doc">
@@ -44,6 +45,7 @@ export function TermsView({ hero, closing }: { hero: string; closing: string }) 
       </div>
 
       <LegalCta {...t.cta} href="/contacto" image={closing} />
+      <FloatingActions />
     </main>
   );
 }

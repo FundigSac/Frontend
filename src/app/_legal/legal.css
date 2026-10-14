@@ -73,6 +73,16 @@
   object-position: 70% 58%;
 }
 
+/* La foto ocupa el lado derecho y se funde hacia el fondo: el título nunca queda sobre la imagen. */
+@media (min-width: 901px) {
+  .lg-hero__photo {
+    inset: 0 0 0 34% !important;
+    width: 66% !important;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  }
+}
+
 .lg-hero__veil {
   position: absolute;
   z-index: -1;
@@ -115,7 +125,7 @@
 }
 
 .lg-hero__title--wide {
-  max-width: 14ch;
+  max-width: 24ch;
 }
 
 .lg-hero__lead {
@@ -1783,14 +1793,15 @@
   letter-spacing: -0.03em;
 }
 
-/* Texto justificado con guiones automáticos (según html[lang]); en pantallas angostas queda alineado a la izquierda. */
+/* Texto justificado sin cortar palabras con guiones (cada palabra va completa o pasa a la línea siguiente); en pantallas angostas queda alineado a la izquierda. */
 @media (min-width: 640px) {
   .lg :where(.lg-term p, .lg-step p, .lg-info p, .lg-faq details > div, .lg-intro .lg-text) {
     text-align: justify;
     text-justify: inter-word;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    hyphenate-limit-chars: 6 3 3;
+    -webkit-hyphens: none;
+    hyphens: none;
+    overflow-wrap: normal;
+    word-break: normal;
     text-wrap: pretty;
   }
 }
