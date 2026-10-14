@@ -167,7 +167,7 @@ export function LandingHeader() {
             <button
               type="button"
               className="lp-icon-btn lp-lang__btn"
-              aria-label={t.language}
+              aria-label={`${lang.toUpperCase()} – ${t.language}`}
               aria-haspopup="listbox"
               aria-expanded={langOpen}
               onClick={() => setLangOpen(!langOpen)}
@@ -320,7 +320,7 @@ export function LandingFooter() {
           <Link href="/cookies">{f.cookies}</Link>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
           <Link href="/reclamaciones">{f.complaints}</Link>
-          <a href="/sitemap.xml">{f.sitemap}</a>
+          <Link href="/mapa-del-sitio">{f.sitemap}</Link>
         </div>
       </div>
     </footer>

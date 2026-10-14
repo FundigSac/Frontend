@@ -19,7 +19,7 @@
 .x-need:focus-visible {
   gap: 9px;
   border-bottom-color: currentColor;
-  color: #c24a08;
+  color: #b84508;
 }
 
 .x-need:hover svg,
@@ -111,7 +111,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #c24a08;
+  color: #b84508;
   font-size: 14px;
   font-weight: 700;
   transition: gap 200ms ease;

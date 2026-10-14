@@ -7,7 +7,7 @@
   --lp-ink: #13233d;
   --lp-text: #4a5568;
   --lp-orange: #f26a1b;
-  --lp-orange-dark: #c24a08;
+  --lp-orange-dark: #b84508;
   --lp-line: #e3e8ef;
   --lp-soft: #f4f6f9;
   --lp-gutter: max(clamp(20px, 5vw, 96px), calc((100vw - 1560px) / 2));
@@ -1369,6 +1369,8 @@
   .lp-footer__bottom {
     align-items: flex-start;
     flex-direction: column;
+    /* deja libre la esquina inferior para el botón flotante de WhatsApp */
+    padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -1377,8 +1379,13 @@
     width: 100%;
   }
 
+  /* Sin barras separadoras al partir líneas: quedaban huérfanas al inicio de cada renglón. */
+  .lp-footer__legal {
+    gap: 0 20px;
+  }
+
   .lp-footer__legal a + a::before {
-    margin: 0 8px;
+    display: none;
   }
 }
 
@@ -2798,4 +2805,41 @@ html[data-lp-theme="dark"] .lp-cart__badge {
   .lp-location > * {
     animation: none !important;
   }
+}
+
+.lp-search.is-open:focus-within {
+  border-color: var(--lp-orange);
+  box-shadow: 0 0 0 3px rgb(242 106 27 / 22%), 0 10px 28px -16px rgb(11 34 68 / 40%);
+}
+
+/* Pantallas muy angostas (320 px): el logo y los íconos de la cabecera se compactan para no desbordar. */
+@media (max-width: 350px) {
+  .lp-header__brand img {
+    width: 100px;
+  }
+
+  .lp-header__actions > *,
+  .lp-header__toggle {
+    min-width: 38px;
+    width: 38px;
+  }
+}
+
+/* Botones principales: naranja de marca algo más profundo (#c94f0a) para cumplir el contraste AA (4.5:1) con texto blanco; el naranja vivo queda para acentos. */
+.lp-btn--solid,
+.lp-header .lp-header__quote {
+  background: #c94f0a;
+}
+
+.lp-btn--solid:hover,
+.lp-header .lp-header__quote:hover {
+  background: #b04307;
+}
+
+.lp-nav__link.is-active {
+  color: #a33d05;
+}
+
+html[data-lp-theme="dark"] .lp-nav__link.is-active {
+  color: #ff9a62;
 }

@@ -3,7 +3,7 @@
   --ck-ink: #13233d;
   --ck-text: #4a5568;
   --ck-orange: #f26a1b;
-  --ck-orange-dark: #c24a08;
+  --ck-orange-dark: #b84508;
   position: fixed;
   right: 0;
   bottom: 18px;
@@ -282,7 +282,7 @@ html.ck-lock {
   --ck-ink: #13233d;
   --ck-text: #4a5568;
   --ck-orange: #f26a1b;
-  --ck-orange-dark: #c24a08;
+  --ck-orange-dark: #b84508;
   --ck-line: rgb(19 35 61 / 12%);
   width: min(100% - 24px, 680px);
   max-width: none;
