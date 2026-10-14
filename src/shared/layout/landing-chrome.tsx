@@ -77,7 +77,7 @@ export function LandingHeader() {
   }, []);
 
   return (
-    <header className={`lp-header${scrolled || mobileOpen ? " is-solid" : ""}`}>
+    <header className={`lp-header${pathname === "/industrias/saneamiento" ? " lp-header--sector" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
       <div className="lp-shell lp-header__bar">
         <Link className="lp-header__brand" href="/" aria-label="FUNDIGSAC, inicio">
           <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" priority />
