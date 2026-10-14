@@ -7,7 +7,7 @@
   --lp-ink: #13233d;
   --lp-text: #4a5568;
   --lp-orange: #f26a1b;
-  --lp-orange-dark: #d9560c;
+  --lp-orange-dark: #c24a08;
   --lp-line: #e3e8ef;
   --lp-soft: #f4f6f9;
   --lp-gutter: max(clamp(20px, 5vw, 96px), calc((100vw - 1560px) / 2));
@@ -590,6 +590,10 @@
 
 .lp-hero__count {
   min-width: 58px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgb(11 34 68 / 66%);
+  color: #fff;
   font-size: 14px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
@@ -1099,6 +1103,8 @@
 }
 
 .lp-footer__legal a {
+  display: inline-block;
+  padding-block: 5px;
   font-size: 13px;
 }
 
@@ -1735,7 +1741,7 @@ html[data-lp-theme="dark"] .lp-hero__valve {
 }
 
 .lp-backing__n {
-  color: var(--lp-orange);
+  color: var(--lp-orange-dark);
   font-size: 14px;
   font-weight: 700;
 }
@@ -2462,7 +2468,6 @@ html[data-lp-theme="dark"] .lp-cart__badge {
 .lp-backing,
 .lp-docs,
 .lp-location,
-.lp-footer,
 .ag-line {
   content-visibility: auto;
   contain-intrinsic-size: auto 520px;
