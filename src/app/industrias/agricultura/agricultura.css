@@ -621,6 +621,51 @@ html[data-lp-theme="dark"] .ag-docs__book {
   mix-blend-mode: normal;
 }
 
+/* Recorte al contorno real del papel: sin el fondo gris de la foto, con sombra propia. */
+.ag-docs__plan,
+.ag-docs__book {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 26px 30px rgb(11 34 68 / 22%)) drop-shadow(0 4px 8px rgb(11 34 68 / 12%));
+}
+
+.ag-docs__plan img {
+  clip-path: polygon(11% 6.5%, 81% 1.5%, 94.5% 92.5%, 10.5% 99%);
+}
+
+.ag-docs__book img {
+  clip-path: polygon(14.8% 13.5%, 68% 4.5%, 90% 82.5%, 30.5% 99%);
+}
+
+.ag-docs__plan {
+  top: -18px;
+  right: -4%;
+  width: 66%;
+  transform: none;
+}
+
+.ag-docs__book {
+  bottom: -10px;
+  left: 0;
+  width: 68%;
+  transform: none;
+}
+
+.ag-docs__media:hover .ag-docs__plan {
+  transform: translate(8px, -6px);
+}
+
+.ag-docs__media:hover .ag-docs__book {
+  transform: translate(-6px, 4px) scale(1.02);
+}
+
+html[data-lp-theme="dark"] .ag-docs__plan,
+html[data-lp-theme="dark"] .ag-docs__book {
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 26px 34px rgb(0 0 0 / 60%));
+}
+
 @media (max-width: 860px) {
   .ag-docs__inner {
     grid-template-columns: 1fr;
