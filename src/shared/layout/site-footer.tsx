@@ -33,6 +33,7 @@ const FOOTER_GROUPS = [
       { href: "/terminos", label: "Términos y condiciones" },
       { href: "/terminos-b2b", label: "Términos B2B" },
       { href: "/reclamaciones", label: "Libro de reclamaciones" },
+      { href: "/mapa-del-sitio", label: "Mapa del sitio" },
     ],
   },
 ] as const;

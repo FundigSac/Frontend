@@ -2,7 +2,7 @@
 const LANDING_PATHS = new Set(["/", "/industrias/agricultura", "/industrias/saneamiento", "/industrias/mineria"]);
 
 /** Páginas legales y de atención: mismo chrome landing con la cabecera transparente sobre su hero. */
-const LEGAL_PATHS = new Set(["/terminos", "/privacidad", "/cookies", "/reclamaciones"]);
+const LEGAL_PATHS = new Set(["/terminos", "/privacidad", "/cookies", "/reclamaciones", "/mapa-del-sitio"]);
 
 /** Segmento que Next asigna a la página 404 global (app/not-found.tsx). */
 const NOT_FOUND_SEGMENT = "/_not-found";
