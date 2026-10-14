@@ -756,3 +756,47 @@ html[data-lp-theme="dark"] .ag-hero__motion {
   inset: 0;
   mix-blend-mode: screen;
 }
+
+/* Móvil: la línea de productos en dos columnas (menos scroll); una sola columna en pantallas diminutas. */
+@media (max-width: 560px) {
+  .ag-line__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .ag-line .lp-card__label {
+    padding: 12px;
+    font-size: 13.5px;
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 340px) {
+  .ag-line__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet (561–860 px): botones lado a lado y foto de la válvula menos alta. */
+@media (min-width: 561px) and (max-width: 860px) {
+  .ag-hero__actions .lp-btn {
+    flex: 0 1 auto;
+  }
+
+  .ag-featured__media {
+    aspect-ratio: 3 / 2;
+  }
+
+  .ag-featured__media img {
+    object-position: 50% 24%;
+  }
+
+  .ag-actions .lp-btn {
+    flex: 1 1 auto;
+  }
+
+  .ag-docs__media {
+    min-height: 380px;
+    max-width: 560px;
+  }
+}

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import "../../app/home.css";
 import { LandingFooter } from "./landing-chrome";
+import { openCookiePreferences } from "./cookie-events";
 
 const FOOTER_GROUPS = [
   {
@@ -138,7 +139,7 @@ function ProductsFooter() {
       </div>
       <div className="home-footer__bottom">
         <span>© {new Date().getFullYear()} FUNDIGSAC. Todos los derechos reservados.</span>
-        <div><Link href="/terminos-b2b">Términos y condiciones</Link><Link href="/privacidad">Política de privacidad</Link><Link href="/cookies">Cookies</Link><Link href="/reclamaciones">Libro de reclamaciones</Link></div>
+        <div><Link href="/terminos-b2b">Términos y condiciones</Link><Link href="/privacidad">Política de privacidad</Link><Link href="/cookies">Cookies</Link><button type="button" className="footer-linkbtn" onClick={openCookiePreferences}>Preferencias de cookies</button><Link href="/reclamaciones">Libro de reclamaciones</Link></div>
       </div>
     </footer>
   );

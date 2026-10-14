@@ -77,6 +77,7 @@ export const HOME = {
       complaints: "Libro de reclamaciones",
       sitemap: "Mapa del sitio",
       cookies: "Política de cookies",
+      cookiePrefs: "Preferencias de cookies",
     },
   },
   en: {
@@ -153,6 +154,7 @@ export const HOME = {
       complaints: "Complaints book",
       sitemap: "Sitemap",
       cookies: "Cookie policy",
+      cookiePrefs: "Cookie preferences",
     },
   },
 };

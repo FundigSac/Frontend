@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, ShoppingCart, Sun, User, UserPlus, LogIn, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
+import { openCookiePreferences } from "./cookie-events";
 import { useHome } from "./home-copy";
 import { COPY, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
@@ -315,6 +316,7 @@ export function LandingFooter() {
           <Link href="/terminos-b2b">{f.terms}</Link>
           <Link href="/privacidad">{f.privacy}</Link>
           <Link href="/cookies">{f.cookies}</Link>
+          <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
           <Link href="/reclamaciones">{f.complaints}</Link>
           <a href="/sitemap.xml">{f.sitemap}</a>
         </div>

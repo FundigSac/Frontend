@@ -2536,3 +2536,58 @@ html[data-lp-theme="dark"] .lp-cart__badge {
     font-size: 12.5px;
   }
 }
+
+/* Enlace-botón "Preferencias de cookies" en los pies de página. */
+.lp-footer__legal .lp-footer__linkbtn,
+.footer-linkbtn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.lp-footer__legal .lp-footer__linkbtn {
+  font-size: 13px;
+}
+
+.lp-footer__legal .lp-footer__linkbtn:hover,
+.footer-linkbtn:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lp-footer__legal a + .lp-footer__linkbtn::before,
+.lp-footer__legal .lp-footer__linkbtn + a::before {
+  margin: 0 14px;
+  color: rgb(255 255 255 / 35%);
+  content: "|";
+}
+
+/* Pie de página en pantallas muy angostas: columnas que se encogen y correo que puede cortarse. */
+.lp-footer__main > * {
+  min-width: 0;
+}
+
+.lp-footer a,
+.lp-footer address li {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 360px) {
+  .lp-footer__main {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .lp-footer__legal {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
