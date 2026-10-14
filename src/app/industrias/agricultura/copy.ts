@@ -47,7 +47,7 @@ export const AGRI = {
       quote: "Solicitar cotización",
     },
     motion: { pause: "Pausar animación del fondo", play: "Reproducir animación del fondo" },
-    crumbs: { home: "Inicio", sectors: "Sectores", current: "Agricultura" },
+    crumbs: { home: "Inicio", current: "Agricultura" },
   },
   en: {
     hero: {
@@ -93,7 +93,7 @@ export const AGRI = {
       quote: "Request a quote",
     },
     motion: { pause: "Pause background animation", play: "Play background animation" },
-    crumbs: { home: "Home", sectors: "Industries", current: "Agriculture" },
+    crumbs: { home: "Home", current: "Agriculture" },
   },
 };
 

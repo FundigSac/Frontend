@@ -65,8 +65,6 @@ export function AgricultureSections() {
           <nav className="ag-crumbs" aria-label="breadcrumb">
             <Link href="/">{t.crumbs.home}</Link>
             <span aria-hidden="true">/</span>
-            <Link href="/industrias">{t.crumbs.sectors}</Link>
-            <span aria-hidden="true">/</span>
             <span aria-current="page">{t.crumbs.current}</span>
           </nav>
           <p className="ag-eyebrow"><span aria-hidden="true" />{t.hero.eyebrow}</p>
