@@ -5,15 +5,16 @@ import Link from "next/link";
 import { ArrowRight, Droplet, FileText, Settings, ShieldCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useAgri } from "./copy";
+import { BLUR } from "@/shared/media/blur";
 import { HeroMotion, type HeroVideo } from "./hero-motion";
 
-/** Cuando exista un video real del riego (WebM/MP4), indícalo aquí y reemplaza al shader: { webm: "/media/agricultura/hero-loop-hd.webm", mp4: "/media/agricultura/hero-loop-hd.mp4" } */
+/** Video del riego (generado a partir de la foto, bucle sin costura). 1080p / medio / móvil: el componente elige según pantalla y conexión. */
 const HERO_VIDEO: HeroVideo | undefined = {
-  webm: "/media/agricultura/hero-loop-hd.webm",
-  mp4: "/media/agricultura/hero-loop-hd.mp4",
-  small: { webm: "/media/agricultura/hero-loop-hd-sm.webm", mp4: "/media/agricultura/hero-loop-hd-sm.mp4" },
+  webm: "/media/agricultura/hero-loop-md.webm",
+  mp4: "/media/agricultura/hero-loop-md.mp4",
+  full: { webm: "/media/agricultura/hero-loop-fhd.webm", mp4: "/media/agricultura/hero-loop-fhd.mp4" },
+  small: { webm: "/media/agricultura/hero-loop-sm.webm", mp4: "/media/agricultura/hero-loop-sm.mp4" },
 };
-import { BLUR } from "@/shared/media/blur";
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
 const LINE_ITEMS = [

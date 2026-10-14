@@ -16,7 +16,18 @@ import { useAgri } from "./copy";
  *   Todo es periódico (16 s): no hay salto al reiniciar. Con `prefers-reduced-motion`, sin WebGL o antes de
  *   cargar, se queda la foto estática (el LCP no se ve afectado).
  */
-export type HeroVideo = { webm?: string; mp4?: string; small?: { webm?: string; mp4?: string } };
+type VideoFiles = { webm?: string; mp4?: string };
+export type HeroVideo = VideoFiles & { full?: VideoFiles; small?: VideoFiles };
+
+/** 1080p solo en pantallas grandes (≥1700 px físicos) y buena conexión; liviano en móvil; medio en el resto. */
+function pickSource(v: HeroVideo): VideoFiles {
+  const conn = (navigator as unknown as { connection?: { effectiveType?: string; downlink?: number } }).connection;
+  const slow = /2g/.test(conn?.effectiveType ?? "") || (conn?.downlink ?? 10) < 1;
+  const w = window.innerWidth;
+  if (v.small && (w < 860 || slow)) return v.small;
+  if (v.full && w * (window.devicePixelRatio || 1) >= 1700) return v.full;
+  return v;
+}
 
 const LOOP = 16;
 const FPS = 30;
@@ -220,7 +231,7 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     let cancelled = false;
     const arm = () => {
       const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
-      const go = () => !cancelled && setSrc(window.innerWidth < 860 && video.small ? video.small : video);
+      const go = () => !cancelled && setSrc(pickSource(video));
       if (idle) idle(go, { timeout: 2500 });
       else window.setTimeout(go, 600);
     };
