@@ -10,10 +10,10 @@ import { HeroMotion, type HeroVideo } from "./hero-motion";
 
 /** Video del riego (generado a partir de la foto, bucle sin costura). 1080p / medio / móvil: el componente elige según pantalla y conexión. */
 const HERO_VIDEO: HeroVideo | undefined = {
-  webm: "/media/agricultura/hero-flow-md.webm",
-  mp4: "/media/agricultura/hero-flow-md.mp4",
-  full: { webm: "/media/agricultura/hero-flow-fhd.webm", mp4: "/media/agricultura/hero-flow-fhd.mp4" },
-  small: { webm: "/media/agricultura/hero-flow-sm.webm", mp4: "/media/agricultura/hero-flow-sm.mp4" },
+  webm: "/media/agricultura/hero-esr-md.webm",
+  mp4: "/media/agricultura/hero-esr-md.mp4",
+  full: { webm: "/media/agricultura/hero-esr-fhd.webm", mp4: "/media/agricultura/hero-esr-fhd.mp4" },
+  small: { webm: "/media/agricultura/hero-esr-sm.webm", mp4: "/media/agricultura/hero-esr-sm.mp4" },
 };
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
