@@ -41,7 +41,7 @@ export const nameSchema = z
   .trim()
   .min(2, "Ingresa tu nombre completo.")
   .max(120, "El nombre es demasiado largo (máximo 120 caracteres).")
-  // eslint-disable-next-line no-control-regex
+   
   .refine((v) => !/[\u0000-\u001f\u007f<>]/.test(v), "El nombre contiene caracteres no permitidos.");
 
 /** Contraseña nueva: longitud 12–128 y no trivial. (La de inicio de sesión sólo exige no estar vacía.) */
@@ -96,7 +96,7 @@ const optionalText = (max: number, message: string) =>
     .string()
     .trim()
     .max(max, message)
-    // eslint-disable-next-line no-control-regex
+     
     .refine((v) => !/[\u0000-\u001f\u007f<>]/.test(v), "Contiene caracteres no permitidos.")
     .transform((v) => (v === "" ? null : v));
 

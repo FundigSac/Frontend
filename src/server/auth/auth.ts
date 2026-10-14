@@ -165,6 +165,10 @@ export function createAuth({ db, runInBackground = defaultRunInBackground, relax
     advanced: {
       cookiePrefix: "fundigsac",
       useSecureCookies: secure,
+      // Better Auth desactiva estas verificaciones por defecto cuando detecta un entorno de pruebas; se fijan
+      // explícitamente para que CSRF/Origin y la validación de callbackURL/redirectTo rijan siempre (y se prueben).
+      disableOriginCheck: false,
+      disableCSRFCheck: false,
       defaultCookieAttributes: { httpOnly: true, sameSite: "lax", secure, path: "/" },
       ipAddress: {
         ...(ipHeaders ? { ipAddressHeaders: ipHeaders } : {}),

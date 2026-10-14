@@ -14,7 +14,7 @@ export function isSafeRedirectPath(value: unknown): value is string {
   if (value.startsWith("//") || value.startsWith("/\\")) return false;
   if (value.includes("\\")) return false;
   // Caracteres de control / espacios en blanco no estándar (CR, LF, tab, NUL…).
-  // eslint-disable-next-line no-control-regex
+   
   if (/[\u0000-\u001f\u007f]/.test(value)) return false;
   // Evita rutas que, tras decodificar, produzcan "//" o "\" (p. ej. "/%2F%2Fevil.com", "/%5Cevil.com").
   let decoded: string;
@@ -24,7 +24,7 @@ export function isSafeRedirectPath(value: unknown): value is string {
     return false;
   }
   if (decoded.startsWith("//") || decoded.includes("\\")) return false;
-  // eslint-disable-next-line no-control-regex
+   
   if (/[\u0000-\u001f\u007f]/.test(decoded)) return false;
   // Verificación final: debe resolver al mismo origen.
   try {
