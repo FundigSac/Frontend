@@ -70,7 +70,7 @@
 .lg-hero__photo {
   z-index: -2;
   object-fit: cover;
-  object-position: 72% 50%;
+  object-position: 70% 58%;
 }
 
 .lg-hero__veil {
@@ -78,8 +78,8 @@
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(247 251 255 / 97%) 0%, rgb(247 251 255 / 88%) 30%, rgb(247 251 255 / 36%) 52%, rgb(247 251 255 / 0%) 70%),
-    linear-gradient(180deg, rgb(196 224 247 / 70%) 0%, rgb(196 224 247 / 0%) 34%);
+    linear-gradient(90deg, rgb(247 251 255 / 97%) 0%, rgb(247 251 255 / 93%) 28%, rgb(247 251 255 / 62%) 38%, rgb(247 251 255 / 14%) 50%, rgb(247 251 255 / 0%) 62%),
+    linear-gradient(180deg, rgb(214 233 250 / 55%) 0%, rgb(214 233 250 / 0%) 26%);
 }
 
 .lg-crumbs {
@@ -119,7 +119,7 @@
 }
 
 .lg-hero__lead {
-  max-width: 540px;
+  max-width: 500px;
   margin-top: 22px !important;
   color: var(--lp-text);
   font-size: clamp(16px, 1.35vw, 20px);
@@ -527,14 +527,14 @@
 .lg-cta__photo {
   z-index: -2;
   object-fit: cover;
-  object-position: 50% 62%;
+  object-position: 50% 58%;
 }
 
 .lg-cta__veil {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(90deg, rgb(8 24 48 / 90%) 0%, rgb(8 24 48 / 70%) 46%, rgb(8 24 48 / 28%) 100%);
+  background: linear-gradient(90deg, rgb(7 20 42 / 88%) 0%, rgb(7 20 42 / 62%) 46%, rgb(7 20 42 / 24%) 100%);
 }
 
 .lg-cta__inner {

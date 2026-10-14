@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   // /reclamaciones se renderiza por petición y comprueba si existen las fotos legales en /public.
   outputFileTracingIncludes: { "/reclamaciones": ["./public/media/legal/**/*"] },
   reactStrictMode: true,
-  images: { formats: ["image/avif", "image/webp"], qualities: [60, 70, 72, 75], minimumCacheTTL: 60 * 60 * 24 * 30 },
+  images: { formats: ["image/avif", "image/webp"], qualities: [60, 70, 72, 75, 85], minimumCacheTTL: 60 * 60 * 24 * 30 },
   async headers() {
     return [
       {

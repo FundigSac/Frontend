@@ -18,7 +18,7 @@ export function LegalHero({ crumb, title, lead, image, alt, wide, modifier, chil
 }) {
   return (
     <section className={`lg-hero${modifier ? ` ${modifier}` : ""}`} aria-labelledby="lg-title">
-      <Image className="lg-hero__photo" src={image} alt={alt ?? ""} fill priority fetchPriority="high" quality={72} sizes="100vw" />
+      <Image className="lg-hero__photo" src={image} alt={alt ?? ""} fill priority fetchPriority="high" quality={85} sizes="100vw" />
       <div className="lg-hero__veil" aria-hidden="true" />
       <div className="lp-shell">
         <nav className="lg-crumbs lg-rise" aria-label="Ruta de navegación">
@@ -46,7 +46,7 @@ export function LegalCta({ eyebrow, title, text, cta, href, image }: {
 }) {
   return (
     <section className="lg-cta" aria-labelledby="lg-cta-title">
-      <Image className="lg-cta__photo" src={image} alt="" fill quality={60} sizes="100vw" />
+      <Image className="lg-cta__photo" src={image} alt="" fill quality={75} sizes="100vw" />
       <div className="lg-cta__veil" aria-hidden="true" />
       <div className="lp-shell lg-cta__inner">
         <div>
