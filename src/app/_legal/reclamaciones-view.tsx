@@ -1,5 +1,6 @@
 "use client";
 
+import { FloatingActions } from "../_landing/floating-actions";
 import { ChevronRight, FileText, Info, Mail, MessageCircle, Phone, Search, ShieldCheck, Users } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { CLAIMS, COMMON } from "./copy";
@@ -100,6 +101,7 @@ export function ClaimsView({ hero, closing, enabled, email, phone, phoneHref, wh
       </div>
 
       <LegalCta {...t.cta} href="/contacto" image={closing} />
+      <FloatingActions />
     </main>
   );
 }

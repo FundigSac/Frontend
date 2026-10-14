@@ -1,5 +1,6 @@
 "use client";
 
+import { FloatingActions } from "../_landing/floating-actions";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { COMMON, COOKIES } from "./copy";
@@ -60,6 +61,7 @@ export function CookiesView({ hero }: { hero: string }) {
           </div>
         </div>
       </section>
+      <FloatingActions />
     </main>
   );
 }

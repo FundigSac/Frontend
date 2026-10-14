@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FloatingActions } from "@/app/_landing/floating-actions";
 import "@/app/landing.css";
 import "../agricultura/agricultura.css";
 import "../_sector/sector.css";
@@ -15,6 +16,7 @@ export default function MiningPage() {
   return (
     <>
       <MiningSections />
+      <FloatingActions />
     </>
   );
 }

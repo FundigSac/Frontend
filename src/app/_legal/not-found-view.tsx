@@ -1,5 +1,6 @@
 "use client";
 
+import { FloatingActions } from "../_landing/floating-actions";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Home, LayoutGrid } from "lucide-react";
@@ -117,6 +118,7 @@ export function NotFoundView() {
           ))}
         </ul>
       </div>
+      <FloatingActions />
     </main>
   );
 }
