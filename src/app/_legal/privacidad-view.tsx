@@ -1,5 +1,6 @@
 "use client";
 
+import { FloatingActions } from "../_landing/floating-actions";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, FileText, Lock, Mail, ScrollText, ShieldCheck, Users } from "lucide-react";
@@ -10,7 +11,7 @@ import { useCopy } from "./use-copy";
 
 const PILLAR_ICONS = [ShieldCheck, Users, Lock, ScrollText] as const;
 
-export function PrivacyView({ hero }: { hero: string }) {
+export function PrivacyView({ hero, aside, closing }: { hero: string; aside: string; closing: string }) {
   const t = useCopy(PRIVACY);
   const home = useCopy(COMMON.home);
   const date = useCopy(UPDATED);
@@ -64,7 +65,7 @@ export function PrivacyView({ hero }: { hero: string }) {
 
           <aside className="lg-aside" aria-labelledby="lg-aside-title">
             <div className="lg-aside__media">
-              <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.aside.alt} fill quality={75} sizes="(max-width: 900px) 92vw, 400px" />
+              <Image src={aside} alt={t.aside.alt} fill quality={75} sizes="(max-width: 900px) 92vw, 400px" />
             </div>
             <span className="lg-bar" style={{ marginTop: 22 }} aria-hidden="true" />
             <h3 id="lg-aside-title" style={{ marginTop: 14 }}>{t.aside.title}</h3>
@@ -101,7 +102,8 @@ export function PrivacyView({ hero }: { hero: string }) {
         </div>
       </div>
 
-      <LegalCta {...t.cta} href="/cotizar" image="/media/saneamiento/cierre.webp" />
+      <LegalCta {...t.cta} href="/cotizar" image={closing} />
+      <FloatingActions />
     </main>
   );
 }
