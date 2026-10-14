@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FloatingActions } from "@/app/_landing/floating-actions";
 import "@/app/landing.css";
 import "../agricultura/agricultura.css";
-import "./saneamiento.css";
+import "../_sector/sector.css";
 import { SanitationSections } from "./sections";
 
 export const metadata: Metadata = {

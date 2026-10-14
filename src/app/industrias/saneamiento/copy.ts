@@ -1,8 +1,9 @@
 "use client";
 
 import { useLang } from "@/shared/layout/landing-prefs";
+import type { SectorCopy } from "../_sector/sector-page";
 
-export const SANEA = {
+export const SANEA: Record<"es" | "en", SectorCopy> = {
   es: {
     crumbs: { home: "Inicio", current: "Saneamiento" },
     hero: {

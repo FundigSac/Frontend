@@ -11,8 +11,8 @@ import { HeroMotion, type HeroVideo } from "./hero-motion";
 /** Video del riego (generado a partir de la foto, bucle sin costura). 1080p / medio / móvil: el componente elige según pantalla y conexión. */
 const HERO_VIDEO: HeroVideo | undefined = {
   // Bucle de 14 s armado con los dos clips (fundido en la unión y en el reinicio, sin corte visible).
-  mp4: "/media/agricultura/hero-loop-720.mp4",
-  small: { mp4: "/media/agricultura/hero-loop-480.mp4" },
+  mp4: "/media/agricultura/hero-loop-720-v2.mp4",
+  small: { mp4: "/media/agricultura/hero-loop-480-v2.mp4" },
 };
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;

@@ -426,3 +426,117 @@ html[data-lp-theme="dark"] .sa-docs__media {
     transition: none;
   }
 }
+
+/* ===== Documentación como lámina (catálogo con fondo propio, sin recorte) ===== */
+.sa-docs__media--sheet {
+  width: min(100%, 640px);
+  overflow: hidden;
+  border-radius: 14px;
+  filter: none;
+  box-shadow: 0 34px 60px -30px rgb(11 34 68 / 50%), 0 8px 18px -10px rgb(11 34 68 / 22%);
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 600ms ease;
+}
+
+.sa-docs__media--sheet img {
+  animation: none;
+  transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sa-docs__media--sheet:hover {
+  filter: none;
+  box-shadow: 0 44px 70px -30px rgb(11 34 68 / 55%), 0 10px 20px -10px rgb(11 34 68 / 24%);
+}
+
+.sa-docs__media--sheet:hover img {
+  transform: scale(1.04);
+}
+
+/* Enlace secundario de campañas bajo el botón de recursos. */
+.sa-docs__campaigns {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  color: var(--lp-navy);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sa-docs__campaigns > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--lp-line);
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+
+.sa-docs__campaigns svg:last-child {
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sa-docs__campaigns:hover {
+  color: var(--lp-orange-dark);
+}
+
+.sa-docs__campaigns:hover > span {
+  border-color: var(--lp-orange);
+  color: var(--lp-orange);
+}
+
+.sa-docs__campaigns:hover svg:last-child {
+  transform: translateX(4px);
+}
+
+.ag-docs__copy .sa-docs__campaigns {
+  display: flex;
+  width: fit-content;
+}
+
+/* Minería: el hero es muy panorámico; se ancla en la válvula (derecha) y en móvil se centra en ella. */
+.sa--mi .sa-hero__photo {
+  object-position: 82% 50%;
+  transform-origin: 66% 55%;
+}
+
+.sa--mi .sa-featured .ag-featured__media img {
+  object-position: 55% 50%;
+}
+
+.sa--mi .ag-line .lp-card__media img {
+  object-fit: contain;
+  background: #fff;
+}
+
+@media (max-width: 860px) {
+  .sa--mi .sa-hero__photo {
+    object-position: 74% 50%;
+  }
+
+  .sa-docs__media--sheet {
+    margin-bottom: -40px;
+  }
+}
+
+html[data-lp-theme="dark"] .sa-docs__campaigns {
+  color: #e7eef8;
+}
+
+html[data-lp-theme="dark"] .sa-docs__campaigns > span {
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 6%);
+}
+
+html[data-lp-theme="dark"] .sa--mi .ag-line .lp-card__media img {
+  background: #f4f6f9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-docs__media--sheet,
+  .sa-docs__media--sheet img {
+    transition: none;
+  }
+}
