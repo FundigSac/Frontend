@@ -52,7 +52,7 @@ export function useTheme(): [Theme, (t: Theme) => void] {
 
 export const COPY = {
   es: {
-    nav: { products: "Productos", sectors: "Sectores", about: "Nosotros", resources: "Recursos", contact: "Contacto" },
+    nav: { home: "Inicio", products: "Productos", sectors: "Sectores", about: "Nosotros", resources: "Recursos", contact: "Contacto" },
     products: ["Catálogo general", "Válvulas", "Marcos y tapas", "Grifos", "Acoples", "Tuberías"],
     sectors: ["Saneamiento", "Agricultura", "Minería"],
     resources: ["Fichas técnicas", "Documentación", "Catálogo digital", "Campañas y sobrestock"],
@@ -75,7 +75,7 @@ export const COPY = {
     },
   },
   en: {
-    nav: { products: "Products", sectors: "Industries", about: "About us", resources: "Resources", contact: "Contact" },
+    nav: { home: "Home", products: "Products", sectors: "Industries", about: "About us", resources: "Resources", contact: "Contact" },
     products: ["Full catalog", "Valves", "Frames & covers", "Hydrants", "Couplings", "Pipes"],
     sectors: ["Sanitation", "Agriculture", "Mining"],
     resources: ["Data sheets", "Documentation", "Digital catalog", "Campaigns & overstock"],

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, ShoppingCart, Sun, User, UserPlus, LogIn, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
@@ -19,6 +19,7 @@ const SECTOR_HREFS = ["/industrias#saneamiento", "/industrias/agricultura", "/in
 function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
   const link = (hrefs: readonly string[], labels: readonly string[]): NavLink[] => labels.map((label, i) => ({ href: hrefs[i], label }));
   return [
+    { href: "/", label: t.nav.home },
     { href: "/productos", label: t.nav.products, children: link(PRODUCT_HREFS, t.products) },
     { href: "/industrias", label: t.nav.sectors, children: link(SECTOR_HREFS, t.sectors) },
     { href: "/nosotros", label: t.nav.about },
@@ -43,6 +44,8 @@ export function LandingHeader() {
   const navRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const mobileId = useId();
 
   useEffect(() => {
@@ -90,7 +93,7 @@ export function LandingHeader() {
               >
                 <button
                   type="button"
-                  className="lp-nav__link"
+                  className={`lp-nav__link${isActive(item.href) ? " is-active" : ""}`}
                   aria-expanded={open === item.label}
                   aria-controls={`lp-menu-${item.label}`}
                   onClick={() => setOpen(open === item.label ? null : item.label)}
@@ -107,7 +110,7 @@ export function LandingHeader() {
               </div>
             ) : (
               <div key={item.label} className="lp-nav__item">
-                <Link className="lp-nav__link" href={item.href}>{item.label}</Link>
+                <Link className={`lp-nav__link${isActive(item.href) ? " is-active" : ""}`} href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>{item.label}</Link>
               </div>
             ),
           )}
@@ -234,7 +237,7 @@ export function LandingHeader() {
         <nav className="lp-shell" aria-label="Navegación móvil">
           {NAV.map((item) => (
             <div className="lp-mobile__group" key={item.label}>
-              <Link href={item.href} onClick={() => setMobileOpen(false)}>{item.label}</Link>
+              <Link href={item.href} className={isActive(item.href) ? "is-active" : undefined} aria-current={isActive(item.href) && !item.children ? "page" : undefined} onClick={() => setMobileOpen(false)}>{item.label}</Link>
               {item.children && (
                 <ul>
                   {item.children.map((child) => (
