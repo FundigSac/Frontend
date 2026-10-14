@@ -2493,3 +2493,106 @@ html[data-lp-theme="dark"] .lg .lg-map__links a:hover {
   font-weight: 700;
   letter-spacing: -0.005em;
 }
+
+/* ===== Libro de reclamaciones sin registro en línea: solicitud lista para enviar ===== */
+.lg-offline {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.lg-offline > svg {
+  color: #1b7a46;
+}
+
+.lg-offline h2 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 800;
+}
+
+.lg-offline__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.lg-offline__preview {
+  width: 100%;
+  border: 1px solid var(--lg-line);
+  border-radius: 6px;
+  background: #fafbfd;
+}
+
+.lg-offline__preview summary {
+  padding: 14px 18px;
+  color: var(--lp-ink);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lg-offline__preview summary:focus-visible {
+  outline: 2px solid var(--lp-orange);
+  outline-offset: -2px;
+}
+
+.lg-offline__preview pre {
+  max-height: 320px;
+  margin: 0;
+  padding: 0 18px 18px;
+  overflow: auto;
+  color: var(--lp-text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lg-offline__note {
+  max-width: 62ch;
+  color: var(--lg-muted);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.lg-link-btn {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--lg-blue);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lg-link-btn:focus-visible {
+  outline: 2px solid var(--lp-orange);
+  outline-offset: 3px;
+}
+
+html[data-lp-theme="dark"] .lg .lg-offline__preview {
+  border-color: var(--lg-line);
+  background: #0b1a2e;
+}
+
+html[data-lp-theme="dark"] .lg .lg-offline__preview summary {
+  color: #e4edf8;
+}
+
+html[data-lp-theme="dark"] .lg .lg-offline__preview pre {
+  color: #b4c2d4;
+}
+
+html[data-lp-theme="dark"] .lg .lg-offline > svg {
+  color: #6ee7b7;
+}
+
+html[data-lp-theme="dark"] .lg .lg-link-btn {
+  color: #8dbcff;
+}

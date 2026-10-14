@@ -1,13 +1,14 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Mail, MessageCircle, MessageSquareWarning, Megaphone, Phone, RotateCcw } from "lucide-react";
+import { ArrowRight, CheckCircle2, Copy, Mail, MessageCircle, MessageSquareWarning, Megaphone, RotateCcw } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { LeadForm, LeadSubmit, useLeadState } from "@/modules/leads/lead-form";
+import { buildClaimMessage, mailtoUrl, whatsappUrl } from "./claim-message";
 import { CLAIMS } from "./copy";
 import { useCopy } from "./use-copy";
 
 type Kind = "RECLAMO" | "QUEJA";
-type Contact = { email: string; phone: string; whatsappNumber: string };
+type Contact = { email: string; phone?: string; whatsappNumber: string };
 
 function Field({ id, label, required, full, children }: { id: string; label: string; required?: boolean; full?: boolean; children: React.ReactNode }) {
   return (
@@ -175,25 +176,96 @@ function Fields() {
   );
 }
 
-/** Formulario del libro de reclamaciones: valida en el cliente y en el servidor, y entrega un folio real. */
-export function ClaimForm({ enabled = true, email, phone, whatsappNumber }: { enabled?: boolean } & Contact) {
+/**
+ * Modo sin registro en línea (no hay base de datos configurada): el formulario se ve y valida igual, y al enviar
+ * prepara el texto del reclamo para mandarlo por correo o WhatsApp. No se inventa ningún folio.
+ */
+function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
+  const t = useCopy(CLAIMS);
+  const o = t.offline;
+  const [prepared, setPrepared] = useState<{ subject: string; body: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const text = (name: string) => String(data.get(name) ?? "");
+    setPrepared(
+      buildClaimMessage({
+        tipoReclamacion: text("tipoReclamacion"),
+        nombresYApellidosRazon: text("nombresYApellidosRazon"),
+        tipoDeDocumento: text("tipoDeDocumento"),
+        numeroDeDocumento: text("numeroDeDocumento"),
+        correoElectronico: text("correoElectronico"),
+        telefonoDeContacto: text("telefonoDeContacto"),
+        domicilioLegalOHabitual: text("domicilioLegalOHabitual"),
+        descripcionDelProductoO: text("descripcionDelProductoO"),
+        fechaDelSuceso: text("fechaDelSuceso"),
+        nDeCotizacionO: text("nDeCotizacionO"),
+        detalleDeLosHechos: text("detalleDeLosHechos"),
+        pedidoConcretoOPretension: text("pedidoConcretoOPretension"),
+        canalesDeRespuesta: data.getAll("canalesDeRespuesta").map(String),
+      }),
+    );
+    setCopied(false);
+    window.requestAnimationFrame(() => document.getElementById("reclamo-listo")?.scrollIntoView({ block: "center", behavior: "smooth" }));
+  };
+
+  const copy = async () => {
+    if (!prepared) return;
+    try {
+      await navigator.clipboard.writeText(prepared.body);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <>
+      <form className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} hidden={prepared !== null}>
+        <h2>{t.formTitle}</h2>
+        <p>{t.formIntro}</p>
+        <div style={{ marginTop: 22 }}>
+          <Fields />
+        </div>
+      </form>
+
+      {prepared && (
+        <section className="lg-form-card lg-offline" id="reclamo-listo" aria-labelledby="reclamo-listo-title">
+          <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
+          <h2 id="reclamo-listo-title">{o.title}</h2>
+          <p className="lg-text">{o.text}</p>
+          <div className="lg-offline__actions">
+            <a className="lp-btn lp-btn--solid" href={mailtoUrl(email, prepared.subject, prepared.body)}>
+              <Mail aria-hidden="true" size={18} strokeWidth={1.8} /> {o.mail}
+            </a>
+            <a className="lp-btn lp-btn--outline" href={whatsappUrl(whatsappNumber, prepared.body)} target="_blank" rel="noopener noreferrer">
+              <MessageCircle aria-hidden="true" size={18} strokeWidth={1.8} /> {o.whatsapp}
+            </a>
+            <button type="button" className="lp-btn lp-btn--outline" onClick={copy}>
+              <Copy aria-hidden="true" size={18} strokeWidth={1.8} /> {copied ? o.copied : o.copy}
+            </button>
+          </div>
+          <details className="lg-offline__preview">
+            <summary>{o.preview}</summary>
+            <pre>{prepared.body}</pre>
+          </details>
+          <p className="lg-offline__note">{o.note.replace("{email}", email)}</p>
+          <button type="button" className="lg-link-btn" onClick={() => setPrepared(null)}>
+            {o.edit}
+          </button>
+        </section>
+      )}
+    </>
+  );
+}
+
+/** Formulario del libro de reclamaciones: con base de datos entrega un folio real; sin ella, prepara el envío por correo/WhatsApp. */
+export function ClaimForm({ enabled = true, email, whatsappNumber }: { enabled?: boolean } & Omit<Contact, "phone">) {
   const t = useCopy(CLAIMS);
 
-  if (!enabled) {
-    const whatsapp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.side.help.whatsappMsg)}`;
-    const fb = t.fallback;
-    return (
-      <div className="lg-form-card">
-        <h2>{fb.title}</h2>
-        <p>{fb.text}</p>
-        <ul className="lg-help" style={{ marginTop: 22 }}>
-          <li><a href={`mailto:${email}?subject=${encodeURIComponent(fb.mailSubject)}`}><Mail aria-hidden="true" size={24} strokeWidth={1.6} /><div><strong>{fb.mail}</strong><span>{email}</span></div><ArrowRight aria-hidden="true" size={18} /></a></li>
-          <li><a href={`tel:${phone.replace(/\s/g, "")}`}><Phone aria-hidden="true" size={24} strokeWidth={1.6} /><div><strong>{fb.phone}</strong><span>{phone}</span></div><ArrowRight aria-hidden="true" size={18} /></a></li>
-          <li><a href={whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden="true" size={24} strokeWidth={1.6} /><div><strong>{fb.whatsapp}</strong><span>{fb.whatsappText}</span></div><ArrowRight aria-hidden="true" size={18} /></a></li>
-        </ul>
-      </div>
-    );
-  }
+  if (!enabled) return <OfflineClaimForm email={email} whatsappNumber={whatsappNumber} />;
 
   return (
     <LeadForm formId="claim" className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria}>

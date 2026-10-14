@@ -281,7 +281,7 @@ export const CLAIMS: Pair<{
   submit: { reclamo: string; queja: string };
   sending: string;
   success: { title: string; text: string; again: string };
-  fallback: { title: string; text: string; mail: string; phone: string; whatsapp: string; whatsappText: string; mailSubject: string };
+  offline: { title: string; text: string; mail: string; whatsapp: string; copy: string; copied: string; preview: string; note: string; edit: string };
   side: {
     blue: { title: string; text: string };
     how: { title: string; items: readonly { title: string; text: string }[] };
@@ -334,14 +334,16 @@ export const CLAIMS: Pair<{
     submit: { reclamo: "Enviar reclamo", queja: "Enviar queja" },
     sending: "Enviando…",
     success: { title: "Recibimos tu {kind}", text: "Guarda tu código de registro. Te contactaremos por el medio que elegiste para darte una respuesta.", again: "Registrar otra solicitud" },
-    fallback: {
-      title: "Registro en línea en preparación",
-      text: "Estamos habilitando el registro digital con código de seguimiento. Mientras tanto, puedes presentar tu reclamo o queja por estos canales y lo atenderemos.",
-      mail: "Por correo",
-      phone: "Por teléfono",
-      whatsapp: "Por WhatsApp",
-      whatsappText: "Indica que se trata de un reclamo o queja.",
-      mailSubject: "Reclamo o queja FUNDIGSAC",
+    offline: {
+      title: "Tu solicitud está lista para enviar",
+      text: "Revisamos tus datos y armamos el texto de tu reclamo o queja. Elige cómo enviarlo al equipo de FUNDIGSAC; te responderemos por el medio que indicaste.",
+      mail: "Enviar por correo",
+      whatsapp: "Enviar por WhatsApp",
+      copy: "Copiar texto",
+      copied: "Texto copiado",
+      preview: "Ver el texto que se enviará",
+      note: "Tu solicitud queda registrada cuando recibimos el mensaje en {email} o por WhatsApp. Si no se abre tu aplicación de correo, usa “Copiar texto” y pégalo en un correo nuevo.",
+      edit: "Editar mis datos",
     },
     side: {
       blue: { title: "Tu voz nos importa", text: "En FUNDIGSAC, cada reclamo o queja es una oportunidad para mejorar nuestros productos y servicios." },
@@ -349,7 +351,7 @@ export const CLAIMS: Pair<{
         title: "¿Cómo funciona?",
         items: [
           { title: "1. Completa el formulario", text: "Registra tu reclamo o queja con toda la información solicitada." },
-          { title: "2. Recibimos tu solicitud", text: "Te enviaremos un número de registro por correo electrónico." },
+          { title: "2. Recibimos tu solicitud", text: "Te confirmaremos la recepción por el medio que elijas." },
           { title: "3. Evaluamos tu caso", text: "Nuestro equipo analizará la información y se pondrá en contacto contigo." },
           { title: "4. Te brindamos una respuesta", text: "Recibirás una respuesta en el menor tiempo posible, por el medio que elijas." },
         ],
@@ -411,14 +413,16 @@ export const CLAIMS: Pair<{
     submit: { reclamo: "Submit claim", queja: "Submit complaint" },
     sending: "Sending…",
     success: { title: "We received your {kind}", text: "Keep your registration code. We will contact you through the channel you chose to give you a response.", again: "Submit another request" },
-    fallback: {
-      title: "Online registration coming soon",
-      text: "We are enabling digital registration with a tracking code. In the meantime, you can submit your claim or complaint through these channels and we will handle it.",
-      mail: "By email",
-      phone: "By phone",
-      whatsapp: "By WhatsApp",
-      whatsappText: "Mention that it is a claim or complaint.",
-      mailSubject: "FUNDIGSAC claim or complaint",
+    offline: {
+      title: "Your request is ready to send",
+      text: "We checked your details and prepared the text of your claim or complaint. Choose how to send it to the FUNDIGSAC team; we will reply through the channel you selected.",
+      mail: "Send by email",
+      whatsapp: "Send by WhatsApp",
+      copy: "Copy text",
+      copied: "Text copied",
+      preview: "See the text that will be sent",
+      note: "Your request is registered when we receive the message at {email} or on WhatsApp. If your email app does not open, use “Copy text” and paste it into a new email.",
+      edit: "Edit my details",
     },
     side: {
       blue: { title: "Your voice matters", text: "At FUNDIGSAC, every claim or complaint is an opportunity to improve our products and services." },
@@ -426,7 +430,7 @@ export const CLAIMS: Pair<{
         title: "How does it work?",
         items: [
           { title: "1. Complete the form", text: "Register your claim or complaint with all the requested information." },
-          { title: "2. We receive your request", text: "We will send you a registration number by email." },
+          { title: "2. We receive your request", text: "We will confirm receipt through the channel you choose." },
           { title: "3. We assess your case", text: "Our team will analyze the information and get in touch with you." },
           { title: "4. We give you a response", text: "You will receive a response as soon as possible, through the channel you choose." },
         ],

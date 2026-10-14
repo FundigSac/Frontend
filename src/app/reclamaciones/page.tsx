@@ -21,7 +21,6 @@ export default function ComplaintsPage() {
       closing={claimsClosingImage()}
       enabled={registryEnabled}
       email={SITE.email}
-      phone={site.phone}
       phoneHref={site.phoneHref}
       whatsappNumber={site.whatsappNumber}
     />
