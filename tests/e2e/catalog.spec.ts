@@ -27,17 +27,25 @@ test.describe("consola limpia", () => {
 });
 
 test.describe("W01 inicio", () => {
-  test("fichas destacadas y descargas apuntan a rutas reales", async ({ page }) => {
+  test("tarjetas de componentes y accesos apuntan a rutas reales", async ({ page }) => {
     await page.goto("/");
     const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs.filter((h) => h === "#")).toEqual([]);
-    await expect(page.getByRole("link", { name: /Ficha: Válvula Compuerta Bridada/ })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
-    await expect(page.getByRole("link", { name: /Ficha: Tubería Hierro Dúctil Campana Tyton/ })).toHaveAttribute("href", "/productos/tuberias/tuberia-tyton");
-    const dl = page.getByRole("link", { name: "Descargar PDF" });
-    await expect(dl).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=/);
-    await dl.click();
-    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion/);
-    await expect(page.getByText("Preparando...")).toHaveCount(0);
+    // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=grifo", "/productos?q=acople", "/productos/tuberias", "/industrias", "/recursos", "/contacto"]) {
+      expect(hrefs, `falta un enlace a ${href}`).toContain(href);
+    }
+    await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
+    await expect(page.getByRole("link", { name: "Ver soluciones" })).toHaveAttribute("href", "/soluciones");
+  });
+
+  test("'Explorar productos' y 'Explorar recursos técnicos' navegan", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Explorar recursos técnicos" }).click();
+    await expect(page).toHaveURL(/\/recursos$/);
+    await page.goto("/");
+    await page.getByRole("link", { name: "Explorar productos" }).click();
+    await expect(page).toHaveURL(/\/productos$/);
   });
 });
 
