@@ -25,7 +25,7 @@ export const LEAD_FORMS: Record<LeadFormId, LeadFormSpec> = {
   "quote-pipe": { kind: "quote", prefix: "COT", confirmation: "/cotizar/confirmacion", required: ["company-name", "company-ruc", "contact-name", "contact-email", "form-metrado", "form-location"] },
   "quote-frame": { kind: "quote", prefix: "COT", confirmation: "/cotizar/confirmacion", required: ["empresa", "nombre", "email", "telefono", "cantidad", "destino", "terminos"] },
   procurement: { kind: "procurement", prefix: "REQ", required: ["contact-name", "company-ruc", "contact-email", "contact-phone", "lot-quantity"] },
-  claim: { kind: "claim", prefix: "REC", required: ["tipoDeDocumento", "numeroDeDocumento", "telefonoDeContacto", "nombresYApellidosRazon", "correoElectronico", "domicilioLegalOHabitual", "descripcionDelProductoO", "detalleDeLosHechos", "pedidoConcretoOPretension", "declaracionJuradaDeVeracidad", "consentimientoLeyN29733"] },
+  claim: { kind: "claim", prefix: "REC", required: ["tipoDeDocumento", "numeroDeDocumento", "telefonoDeContacto", "nombresYApellidosRazon", "correoElectronico", "domicilioLegalOHabitual", "descripcionDelProductoO", "fechaDelSuceso", "detalleDeLosHechos", "pedidoConcretoOPretension", "consentimientoLeyN29733"] },
 };
 
 export const isLeadFormId = (v: unknown): v is LeadFormId => typeof v === "string" && Object.hasOwn(LEAD_FORMS, v);
