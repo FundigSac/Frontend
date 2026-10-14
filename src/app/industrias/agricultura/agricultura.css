@@ -901,3 +901,18 @@ html[data-lp-theme="dark"] .ag-hero__motion {
     margin-top: 32px;
   }
 }
+
+/* Producto destacado: los botones van centrados en la columna. */
+.ag-actions {
+  justify-content: center;
+}
+
+@media (min-width: 1200px) {
+  .ag-actions {
+    gap: 10px;
+  }
+
+  .ag-actions .lp-btn {
+    padding: 0 13px;
+  }
+}
