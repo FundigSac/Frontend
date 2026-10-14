@@ -2591,3 +2591,55 @@ html[data-lp-theme="dark"] .lp-cart__badge {
     row-gap: 8px;
   }
 }
+
+/* Nuestro respaldo: más aire entre etiqueta, título, texto y los tres puntos. */
+.lp-backing__copy {
+  padding-block: clamp(56px, 6vw, 100px);
+}
+
+.lp-backing__copy .lp-hero__rule {
+  margin: 22px 0 30px;
+}
+
+.lp-backing h2 {
+  line-height: 1.1;
+}
+
+.lp-backing__lead {
+  margin-top: 26px !important;
+}
+
+.lp-backing__list {
+  gap: clamp(22px, 2.8vw, 48px);
+  margin-top: 60px !important;
+}
+
+.lp-backing__list a {
+  gap: 12px;
+  padding-top: 24px;
+  line-height: 1.55;
+}
+
+.lp-backing__list strong {
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+@media (max-width: 860px) {
+  .lp-backing__copy {
+    padding-block: 44px 52px;
+  }
+
+  .lp-backing__copy .lp-hero__rule {
+    margin: 18px 0 24px;
+  }
+
+  .lp-backing__lead {
+    margin-top: 20px !important;
+  }
+
+  .lp-backing__list {
+    gap: 26px;
+    margin-top: 40px !important;
+  }
+}
