@@ -378,67 +378,76 @@ test.describe("W21 404", () => {
 });
 
 test.describe("W22 búsqueda", () => {
-  test("'válvula compuerta pn 16' devuelve 6 compuertas, resalta y muestra criterios", async ({ page }) => {
-    await page.goto("/buscar?q=v%C3%A1lvula%20compuerta%20pn%2016");
-    await expect(page.locator("main article")).toHaveCount(6);
-    await expect(page.getByRole("status").filter({ hasText: "6 resultados de ingeniería" })).toBeVisible();
-    await expect(page.locator("main article mark").first()).toBeVisible();
-    await expect(page.getByText("Presión: PN 16")).toBeVisible();
+  const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar por familia" });
+  const results = (page: Page) => page.locator('section[aria-labelledby="search-results-heading"]');
+
+  test("sin término lista las 3 familias del catálogo", async ({ page }) => {
+    await page.goto("/buscar");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Familias del catálogo");
+    const families = results(page).locator("ul > li");
+    await expect(families).toHaveCount(3);
+    await expect(families.getByRole("heading", { level: 2 })).toHaveText(["Válvulas", "Tuberías", "Marcos y tapas"]);
+    const hrefs = await families.locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs).toEqual(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas"]);
+    await expect(page.getByText("3 familias disponibles")).toBeVisible();
+    await expect(page.getByText("Busca o explora las familias del catálogo")).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-    // el criterio numérico se puede quitar
-    await page.getByRole("button", { name: "Quitar criterio: Presión: PN 16" }).click();
-    await expect(page).toHaveURL(/q=v%C3%A1lvula\+compuerta$|q=v%C3%A1lvula%20compuerta$/);
   });
 
-  test("re-ejecutar búsqueda, vacío y restablecer", async ({ page }) => {
-    await page.goto("/buscar");
-    await expect(page.locator("main article")).toHaveCount(6);
-    await expect(page.getByRole("status").filter({ hasText: "19 productos" })).toBeVisible();
-    await page.getByRole("searchbox", { name: "Buscar productos" }).fill("xyzxyz");
-    await page.getByRole("button", { name: "Re-ejecutar" }).click();
-    await expect(page.getByRole("heading", { name: "Sin resultados para «xyzxyz»" })).toBeVisible();
-    await expect(page).toHaveURL(/q=xyzxyz/);
-    await page.getByRole("button", { name: "Restablecer todos los filtros" }).first().click();
-    await expect(page.locator("main article")).toHaveCount(6);
-    await expect(page).not.toHaveURL(/q=/);
+  test("'válvula compuerta pn 16' muestra las referencias visuales de válvulas, sin inventar datos", async ({ page }) => {
+    await page.goto("/buscar?q=v%C3%A1lvula%20compuerta%20pn%2016");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Referencias visuales de válvulas");
+    const cards = results(page).locator("ul > li");
+    await expect(cards).toHaveCount(5);
+    const hrefs = await cards.locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(new Set(hrefs)).toEqual(new Set(["/productos/valvulas"]));
+    await expect(cards.first()).toContainText("Imagen referencial");
+    await expect(cards.first()).toContainText("Datos pendientes");
+    await expect(page.getByText(/Coincidencias visuales para .válvula compuerta pn 16. · especificaciones pendientes/)).toBeVisible();
+    await expect(page.getByText("no constituye un listado de productos aprobados")).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    // 'Restablecer búsqueda' vuelve a la lista de familias sin término
+    await page.getByRole("link", { name: "Restablecer búsqueda" }).click();
+    await expect(page).toHaveURL(/\/buscar$/);
+    await expect(results(page).locator("ul > li")).toHaveCount(3);
   });
 
-  test("filtros por familia y homologación; conteos y deshabilitado en 0", async ({ page }) => {
+  test("un término de familia filtra y uno desconocido muestra el vacío", async ({ page }) => {
     await page.goto("/buscar?q=tuber%C3%ADa");
-    await expect(page.getByLabel(/Válvulas de Línea/)).toBeDisabled();
-    await expect(page.getByLabel(/Tuberías y Juntas/)).toBeEnabled();
-    await page.goto("/buscar");
-    await page.getByLabel(/Marcos y Tapas Viales/).check();
-    await expect(page.getByText("1 activo", { exact: true })).toBeVisible();
-    await expect(page.getByRole("status").filter({ hasText: "4 productos" })).toBeVisible();
-    await page.getByLabel(/SEDAPAL \(Conforme NT-002\)/).check();
-    await expect(page.getByRole("status").filter({ hasText: "1 producto" })).toBeVisible();
-    await page.getByRole("button", { name: "Limpiar Selección" }).click();
-    await expect(page.getByText("0 activos")).toBeVisible();
+    await expect(results(page).locator("ul > li")).toHaveCount(1);
+    await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Tuberías");
+    await page.goto("/buscar?q=xyzxyz");
+    await expect(page.getByRole("heading", { name: "No encontramos una familia con esos términos" })).toBeVisible();
+    await expect(results(page).locator("ul > li")).toHaveCount(0);
+    await expect(page.getByText("0 familias disponibles")).toBeVisible();
+    await page.getByRole("link", { name: "Restablecer búsqueda" }).click();
+    await expect(page).toHaveURL(/\/buscar$/);
+    await expect(results(page).locator("ul > li")).toHaveCount(3);
   });
 
-  test("rango DN, orden y vista de tabla", async ({ page }) => {
+  test("teclado y botón: Enter y 'Buscar' ejecutan la búsqueda; 'Borrar búsqueda' la limpia", async ({ page }) => {
     await page.goto("/buscar");
-    await page.getByLabel("Diámetro nominal mínimo").selectOption("700");
-    await expect(page.getByRole("status").filter({ hasText: "2 productos" })).toBeVisible();
-    await page.getByLabel("Diámetro nominal mínimo").selectOption("25");
-    await page.getByLabel("Ordenar por:").selectOption("dn-desc");
-    await page.getByRole("button", { name: "Vista en tabla de especificaciones" }).click();
-    await expect(page.getByRole("button", { name: "Vista en tabla de especificaciones" })).toHaveAttribute("aria-pressed", "true");
-    const rows = page.locator("main table tbody tr");
-    await expect(rows).toHaveCount(6);
-    await expect(rows.first()).toContainText("DN 700 – DN 1200");
-    await expect(page).toHaveURL(/vista=tabla/);
-    await page.getByRole("button", { name: "Página 2" }).click();
-    await expect(page.getByText(/Mostrando 6 de 19/)).toBeVisible();
+    await searchbox(page).fill("tapa");
+    await searchbox(page).press("Enter");
+    await expect(page).toHaveURL(/\/buscar\?q=tapa$/);
+    await expect(searchbox(page)).toHaveValue("tapa");
+    await expect(results(page).locator("ul > li")).toHaveCount(1);
+    await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Marcos y tapas");
+    await page.getByRole("link", { name: "Borrar búsqueda" }).click();
+    await expect(page).toHaveURL(/\/buscar$/);
+    await searchbox(page).fill("tubo");
+    await page.getByRole("button", { name: "Buscar", exact: true }).click();
+    await expect(page).toHaveURL(/\/buscar\?q=tubo$/);
+    await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Tuberías");
   });
 
-  test("teclado: Enter en el campo ejecuta la búsqueda", async ({ page }) => {
+  test("filtros técnicos y paginación siguen deshabilitados hasta publicar datos aprobados", async ({ page }) => {
     await page.goto("/buscar");
-    const box = page.getByRole("searchbox", { name: "Buscar productos" });
-    await box.fill("EN 124");
-    await box.press("Enter");
-    await expect(page).toHaveURL(/q=EN(\+|%20)124/);
-    await expect(page.locator("main article").first()).toBeVisible();
+    const checkboxes = page.locator("main aside input[type='checkbox']");
+    expect(await checkboxes.count()).toBeGreaterThan(0);
+    expect(await checkboxes.evaluateAll((els) => els.every((el) => (el as HTMLInputElement).disabled))).toBe(true);
+    await expect(page.getByRole("button", { name: "Página anterior" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Página siguiente" })).toBeDisabled();
+    await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
   });
 });
