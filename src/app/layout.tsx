@@ -6,6 +6,7 @@ import { SiteFooter } from "@/shared/layout/site-footer";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
 import { SiteHeader } from "@/shared/layout/site-header";
 import { JsonLd } from "@/shared/seo/json-ld";
+import { SourceGuard } from "@/shared/security/source-guard";
 import { ToastProvider } from "@/shared/ui/toast";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="es-PE" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
       <body className="bg-background font-body-default text-body-default text-on-surface antialiased">
+        <SourceGuard />
         <ToastProvider>
           <JsonLd
             data={[
