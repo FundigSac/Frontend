@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, ShoppingCart, Sun, User, UserPlus, LogIn, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
 import { openCookiePreferences } from "./cookie-events";
+import { isHeroOverlayHeader } from "./landing-paths";
 import { useHome } from "./home-copy";
 import { COPY, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
@@ -46,6 +47,7 @@ export function LandingHeader() {
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const segment = useSelectedLayoutSegment();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const mobileId = useId();
 
@@ -77,7 +79,7 @@ export function LandingHeader() {
   }, []);
 
   return (
-    <header className={`lp-header${pathname === "/industrias/saneamiento" ? " lp-header--sector" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
+    <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
       <div className="lp-shell lp-header__bar">
         <Link className="lp-header__brand" href="/" aria-label="FUNDIGSAC, inicio">
           <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" priority />
@@ -313,7 +315,7 @@ export function LandingFooter() {
       <div className="lp-shell lp-footer__bottom">
         <span>© {new Date().getFullYear()} {SITE.name}. {f.rights}</span>
         <div className="lp-footer__legal">
-          <Link href="/terminos-b2b">{f.terms}</Link>
+          <Link href="/terminos">{f.terms}</Link>
           <Link href="/privacidad">{f.privacy}</Link>
           <Link href="/cookies">{f.cookies}</Link>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>

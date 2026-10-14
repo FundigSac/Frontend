@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { ArrowRight, ChevronDown, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { AccountLink } from "@/modules/auth/account-link";
 import { MAIN_NAV, isActivePath } from "@/shared/config/site";
 import { LandingHeader } from "./landing-chrome";
+import { isLandingChrome } from "./landing-paths";
 
 const NAV_ACTIVE = "transition-colors flex items-center h-full pt-0.5 text-primary font-semibold border-b-2 border-primary";
 const NAV_IDLE = "font-button-text text-button-text text-on-surface-variant hover:text-primary transition-colors flex items-center h-full pt-0.5";
@@ -52,6 +53,7 @@ function HomeHeader({ current, menuOpen, menuId, onToggle, onNavigate }: { curre
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const segment = useSelectedLayoutSegment();
   const [menuOpenedOn, setMenuOpenedOn] = useState<string | null>(null);
   const menuOpen = menuOpenedOn === pathname;
   const menuId = useId();
@@ -64,7 +66,7 @@ export function SiteHeader() {
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  if (pathname === "/" || pathname === "/industrias/agricultura" || pathname === "/industrias/saneamiento" || pathname === "/industrias/mineria") return <LandingHeader />;
+  if (isLandingChrome(pathname, segment)) return <LandingHeader />;
   if (pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas" || pathname === "/productos/valvulas/valvula-compuerta") return <HomeHeader current={pathname} menuOpen={menuOpen} menuId={menuId} onToggle={() => setMenuOpenedOn(menuOpen ? null : pathname)} onNavigate={() => setMenuOpenedOn(null)} />;
 
   return (

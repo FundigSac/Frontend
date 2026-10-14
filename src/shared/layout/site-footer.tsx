@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import "../../app/home.css";
 import { LandingFooter } from "./landing-chrome";
+import { isLandingChrome } from "./landing-paths";
 import { openCookiePreferences } from "./cookie-events";
 
 const FOOTER_GROUPS = [
@@ -29,6 +30,7 @@ const FOOTER_GROUPS = [
     links: [
       { href: "/privacidad", label: "Privacidad" },
       { href: "/cookies", label: "Cookies" },
+      { href: "/terminos", label: "Términos y condiciones" },
       { href: "/terminos-b2b", label: "Términos B2B" },
       { href: "/reclamaciones", label: "Libro de reclamaciones" },
     ],
@@ -37,7 +39,8 @@ const FOOTER_GROUPS = [
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (pathname === "/" || pathname === "/industrias/agricultura" || pathname === "/industrias/saneamiento" || pathname === "/industrias/mineria") return <LandingFooter />;
+  const segment = useSelectedLayoutSegment();
+  if (isLandingChrome(pathname, segment)) return <LandingFooter />;
   if (pathname === "/productos" || pathname === "/productos/valvulas" || pathname === "/productos/tuberias" || pathname === "/productos/marcos-y-tapas" || pathname === "/productos/valvulas/valvula-compuerta") return <ProductsFooter />;
 
   return (
