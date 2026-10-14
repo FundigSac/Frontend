@@ -698,6 +698,12 @@
   opacity: 0.6;
 }
 
+/* Cookies necesarias (bloqueadas): gris, como en el diseño. */
+.lg-switch:disabled[aria-checked="true"] {
+  background: #aab5c5;
+  opacity: 0.85;
+}
+
 .lg-switch:focus-visible {
   outline: 2px solid var(--lp-orange);
   outline-offset: 3px;
@@ -1667,9 +1673,7 @@
   }
 
   .lg-hero__veil {
-    background:
-      linear-gradient(90deg, rgb(247 251 255 / 94%) 0%, rgb(247 251 255 / 70%) 55%, rgb(247 251 255 / 22%) 100%),
-      linear-gradient(180deg, rgb(196 224 247 / 70%) 0%, rgb(196 224 247 / 0%) 34%);
+    background: linear-gradient(180deg, rgb(247 251 255 / 90%) 0%, rgb(247 251 255 / 86%) 55%, rgb(247 251 255 / 74%) 100%);
   }
 
   .lg-nf__veil {
@@ -1795,7 +1799,7 @@
 
 /* Texto justificado sin cortar palabras con guiones (cada palabra va completa o pasa a la línea siguiente); en pantallas angostas queda alineado a la izquierda. */
 @media (min-width: 640px) {
-  .lg :where(.lg-term p, .lg-step p, .lg-info p, .lg-faq details > div, .lg-intro .lg-text) {
+  .lg :where(.lg-term p, .lg-step p, .lg-faq details > div, .lg-intro .lg-text) {
     text-align: justify;
     text-justify: inter-word;
     -webkit-hyphens: none;
@@ -2161,4 +2165,21 @@ html[data-lp-theme="dark"] .lg .lg-nf__actions .lp-btn--outline:hover {
 
 html[data-lp-theme="dark"] .lg .lg-cta__veil {
   background: linear-gradient(90deg, rgb(5 12 24 / 92%) 0%, rgb(5 12 24 / 70%) 46%, rgb(5 12 24 / 36%) 100%);
+}
+
+html[data-lp-theme="dark"] .lg .lg-switch:disabled[aria-checked="true"] {
+  background: #4a5d77;
+}
+
+/* El eyebrow conserva su tracking aunque viva dentro de un bloque con tipografía de lectura. */
+.lg .lg-eyebrow {
+  font-family: var(--lp-font);
+  letter-spacing: 0.3em;
+  word-spacing: 0;
+}
+
+@media (max-width: 900px) {
+  html[data-lp-theme="dark"] .lg .lg-hero__veil {
+    background: linear-gradient(180deg, rgb(7 15 28 / 88%) 0%, rgb(7 15 28 / 82%) 55%, rgb(7 15 28 / 70%) 100%);
+  }
 }
