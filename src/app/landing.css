@@ -2643,3 +2643,152 @@ html[data-lp-theme="dark"] .lp-cart__badge {
     margin-top: 40px !important;
   }
 }
+
+/* ===== Entrada del inicio: escalonada y fluida (solo transform/opacity, sin JS) ===== */
+.lp-hero__copy {
+  animation: none;
+}
+
+.lp-hero__copy > * {
+  animation: lp-hero-in 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.lp-hero__copy > .lp-eyebrow { animation-delay: 60ms; }
+.lp-hero__copy > h1 { animation-name: lp-hero-in-lcp; animation-delay: 120ms; }
+.lp-hero__copy > .lp-hero__lead { animation-delay: 260ms; }
+.lp-hero__copy > .lp-hero__actions { animation-delay: 380ms; }
+
+.lp-hero__copy > .lp-hero__rule {
+  transform-origin: left center;
+  animation: lp-rule-draw 900ms cubic-bezier(0.65, 0, 0.35, 1) 200ms both;
+}
+
+.lp-hero__photo {
+  animation: lp-hero-photo-in 1600ms cubic-bezier(0.16, 1, 0.3, 1) both, lp-kenburns 26s ease-in-out 1600ms infinite alternate;
+}
+
+.lp-hero__stage {
+  animation: lp-stage-in 1100ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both, lp-float 7s ease-in-out 1320ms infinite;
+}
+
+.lp-hero__shadow {
+  animation: lp-shadow-breathe 7s ease-in-out 1320ms infinite;
+}
+
+.lp-hero__controls-row {
+  animation: lp-hero-in 700ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both;
+}
+
+.lp-hero .lp-btn--solid {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms ease, background 180ms ease;
+}
+
+.lp-hero .lp-btn--solid:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -12px rgb(242 106 27 / 60%);
+}
+
+.lp-hero .lp-link svg {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lp-hero .lp-link:hover svg {
+  transform: translateX(4px);
+}
+
+@keyframes lp-hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+}
+
+/* El título es el LCP: arranca casi invisible (no en 0) para que el navegador lo cuente al instante. */
+@keyframes lp-hero-in-lcp {
+  from {
+    opacity: 0.01;
+    transform: translateY(22px);
+  }
+}
+
+@keyframes lp-rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes lp-hero-photo-in {
+  from {
+    opacity: 0.6;
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+
+@keyframes lp-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+}
+
+@keyframes lp-shadow-breathe {
+  50% {
+    opacity: 0.6;
+    transform: translateX(-50%) scaleX(0.9);
+  }
+}
+
+/* ===== Secciones del inicio: aparecen al hacer scroll (scroll-driven, en el compositor).
+   Mejora progresiva: sin soporte, el contenido se ve normal. ===== */
+@supports (animation-timeline: view()) {
+  .lp-components__head,
+  .lp-sectors > *,
+  .lp-backing__media,
+  .lp-backing__copy > *,
+  .lp-docs__copy > *,
+  .lp-docs__media,
+  .lp-location > * {
+    animation: lp-scroll-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+
+  .lp-backing__media,
+  .lp-docs__media {
+    animation-name: lp-scroll-in-media;
+  }
+
+  @keyframes lp-scroll-in {
+    from {
+      opacity: 0;
+      transform: translateY(34px);
+    }
+  }
+
+  @keyframes lp-scroll-in-media {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.97);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero__copy > *,
+  .lp-hero__photo,
+  .lp-hero__stage,
+  .lp-hero__shadow,
+  .lp-hero__controls-row,
+  .lp-components__head,
+  .lp-sectors > *,
+  .lp-backing__media,
+  .lp-backing__copy > *,
+  .lp-docs__copy > *,
+  .lp-docs__media,
+  .lp-location > * {
+    animation: none !important;
+  }
+}

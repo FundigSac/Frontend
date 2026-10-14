@@ -969,3 +969,20 @@ html[data-lp-theme="dark"] .ag-hero__motion {
     padding: 0 13px;
   }
 }
+
+/* ===== Entrada del hero más fluida; el título (LCP) no arranca en opacidad 0. ===== */
+.ag-hero__inner > * {
+  animation-duration: 820ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ag-hero__inner > h1 {
+  animation-name: lp-hero-in-lcp;
+}
+
+@keyframes lp-hero-in-lcp {
+  from {
+    opacity: 0.01;
+    transform: translateY(22px);
+  }
+}
