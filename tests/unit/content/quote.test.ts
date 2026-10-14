@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { formatLimaDateTime, isLeadReference, leadKindLabel } from "@/modules/quote/format";
 import { QUOTE_PRODUCTS, QUOTE_PRODUCT_SLUGS, findQuoteProduct, isValidRucChecksum, limaToday } from "@/modules/quote/products";
@@ -12,7 +14,8 @@ describe("productos de cotización (W17)", () => {
       expect(p.documents).toHaveLength(3);
       expect(p.addons).toHaveLength(3);
       expect(p.productHref).toContain(slug);
-      expect(p.image.src).toMatch(/^\/images\/stitch\/.+\.jpg$/);
+      expect(p.image.src).toMatch(/^\/(images|media)\/.+\.(jpg|webp|png)$/);
+      expect(existsSync(path.join(process.cwd(), "public", p.image.src))).toBe(true);
       expect(p.image.alt.length).toBeLessThanOrEqual(125);
     }
   });

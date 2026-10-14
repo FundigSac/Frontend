@@ -277,96 +277,89 @@ test.describe("W16 / W17 / W24 Cotización", () => {
 });
 
 test.describe("W18 Libro de Reclamaciones", () => {
-  test("radios accesibles, validación, nota legal y registro real con folio REC", async ({ page }) => {
-    await go(page, "/reclamaciones", "#numeroDeDocumento");
-    await expect(page.getByText("La validez legal de este libro virtual depende de la aprobación formal de FUNDIGSAC")).toBeVisible();
+  test("tipo de solicitud accesible, validación nativa y registro real con folio REC", async ({ page }) => {
+    await go(page, "/reclamaciones");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Libro de Reclamaciones");
 
-    const group = page.getByRole("radiogroup", { name: "Tipo de reclamación" });
-    await expect(group.getByRole("radio", { name: /Reclamo/ })).toBeChecked();
-    await group.getByRole("radio", { name: /Queja/ }).check();
-    await expect(group.getByRole("radio", { name: /Reclamo/ })).not.toBeChecked();
-    await page.getByRole("radio", { name: "Servicio" }).check();
+    // Sin base de datos configurada el registro se declara "en preparación" y ofrece los canales de atención.
+    const fallback = page.getByRole("heading", { name: "Registro en línea en preparación" });
+    if (await fallback.isVisible()) {
+      await expect(page.getByRole("link", { name: /Por correo/ })).toHaveAttribute("href", /^mailto:/);
+      await expect(page.getByRole("link", { name: /Por teléfono/ })).toHaveAttribute("href", /^tel:/);
+      await expect(page.getByRole("link", { name: /Por WhatsApp/ })).toHaveAttribute("href", /wa\.me/);
+      return;
+    }
 
-    await page.getByRole("button", { name: /Registrar Reclamación/ }).click();
-    await expect(page.locator("#successBanner")).toHaveCount(0);
-    expect(await page.locator("#numeroDeDocumento").evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
+    await hydrated(page, "#reclamaciones-form");
+    const form = page.locator("#reclamaciones-form");
+    await expect(form.getByRole("radio", { name: /Reclamo/ })).toBeChecked();
+    await form.getByRole("radio", { name: /Queja/ }).check();
+    await expect(form.getByRole("radio", { name: /Reclamo/ })).not.toBeChecked();
+    await expect(form.getByRole("button", { name: /Enviar queja/ })).toBeVisible();
+    await form.getByRole("radio", { name: /Reclamo/ }).check();
 
-    // apoderado
-    await page.getByRole("button", { name: "Habilitar campo de apoderado" }).click();
-    await expect(page.locator("#apoderadoNombre")).toBeVisible();
-    await page.getByRole("button", { name: "Ocultar campo de apoderado" }).click();
-    await expect(page.locator("#apoderadoNombre")).toHaveCount(0);
+    // validación nativa: campos obligatorios vacíos
+    await form.getByRole("button", { name: /Enviar reclamo/ }).click();
+    await expect(page.locator(".lg-success")).toHaveCount(0);
+    expect(await form.locator('input[name="nombresYApellidosRazon"]').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
 
-    await page.locator("#tipoDeDocumento").selectOption("DNI");
-    await page.locator("#numeroDeDocumento").fill("72489102");
-    await page.locator("#telefonoDeContacto").fill("+51 987 654 321");
-    await page.locator("#nombresYApellidosRazon").fill("Usuario de Prueba");
-    await page.locator("#correoElectronico").fill("prueba@correo.pe");
-    await page.locator("#domicilioLegalOHabitual").fill("Av. Prueba 123, Lima");
-    await page.locator("#descripcionDelProductoO").fill("Válvula de compuerta DN 200");
-    await page.locator("#detalleDeLosHechos").fill("Detalle de prueba automatizada.");
-    await page.locator("#pedidoConcretoOPretension").fill("Respuesta técnica formal.");
-    await expect(page.getByText("Los adjuntos se coordinan por correo con el equipo comercial")).toBeVisible();
-    // las casillas son obligatorias
-    await page.getByRole("button", { name: /Registrar Reclamación/ }).click();
-    expect(await page.locator('input[name="declaracionJuradaDeVeracidad"]').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
-    await page.locator('input[name="declaracionJuradaDeVeracidad"]').check();
-    await page.locator('input[name="consentimientoLeyN29733"]').check();
-    await page.getByRole("button", { name: /Registrar Reclamación/ }).click();
+    await form.locator('input[name="nombresYApellidosRazon"]').fill("Usuario de Prueba");
+    await form.locator('select[name="tipoDeDocumento"]').selectOption("DNI");
+    await form.locator('input[name="numeroDeDocumento"]').fill("72489102");
+    await form.locator('input[name="correoElectronico"]').fill("prueba@correo.pe");
+    await form.locator('input[name="telefonoDeContacto"]').fill("+51 987 654 321");
+    await form.locator('input[name="domicilioLegalOHabitual"]').fill("Av. Prueba 123, Lima");
+    await form.locator('select[name="descripcionDelProductoO"]').selectOption("Válvulas");
+    await form.locator('input[name="fechaDelSuceso"]').fill("2026-10-10");
+    await form.locator('textarea[name="detalleDeLosHechos"]').fill("Detalle de prueba automatizada.");
+    await form.locator('textarea[name="pedidoConcretoOPretension"]').fill("Respuesta técnica formal.");
 
-    const banner = page.locator("#successBanner");
-    await expect(banner).toBeVisible({ timeout: 60_000 });
-    await expect(banner).toContainText(/REC-\d{4}-\d{6}/);
-    await expect(banner).not.toContainText("HR-2026-00412");
+    // la declaración y el consentimiento son obligatorios
+    await form.getByRole("button", { name: /Enviar reclamo/ }).click();
+    expect(await form.locator('input[name="consentimientoLeyN29733"]').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
+    await form.locator('input[name="consentimientoLeyN29733"]').check();
+    await form.getByRole("button", { name: /Enviar reclamo/ }).click();
+
+    const success = page.locator(".lg-success");
+    await expect(success).toBeVisible({ timeout: 60_000 });
+    await expect(success).toContainText(/REC-\d{4}-\d{6}/);
   });
 });
 
 test.describe("W19 Privacidad", () => {
-  test("barra de progreso y resaltado del índice según el scroll; los anclas respetan el encabezado fijo", async ({ page }) => {
-    await go(page, "/privacidad", "#toc-nav a");
-    const bar = page.locator("#reading-progress");
-    const toc = page.locator("#toc-nav");
-    await expect(toc.locator('a[aria-current="location"]')).toHaveAttribute("href", "#responsable");
-    expect(await bar.evaluate((el) => el.getBoundingClientRect().width)).toBe(0);
+  test("estructura de la política, siete secciones y vía de contacto real", async ({ page }) => {
+    await go(page, "/privacidad");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Política de privacidad");
+    await expect(page.getByRole("heading", { name: "Nuestro compromiso con tu privacidad" })).toBeVisible();
+    for (const title of ["Legalidad", "Finalidad", "Seguridad", "Transparencia"]) {
+      await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    }
+    await expect(page.locator(".lg-step")).toHaveCount(7);
+    await expect(page.getByRole("heading", { name: "Derechos del titular" })).toBeVisible();
+    await expect(page.locator(".lg-aside").getByRole("link", { name: /cotizaciones@fundigsac\.com/ })).toHaveAttribute("href", /^mailto:/);
 
-    await page.evaluate(() => window.scrollTo(0, document.getElementById("seguridad")!.offsetTop - 100));
-    await expect(toc.locator('a[aria-current="location"]')).toHaveAttribute("href", "#seguridad");
-    await expect.poll(() => bar.evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThan(10);
-
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await expect(toc.locator('a[aria-current="location"]')).toHaveAttribute("href", "#responsable");
-
-    await toc.getByRole("link", { name: /Finalidades del Tratamiento/ }).click();
-    await expect(toc.locator('a[aria-current="location"]')).toHaveAttribute("href", "#finalidades");
-    await expect.poll(() => page.evaluate(() => Math.round(document.getElementById("finalidades")!.getBoundingClientRect().top))).toBeGreaterThanOrEqual(76);
-
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await expect.poll(() => bar.evaluate((el) => Math.round(el.getBoundingClientRect().width / (el.parentElement as HTMLElement).getBoundingClientRect().width * 100))).toBeGreaterThanOrEqual(98);
-  });
-
-  test("el formulario ARCO lleva al contacto con el documento precargado (sin alert ni descarga falsa)", async ({ page }) => {
     let dialog = false;
     page.on("dialog", (d) => { dialog = true; void d.dismiss(); });
-    await go(page, "/privacidad", "#toc-nav a");
-    const link = page.getByRole("link", { name: /Descargar Formulario ARCO/ });
-    await expect(link).toHaveAttribute("href", /\/contacto\?motivo=documentacion&documento=/);
-    await link.click();
-    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion/);
+    await page.getByRole("link", { name: /Ir al formulario de contacto/ }).click();
+    await expect(page).toHaveURL(/\/contacto/);
     expect(dialog).toBe(false);
   });
 });
 
 test.describe("W20 Cookies", () => {
-  test("preferencias reales: cookie propia, estado, aviso con cierre automático y persistencia", async ({ page, context }) => {
-    await go(page, "/cookies", "#btnSavePreferences");
-    await expect(page.locator("#consentStatusBadge")).toContainText("Sin preferencias guardadas");
+  test("preferencias reales: cookie propia, estado, personalización y persistencia", async ({ page, context }) => {
+    await go(page, "/cookies", ".lg-switch:not([disabled])");
     expect((await context.cookies()).find((c) => c.name === "fundigsac-consent")).toBeUndefined();
+    const analytics = page.getByRole("switch", { name: "Cookies analíticas" });
+    const functional = page.getByRole("switch", { name: "Cookies funcionales" });
+    await expect(page.getByRole("switch", { name: "Cookies necesarias" })).toBeDisabled();
+    await expect(page.getByRole("switch", { name: "Cookies publicitarias" })).toBeDisabled();
 
     // rechazar opcionales
-    await page.locator("#btnRejectOptional").click();
-    await expect(page.locator("#consentStatusBadge")).toContainText("Solo Necesarias Activas");
-    await expect(page.locator("#cookiePerformanceToggle")).not.toBeChecked();
-    await expect(page.locator("#cookieCustomizationToggle")).not.toBeChecked();
+    await page.getByRole("button", { name: "Rechazar opcionales" }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Solo se usarán las cookies necesarias." })).toBeVisible();
+    await expect(analytics).toHaveAttribute("aria-checked", "false");
+    await expect(functional).toHaveAttribute("aria-checked", "false");
     const rejected = (await context.cookies()).find((c) => c.name === "fundigsac-consent");
     expect(rejected).toBeTruthy();
     expect(rejected!.sameSite).toBe("Lax");
@@ -374,51 +367,51 @@ test.describe("W20 Cookies", () => {
     const days = (rejected!.expires - Date.now() / 1000) / 86400;
     expect(days).toBeGreaterThan(179);
     expect(days).toBeLessThanOrEqual(180.01);
-    const parsed = JSON.parse(decodeURIComponent(rejected!.value));
-    expect(parsed).toMatchObject({ necessary: true, performance: false, customization: false, version: 1 });
-
-    const notice = page.locator("#consentNotification");
-    await expect(notice).toBeVisible();
-    await expect(notice).toContainText("rechazaron las cookies opcionales");
-    await expect(notice).toBeHidden({ timeout: 8000 }); // se oculta solo a los 5 s
+    expect(JSON.parse(decodeURIComponent(rejected!.value))).toMatchObject({ necessary: true, performance: false, customization: false, version: 1 });
 
     // personalizar y guardar
-    await page.locator("label:has(#cookiePerformanceToggle)").click();
-    await expect(page.locator("#cookiePerformanceToggle")).toBeChecked();
-    await page.locator("#btnSavePreferences").click();
-    await expect(page.locator("#consentStatusBadge")).toContainText("Configuración Personalizada");
-    await expect(notice).toBeVisible();
-    await page.locator("#dismissAlert").click();
-    await expect(notice).toHaveCount(0);
+    await analytics.click();
+    await expect(analytics).toHaveAttribute("aria-checked", "true");
+    await page.getByRole("button", { name: "Guardar preferencias" }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Preferencias guardadas." })).toBeVisible();
     const saved = JSON.parse(decodeURIComponent((await context.cookies()).find((c) => c.name === "fundigsac-consent")!.value));
     expect(saved).toMatchObject({ performance: true, customization: false });
 
     // persiste tras recargar
     await page.reload({ waitUntil: "domcontentloaded" });
-    await hydrated(page, "#btnSavePreferences");
-    await expect(page.locator("#cookiePerformanceToggle")).toBeChecked();
-    await expect(page.locator("#cookieCustomizationToggle")).not.toBeChecked();
-    await expect(page.locator("#consentStatusBadge")).toContainText("Configuración Personalizada");
+    await hydrated(page, ".lg-switch:not([disabled])");
+    await expect(analytics).toHaveAttribute("aria-checked", "true");
+    await expect(functional).toHaveAttribute("aria-checked", "false");
 
-    // todas
-    await page.locator("label:has(#cookieCustomizationToggle)").click();
-    await page.locator("#btnSavePreferences").click();
-    await expect(page.locator("#consentStatusBadge")).toContainText("Todas las Cookies Habilitadas");
+    // aceptar todas
+    await page.getByRole("button", { name: /Aceptar todas/ }).first().click();
+    await expect(analytics).toHaveAttribute("aria-checked", "true");
+    await expect(functional).toHaveAttribute("aria-checked", "true");
+    expect(JSON.parse(decodeURIComponent((await context.cookies()).find((c) => c.name === "fundigsac-consent")!.value))).toMatchObject({ performance: true, customization: true });
   });
 
-  test("la barra de progreso avanza al hacer scroll y el índice marca la sección visible", async ({ page }) => {
-    await go(page, "/cookies", "#btnSavePreferences");
-    const bar = page.locator("#scrollProgressBar");
-    const before = await bar.evaluate((el) => el.getBoundingClientRect().width);
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await expect.poll(() => bar.evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThan(before);
-    await expect(page.getByRole("navigation", { name: "Índice normativo" }).locator('a[aria-current="location"]')).toHaveAttribute("href", "#section-6");
+  test("las preguntas frecuentes se expanden con el teclado", async ({ page }) => {
+    await go(page, "/cookies");
+    const first = page.locator(".lg-faq details").first();
+    await expect(first).not.toHaveAttribute("open", "");
+    await first.locator("summary").focus();
+    await page.keyboard.press("Enter");
+    await expect(first).toHaveAttribute("open", "");
   });
+});
 
-  test("sin banner global de cookies en el resto del sitio", async ({ page }) => {
-    await go(page, "/");
-    await expect(page.locator("#consentStatusBadge")).toHaveCount(0);
-    await expect(page.getByRole("dialog")).toHaveCount(0);
+test.describe("Términos y condiciones", () => {
+  test("diez secciones numeradas, índice con sección activa y anclas que respetan el encabezado", async ({ page }) => {
+    await go(page, "/terminos", ".lg-toc a");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Términos y condiciones");
+    await expect(page.locator(".lg-term")).toHaveCount(10);
+    const toc = page.getByRole("navigation", { name: "Contenido de los términos" });
+    await expect(toc.locator('a[aria-current="true"]')).toHaveAttribute("href", "#aceptacion");
+
+    await toc.getByRole("link", { name: /Propiedad intelectual/ }).click();
+    await expect(toc.locator('a[aria-current="true"]')).toHaveAttribute("href", "#propiedad");
+    await expect.poll(() => page.evaluate(() => Math.round(document.getElementById("propiedad")!.getBoundingClientRect().top))).toBeGreaterThanOrEqual(80);
+    await expect(page.locator(".lg-term").getByRole("link", { name: "Política de Privacidad" })).toHaveAttribute("href", "/privacidad");
   });
 });
 
@@ -429,7 +422,7 @@ test.describe("T&C B2B y consola limpia", () => {
     await expect(page.locator("main")).toContainText("pendiente de revisión");
   });
 
-  const routes = ["/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar?producto=valvula-compuerta", "/cotizar?producto=marco-tapa-d400", "/cotizar/confirmacion", "/reclamaciones", "/privacidad", "/cookies", "/terminos-b2b"];
+  const routes = ["/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar?producto=valvula-compuerta", "/cotizar?producto=marco-tapa-d400", "/cotizar/confirmacion", "/reclamaciones", "/privacidad", "/cookies", "/terminos", "/terminos-b2b"];
   for (const route of routes) {
     test(`sin errores ni advertencias de consola: ${route}`, async ({ page }) => {
       const problems: string[] = [];

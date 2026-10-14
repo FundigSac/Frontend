@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { CATALOG_PRODUCTS, hasProductPage, quoteHref } from "@/modules/catalog/data";
 import {
@@ -14,7 +16,9 @@ describe("dataset", () => {
     expect(new Set(skus).size).toBe(skus.length);
     for (const p of CATALOG_PRODUCTS) {
       expect(p.href.startsWith("/productos/")).toBe(true);
-      expect(p.image.startsWith("/images/stitch/")).toBe(true);
+      // Imagen local y existente en /public (sin URLs externas).
+      expect(p.image).toMatch(/^\/(images|media)\/.+\.(jpg|webp|png)$/);
+      expect(existsSync(path.join(process.cwd(), "public", p.image))).toBe(true);
       expect(p.specs).toHaveLength(4);
     }
   });

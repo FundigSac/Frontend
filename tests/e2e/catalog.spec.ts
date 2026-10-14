@@ -183,19 +183,24 @@ test.describe("W05 formulario de requerimiento", () => {
 });
 
 test.describe("W21 404", () => {
-  test("el buscador envía a /buscar?q= y los enlaces son reales", async ({ page }) => {
+  test("responde 404 con mensaje, acciones y accesos rápidos reales", async ({ page }) => {
     const res = await page.goto("/ruta-que-no-existe");
     expect(res?.status()).toBe(404);
-    await page.getByRole("searchbox", { name: "Buscar en el sitio" }).fill("válvula DN 200");
-    await page.getByRole("button", { name: "Buscar" }).click();
-    await expect(page).toHaveURL(/\/buscar\?q=v%C3%A1lvula\+DN\+200|\/buscar\?q=v%C3%A1lvula%20DN%20200/);
-    await expect(page.getByRole("heading", { name: /Resultados|Sin resultados/ }).or(page.locator("article").first())).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Ups, esta página no se encuentra.");
+    await expect(page.getByRole("link", { name: /Volver al inicio/ })).toHaveAttribute("href", "/");
+    await expect(page.getByRole("link", { name: /Explorar productos/ })).toHaveAttribute("href", "/productos");
+    for (const [name, href] of [["Conoce nuestros productos", "/productos"], ["Explora por sectores", "/industrias"], ["Recursos técnicos", "/recursos"]] as const) {
+      await expect(page.getByRole("link", { name: new RegExp(name) })).toHaveAttribute("href", href);
+    }
+    await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
   });
-  test("búsquedas frecuentes llevan a resultados", async ({ page }) => {
+
+  test("usa la cabecera y el pie del sitio, y 'Explorar productos' navega", async ({ page }) => {
     await page.goto("/ruta-que-no-existe");
-    await page.getByRole("link", { name: "Tapa D400 EN 124" }).click();
-    await expect(page).toHaveURL(/\/buscar\?q=tapa/);
-    await expect(page.locator("article").first()).toBeVisible();
+    await expect(page.locator("header.lp-header")).toBeVisible();
+    await expect(page.locator("footer.lp-footer")).toBeVisible();
+    await page.getByRole("link", { name: /Explorar productos/ }).click();
+    await expect(page).toHaveURL(/\/productos$/);
   });
 });
 
