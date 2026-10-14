@@ -45,6 +45,11 @@ function useReveal(enabled = true) {
     const el = root.current;
     if (!el || !enabled) return;
     const nodes = el.querySelectorAll<HTMLElement>("[data-reveal]");
+    // Lo que ya está en el primer pantallazo se muestra de inmediato (sin parpadeo); solo lo de abajo se anima al llegar.
+    const fold = window.innerHeight * 0.92;
+    nodes.forEach((n) => {
+      if (n.getBoundingClientRect().top <= fold) n.classList.add("is-in");
+    });
     el.classList.add("ag-js");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
       nodes.forEach((n) => n.classList.add("is-in"));
@@ -59,7 +64,9 @@ function useReveal(enabled = true) {
       }),
       { threshold: 0.15, rootMargin: "0px 0px -6% 0px" },
     );
-    nodes.forEach((n) => io.observe(n));
+    nodes.forEach((n) => {
+      if (!n.classList.contains("is-in")) io.observe(n);
+    });
     return () => io.disconnect();
   }, [enabled]);
   return root;

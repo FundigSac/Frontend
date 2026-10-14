@@ -11,7 +11,6 @@ const MEDIA: SectorMedia = {
   featured: "/media/mineria/valvula-planta.webp",
   featuredSizes: "(max-width: 900px) 100vw, 53vw",
   preparedImages: MINING_IMAGES,
-  reveal: false,
   features: [MapPinned, ShieldCheck, Settings],
   apps: [
     { href: "/productos/tuberias", image: "/media/mineria/agua-proceso.webp" },
