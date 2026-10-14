@@ -281,15 +281,6 @@ test.describe("W18 Libro de Reclamaciones", () => {
     await go(page, "/reclamaciones");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Libro de Reclamaciones");
 
-    // Sin base de datos configurada el registro se declara "en preparación" y ofrece los canales de atención.
-    const fallback = page.getByRole("heading", { name: "Registro en línea en preparación" });
-    if (await fallback.isVisible()) {
-      await expect(page.getByRole("link", { name: /Por correo/ })).toHaveAttribute("href", /^mailto:/);
-      await expect(page.getByRole("link", { name: /Por teléfono/ })).toHaveAttribute("href", /^tel:/);
-      await expect(page.getByRole("link", { name: /Por WhatsApp/ })).toHaveAttribute("href", /wa\.me/);
-      return;
-    }
-
     await hydrated(page, "#reclamaciones-form");
     const form = page.locator("#reclamaciones-form");
     await expect(form.getByRole("radio", { name: /Reclamo/ })).toBeChecked();
@@ -320,9 +311,20 @@ test.describe("W18 Libro de Reclamaciones", () => {
     await form.locator('input[name="consentimientoLeyN29733"]').check();
     await form.getByRole("button", { name: /Enviar reclamo/ }).click();
 
+    // Con base de datos: folio REC real. Sin ella: solicitud lista para enviar por correo o WhatsApp (nunca un folio inventado).
     const success = page.locator(".lg-success");
-    await expect(success).toBeVisible({ timeout: 60_000 });
-    await expect(success).toContainText(/REC-\d{4}-\d{6}/);
+    const ready = page.locator("#reclamo-listo");
+    await expect(success.or(ready)).toBeVisible({ timeout: 60_000 });
+    if (await success.isVisible()) {
+      await expect(success).toContainText(/REC-\d{4}-\d{6}/);
+    } else {
+      await expect(ready.getByRole("link", { name: /Enviar por correo/ })).toHaveAttribute("href", /^mailto:cotizaciones@fundigsac\.com\?subject=Reclamo/);
+      await expect(ready.getByRole("link", { name: /Enviar por WhatsApp/ })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
+      await expect(ready.locator("pre")).toContainText("Usuario de Prueba");
+      await ready.getByRole("button", { name: "Editar mis datos" }).click();
+      await expect(page.locator("#reclamaciones-form")).toBeVisible();
+      await expect(form.locator('input[name="nombresYApellidosRazon"]')).toHaveValue("Usuario de Prueba");
+    }
   });
 });
 
