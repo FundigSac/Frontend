@@ -179,9 +179,9 @@ export const COOKIES: Pair<{
       note: "Al hacer clic en “Aceptar todas”, consientes el uso de todas las cookies. Puedes cambiar tus preferencias en cualquier momento.",
     },
     info: [
-      { title: "¿Qué son las cookies?", alt: "Planta de tratamiento de agua", text: "Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Permiten que el sitio recuerde tu información y preferencias durante un tiempo, facilitando tu próxima visita." },
+      { title: "¿Qué son las cookies?", alt: "Tanques circulares de una planta de tratamiento de agua", text: "Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Permiten que el sitio recuerde tu información y preferencias durante un tiempo, facilitando tu próxima visita." },
       { title: "¿Cómo las usamos?", alt: "Acople bridado de hierro dúctil", text: "En FUNDIGSAC utilizamos cookies para garantizar el funcionamiento del sitio, analizar su uso, mejorar nuestros contenidos y, con tu consentimiento, mostrarte información relevante sobre nuestros productos y soluciones." },
-      { title: "Duración de las cookies", alt: "Válvula compuerta frente a una planta de agua", text: "Las cookies pueden ser de sesión (se eliminan al cerrar el navegador) o persistentes (permanecen durante un tiempo determinado en tu dispositivo). La duración varía según el tipo de cookie y su finalidad." },
+      { title: "Duración de las cookies", alt: "Cascada de agua en una planta de tratamiento", text: "Las cookies pueden ser de sesión (se eliminan al cerrar el navegador) o persistentes (permanecen durante un tiempo determinado en tu dispositivo). La duración varía según el tipo de cookie y su finalidad." },
     ],
     faq: {
       eyebrow: "Información adicional",
@@ -223,9 +223,9 @@ export const COOKIES: Pair<{
       note: "By clicking “Accept all”, you consent to the use of all cookies. You can change your preferences at any time.",
     },
     info: [
-      { title: "What are cookies?", alt: "Water treatment plant", text: "Cookies are small text files stored on your device when you visit a website. They let the site remember your information and preferences for a period of time, making your next visit easier." },
+      { title: "What are cookies?", alt: "Circular tanks at a water treatment plant", text: "Cookies are small text files stored on your device when you visit a website. They let the site remember your information and preferences for a period of time, making your next visit easier." },
       { title: "How do we use them?", alt: "Ductile iron flange coupling", text: "At FUNDIGSAC we use cookies to ensure the site works, analyze its use, improve our content and, with your consent, show you relevant information about our products and solutions." },
-      { title: "Cookie duration", alt: "Gate valve in front of a water plant", text: "Cookies can be session cookies (deleted when you close the browser) or persistent cookies (kept on your device for a set period). Duration varies by cookie type and purpose." },
+      { title: "Cookie duration", alt: "Water cascade at a treatment plant", text: "Cookies can be session cookies (deleted when you close the browser) or persistent cookies (kept on your device for a set period). Duration varies by cookie type and purpose." },
     ],
     faq: {
       eyebrow: "Additional information",

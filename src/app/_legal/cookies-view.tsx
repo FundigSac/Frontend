@@ -8,13 +8,9 @@ import { CookiePrefs } from "./cookie-prefs";
 import { LegalHero } from "./legal-parts";
 import { useCopy } from "./use-copy";
 
-const INFO_MEDIA = [
-  { image: "/media/home-v3/hero-planta.webp", position: "30% 60%" },
-  { image: "/media/mineria/acople-bridado.webp", position: "50% 50%" },
-  { image: "/media/saneamiento/hero.webp", position: "40% 60%" },
-] as const;
+const INFO_POSITIONS = ["50% 58%", "50% 50%", "50% 62%"] as const;
 
-export function CookiesView({ hero }: { hero: string }) {
+export function CookiesView({ hero, info }: { hero: string; info: readonly [string, string, string] }) {
   const t = useCopy(COOKIES);
   const home = useCopy(COMMON.home);
 
@@ -29,7 +25,7 @@ export function CookiesView({ hero }: { hero: string }) {
           {t.info.map((item, i) => (
             <li className="lg-info" key={item.title}>
               <div className="lg-info__media">
-                <Image src={INFO_MEDIA[i].image} alt={item.alt} fill quality={75} sizes="(max-width: 720px) 92vw, 33vw" style={{ objectPosition: INFO_MEDIA[i].position }} />
+                <Image src={info[i]} alt={item.alt} fill quality={85} sizes="(max-width: 720px) 92vw, 33vw" style={{ objectPosition: INFO_POSITIONS[i] }} />
               </div>
               <span className="lg-bar" aria-hidden="true" />
               <h3>{item.title}</h3>
