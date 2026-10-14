@@ -14,7 +14,7 @@ const VARIANTS = [
   { id: "con-timon", label: "Con timón", src: "/media/home-v2/compuerta-con-timon-v4.webp", alt: "Válvula compuerta FUNDIGSAC de hierro dúctil con timón de maniobra" },
 ] as const;
 
-const INTERVAL = 7000;
+const INTERVAL = 4200;
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
 function subscribeMotion(onChange: () => void) {

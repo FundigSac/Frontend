@@ -15,7 +15,7 @@ const ITEMS = [
   { href: "/productos/tuberias", image: "/media/home-v3/card-tuberias.webp" },
 ] as const;
 
-const INTERVAL = 4500;
+const INTERVAL = 2800;
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
 function subscribeMotion(onChange: () => void) {
