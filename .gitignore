@@ -17,3 +17,6 @@ docs/qa/captures/
 docs/qa/results/
 docs/qa/screenshots/
 .vercel
+
+# Reportes de Lighthouse (scripts/perf)
+.perf/
