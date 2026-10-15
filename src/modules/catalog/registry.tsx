@@ -3,7 +3,7 @@ import { W03Valvulas } from "@/screens/islands/w03-valvulas";
 import { W04Tuberias } from "@/screens/islands/w04-tuberias";
 import { W05Marcos } from "@/screens/islands/w05-marcos";
 import { W06Ficha } from "@/screens/islands/w06-ficha";
-import { W06FichaGarantia1, W06FichaGarantia5 } from "@/screens/islands/w06-ficha-garantia";
+import { W06FichaFundigsac, W06FichaGarantia5 } from "@/screens/islands/w06-ficha-garantia";
 import { ScreenW07 } from "@/screens/w07";
 import { ScreenW08 } from "@/screens/w08";
 import { ScreenW09 } from "@/screens/w09";
@@ -32,7 +32,7 @@ export const CATEGORIES: readonly CategoryEntry[] = [
 
 export const PRODUCTS: readonly ProductEntry[] = [
   { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Screen: W06Ficha, Viewer3D: ScreenW23 },
-  { category: "valvulas", slug: "valvula-compuerta-fundigsac-1-ano", name: "Válvula de compuerta bridada FUNDIGSAC · 1 año de garantía", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC con 1 año de garantía.", Screen: W06FichaGarantia1 },
+  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC.", Screen: W06FichaFundigsac },
   { category: "valvulas", slug: "valvula-compuerta-fundigsac-5-anos", name: "Válvula de compuerta bridada FUNDIGSAC · 5 años de garantía", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC con 5 años de garantía.", Screen: W06FichaGarantia5 },
   { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW07 },
   { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW08 },

@@ -32,7 +32,7 @@ type FeaturedProduct = {
 
 const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
   { id: "compuerta", family: "valvulas", name: "Válvula de compuerta bridada", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta azul", href: "/productos/valvulas/valvula-compuerta", terms: "válvula compuerta cierre agua hierro dúctil" },
-  { id: "compuerta-1-ano", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC · 1 año de garantía", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac-1/f1-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con 1 año de garantía", href: "/productos/valvulas/valvula-compuerta-fundigsac-1-ano", terms: "válvula compuerta fundigsac garantía 1 año cierre agua hierro dúctil" },
+  { id: "compuerta-fundigsac", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac/f-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con el logotipo en relieve", href: "/productos/valvulas/valvula-compuerta-fundigsac", terms: "válvula compuerta fundigsac cierre agua hierro dúctil" },
   { id: "compuerta-5-anos", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC · 5 años de garantía", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con 5 años de garantía", href: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", terms: "válvula compuerta fundigsac garantía 5 años cierre agua hierro dúctil" },
   { id: "mariposa", family: "valvulas", name: "Válvula mariposa", descriptor: "DN 50 – DN 1200  |  PN 10/16", image: "/media/productos-page/featured-mariposa.jpg", alt: "Válvula mariposa azul con accionamiento manual", href: "/productos/valvulas/valvula-mariposa", terms: "válvula mariposa palanca control" },
   { id: "hdpe-pipe", family: "tuberias", name: "Tubería HDPE PE100", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tuberia.jpg", alt: "Tuberías HDPE negras con franja azul", href: "/productos/tuberias", terms: "tubería hdpe pe100 pead conducción" },
@@ -53,11 +53,16 @@ function readFamily(value: string | null): FamilyFilter {
   return value && FAMILIES.some((family) => family.id === value) ? value as FamilyId : "todas";
 }
 
-function updateAddress(query: string, family: FamilyFilter) {
+/** Parámetros de dirección que corresponden a un estado (los espacios al teclear no llegan a la URL). */
+function addressSearch(query: string, family: FamilyFilter) {
   const params = new URLSearchParams();
   if (query.trim()) params.set("q", query.trim());
   if (family !== "todas") params.set("familia", family);
-  const search = params.toString();
+  return params.toString();
+}
+
+function updateAddress(query: string, family: FamilyFilter) {
+  const search = addressSearch(query, family);
   const next = window.location.pathname + (search ? "?" + search : "") + window.location.hash;
   // Con `null` Next.js completa su propio estado e informa al router de la nueva URL (useSearchParams); pasar
   // window.history.state tal cual se salta esa integración y el router seguiría con los parámetros anteriores.
@@ -118,7 +123,10 @@ export function W02Catalog({
   const addressKey = useSearchParams().toString();
   const seenAddressKey = useRef(addressKey);
 
+  const latest = useRef({ query, family });
+
   useEffect(() => {
+    latest.current = { query, family };
     updateAddress(query, family);
   }, [query, family]);
 
@@ -138,6 +146,11 @@ export function W02Catalog({
   useEffect(() => {
     if (seenAddressKey.current === addressKey) return;
     seenAddressKey.current = addressKey;
+    // El router avisa con retraso de las escrituras propias: si la dirección real ya es otra (se siguió tecleando), el aviso
+    // es viejo y releerlo pisaría lo escrito. Tampoco hay nada que hacer si ya coincide con el estado.
+    const location = new URLSearchParams(window.location.search).toString();
+    if (location !== addressKey) return;
+    if (location === addressSearch(latest.current.query, latest.current.family)) return;
     readAddress();
   }, [addressKey, readAddress]);
 

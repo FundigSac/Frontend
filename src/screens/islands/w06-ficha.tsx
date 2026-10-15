@@ -52,14 +52,14 @@ const BASE_THUMBS = [
   { dir: REAL, src: "v-05.webp", alt: "Válvula de compuerta bridada, vista frontal de la brida con etiqueta DN100" },
 ];
 
-/** Fotos reales de la válvula FUNDIGSAC con 1 año de garantía (recortes WebP con transparencia, 1000×1250). */
-const F1 = "/media/valvula-fundigsac-1/";
-const FUNDIGSAC_1_THUMBS = [
-  { dir: F1, src: "f1-01.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal con el logotipo en relieve en el cuerpo" },
-  { dir: F1, src: "f1-02.webp", alt: "Válvula de compuerta bridada FUNDIGSAC DN100 PN16, vista frontal con volante y marcado GGG50 en el cuerpo" },
-  { dir: F1, src: "f1-03.webp", alt: "Vista superior del volante azul de la válvula FUNDIGSAC con indicación CLOSE y OPEN" },
-  { dir: F1, src: "f1-04.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal elevada con etiqueta DN100 de 4 pulgadas en la brida" },
-  { dir: F1, src: "f1-05.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal de la brida con etiqueta DN100 de 4 pulgadas" },
+/** Fotos reales de la válvula FUNDIGSAC (recortes WebP con transparencia, 1000×1250). */
+const FG = "/media/valvula-fundigsac/";
+const FUNDIGSAC_THUMBS = [
+  { dir: FG, src: "f-01.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal con el logotipo en relieve en el cuerpo" },
+  { dir: FG, src: "f-02.webp", alt: "Válvula de compuerta bridada FUNDIGSAC DN100 PN16, vista frontal con volante y marcado GGG50 en el cuerpo" },
+  { dir: FG, src: "f-03.webp", alt: "Vista superior del volante azul de la válvula FUNDIGSAC con indicación CLOSE y OPEN" },
+  { dir: FG, src: "f-04.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal elevada con etiqueta DN100 de 4 pulgadas en la brida" },
+  { dir: FG, src: "f-05.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal de la brida con etiqueta DN100 de 4 pulgadas" },
 ];
 
 const RELATED = [
@@ -90,19 +90,20 @@ const SPECS = [
   ["Rango dimensional", "DN40 a DN600"],
 ];
 
-/** Garantía FUNDIGSAC de las variantes del catálogo (1 o 5 años); sin valor es la ficha base. */
-export type Warranty = 1 | 5;
+/** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía de 5 años; sin valor es la ficha base (H-ITALY). */
+export type Variant = "fundigsac" | 5;
 
 /** Textos de la ficha por variante, definidos a nivel de módulo: la base (H-ITALY) o FUNDIGSAC con garantía. */
-const variantCopy = (warranty?: Warranty) => {
-  if (!warranty) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY", thumbs: BASE_THUMBS };
-  const warrantyLabel = warranty === 1 ? "1 año de garantía" : `${warranty} años de garantía`;
-  return { warrantyLabel, productName: `Válvula de compuerta bridada FUNDIGSAC · ${warrantyLabel}`, specs: [["Marca", "FUNDIGSAC"], ["Garantía", warrantyLabel], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: warranty === 1 ? FUNDIGSAC_1_THUMBS : BASE_THUMBS };
+const variantCopy = (variant?: Variant) => {
+  if (!variant) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY", thumbs: BASE_THUMBS };
+  if (variant === "fundigsac") return { warrantyLabel: null, productName: "Válvula de compuerta bridada FUNDIGSAC", specs: [["Marca", "FUNDIGSAC"], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: FUNDIGSAC_THUMBS };
+  const warrantyLabel = `${variant} años de garantía`;
+  return { warrantyLabel, productName: `Válvula de compuerta bridada FUNDIGSAC · ${warrantyLabel}`, specs: [["Marca", "FUNDIGSAC"], ["Garantía", warrantyLabel], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: BASE_THUMBS };
 };
-const COPY = { base: variantCopy(), 1: variantCopy(1), 5: variantCopy(5) } as const;
+const COPY = { base: variantCopy(), fundigsac: variantCopy("fundigsac"), 5: variantCopy(5) } as const;
 
-export function W06Ficha(props: { warranty?: Warranty }) {
-  const { warrantyLabel, productName, specs, brand, thumbs: THUMBS } = COPY[props.warranty ?? "base"];
+export function W06Ficha(props: { variant?: Variant }) {
+  const { warrantyLabel, productName, specs, brand, thumbs: THUMBS } = COPY[props.variant ?? "base"];
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [docOpen, setDocOpen] = useState(false);

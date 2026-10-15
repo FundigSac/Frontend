@@ -7,6 +7,8 @@ function watchConsole(page: Page) {
     if (m.type() !== "error" && m.type() !== "warning") return;
     // Chrome registra el 404 del propio documento en la ruta inexistente; no es un fallo de la página.
     if (/Failed to load resource.*404/.test(m.text()) && page.url().includes("ruta-que-no-existe")) return;
+    // Solo en `next dev`: precarga el CSS del not-found (legal.css) en todas las rutas y Chrome avisa si la carga tarda. El build de producción no lo emite.
+    if (/legal_[\w-]+\.css was preloaded using link preload but not used/.test(m.text())) return;
     problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
@@ -200,8 +202,8 @@ test.describe("W02 catálogo", () => {
     await expect(catalogo).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
   });
 
-  test("fichas FUNDIGSAC de compuerta con 1 y 5 años de garantía salen del catálogo y usan la plantilla de la ficha", async ({ page }) => {
-    for (const [slug, years, label] of [["valvula-compuerta-fundigsac-1-ano", "1", "1 año de garantía"], ["valvula-compuerta-fundigsac-5-anos", "5", "5 años de garantía"]] as const) {
+  test("ficha FUNDIGSAC de compuerta con 5 años de garantía sale del catálogo y usan la plantilla de la ficha", async ({ page }) => {
+    for (const [slug, years, label] of [["valvula-compuerta-fundigsac-5-anos", "5", "5 años de garantía"]] as const) {
       await page.goto("/productos");
       const card = page.locator("#productos-destacados article").filter({ hasText: `FUNDIGSAC · ${label}` });
       await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", `/productos/valvulas/${slug}`);
@@ -214,14 +216,19 @@ test.describe("W02 catálogo", () => {
     }
   });
 
-  test("ficha de 1 año: galería con 5 fotos FUNDIGSAC (la de 5 años y la base conservan las suyas)", async ({ page }) => {
-    await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-1-ano");
+  test("ficha FUNDIGSAC: galería con 5 fotos propias y sin garantía indicada; la de 5 años y la base conservan las suyas", async ({ page }) => {
+    await page.goto("/productos");
+    const card = page.locator("#productos-destacados article").filter({ hasText: "Válvula de compuerta FUNDIGSAC" }).filter({ hasNotText: "garantía" });
+    await card.getByRole("link", { name: "Ver ficha", exact: true }).click();
+    await expect(page).toHaveURL(/\/productos\/valvulas\/valvula-compuerta-fundigsac$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvula de compuerta bridada FUNDIGSAC");
+    await expect(page.locator("main").getByText(/garantía/i)).toHaveCount(0);
+    await expect(page.getByRole("row", { name: /^Marca FUNDIGSAC/ })).toBeVisible();
     const thumbs = page.locator("[role='list'] button[role='listitem']");
     await expect(thumbs).toHaveCount(5);
-    const main = page.locator("main img").first();
-    await expect(main).toHaveAttribute("alt", /FUNDIGSAC, vista frontal con el logotipo en relieve/);
-    const srcs = await page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
-    expect(srcs.every((s) => s.includes("/media/valvula-fundigsac-1/f1-0"))).toBe(true);
+    await expect(page.locator("main img").first()).toHaveAttribute("alt", /FUNDIGSAC, vista frontal con el logotipo en relieve/);
+    const srcOf = () => page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
+    expect((await srcOf()).every((u) => u.includes("/media/valvula-fundigsac/f-0"))).toBe(true);
     await thumbs.nth(3).click();
     await expect(page.locator("main img").first()).toHaveAttribute("alt", /etiqueta DN100 de 4 pulgadas en la brida/);
     await page.getByRole("button", { name: "Ampliar" }).click();
@@ -231,8 +238,7 @@ test.describe("W02 catálogo", () => {
     await expect(page.getByRole("dialog", { name: "Galería ampliada" })).toBeHidden();
     for (const slug of ["valvula-compuerta-fundigsac-5-anos", "valvula-compuerta"]) {
       await page.goto(`/productos/valvulas/${slug}`);
-      const base = await page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
-      expect(base.every((s) => s.includes("/media/valvula-hd/v-0"))).toBe(true);
+      expect((await srcOf()).every((u) => u.includes("/media/valvula-hd/v-0"))).toBe(true);
     }
   });
 
@@ -322,7 +328,9 @@ function lineTests(line: Line) {
       await page.goto(line.route);
       expect(await page.locator("main a[href='#']").count()).toBe(0);
       for (const [name, href] of line.cards) {
-        await expect(cards(page).filter({ hasText: name }).getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", href);
+        // Por encabezado exacto: un nombre puede ser subcadena de otro (p. ej. "…FUNDIGSAC" y "…FUNDIGSAC · 5 años de garantía").
+        const card = cards(page).filter({ has: page.getByRole("heading", { name, exact: true }) });
+        await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", href);
       }
       await expect(page.getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
       await expect(page.getByRole("link", { name: "Ver todos los recursos" })).toHaveAttribute("href", "/recursos");
@@ -345,7 +353,7 @@ lineTests({
   za: "Válvula reductora de presión",
   emptyHeading: "No encontramos válvulas con esos datos",
   resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC · 1 año de garantía", "/productos/valvulas/valvula-compuerta-fundigsac-1-ano"], ["Válvula de compuerta FUNDIGSAC · 5 años de garantía", "/productos/valvulas/valvula-compuerta-fundigsac-5-anos"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC · 5 años de garantía", "/productos/valvulas/valvula-compuerta-fundigsac-5-anos"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
 });
 
 lineTests({
