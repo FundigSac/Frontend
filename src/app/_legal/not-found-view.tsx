@@ -1,12 +1,21 @@
 "use client";
 
 import { FloatingActions } from "../_landing/floating-actions";
-import Image from "next/image";
+import Image, { type ImageLoaderProps } from "next/image";
 import Link from "next/link";
 import { ArrowRight, Home, LayoutGrid } from "lucide-react";
 import { NOT_FOUND } from "./copy";
 import { useCopy } from "./use-copy";
 import "./legal.css";
+
+// Variantes WebP pregeneradas (scripts/optimize-404-images.mjs) servidas como estáticos:
+// el loader elige la más cercana al ancho pedido, así no hay transformación en la primera visita.
+const HERO_WIDTHS = [768, 1200, 1672] as const;
+const THUMB_WIDTHS = [256, 512] as const;
+
+const pickVariant = (widths: readonly number[], width: number) => widths.find((w) => width <= w) ?? widths[widths.length - 1];
+const heroLoader = ({ width }: ImageLoaderProps) => `/media/legal/404/hero-404-${pickVariant(HERO_WIDTHS, width)}.webp`;
+const thumbLoader = (base: string) => ({ width }: ImageLoaderProps) => `${base}-${pickVariant(THUMB_WIDTHS, width)}.webp`;
 
 const BOLTS = Array.from({ length: 8 }, (_, i) => {
   const a = (i * Math.PI * 2) / 8 + Math.PI / 8;
@@ -66,9 +75,9 @@ function FlangeZero() {
 }
 
 const CARD_MEDIA = [
-  { href: "/productos", image: "/media/legal/404-productos.webp" },
-  { href: "/industrias", image: "/media/legal/404-sectores.webp" },
-  { href: "/recursos", image: "/media/legal/404-recursos.webp" },
+  { href: "/productos", image: "/media/legal/404/404-productos" },
+  { href: "/industrias", image: "/media/legal/404/404-sectores" },
+  { href: "/recursos", image: "/media/legal/404/404-recursos" },
 ] as const;
 
 export function NotFoundView() {
@@ -76,7 +85,8 @@ export function NotFoundView() {
 
   return (
     <main className="lp lg lg-nf">
-      <Image className="lg-nf__photo" src="/media/legal/hero-404.webp" alt="" fill priority fetchPriority="high" quality={85} sizes="100vw" />
+      {/* La foto es el LCP de esta página: priority la precarga desde el HTML inicial. */}
+      <Image className="lg-nf__photo" src="/media/legal/404/hero-404-1200.webp" loader={heroLoader} alt="" fill priority sizes="100vw" />
       <div className="lg-nf__veil" aria-hidden="true" />
 
       <div className="lp-shell lg-nf__main">
@@ -108,7 +118,7 @@ export function NotFoundView() {
             <li key={CARD_MEDIA[i].href}>
               <Link className="lg-nf__card" href={CARD_MEDIA[i].href}>
                 <span className="lg-nf__thumb">
-                  <Image src={CARD_MEDIA[i].image} alt={c.alt} fill quality={70} sizes="(max-width: 720px) 84px, 116px" />
+                  <Image src={`${CARD_MEDIA[i].image}.webp`} loader={thumbLoader(CARD_MEDIA[i].image)} alt={c.alt} fill sizes="(max-width: 720px) 84px, 116px" />
                 </span>
                 <span>
                   <strong>{c.title}</strong>
