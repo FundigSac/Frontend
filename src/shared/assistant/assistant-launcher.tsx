@@ -4,7 +4,8 @@ import { X } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ASSISTANT_COPY, ASSISTANT_EVENT } from "./assistant-copy";
-import { AssistantMark } from "./assistant-icon";
+import { AssistantMascot } from "./assistant-mascot";
+import type { Settled } from "./use-assistant-chat";
 import "./assistant.css";
 
 // El panel (y su lógica de chat) se descarga solo cuando la persona se acerca al botón o lo abre.
@@ -22,8 +23,19 @@ export function AssistantLauncher() {
   const [mounted, setMounted] = useState(false);
   const [teaser, setTeaser] = useState(false);
   const [prompt, setPrompt] = useState<string | null>(null);
+  const [unread, setUnread] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const openRef = useRef(open);
   const clearPrompt = useCallback(() => setPrompt(null), []);
+
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  // Si la respuesta termina con el chat cerrado, el botón lo avisa y la mascota celebra.
+  const onSettled = useCallback((result: Settled) => {
+    if (!openRef.current && result === "done") setUnread(true);
+  }, []);
 
   const hideTeaser = useCallback(() => {
     setTeaser(false);
@@ -37,6 +49,7 @@ export function AssistantLauncher() {
   const show = useCallback(
     (question?: string) => {
       hideTeaser();
+      setUnread(false);
       setMounted(true);
       setOpen(true);
       if (question) setPrompt(question);
@@ -83,7 +96,7 @@ export function AssistantLauncher() {
       {teaser && !open && (
         <div className="ai-teaser">
           <button type="button" className="ai-teaser__text" onClick={() => show()}>
-            <AssistantMark size={18} />
+            <AssistantMascot size={34} />
             {t.teaser}
           </button>
           <button type="button" className="ai-teaser__close" onClick={hideTeaser} aria-label={t.teaserDismiss} title={t.teaserDismiss}>
@@ -95,8 +108,8 @@ export function AssistantLauncher() {
         ref={buttonRef}
         type="button"
         className="ai-launch"
-        aria-label={open ? t.close : t.open}
-        title={open ? t.close : t.open}
+        aria-label={open ? t.close : unread ? `${t.open} · ${t.unread}` : t.open}
+        title={open ? t.close : unread ? t.unread : t.open}
         aria-expanded={open}
         aria-controls={mounted ? "ai-panel" : undefined}
         data-open={open ? "true" : "false"}
@@ -106,18 +119,16 @@ export function AssistantLauncher() {
         onClick={() => (open ? close() : show())}
       >
         <span className="ai-launch__glyph ai-launch__glyph--mark" aria-hidden="true">
-          <AssistantMark size={30} />
+          <AssistantMascot size={66} mood={unread ? "happy" : "idle"} />
         </span>
+        {unread && !open && <span className="ai-launch__dot" aria-hidden="true">1</span>}
         <span className="ai-launch__glyph ai-launch__glyph--close" aria-hidden="true">
           <X size={26} strokeWidth={2.2} />
-        </span>
-        <span className="ai-launch__badge" aria-hidden="true">
-          {lang === "en" ? "AI" : "IA"}
         </span>
       </button>
       {mounted && (
         <Suspense fallback={null}>
-          <AssistantPanel open={open} onClose={close} prompt={prompt} onPromptUsed={clearPrompt} />
+          <AssistantPanel open={open} onClose={close} prompt={prompt} onPromptUsed={clearPrompt} onSettled={onSettled} />
         </Suspense>
       )}
     </div>

@@ -1,12 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { guideAnswer, withSuggestions } from "@/modules/assistant/guide";
 import { createRateLimiter, parseChatRequest } from "@/modules/assistant/limits";
 import { SYSTEM_PROMPT, visitContext } from "@/modules/assistant/prompt";
 
 /**
- * Asistente de FUNDIGSAC: respuesta en streaming (Server-Sent Events) con Claude.
- * Eventos: {"type":"text","text":…}, {"type":"done"}, {"type":"refusal"}, {"type":"error","code":…}.
- * Requiere ANTHROPIC_API_KEY en el entorno; sin ella responde 503 "not_configured" y el widget ofrece
- * WhatsApp y cotización.
+ * FundigIA: respuesta en streaming (Server-Sent Events).
+ * Eventos: {"type":"meta","mode":"ai"|"guide"}, {"type":"text","text":…}, {"type":"done"}, {"type":"refusal"},
+ * {"type":"error","code":…}.
+ * Con ANTHROPIC_API_KEY responde Claude; sin la clave, o si el servicio falla antes de empezar a responder,
+ * contesta la guía rápida (src/modules/assistant/guide.ts) con los datos del sitio, para que el chat siempre funcione.
  */
 
 export const runtime = "nodejs";
@@ -43,6 +45,15 @@ function errorCode(error: unknown): string {
   return "error";
 }
 
+const sleep = (ms: number, signal: AbortSignal) =>
+  new Promise<void>((resolve) => {
+    const id = setTimeout(resolve, ms);
+    signal.addEventListener("abort", () => {
+      clearTimeout(id);
+      resolve();
+    });
+  });
+
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return json(403, { error: "forbidden" });
 
@@ -58,10 +69,7 @@ export async function POST(request: Request) {
   const limited = rateLimit(clientKey(request));
   if (!limited.ok) return json(429, { error: "rate_limited", retryAfter: limited.retryAfter }, { "Retry-After": String(limited.retryAfter) });
 
-  if (!process.env.ANTHROPIC_API_KEY) return json(503, { error: "not_configured" });
-
   const { messages, lang, page } = parsed.value;
-  const client = new Anthropic();
   const encoder = new TextEncoder();
   const abort = new AbortController();
   request.signal.addEventListener("abort", () => abort.abort());
@@ -69,36 +77,64 @@ export async function POST(request: Request) {
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const send = (event: Record<string, unknown>) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+
+      // Guía rápida: se envía por trozos para que se lea como una respuesta escrita en vivo.
+      const answerFromGuide = async () => {
+        send({ type: "meta", mode: "guide" });
+        const text = withSuggestions(guideAnswer(messages[messages.length - 1].content, lang, page));
+        for (const piece of text.match(/[\s\S]{1,14}/g) ?? []) {
+          if (abort.signal.aborted) return;
+          send({ type: "text", text: piece });
+          await sleep(14, abort.signal);
+        }
+        send({ type: "done", stop: "guide" });
+      };
+
       try {
-        const reply = client.beta.messages.stream(
-          {
-            model: MODEL,
-            max_tokens: 4096,
-            betas: ["server-side-fallback-2026-07-01"],
-            fallbacks: "default",
-            thinking: { type: "adaptive" },
-            output_config: { effort: EFFORT },
-            // Prefijo estable (rol + base de conocimiento) en caché; el contexto de la visita va al final.
-            system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
-            messages: [...messages, { role: "system", content: visitContext(lang, page) }],
-          },
-          { signal: abort.signal },
-        );
-        reply.on("text", (text) => send({ type: "text", text }));
-        const final = await reply.finalMessage();
-        if (final.stop_reason === "refusal") send({ type: "refusal" });
-        else send({ type: "done", stop: final.stop_reason });
-        console.info("[chat] uso", {
-          model: final.model,
-          input: final.usage.input_tokens,
-          cacheRead: final.usage.cache_read_input_tokens,
-          cacheWrite: final.usage.cache_creation_input_tokens,
-          output: final.usage.output_tokens,
-        });
-      } catch (error) {
-        if (!abort.signal.aborted) {
+        if (!process.env.ANTHROPIC_API_KEY) {
+          await answerFromGuide();
+          return;
+        }
+        let started = false;
+        try {
+          const client = new Anthropic();
+          const reply = client.beta.messages.stream(
+            {
+              model: MODEL,
+              max_tokens: 4096,
+              betas: ["server-side-fallback-2026-07-01"],
+              fallbacks: "default",
+              thinking: { type: "adaptive" },
+              output_config: { effort: EFFORT },
+              // Prefijo estable (rol + base de conocimiento) en caché; el contexto de la visita va al final.
+              system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+              messages: [...messages, { role: "system", content: visitContext(lang, page) }],
+            },
+            { signal: abort.signal },
+          );
+          reply.on("text", (text) => {
+            if (!started) {
+              started = true;
+              send({ type: "meta", mode: "ai" });
+            }
+            send({ type: "text", text });
+          });
+          const final = await reply.finalMessage();
+          if (final.stop_reason === "refusal") send({ type: "refusal" });
+          else send({ type: "done", stop: final.stop_reason });
+          console.info("[chat] uso", {
+            model: final.model,
+            input: final.usage.input_tokens,
+            cacheRead: final.usage.cache_read_input_tokens,
+            cacheWrite: final.usage.cache_creation_input_tokens,
+            output: final.usage.output_tokens,
+          });
+        } catch (error) {
+          if (abort.signal.aborted) return;
           console.error("[chat] error", error instanceof Anthropic.APIError ? `${error.status} ${error.name}` : error);
-          send({ type: "error", code: errorCode(error) });
+          // Si la IA falla antes de escribir, responde la guía; si ya había empezado, se avisa del corte.
+          if (!started) await answerFromGuide();
+          else send({ type: "error", code: errorCode(error) });
         }
       } finally {
         controller.close();

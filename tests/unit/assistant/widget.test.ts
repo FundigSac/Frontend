@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { suggestionsFor, whatsappHref } from "@/shared/assistant/assistant-copy";
 import { safeHref } from "@/shared/assistant/assistant-markdown";
-import { historyFor, type ChatMessage } from "@/shared/assistant/use-assistant-chat";
+import { historyFor, parseReply, type ChatMessage } from "@/shared/assistant/use-assistant-chat";
 
 describe("enlaces de las respuestas", () => {
   it("acepta rutas internas, WhatsApp, correo y teléfono", () => {
@@ -20,6 +20,17 @@ describe("enlaces de las respuestas", () => {
   });
 });
 
+describe("sugerencias de seguimiento", () => {
+  it("separa el texto de las preguntas sugeridas", () => {
+    expect(parseReply("Hola.\n[[¿Qué es DN?|¿Cómo cotizo?]]")).toEqual({ body: "Hola.", suggestions: ["¿Qué es DN?", "¿Cómo cotizo?"] });
+  });
+
+  it("oculta un bloque de sugerencias a medio llegar", () => {
+    expect(parseReply("Respuesta en curso\n[[¿Qué es")).toEqual({ body: "Respuesta en curso", suggestions: [] });
+    expect(parseReply("Sin sugerencias")).toEqual({ body: "Sin sugerencias", suggestions: [] });
+  });
+});
+
 describe("historial enviado a la API", () => {
   const msg = (role: ChatMessage["role"], content: string, status: ChatMessage["status"] = "done"): ChatMessage => ({ id: `${role}-${content}`, role, content, status });
 
@@ -31,6 +42,11 @@ describe("historial enviado a la API", () => {
       { role: "assistant", content: "c" },
       { role: "user", content: "d" },
     ]);
+  });
+
+  it("no reenvía las sugerencias al modelo", () => {
+    const history = historyFor([msg("user", "a"), msg("assistant", "respuesta\n[[x|y]]"), msg("user", "b")]);
+    expect(history[1]).toEqual({ role: "assistant", content: "respuesta" });
   });
 
   it("limita la cantidad de mensajes", () => {
