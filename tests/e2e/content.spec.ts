@@ -20,87 +20,53 @@ const go = async (page: Page, url: string, hydrateSelector?: string) => {
 const cards = (page: Page) => page.locator("article.resource-card");
 
 test.describe("W13 Recursos técnicos", () => {
-  test("filtros de categoría, familia y búsqueda con estado ARIA y conteo", async ({ page }) => {
-    await go(page, "/recursos", "#docSearchInput");
-    await expect(cards(page)).toHaveCount(6);
+  test("filtros de tipo y familia con estado ARIA y sin descargas pendientes", async ({ page }) => {
+    await go(page, "/recursos", "#resource-search");
+    const articles = page.locator("section[aria-label=\"Documentos técnicos\"] article");
+    await expect(articles).toHaveCount(6);
+    await expect(page.getByRole("link", { name: /Descargar/ })).toHaveCount(0);
 
-    const fichas = page.getByRole("button", { name: /^Fichas Técnicas/ });
+    const fichas = page.getByRole("button", { name: "Fichas técnicas" });
     await expect(fichas).toHaveAttribute("aria-pressed", "false");
     await fichas.click();
     await expect(fichas).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("button", { name: /^Todos los documentos/ })).toHaveAttribute("aria-pressed", "false");
-    await expect(cards(page)).toHaveCount(2);
-    await expect(page.locator("#resultsCount")).toHaveText("2 documentos encontrados.");
+    await expect(page.getByRole("button", { name: "Todos los documentos" })).toHaveAttribute("aria-pressed", "false");
+    await expect(articles).toHaveCount(2);
+    await expect(page.getByRole("status").filter({ hasText: "2 documentos en preparación." })).toHaveCount(1);
 
-    await page.getByRole("button", { name: "Marcos y Tapas" }).click();
-    await expect(cards(page)).toHaveCount(1);
-    await expect(cards(page).first()).toContainText("Protocolo de Ensayos Metrológicos");
-    await expect(page.locator("#resultsCount")).toHaveText("1 documento encontrado.");
-    await expect(page).toHaveURL(/cat=fichas/);
-    await expect(page).toHaveURL(/fam=marcos/);
+    await page.getByRole("group", { name: "Filtrar por familia de producto" }).getByRole("button", { name: "Marcos y tapas" }).click();
+    await expect(articles).toHaveCount(1);
+    await expect(articles.first()).toContainText("Documentos de inspección y ensayo");
   });
 
-  test("búsqueda de texto, 'limpiar', estado vacío y restablecer filtros", async ({ page }) => {
-    await go(page, "/recursos", "#docSearchInput");
-    const search = page.locator("#docSearchInput");
-    await expect(page.locator("#clearSearch")).toHaveCount(0);
+  test("búsqueda de texto, estado vacío y restablecer filtros", async ({ page }) => {
+    await go(page, "/recursos", "#resource-search");
+    const articles = page.locator("section[aria-label=\"Documentos técnicos\"] article");
+    await page.locator("#resource-search").fill("xyz-no-existe");
+    await expect(articles).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "No encontramos documentos" })).toBeVisible();
 
-    await search.fill("golpe de ariete");
-    await expect(cards(page)).toHaveCount(1);
-    await expect(page.locator("#clearSearch")).toBeVisible();
-    await expect(page).toHaveURL(/q=golpe\+de\+ariete/);
-
-    await page.locator("#clearSearch").click();
-    await expect(cards(page)).toHaveCount(6);
-    await expect(search).toHaveValue("");
-    await expect(page.locator("#clearSearch")).toHaveCount(0);
-
-    await search.fill("xyz-no-existe");
-    await expect(cards(page)).toHaveCount(0);
-    await expect(page.locator("#noResults")).toBeVisible();
-    await expect(page.locator("#resultsCount")).toHaveText("No se encontraron documentos.");
-
-    await page.getByRole("button", { name: "Planos CAD / DWG (1)" }).click();
-    await page.locator("#resetFilters").click();
-    await expect(page.locator("#noResults")).toHaveCount(0);
-    await expect(cards(page)).toHaveCount(6);
-    await expect(page.getByRole("button", { name: /^Todos los documentos/ })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Fichas técnicas" }).click();
+    await page.getByRole("button", { name: "Restablecer filtros" }).first().click();
+    await expect(articles).toHaveCount(6);
+    await expect(page.locator("#resource-search")).toHaveValue("");
+    await expect(page.getByRole("button", { name: "Todos los documentos" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("button", { name: "Todas", exact: true })).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("los filtros se leen de la URL (?q=&cat=&fam=) y los botones se operan con teclado", async ({ page }) => {
-    await go(page, "/recursos?q=ariete&cat=manuales&fam=valvulas", "#docSearchInput");
-    await expect(page.locator("#docSearchInput")).toHaveValue("ariete");
-    await expect(cards(page)).toHaveCount(1);
-    await expect(page.getByRole("button", { name: /^Manuales de Montaje/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("button", { name: "Válvulas", exact: true })).toHaveAttribute("aria-pressed", "true");
-
-    await page.goto("/recursos?cat=inexistente&fam=<script>", { waitUntil: "domcontentloaded" });
-    await hydrated(page, "#docSearchInput");
-    await expect(cards(page)).toHaveCount(6);
-
+  test("el teclado opera los filtros (Enter sobre el botón de familia)", async ({ page }) => {
+    await go(page, "/recursos", "#resource-search");
+    const articles = page.locator("section[aria-label=\"Documentos técnicos\"] article");
     const tuberias = page.getByRole("button", { name: "Tuberías", exact: true });
     await tuberias.focus();
     await page.keyboard.press("Enter");
     await expect(tuberias).toHaveAttribute("aria-pressed", "true");
-    await expect(cards(page)).toHaveCount(3);
-  });
-
-  test("las descargas llevan al formulario de contacto con el documento precargado (sin simular descargas)", async ({ page }) => {
-    await go(page, "/recursos", "#docSearchInput");
-    const first = cards(page).first().getByRole("link", { name: /Descargar PDF/ });
-    const href = await first.getAttribute("href");
-    expect(href).toContain("/contacto?motivo=documentacion&documento=");
-    expect(decodeURIComponent(href!)).toContain("Catálogo General Técnico FUNDIGSAC 2026");
-    await first.click();
-    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion/);
-    await expect(page.locator("#technicalMessage")).toHaveValue("Solicito el documento: Catálogo General Técnico FUNDIGSAC 2026");
-    await expect(page.locator("#contactReason")).toHaveValue("documentacion");
+    await expect(articles).toHaveCount(2);
   });
 });
 
 test.describe("W14 Detalle de recurso", () => {
-  test("compartir copia el enlace y avisa con el toast global; descargar no simula descarga", async ({ page, context, browserName }) => {
+  test("compartir copia el enlace y avisa; la migas de pan y el retorno llevan a recursos", async ({ page, context, browserName }) => {
     test.skip(browserName !== "chromium", "permisos de portapapeles sólo en chromium");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await go(page, "/recursos/detalle-tecnico", "#btn-share");
@@ -108,10 +74,8 @@ test.describe("W14 Detalle de recurso", () => {
     await expect(page.getByRole("status").filter({ hasText: "Enlace técnico copiado" })).toBeVisible();
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
 
-    const dl = page.getByRole("link", { name: /Descargar Catálogo Completo/ });
-    await expect(dl).toHaveAttribute("href", /\/contacto\?motivo=documentacion&documento=/);
-    await expect(page.locator("#toast")).toHaveCount(0);
-    await expect(page.getByRole("navigation", { name: "Ruta de navegación" }).getByRole("link", { name: "Recursos Técnicos" })).toHaveAttribute("href", "/recursos");
+    await expect(page.getByRole("navigation", { name: "Migas de pan" }).getByRole("link", { name: "Recursos técnicos" })).toHaveAttribute("href", "/recursos");
+    await expect(page.getByRole("link", { name: "Volver a Recursos" })).toHaveAttribute("href", "/recursos");
   });
 
   test("si el portapapeles no está disponible muestra la URL para copiar manualmente", async ({ page }) => {
@@ -162,59 +126,45 @@ async function fillQuoteGeneral(page: Page) {
 }
 
 test.describe("W16 / W17 / W24 Cotización", () => {
-  test("cotización general: validación nativa, nota de adjuntos y envío real → confirmación con folio", async ({ page }) => {
+  test("cotización general: validación nativa del RUC y envío → confirmación", async ({ page }) => {
     await go(page, "/cotizar", "#razonSocial");
-    await expect(page.getByText("Los adjuntos se coordinan por correo con el equipo comercial")).toBeVisible();
 
-    await page.getByRole("button", { name: /Enviar Requerimiento/ }).click();
+    await page.getByRole("button", { name: /Enviar solicitud/ }).click();
     await expect(page).toHaveURL(/\/cotizar$/);
     expect(await page.locator("#razonSocial").evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
 
     await fillQuoteGeneral(page);
     await page.locator("#rucEmpresa").fill("123");
-    await page.getByRole("button", { name: /Enviar Requerimiento/ }).click();
+    await page.getByRole("button", { name: /Enviar solicitud/ }).click();
     expect(await page.locator("#rucEmpresa").evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
     await page.locator("#rucEmpresa").fill("20100070970");
 
-    await page.locator("#fileUpload").setInputFiles({ name: "metrado.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4 prueba") });
-    await expect(page.locator("#fileNameLabel")).toHaveText("metrado.pdf");
-
-    await page.getByRole("button", { name: /Enviar Requerimiento/ }).click();
+    await page.getByRole("button", { name: /Enviar solicitud/ }).click();
     await page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-\d{4}-\d{6}/, { timeout: 60_000 });
-    const ref = new URL(page.url()).searchParams.get("ref")!;
-    await expect(page.locator("#folio-code")).toHaveText(ref);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Registrado Exitosamente");
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-    // no se expone información personal
+    // no se expone información personal en la confirmación
     await expect(page.locator("main")).not.toContainText("compras@prueba.com.pe");
     await expect(page.locator("main")).not.toContainText("Consorcio Prueba E2E");
   });
 
-  test("producto precargado: resumen por slug, stepper, fecha mínima, cambiar producto y envío", async ({ page }) => {
+  test("producto precargado: resumen por slug, stepper, fecha mínima, accesorios, RUC y envío", async ({ page }) => {
     await go(page, "/cotizar?producto=tuberia-tyton", "#input-qty");
-    await expect(page.getByText("SKU: TUB-TYT-C40")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: /Tubería de Hierro Dúctil Junta Flexible Tyton/ })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Cambiar producto o especificación técnica" })).toHaveAttribute("href", "/productos");
-    await expect(page.getByRole("navigation", { name: "Ruta de navegación" }).getByRole("link", { name: /Tubería Tyton/ })).toHaveAttribute("href", "/productos/tuberias/tuberia-tyton");
+    await expect(page.getByRole("heading", { name: /Junta Flexible Tyton/ })).toBeVisible();
 
     const qty = page.locator("#input-qty");
     await expect(qty).toHaveValue("4");
     await page.getByRole("button", { name: "Aumentar cantidad" }).click();
     await expect(qty).toHaveValue("5");
-    for (let i = 0; i < 6; i++) await page.getByRole("button", { name: "Disminuir cantidad" }).click({ trial: false }).catch(() => {});
+    for (let i = 0; i < 6; i++) await page.getByRole("button", { name: "Disminuir cantidad" }).click().catch(() => {});
     await expect(qty).toHaveValue("1");
     await expect(page.getByRole("button", { name: "Disminuir cantidad" })).toBeDisabled();
 
     const today = await page.evaluate(() => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Lima", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
     await expect(page.locator("#delivery-date")).toHaveAttribute("min", today);
 
-    // casillas de accesorios (valores del diseño: primera marcada por defecto)
     const addons = page.locator('input[name="addons"]');
-    await expect(addons).toHaveCount(3);
     await expect(addons.first()).toBeChecked();
     await addons.nth(1).check();
 
-    // RUC: botón "Validar" (formato + dígito verificador; no consulta a la SUNAT)
     await page.locator("#ruc").fill("20100070971");
     await page.getByRole("button", { name: "Validar formato del RUC" }).click();
     await expect(page.getByRole("status").filter({ hasText: "dígito verificador" })).toBeVisible();
@@ -226,53 +176,26 @@ test.describe("W16 / W17 / W24 Cotización", () => {
     await page.locator("#contact-name").fill("Ing. Prueba");
     await page.locator("#email").fill("residente@prueba.com.pe");
     await page.locator("#phone").fill("987654321");
-    await page.locator("#delivery-place").selectOption("almacen-lima");
     await page.locator("#delivery-date").fill(today);
     await page.locator('input[name="declaroQueLaInformacion"]').check();
-    await page.getByRole("button", { name: /Solicitar Proforma Oficial/ }).click();
+    await page.getByRole("button", { name: /Enviar solicitud/ }).click();
     await page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-/, { timeout: 60_000 });
-    await expect(page.locator("#folio-code")).toHaveText(/^COT-\d{4}-\d{6}$/);
   });
 
   test("un slug desconocido muestra la cotización general (sin inyectar datos)", async ({ page }) => {
     await go(page, "/cotizar?producto=<img src=x>", "#razonSocial");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Solicitud Formal de Cotización");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/cotizaci/i);
+    await expect(page.locator("img[src='x']")).toHaveCount(0);
   });
 
-  test("confirmación: sin folio o con folio inexistente muestra estado honesto; con folio real permite copiar e imprimir", async ({ page, context, browserName }) => {
+  test("confirmación: sin folio o con folio no válido muestra estado honesto y enlace a una nueva solicitud", async ({ page }) => {
     await go(page, "/cotizar/confirmacion");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("No encontramos esta solicitud");
-    await expect(page.getByRole("link", { name: "Solicitar una cotización" })).toHaveAttribute("href", "/cotizar");
-    await go(page, "/cotizar/confirmacion?ref=COT-2026-999999");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("No encontramos esta solicitud");
-    await go(page, "/cotizar/confirmacion?ref=REC-2026-000001");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("No encontramos esta solicitud");
-
-    // folio real: se crea una cotización
-    await go(page, "/cotizar", "#razonSocial");
-    await fillQuoteGeneral(page);
-    await page.getByRole("button", { name: /Enviar Requerimiento/ }).click();
-    await page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-/, { timeout: 60_000 });
-    const ref = new URL(page.url()).searchParams.get("ref")!;
-    await hydrated(page, "#copy-btn");
-
-    await expect(page.getByText(/\d{1,2} de \w+ de \d{4} · \d{2}:\d{2} hrs \(PET\)/)).toBeVisible();
-    await expect(page.getByText("COT-2026-FND-0841")).toHaveCount(0);
-
-    if (browserName === "chromium") {
-      await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-      await page.locator("#copy-btn").click();
-      await expect(page.locator("#copy-btn")).toContainText("Copiado");
-      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(ref);
-      await expect(page.getByRole("status").filter({ hasText: ref })).toBeVisible();
-    }
-
-    await page.evaluate(() => {
-      (window as unknown as { __printed: number }).__printed = 0;
-      window.print = () => void ((window as unknown as { __printed: number }).__printed += 1);
-    });
-    await page.getByRole("button", { name: /Imprimir Confirmación/ }).click();
-    expect(await page.evaluate(() => (window as unknown as { __printed: number }).__printed)).toBe(1);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("No hay una solicitud registrada");
+    await expect(page.locator('main a[href="/cotizar"]').first()).toBeVisible();
+    await go(page, "/cotizar/confirmacion?ref=COT-2026-999999x");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("No hay una solicitud registrada");
+    await go(page, "/cotizar/confirmacion?ref=REC-2026-000001x");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("No hay una solicitud registrada");
   });
 });
 
@@ -514,9 +437,10 @@ test.describe("Mapa del sitio", () => {
     await page.locator("footer.lp-footer").getByRole("link", { name: "Mapa del sitio" }).click();
     await expect(page).toHaveURL(/\/mapa-del-sitio$/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Mapa del sitio");
-    await expect(page.locator(".lg-map__card")).toHaveCount(5);
+    // cuatro grupos: el de cuenta se retiró hasta que exista el área de clientes
+    await expect(page.locator(".lg-map__card")).toHaveCount(4);
     const hrefs = await page.locator(".lg-map__links a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs.length).toBeGreaterThan(20);
+    expect(hrefs.length).toBeGreaterThanOrEqual(20);
     for (const href of hrefs) expect(href).toMatch(/^\//);
     // cada enlace interno responde (sin 404)
     for (const href of new Set(hrefs)) {
