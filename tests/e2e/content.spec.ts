@@ -499,3 +499,36 @@ test.describe("T&C B2B y consola limpia", () => {
     });
   }
 });
+
+test.describe("Preguntas frecuentes animadas", () => {
+  test("cookies: el acordeón abre y cierra con animación de altura y deja el estilo limpio", async ({ page }) => {
+    await page.goto("/cookies");
+    const item = page.locator(".lg-faq details").first();
+    await item.scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".lg-faq details");
+      return !!el && Object.keys(el).some((k) => k.startsWith("__reactProps"));
+    });
+    const height = () => item.evaluate((el) => el.getBoundingClientRect().height);
+    const closed = await height();
+    await item.locator("summary").click();
+    await expect(item).toHaveJSProperty("open", true);
+    await expect.poll(height).toBeGreaterThan(closed + 30);
+    await expect(item).not.toHaveAttribute("data-state", /.+/);
+    await expect(item).not.toHaveAttribute("style", /overflow/);
+    await item.locator("summary").click();
+    await expect(item).toHaveJSProperty("open", false);
+    await expect.poll(height).toBeCloseTo(closed, 0);
+    await expect(item).not.toHaveAttribute("style", /overflow/);
+  });
+
+  test("cookies: con movimiento reducido el acordeón abre al instante", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/cookies");
+    const item = page.locator(".lg-faq details").nth(2);
+    await item.scrollIntoViewIfNeeded();
+    await item.locator("summary").click();
+    await expect(item).toHaveJSProperty("open", true);
+    await expect(item).not.toHaveAttribute("data-state", /.+/);
+  });
+});

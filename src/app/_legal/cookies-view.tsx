@@ -4,6 +4,7 @@ import { FloatingActions } from "../_landing/floating-actions";
 import { LegalMotion } from "./motion";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
+import { AnimatedDetails } from "@/shared/ui/animated-details";
 import { COMMON, COOKIES } from "./copy";
 import { CookiePrefs } from "./cookie-prefs";
 import { LegalHero } from "./legal-parts";
@@ -47,13 +48,13 @@ export function CookiesView({ hero, info }: { hero: string; info: readonly [stri
           </div>
           <div className="lg-faq" data-reveal="">
             {t.faq.items.map((item) => (
-              <details key={item.q}>
+              <AnimatedDetails key={item.q}>
                 <summary>
                   {item.q}
                   <ChevronDown aria-hidden="true" size={20} strokeWidth={2} />
                 </summary>
                 <div>{item.a}</div>
-              </details>
+              </AnimatedDetails>
             ))}
           </div>
         </div>

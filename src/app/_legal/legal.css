@@ -842,13 +842,23 @@
   display: none;
 }
 
+.lg-faq summary {
+  transition: background 180ms ease, color 240ms ease;
+}
+
 .lg-faq summary svg {
   flex: 0 0 auto;
   color: var(--lp-navy);
-  transition: transform 220ms ease;
+  transition: transform 340ms cubic-bezier(0.2, 0.7, 0.2, 1), color 240ms ease;
 }
 
-.lg-faq details[open] summary svg {
+/* El giro del chevron y el color acompañan a la animación de altura (AnimatedDetails marca data-state="closing" al cerrar). */
+.lg-faq details[open]:not([data-state="closing"]) summary {
+  color: var(--lp-orange-dark);
+}
+
+.lg-faq details[open]:not([data-state="closing"]) summary svg {
+  color: var(--lp-orange-dark);
   transform: rotate(180deg);
 }
 
@@ -2015,6 +2025,11 @@ html[data-lp-theme="dark"] .lg .lg-faq summary svg {
   color: #cfe0fa;
 }
 
+html[data-lp-theme="dark"] .lg .lg-faq details[open]:not([data-state="closing"]) summary,
+html[data-lp-theme="dark"] .lg .lg-faq details[open]:not([data-state="closing"]) summary svg {
+  color: #ff9a62;
+}
+
 /* Libro de reclamaciones */
 html[data-lp-theme="dark"] .lg .lg-fieldset > legend {
   background: #12253e;
@@ -2286,8 +2301,13 @@ html[data-lp-theme="dark"] .lg .lg-switch:disabled[aria-checked="true"] {
     transform: translateY(-2px);
   }
 
-  .lg-faq details[open] > div {
-    animation: lg-fade-down 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  .lg-faq details[open]:not([data-state="closing"]) > div {
+    animation: lg-fade-down 380ms cubic-bezier(0.2, 0.7, 0.2, 1) 60ms both;
+  }
+
+  .lg-faq details[data-state="closing"] > div {
+    opacity: 0;
+    transition: opacity 160ms ease;
   }
 
   .lg-side__card,
