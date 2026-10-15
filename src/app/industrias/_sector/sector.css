@@ -285,12 +285,18 @@
   background: linear-gradient(180deg, #fff, #eef2f6);
 }
 
-/* ===== Documentación: collage recortado que flota y se monta sobre el cierre ===== */
+/* ===== Documentación: collage recortado que flota y se monta sobre el cierre =====
+   Sección más compacta y collage más arriba, con la misma estructura (texto a la izquierda, collage a la derecha). */
+.sa-docs .ag-docs__inner {
+  min-height: 340px;
+  padding-block: 28px;
+}
+
 .sa-docs__media {
   position: relative;
   display: block;
-  width: min(100%, 700px);
-  margin: 0 0 -132px auto;
+  width: min(100%, 610px);
+  margin: -28px 0 -88px auto;
   filter: drop-shadow(0 30px 34px rgb(11 34 68 / 24%)) drop-shadow(0 6px 10px rgb(11 34 68 / 12%));
   transform: translateY(0);
   transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 600ms ease;
@@ -446,7 +452,7 @@ html[data-lp-theme="dark"] .sa-docs__media {
 
 /* ===== Documentación como lámina (catálogo con fondo propio, sin recorte) ===== */
 .sa-docs__media--sheet {
-  width: min(100%, 640px);
+  width: min(100%, 560px);
   overflow: hidden;
   border-radius: 14px;
   filter: none;
