@@ -28,10 +28,17 @@
   overflow: hidden;
   isolation: isolate;
   background-color: #d4d8d8;
-  background-image: url("/media/productos-page/productos1.jpg");
+  background-image: url("/media/productos-page/productos1-1600.webp");
   background-position: center 64%;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+/* Móvil: variante de 1200 px. Se precarga desde la página (productos/page.tsx) para que sea el LCP temprano. */
+@media (max-width: 860px) {
+  .hero {
+    background-image: url("/media/productos-page/productos1-1200.webp");
+  }
 }
 
 .hero::before {
@@ -771,7 +778,7 @@
   padding: 14px 24px;
   border-radius: 8px;
   background-color: #e6eff3;
-  background-image: linear-gradient(90deg, rgba(230, 239, 243, .97) 0%, rgba(230, 239, 243, .92) 58%, rgba(230, 239, 243, .78) 100%), url("/media/productos-page/productos7.jpg");
+  background-image: linear-gradient(90deg, rgba(230, 239, 243, .97) 0%, rgba(230, 239, 243, .92) 58%, rgba(230, 239, 243, .78) 100%), url("/media/productos-page/productos7-1600.webp");
   background-position: center, 50% 58%;
   background-size: cover;
 }
@@ -1444,7 +1451,7 @@
 }
 :global(html[data-lp-theme="dark"]) .supportInner {
   background-color: #14253f;
-  background-image: linear-gradient(90deg, rgb(20 37 63 / 97%) 0%, rgb(20 37 63 / 92%) 58%, rgb(20 37 63 / 78%) 100%), url("/media/productos-page/productos7.jpg");
+  background-image: linear-gradient(90deg, rgb(20 37 63 / 97%) 0%, rgb(20 37 63 / 92%) 58%, rgb(20 37 63 / 78%) 100%), url("/media/productos-page/productos7-1600.webp");
 }
 @media (max-width: 860px) {
   :global(html[data-lp-theme="dark"]) .hero::before {

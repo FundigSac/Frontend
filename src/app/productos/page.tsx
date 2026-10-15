@@ -25,5 +25,12 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
   const initialQuery = firstValue(params.q).slice(0, 120);
   const initialFamily = validFamily(firstValue(params.familia));
 
-  return <ScreenW02 initialQuery={initialQuery} initialFamily={initialFamily} />;
+  return (
+    <>
+      {/* El hero es un fondo CSS: se precarga la variante del tamaño de pantalla para que sea el LCP temprano. */}
+      <link rel="preload" as="image" href="/media/productos-page/productos1-1600.webp" media="(min-width: 861px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/media/productos-page/productos1-1200.webp" media="(max-width: 860px)" fetchPriority="high" />
+      <ScreenW02 initialQuery={initialQuery} initialFamily={initialFamily} />
+    </>
+  );
 }
