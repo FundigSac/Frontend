@@ -6,10 +6,10 @@ export const site = {
   phoneHref: "tel:+51908849664",
   whatsappNumber: "51908849664",
   email: "ventas@fundigsac.com",
-  address: "Jirón Acomayo N.° 199, Lote 18, Mz. E, Cercado de Lima, Lima",
+  address: "Jirón Pacasmayo Mz. E Lt. 12, Cercado de Lima, Lima",
   hours: "Todos los días, de 10:00 a 18:00",
   instagram: "https://www.instagram.com/fundigsac/",
-  mapsUrl: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Jirón Acomayo 199, Cercado de Lima, Lima, Perú"),
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Jirón Pacasmayo Mz. E Lt. 12, Cercado de Lima, Lima, Perú"),
 };
 
 export const whatsappLink = (message: string) => `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(message)}`;

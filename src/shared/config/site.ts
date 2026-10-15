@@ -4,7 +4,7 @@ export const SITE = {
   ruc: "20601839281",
   /** Razón social completa y domicilio para documentos legales (misma fuente que src/lib/site-info.ts). */
   registeredName: "Fundición y Desarrollo de Ingeniería y Gestión S.A.C.",
-  address: "Jirón Acomayo N.° 199, Lote 18, Mz. E, Cercado de Lima, Lima",
+  address: "Jirón Pacasmayo Mz. E Lt. 12, Cercado de Lima, Lima",
   url: "https://fundigsac.com",
   locale: "es-PE",
   email: "cotizaciones@fundigsac.com",
