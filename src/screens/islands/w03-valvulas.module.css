@@ -5,6 +5,9 @@
   --line: #e4e3df;
   --paper: #fbfaf7;
   --orange: #ed762b;
+  --orange-btn: #cf5a1c;
+  --link: #1d5fd1;
+  --ease: cubic-bezier(.2, .7, .2, 1);
   /* La cabecera de inicio (sticky, 84 px) flota sobre el hero: el hero sube por detrás de ella. */
   --bar: 84px;
   min-height: 100vh;
@@ -33,7 +36,7 @@
   position: relative;
   box-sizing: content-box;
   padding-top: var(--bar);
-  min-height: clamp(400px, 24vw, 500px);
+  min-height: clamp(430px, 27vw, 530px);
   overflow: hidden;
   isolation: isolate;
   background-color: #dfe3e6;
@@ -104,25 +107,6 @@
   color: #34414a;
   font-size: clamp(12.6px, 1vw, 17px);
   line-height: 1.5;
-}
-
-.qualityStamp {
-  position: absolute;
-  top: 14%;
-  right: 0;
-  display: flex;
-  min-width: 150px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 6px 0 6px 18px;
-  border-left: 2px solid var(--orange);
-  color: #101b20;
-  font-size: clamp(10.4px, 0.82vw, 14px);
-  font-weight: 700;
-  letter-spacing: .26em;
-  line-height: 1;
-  text-transform: uppercase;
 }
 
 /* Catálogo */
@@ -334,7 +318,7 @@
   display: block;
   aspect-ratio: 1.14 / 1;
   overflow: hidden;
-  background: #f1f1ef;
+  background: linear-gradient(180deg, #f6f5f2 0%, #ecebe7 100%);
 }
 
 .cardImage img {
@@ -375,26 +359,28 @@
 .cardButton {
   display: inline-flex;
   width: fit-content;
-  min-height: 40px;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   margin-top: auto;
-  padding: 0 18px;
-  border: 1px solid #dfe0dc;
-  border-radius: 7px;
-  background: #fafaf8;
-  color: var(--ink);
-  font-size: clamp(10.4px, 0.82vw, 14px);
-  font-weight: 600;
+  color: var(--link);
+  font-size: clamp(11.4px, 0.88vw, 14.5px);
+  font-weight: 700;
   text-decoration: none;
-  transition: background .2s ease, color .2s ease, border-color .2s ease, gap .2s ease;
+  transition: gap .25s var(--ease);
 }
 
 .cardButton:hover {
-  gap: 16px;
-  border-color: var(--ink);
-  background: var(--ink);
-  color: #fff;
+  gap: 13px;
+}
+
+.cardBody .cardMeta {
+  min-height: 0;
+  margin: -12px 0 16px;
+  color: var(--ink-muted);
+  font-size: clamp(10.4px, 0.82vw, 13.5px);
+  font-weight: 600;
+  letter-spacing: .01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .darkButton {
@@ -681,10 +667,6 @@
     width: 86%;
   }
 
-  .qualityStamp {
-    display: none;
-  }
-
   .toolbar {
     grid-template-columns: 1fr 1fr;
   }
@@ -776,9 +758,6 @@
     background: linear-gradient(90deg, rgba(247, 246, 242, .99) 0%, rgba(247, 246, 242, .96) 36%, rgba(247, 246, 242, .7) 46%, rgba(247, 246, 242, .2) 56%, rgba(247, 246, 242, 0) 66%);
   }
 
-  .qualityStamp {
-    display: none;
-  }
 }
 
 /* Etiqueta que distingue la válvula FUNDIGSAC con garantía extendida. */
@@ -813,6 +792,281 @@
   }
 }
 
+/* ===== Rediseño de estructura: franja de características, tarjetas con rango, banda de asesoría y beneficios ===== */
+.heroEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  color: #6a7378;
+  font-size: clamp(8.8px, 0.7vw, 12px);
+  font-weight: 700;
+  letter-spacing: .26em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.heroEyebrow::before {
+  width: 28px;
+  height: 3px;
+  flex: 0 0 auto;
+  background: var(--orange);
+  content: "";
+}
+
+.heroFeatures {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  width: min(1360px, calc(100% - 80px));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: -46px auto 0;
+  padding: 0;
+  border: 1px solid #ecebe7;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 24px 48px -30px rgba(16, 27, 32, .38);
+  list-style: none;
+}
+
+.heroFeatures li,
+.benefits li {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 24px;
+}
+
+.heroFeatures li + li,
+.benefits li + li {
+  border-left: 1px solid #ecebe7;
+}
+
+.featureIcon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #dfe6ee;
+  border-radius: 50%;
+  background: #f3f7fc;
+  color: var(--link);
+  transition: transform .35s var(--ease), background .3s ease, color .3s ease;
+}
+
+@media (hover: hover) {
+  li:hover > .featureIcon {
+    transform: translateY(-3px);
+    background: var(--link);
+    color: #fff;
+  }
+}
+
+.featureText {
+  color: var(--ink);
+  font-size: clamp(11px, 0.86vw, 14.5px);
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: pre-line;
+}
+
+.catalogSection {
+  padding-top: 52px;
+}
+
+.adviceActions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.orangeButton,
+.ghostButton {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-size: clamp(10.8px, 0.85vw, 14.5px);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform .25s var(--ease), background .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.orangeButton {
+  border: 1px solid var(--orange-btn);
+  background: var(--orange-btn);
+  color: #fff;
+  box-shadow: 0 14px 26px -16px rgba(207, 90, 28, .8);
+}
+
+.orangeButton:hover {
+  transform: translateY(-2px);
+  border-color: #b84a12;
+  background: #b84a12;
+}
+
+.orangeButton svg {
+  transition: transform .25s var(--ease);
+}
+
+.orangeButton:hover svg {
+  transform: translateX(4px);
+}
+
+.ghostButton {
+  border: 1px solid #b9c4d1;
+  background: #fff;
+  color: var(--ink);
+}
+
+.ghostButton:hover {
+  transform: translateY(-2px);
+  border-color: var(--link);
+  color: var(--link);
+}
+
+.benefits {
+  display: grid;
+  width: min(1360px, calc(100% - 80px));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 auto;
+  padding: 18px 0 8px;
+  list-style: none;
+}
+
+.benefits li {
+  padding-inline: 22px;
+}
+
+.benefits li:first-child {
+  padding-left: 0;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translate3d(0, 34px, 0) scale(.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Lo que se ve al cargar entra solo con CSS. */
+  .breadcrumbs { animation: fade .6s ease both; }
+  .heroCopy > * { animation: rise .8s var(--ease) both; }
+  .heroCopy > :nth-child(2) { animation-delay: 80ms; }
+  .heroCopy > :nth-child(3) { animation-delay: 160ms; }
+  .heroFeatures li { animation: rise .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms + 280ms); }
+  .tabs > * { animation: rise .55s var(--ease) both; }
+  .tabs > :nth-child(2) { animation-delay: 50ms; }
+  .tabs > :nth-child(3) { animation-delay: 100ms; }
+  .tabs > :nth-child(4) { animation-delay: 150ms; }
+  .tabs > :nth-child(5) { animation-delay: 200ms; }
+  .tabs > :nth-child(6) { animation-delay: 250ms; }
+
+  /* Al filtrar, la cuadrícula aparece con un fundido corto. */
+  .grid { animation: fade .35s ease both; }
+
+  /* Las tarjetas entran según avanza el scroll (donde el navegador lo soporta; si no, se ven directamente). */
+  @supports (animation-timeline: view()) {
+    .card {
+      animation: cardIn linear backwards;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+
+  /* Banda de beneficios: entra al aparecer en pantalla. */
+  .page[data-armed] [data-reveal]:not([data-in]) { opacity: 0; transform: translate3d(0, 18px, 0); }
+  .benefits[data-in="late"] li { animation: rise .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms); }
+
+  .cardImage img { transition: transform .7s var(--ease); }
+  .card:hover .cardImage img { transform: scale(1.06) translateY(-3px); }
+}
+
+@media (max-width: 1100px) {
+  .heroFeatures,
+  .benefits {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .heroFeatures li:nth-child(3),
+  .benefits li:nth-child(3) {
+    border-left: 0;
+  }
+
+  .heroFeatures li:nth-child(n + 3),
+  .benefits li:nth-child(n + 3) {
+    border-top: 1px solid #ecebe7;
+  }
+
+  .benefits li:nth-child(odd) {
+    padding-left: 0;
+  }
+
+  .adviceActions {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .heroFeatures,
+  .benefits {
+    width: calc(100% - 36px);
+  }
+
+  .heroFeatures {
+    margin-top: 18px;
+  }
+
+  .heroFeatures li,
+  .benefits li {
+    gap: 10px;
+    padding: 14px 12px;
+  }
+
+  .featureIcon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .featureText {
+    font-size: 11.5px;
+  }
+
+  .catalogSection {
+    padding-top: 36px;
+  }
+
+  .adviceActions {
+    width: 100%;
+  }
+
+  .orangeButton,
+  .ghostButton {
+    flex: 1 1 140px;
+  }
+
+  .benefits {
+    padding-bottom: 28px;
+  }
+}
+
 /* ===== Tema oscuro de /productos (generado por scripts/gen-products-dark.mjs) ===== */
 /* dark:begin */
 :global(html[data-lp-theme="dark"]) .page {
@@ -821,6 +1075,7 @@
   --ink-muted: #9db0c7;
   --line: rgb(255 255 255 / 14%);
   --paper: #08121f;
+  --link: #82a9ee;
   --ink-btn: #2b4670;
 }
 :global(html[data-lp-theme="dark"]) .eyebrow {
@@ -840,9 +1095,6 @@
 }
 :global(html[data-lp-theme="dark"]) .heroDescription {
   color: #c3cfde;
-}
-:global(html[data-lp-theme="dark"]) .qualityStamp {
-  color: #eef3fa;
 }
 :global(html[data-lp-theme="dark"]) .tab,
 :global(html[data-lp-theme="dark"]) .tabActive {
@@ -871,15 +1123,7 @@
   background: #0f1d32;
 }
 :global(html[data-lp-theme="dark"]) .cardImage {
-  background: #e8eef6;
-}
-:global(html[data-lp-theme="dark"]) .cardButton {
-  border: 1px solid rgb(255 255 255 / 14%);
-  background: #08121f;
-}
-:global(html[data-lp-theme="dark"]) .cardButton:hover {
-  border-color: var(--ink-btn);
-  background: var(--ink-btn);
+  background: linear-gradient(180deg, #08121f 0%, #14253f 100%);
 }
 :global(html[data-lp-theme="dark"]) .darkButton {
   border: 1px solid var(--ink-btn);
@@ -921,6 +1165,31 @@
 :global(html[data-lp-theme="dark"]) .topVeil {
   background: linear-gradient(180deg, rgb(8 18 31 / 94%) 0%, rgb(8 18 31 / 80%) 50%, rgb(8 18 31 / 0%) 100%);
 }
+:global(html[data-lp-theme="dark"]) .heroEyebrow {
+  color: #9db0c7;
+}
+:global(html[data-lp-theme="dark"]) .heroFeatures {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: rgb(15 29 50 / 98%);
+}
+:global(html[data-lp-theme="dark"]) .heroFeatures li + li,
+:global(html[data-lp-theme="dark"]) .benefits li + li {
+  border-left: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .featureIcon {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .ghostButton {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: rgb(15 29 50 / 90%);
+}
+@media (max-width: 1100px) {
+  :global(html[data-lp-theme="dark"]) .heroFeatures li:nth-child(n + 3),
+:global(html[data-lp-theme="dark"]) .benefits li:nth-child(n + 3) {
+    border-top: 1px solid rgb(255 255 255 / 14%);
+  }
+}
 :global(html[data-lp-theme="dark"]) .tabThumb {
   background: #e8eef6;
 }
@@ -936,4 +1205,43 @@
 :global(html[data-lp-theme="dark"]) .downloadButton:hover {
   border-color: var(--orange);
   background: #34548a;
+}
+
+:global(html[data-lp-theme="dark"]) .page {
+  --link: #6ea8ff;
+  --orange-btn: #d45a1a;
+}
+
+:global(html[data-lp-theme="dark"]) .heroEyebrow {
+  color: #9db0c7;
+}
+
+:global(html[data-lp-theme="dark"]) .heroFeatures {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(15 29 50 / 94%);
+  box-shadow: 0 24px 48px -30px rgb(0 0 0 / 80%);
+}
+
+:global(html[data-lp-theme="dark"]) .heroFeatures li + li,
+:global(html[data-lp-theme="dark"]) .benefits li + li,
+:global(html[data-lp-theme="dark"]) .heroFeatures li:nth-child(n + 3),
+:global(html[data-lp-theme="dark"]) .benefits li:nth-child(n + 3) {
+  border-color: rgb(255 255 255 / 14%);
+}
+
+:global(html[data-lp-theme="dark"]) .featureIcon {
+  border-color: rgb(255 255 255 / 16%);
+  background: #14253f;
+}
+
+@media (hover: hover) {
+  :global(html[data-lp-theme="dark"]) li:hover > .featureIcon {
+    background: #2f6fd6;
+    color: #fff;
+  }
+}
+
+:global(html[data-lp-theme="dark"]) .ghostButton {
+  border-color: rgb(255 255 255 / 24%);
+  background: #14253f;
 }

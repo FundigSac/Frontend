@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpDown, ChevronDown, Download, Filter, Mail, MessageCircleMore, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowRight, ArrowUpDown, BadgeCheck, ChevronDown, Download, Filter, Headset, Layers, Mail, MessageCircleMore, PackageCheck, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
+import { useReveal } from "@/shared/ui/use-reveal";
+import { DATASHEETS } from "./w06-ficha-data";
 import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
 import styles from "./w03-valvulas.module.css";
 
@@ -31,6 +33,15 @@ const VALVES: readonly { id: string; group: GroupId; image: string; href: string
   { id: "aire", group: "aire", image: "/media/valvulas-page/valvula-aire.webp", href: "/contacto" },
 ];
 
+/** Rango de diámetros de las fichas que ya tienen datos aprobados. */
+const RANGES: Record<string, string> = {
+  compuerta: DATASHEETS.base.sizeRange,
+  "compuerta-fundigsac": DATASHEETS.fundigsac.sizeRange,
+  "compuerta-garantia-extendida": DATASHEETS.extendida.sizeRange,
+};
+const HERO_ICONS = [ShieldCheck, BadgeCheck, Layers, Headset] as const;
+const BENEFIT_ICONS = [Headset, ShieldCheck, PackageCheck, SlidersHorizontal] as const;
+
 function normalize(value: string) {
   return value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
@@ -43,6 +54,8 @@ export function W03Valvulas() {
   const [group, setGroup] = useState<Group>("todas");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("destacados");
+  const pageRef = useRef<HTMLElement>(null);
+  useReveal(pageRef);
 
   const visible = useMemo(() => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
@@ -61,7 +74,7 @@ export function W03Valvulas() {
   const unit = (n: number) => (n === 1 ? t.one : t.many);
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
       <section className={styles.hero} aria-labelledby="valvulas-title">
         <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>
@@ -69,13 +82,24 @@ export function W03Valvulas() {
             <Link href="/">{t.home}</Link><span aria-hidden="true">›</span><Link href="/productos">{t.products}</Link><span aria-hidden="true">›</span><span aria-current="page">{t.title}</span>
           </nav>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>{t.products}</p>
+            <p className={styles.heroEyebrow}>{t.eyebrow}</p>
             <h1 id="valvulas-title">{t.title}</h1>
             <p className={styles.heroDescription}>{t.lead}</p>
           </div>
-          <div className={styles.qualityStamp}>{t.stamp.map((word) => <span key={word}>{word}</span>)}</div>
         </div>
       </section>
+
+      <ul className={styles.heroFeatures}>
+        {t.features.map((label, i) => {
+          const Icon = HERO_ICONS[i];
+          return (
+            <li key={label} style={{ ["--i" as string]: i }}>
+              <span className={styles.featureIcon}><Icon size={22} strokeWidth={1.7} aria-hidden="true" /></span>
+              <span className={styles.featureText}>{label}</span>
+            </li>
+          );
+        })}
+      </ul>
 
       <section className={styles.catalogSection} aria-label={t.region}>
         <div className={styles.contentWidth}>
@@ -128,11 +152,12 @@ export function W03Valvulas() {
           </div>
 
           {visible.length ? (
-            <div className={styles.grid}>
-              {visible.map((valve) => {
+            <div className={styles.grid} key={group + sort}>
+              {visible.map((valve, index) => {
                 const info = text[valve.id];
+                const range = RANGES[valve.id];
                 return (
-                <article key={valve.id} className={styles.card}>
+                <article key={valve.id} className={styles.card} style={{ ["--i" as string]: index % 3 }}>
                   <Link href={valve.href} className={styles.cardImage} aria-label={t.viewSheetOf + info.name}>
                     <Image src={valve.image} alt={info.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
                     {info.badge && <span className={styles.cardBadge}>{info.badge}</span>}
@@ -140,6 +165,7 @@ export function W03Valvulas() {
                   <div className={styles.cardBody}>
                     <h3>{info.name}</h3>
                     <p>{info.description}</p>
+                    {range && <p className={styles.cardMeta}>{range}</p>}
                     <Link href={valve.href} className={styles.cardButton}>{t.viewSheet} <ArrowRight size={15} aria-hidden="true" /></Link>
                   </div>
                 </article>
@@ -166,9 +192,24 @@ export function W03Valvulas() {
             <h2 id="advice-title">{t.adviceTitle}</h2>
             <p>{t.adviceText}</p>
           </div>
-          <Link href="/contacto" className={styles.darkButton}>{t.adviceCta} <ArrowRight size={16} aria-hidden="true" /></Link>
+          <div className={styles.adviceActions}>
+            <Link href="/contacto" className={styles.orangeButton}>{t.adviceCta} <ArrowRight size={16} aria-hidden="true" /></Link>
+            <Link href="/contacto" className={styles.ghostButton}>{t.adviceCta2}</Link>
+          </div>
         </div>
       </section>
+
+      <ul className={styles.benefits} data-reveal>
+        {t.benefits.map((label, i) => {
+          const Icon = BENEFIT_ICONS[i];
+          return (
+            <li key={label} style={{ ["--i" as string]: i }}>
+              <span className={styles.featureIcon}><Icon size={22} strokeWidth={1.7} aria-hidden="true" /></span>
+              <span className={styles.featureText}>{label}</span>
+            </li>
+          );
+        })}
+      </ul>
 
       <section className={styles.resourcesSection} aria-labelledby="valvulas-resources-title">
         <div className={styles.resourcesBackdrop} aria-hidden="true" />
