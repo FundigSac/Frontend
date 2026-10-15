@@ -280,7 +280,7 @@ export function LandingFooter() {
           <address>
             <ul>
               <li>{f.place}</li>
-              <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+              <li><a href={`mailto:${SITE.email}`}>{SITE.email.split("@")[0]}@<wbr />{SITE.email.split("@")[1]}</a></li>
               <li><Link href="/contacto">{f.form}</Link></li>
               <li><Link href="/cotizar">{tn.cart}</Link></li>
             </ul>
