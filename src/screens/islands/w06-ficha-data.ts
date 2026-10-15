@@ -1,7 +1,7 @@
 /**
  * Datos técnicos de las fichas de válvula de compuerta, por variante.
  * - base: H-ITALY, ficha FT-HI-100 Rev. 13.
- * - fundigsac: FUNDIGSAC con volante, ficha técnica FUNDIGSAC (H-ITALY, DIN 3352 F4, 1 año).
+ * - fundigsac: FUNDIGSAC con volante (1 año), ficha técnica FUNDIGSAC completada con la ficha del proveedor (serie Z45X).
  * - extendida: FUNDIGSAC con garantía extendida, ficha FT-HD N° 002-2024.
  * Medidas en milímetros. Los valores se transcriben de cada ficha; "-" indica un dato ausente o ilegible.
  */
@@ -133,37 +133,45 @@ const BASE: Datasheet = {
   model3d: { src: "/models/valvula-hitaly.glb", alt: "Modelo 3D de la válvula de compuerta bridada H-ITALY con volante" },
 };
 
-// ---------- FUNDIGSAC con volante · ficha técnica FUNDIGSAC (válvula compuerta bridada, 1 año) ----------
+// ---------- FUNDIGSAC con volante (1 año) ----------
+// Dos fichas de la misma válvula (serie Z45X): la ficha técnica FUNDIGSAC (base) y la ficha del proveedor,
+// que añade D1, D2, b – f, el diámetro de los agujeros y las normas de materiales. Donde difieren (D en DN250 y
+// DN300, agujeros PN10 en DN80) manda la ficha FUNDIGSAC, que coincide con EN 1092-2 para hierro dúctil.
 const DN_F1 = ["DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN450", "DN500", "DN600"];
 const F1_IN = ["2", "2-1/2", "3", "4", "5", "6", "8", "10", "12", "14", "16", "18", "20", "24"];
 const F1_L = [150, 170, 180, 190, 200, 210, 230, 250, 270, 290, 310, 330, 350, 390];
 const F1_D = { PN10: [165, 185, 200, 220, 250, 285, 340, 400, 455, 505, 565, 615, 670, 780], PN16: [165, 185, 200, 220, 250, 285, 340, 400, 455, 520, 580, 640, 715, 840] };
+const F1_D1 = { PN10: [125, 145, 160, 180, 210, 240, 295, 350, 400, 460, 515, 565, 620, 725], PN16: [125, 145, 160, 180, 210, 240, 295, 355, 410, 470, 525, 585, 650, 770] };
+const F1_D2 = { PN10: [99, 118, 132, 156, 184, 211, 266, 319, 370, 430, 482, 532, 585, 685], PN16: [99, 118, 132, 156, 184, 211, 266, 319, 370, 438, 490, 550, 610, 725] };
+const F1_BF = ["19 – 3", "19 – 3", "19 – 3", "19 – 3", "19 – 3", "19 – 3", "20 – 3", "22 – 3", "24.5 – 4", "27 – 4", "29 – 4", "30 – 4", "33 – 4", "37 – 5"];
 const F1_HOLES = { PN10: [4, 4, 8, 8, 8, 8, 8, 12, 12, 16, 16, 20, 20, 20], PN16: [4, 4, 8, 8, 8, 8, 12, 12, 12, 16, 16, 20, 20, 20] };
-// Pernos: un valor común o PN10 / PN16 según la tabla de la ficha.
+const F1_HOLE_D = { PN10: [19, 19, 19, 19, 19, 23, 23, 23, 23, 23, 27, 26, 27, 30], PN16: [19, 19, 19, 19, 19, 23, 23, 28, 28, 28, 30, 30, 33, 36] };
+// Pernos: un valor común o PN10 / PN16 según la tabla de la ficha FUNDIGSAC.
 const F1_BOLTS = ["M16", "M16", "M16", "M16", "M16 / M20", "M20", "M20", "M20 / M24", "M20 / M24", "M20 / M24", "M24 / M27", "M24 / M27", "M24 / M30", "M27 / M33"];
 const pair = (a: number, b: number) => (a === b ? a : `${a} / ${b}`);
 const boltFor = (i: number, pn: "PN10" | "PN16") => { const [p10, p16] = F1_BOLTS[i].split(" / "); return pn === "PN10" ? p10 : (p16 ?? p10); };
 
 const FUNDIGSAC: Datasheet = {
   lead: "Válvula compuerta bridada de asiento resiliente, diseño DIN 3352 F4, para aislamiento y corte del flujo en redes de agua potable, riego, estaciones de bombeo e instalaciones hidráulicas.",
-  description: "Su paso recto reduce la pérdida de carga cuando está totalmente abierta y el asiento elastomérico favorece el cierre hermético. Cuerpo, tapa, compuerta y volante en hierro dúctil GGG50 con recubrimiento epoxi de 250 micras o más, vástago de acero inoxidable SS420 y juntas de EPDM.",
+  description: "Su paso recto reduce la pérdida de carga cuando está totalmente abierta y el asiento elastomérico favorece el cierre hermético. Cuerpo, tapa, compuerta y volante en hierro dúctil GGG50 (ASTM A536 65-45-12) con recubrimiento epoxi de 250 micras o más, compuerta encapsulada en EPDM, vástago de acero inoxidable SS420 y bridas ISO 7005-2 en PN10 / PN16.",
   facts: [["Presión", "PN10 / PN16"], ["Temp. máx.", "120 °C"], ["Diseño", "DIN 3352 F4"], ["Epoxi", "≥ 250 µm"]],
   sizes: DN_F1,
   sizeRange: "DN50 – DN600",
   specs: [
     ["Marca", "FUNDIGSAC"],
     ["Fabricante", "H-ITALY"],
+    ["Serie", "Z45X"],
     ["Tipo", "Compuerta bridada de asiento resiliente"],
     ["Rango nominal", "DN50 a DN600"],
     ["Presión nominal", "PN10 / PN16"],
-    ["Diseño", "DIN 3352 F4"],
-    ["Cara a cara", "EN 558 / ISO 5752"],
-    ["Bridas", "DIN, según PN"],
-    ["Cuerpo y tapa", "Hierro dúctil GGG50"],
-    ["Compuerta", "Hierro dúctil GGG50 + EPDM"],
+    ["Diseño", "DIN 3352 F4 · NTP ISO 7259"],
+    ["Cara a cara", "EN 558 / ISO 5752 serie 14 · DIN 3202 F4"],
+    ["Bridas", "ISO 7005-2 / DIN, según PN"],
+    ["Cuerpo y tapa", "Hierro dúctil GGG50 (ASTM A536 65-45-12)"],
+    ["Compuerta", "Hierro dúctil GGG50 encapsulada en EPDM (ISO 3601 / AWWA C509-87)"],
     ["Vástago", "Acero inoxidable SS420"],
     ["Tuerca del vástago", "Latón / hierro dúctil GGG50"],
-    ["Pernos del cuerpo", "Acero al carbono"],
+    ["Pernos del cuerpo", "Acero al carbono galvanizado ASTM A307; en acero inoxidable ASTM A276 o F593 a pedido"],
     ["Junta y anillos tóricos", "EPDM"],
     ["Tuerca de bloqueo de la tapa", "Latón"],
     ["Arandelas", "PTFE y arandela de empuje de latón"],
@@ -171,29 +179,29 @@ const FUNDIGSAC: Datasheet = {
     ["Volante", "Hierro dúctil GGG50, perno de acero inoxidable SS304"],
     ["Recubrimiento", "Epoxi ≥ 250 micras"],
     ["Temperatura máxima", "120 °C"],
-    ["Pruebas", "Estanqueidad de fábrica según ISO 5208 o API 598"],
+    ["Pruebas", "Hidrostáticas y mecánicas al 100 %; estanqueidad según ISO 5208 o API 598"],
     ["Presiones de prueba", "Cuerpo 1,5 × PN y asiento 1,1 × PN (24 y 17,6 bar en PN16)"],
   ],
-  specsNote: "Valores de la ficha técnica FUNDIGSAC de la válvula compuerta bridada. Confirmar PN, perforación y pernos antes del suministro.",
+  specsNote: "Valores de la ficha técnica FUNDIGSAC y de la ficha del proveedor de la misma válvula (serie Z45X). Confirmar PN, perforación y pernos antes del suministro.",
   dims: {
-    note: "Medidas en milímetros (mm). L longitud entre caras; D diámetro de brida (PN10 / PN16).",
-    head: ["DN", "Pulg.", "L", "D brida"],
-    rows: DN_F1.map((dn, i) => ({ dn, cells: [F1_IN[i], F1_L[i], pair(F1_D.PN10[i], F1_D.PN16[i])] })),
+    note: "Medidas en milímetros (mm). L longitud entre caras; D diámetro exterior de brida (PN10 / PN16); b – f espesor de brida y altura del resalte. D1, D2 y agujeros en la tabla de bridas.",
+    head: ["DN", "Pulg.", "L", "D", "b – f"],
+    rows: DN_F1.map((dn, i) => ({ dn, cells: [F1_IN[i], F1_L[i], pair(F1_D.PN10[i], F1_D.PN16[i]), F1_BF[i]] })),
   },
   flange: {
     title: "Bridas",
-    note: "Bridas DIN según PN: diámetro exterior, número de agujeros y pernos. Medidas en mm. Confirmar antes del suministro.",
-    head: ["PN", "D brida", "Agujeros", "Pernos"],
+    note: "Bridas ISO 7005-2 / DIN según PN. D exterior, D1 círculo de pernos, D2 resalte, b – f espesor y altura del resalte, n × Φd número y diámetro de agujeros. Medidas en mm. Confirmar antes del suministro.",
+    head: ["PN", "D", "D1", "D2", "b – f", "n × Φd", "Pernos"],
     rows: (dn) => {
       const i = DN_F1.indexOf(dn);
-      return (["PN10", "PN16"] as const).map((pn) => ({ pn, cells: [F1_D[pn][i], F1_HOLES[pn][i], boltFor(i, pn)] }));
+      return (["PN10", "PN16"] as const).map((pn) => ({ pn, cells: [F1_D[pn][i], F1_D1[pn][i], F1_D2[pn][i], F1_BF[i], `${F1_HOLES[pn][i]} × ${F1_HOLE_D[pn][i]}`, boltFor(i, pn)] }));
     },
   },
   features: [
-    { icon: "shield", title: "Asiento resiliente", text: "Compuerta de hierro dúctil GGG50 encapsulada en EPDM: cierre hermético en redes de agua." },
-    { icon: "settings", title: "Paso recto", text: "Menor pérdida de carga con la válvula totalmente abierta; diseño DIN 3352 F4." },
-    { icon: "nut", title: "Probada en fábrica", text: "Estanqueidad según ISO 5208 o API 598: cuerpo a 1,5 × PN y asiento a 1,1 × PN." },
-    { icon: "layers", title: "Epoxi de 250 micras o más", text: "Protección anticorrosiva del cuerpo, la tapa y el volante de hierro dúctil GGG50." },
+    { icon: "shield", title: "Asiento resiliente", text: "Compuerta de hierro dúctil GGG50 encapsulada en EPDM (ISO 3601 / AWWA C509-87): cierre hermético en redes de agua." },
+    { icon: "settings", title: "Paso recto", text: "Menor pérdida de carga con la válvula totalmente abierta; diseño DIN 3352 F4 y bridas ISO 7005-2." },
+    { icon: "nut", title: "Probada al 100 %", text: "Pruebas hidrostáticas y mecánicas en cada válvula; estanqueidad ISO 5208 o API 598 con cuerpo a 1,5 × PN y asiento a 1,1 × PN." },
+    { icon: "layers", title: "Epoxi de 250 micras o más", text: "Protección anticorrosiva del cuerpo, la tapa y el volante de hierro dúctil GGG50; pernos galvanizados o inoxidables a pedido." },
   ],
   doc: {
     title: "Ficha técnica FUNDIGSAC · Válvula compuerta bridada",

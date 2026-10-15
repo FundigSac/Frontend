@@ -1024,3 +1024,10 @@
   background: #332e24;
 }
 /* dark:end */
+
+/* Tablas técnicas en móvil: valores en una sola línea y relleno compacto para que entren las 5 a 7 columnas. */
+@media (max-width: 760px) {
+  .dims thead th, .flange thead th { padding: 11px 4px; font-size: 11px; letter-spacing: .02em; }
+  .dims tbody th, .dims tbody td, .flange td, .flange tbody th { padding: 9px 4px; font-size: 12.5px; white-space: nowrap; }
+  .flange .pn { padding: 3px 7px; font-size: 11px; }
+}

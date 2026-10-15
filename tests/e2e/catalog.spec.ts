@@ -264,11 +264,14 @@ test.describe("W02 catálogo", () => {
       const res = await page.request.get(pdf);
       expect(res.status()).toBe(200);
     }
-    // FUNDIGSAC de 1 año: pernos por PN de la ficha oficial (DN100 → M16, 8 agujeros).
+    // FUNDIGSAC de 1 año: ficha FUNDIGSAC completada con la del proveedor (DN100: D1 180, D2 156, 8 × Φ19, M16).
     await page.goto("/productos/valvulas/valvula-compuerta-fundigsac");
     await page.getByRole("button", { name: "DN100", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Bridas · DN100" })).toBeVisible();
-    await expect(page.getByRole("row", { name: /PN16 220 8 M16/ })).toBeVisible();
+    await expect(page.getByRole("row", { name: /PN16 220 180 156 19 – 3 8 × 19 M16/ })).toBeVisible();
+    await page.getByRole("button", { name: "DN300", exact: true }).click();
+    await expect(page.getByRole("row", { name: /PN16 455 410 370 24.5 – 4 12 × 28 M24/ })).toBeVisible();
+    await expect(page.getByRole("row", { name: /^Serie Z45X/ })).toBeVisible();
   });
 
   test("Ver en 3D: cada válvula de compuerta carga su propio modelo", async ({ page }) => {
