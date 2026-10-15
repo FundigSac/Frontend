@@ -138,7 +138,7 @@
 .ct-main {
   display: grid;
   grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
-  align-items: start;
+  align-items: stretch;
   gap: clamp(28px, 4vw, 64px);
   padding-block: clamp(34px, 4.4vw, 64px) clamp(40px, 5.5vw, 84px);
 }
@@ -234,14 +234,17 @@
 
 /* Oficinas */
 .ct-offices {
+  display: flex;
   min-width: 0;
+  flex-direction: column;
   padding-top: clamp(22px, 3vw, 40px);
 }
 
 .ct-map {
   position: relative;
   overflow: hidden;
-  min-height: clamp(260px, 24vw, 340px);
+  flex: 1 1 auto;
+  min-height: clamp(220px, 20vw, 300px);
   margin-top: 26px;
   border: 1px solid var(--lg-line, #e3e8ef);
   border-radius: 8px;
