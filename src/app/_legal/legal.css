@@ -1544,6 +1544,24 @@ html[data-lp-theme="dark"] .lg .lg-provider dd {
   padding-bottom: clamp(24px, 4vw, 48px);
 }
 
+/* Etiqueta legible sobre la foto del cielo: píldora blanca con texto oscuro. */
+.lg-nf__main > .lg-eyebrow {
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b2244;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px -12px rgb(11 34 68 / 55%);
+}
+
+html[data-lp-theme="dark"] .lg .lg-nf__main > .lg-eyebrow {
+  background: #0b2244;
+  color: #fff;
+}
+
 .lg-nf__code {
   display: flex;
   align-items: center;
