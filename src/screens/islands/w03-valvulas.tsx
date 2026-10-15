@@ -5,29 +5,30 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpDown, ChevronDown, Download, Filter, Mail, MessageCircleMore, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { documentHref } from "@/modules/resources/documents";
+import { useLang } from "@/shared/layout/landing-prefs";
+import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
 import styles from "./w03-valvulas.module.css";
 
-type GroupId = "compuerta" | "mariposa" | "reduccion" | "aire" | "control";
 type Group = "todas" | GroupId;
 type SortMode = "destacados" | "az" | "za";
 
-const GROUPS: readonly { id: GroupId; label: string; image: string }[] = [
-  { id: "compuerta", label: "Compuerta", image: "/media/valvula-hd/v-01.webp" },
-  { id: "mariposa", label: "Mariposa", image: "/media/valvulas-page/mariposa.webp" },
-  { id: "reduccion", label: "Reducción", image: "/media/valvulas-page/valvula-reductora.webp" },
-  { id: "aire", label: "Aire", image: "/media/valvulas-page/valvula-aire.webp" },
-  { id: "control", label: "Control", image: "/media/valvulas-page/check-swing.webp" },
+const GROUPS: readonly { id: GroupId; image: string }[] = [
+  { id: "compuerta", image: "/media/valvula-hd/v-01.webp" },
+  { id: "mariposa", image: "/media/valvulas-page/mariposa.webp" },
+  { id: "reduccion", image: "/media/valvulas-page/valvula-reductora.webp" },
+  { id: "aire", image: "/media/valvulas-page/valvula-aire.webp" },
+  { id: "control", image: "/media/valvulas-page/check-swing.webp" },
 ];
 
-const VALVES: readonly { id: string; group: GroupId; name: string; badge?: string; description: string; image: string; href: string }[] = [
-  { id: "compuerta", group: "compuerta", name: "Válvula de compuerta bridada", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga para redes de agua.", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta" },
-  { id: "compuerta-fundigsac", group: "compuerta", name: "Válvula de compuerta FUNDIGSAC", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga. Marca FUNDIGSAC.", image: "/media/valvula-fundigsac/f-07.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
-  { id: "compuerta-garantia-extendida", group: "compuerta", name: "Válvula de compuerta FUNDIGSAC", badge: "Garantía extendida", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga. Marca FUNDIGSAC con garantía extendida.", image: "/media/valvula-fundigsac-cuadrante/q-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
-  { id: "mariposa", group: "mariposa", name: "Válvula mariposa", description: "Diseño compacto y de bajo torque para grandes diámetros, ideal para regular o cerrar el flujo.", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
-  { id: "check-swing", group: "control", name: "Válvula check swing", description: "Evita el retorno de flujo en sistemas de conducción y protege bombas y tuberías de inversiones de caudal.", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
-  { id: "check-flex", group: "control", name: "Válvula check flex", description: "Solución confiable para redes de agua y alcantarillado, que impide el retorno del flujo y protege el sistema.", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },
-  { id: "reductora", group: "reduccion", name: "Válvula reductora de presión", description: "Controla y estabiliza la presión en la red de distribución, protegiendo tuberías y equipos aguas abajo.", image: "/media/valvulas-page/valvula-reductora.webp", href: "/contacto" },
-  { id: "aire", group: "aire", name: "Válvula de aire", description: "Elimina y admite aire en redes de agua, mejorando la eficiencia y evitando daños por bolsas de aire.", image: "/media/valvulas-page/valvula-aire.webp", href: "/contacto" },
+const VALVES: readonly { id: string; group: GroupId; image: string; href: string }[] = [
+  { id: "compuerta", group: "compuerta", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta" },
+  { id: "compuerta-fundigsac", group: "compuerta", image: "/media/valvula-fundigsac/f-07.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
+  { id: "compuerta-garantia-extendida", group: "compuerta", image: "/media/valvula-fundigsac-cuadrante/q-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
+  { id: "mariposa", group: "mariposa", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
+  { id: "check-swing", group: "control", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
+  { id: "check-flex", group: "control", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },
+  { id: "reductora", group: "reduccion", image: "/media/valvulas-page/valvula-reductora.webp", href: "/contacto" },
+  { id: "aire", group: "aire", image: "/media/valvulas-page/valvula-aire.webp", href: "/contacto" },
 ];
 
 function normalize(value: string) {
@@ -35,6 +36,10 @@ function normalize(value: string) {
 }
 
 export function W03Valvulas() {
+  const [lang] = useLang();
+  const t = UI[lang];
+  const text = VALVE_TEXT[lang];
+  const groupLabel = GROUP_LABELS[lang];
   const [group, setGroup] = useState<Group>("todas");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("destacados");
@@ -43,47 +48,48 @@ export function W03Valvulas() {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
     const list = VALVES.filter((valve) => {
       if (group !== "todas" && valve.group !== group) return false;
-      const haystack = normalize(valve.name + " " + valve.description);
+      const haystack = normalize(text[valve.id].name + " " + text[valve.id].description);
       return terms.every((term) => haystack.includes(term));
     });
-    if (sort === "az") return [...list].sort((a, b) => a.name.localeCompare(b.name, "es"));
-    if (sort === "za") return [...list].sort((a, b) => b.name.localeCompare(a.name, "es"));
+    if (sort === "az") return [...list].sort((a, b) => text[a.id].name.localeCompare(text[b.id].name, lang));
+    if (sort === "za") return [...list].sort((a, b) => text[b.id].name.localeCompare(text[a.id].name, lang));
     return list;
-  }, [group, query, sort]);
+  }, [group, query, sort, text, lang]);
 
   const count = (id: GroupId) => VALVES.filter((valve) => valve.group === id).length;
   const catalogDocument = documentHref("Catálogo general de productos FUNDIGSAC");
+  const unit = (n: number) => (n === 1 ? t.one : t.many);
 
   return (
     <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="valvulas-title">
         <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>
-          <nav aria-label="Migas de pan" className={styles.breadcrumbs}>
-            <Link href="/">Inicio</Link><span aria-hidden="true">›</span><Link href="/productos">Productos</Link><span aria-hidden="true">›</span><span aria-current="page">Válvulas</span>
+          <nav aria-label={t.crumbsLabel} className={styles.breadcrumbs}>
+            <Link href="/">{t.home}</Link><span aria-hidden="true">›</span><Link href="/productos">{t.products}</Link><span aria-hidden="true">›</span><span aria-current="page">{t.title}</span>
           </nav>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Productos</p>
-            <h1 id="valvulas-title">Válvulas</h1>
-            <p className={styles.heroDescription}>Válvulas diseñadas para redes de agua, alcantarillado e infraestructura urbana.</p>
+            <p className={styles.eyebrow}>{t.products}</p>
+            <h1 id="valvulas-title">{t.title}</h1>
+            <p className={styles.heroDescription}>{t.lead}</p>
           </div>
-          <div className={styles.qualityStamp}><span>Calidad</span><span>Resistencia</span><span>Confianza</span></div>
+          <div className={styles.qualityStamp}>{t.stamp.map((word) => <span key={word}>{word}</span>)}</div>
         </div>
       </section>
 
-      <section className={styles.catalogSection} aria-label="Catálogo de válvulas">
+      <section className={styles.catalogSection} aria-label={t.region}>
         <div className={styles.contentWidth}>
-          <div className={styles.tabs} role="tablist" aria-label="Tipos de válvula">
+          <div className={styles.tabs} role="tablist" aria-label={t.tabsLabel}>
             <button type="button" role="tab" aria-selected={group === "todas"} className={group === "todas" ? styles.tabActive : styles.tab} onClick={() => setGroup("todas")}>
               <span className={styles.tabThumb}><Image src="/media/valvula-hd/v-01.webp" alt="" width={56} height={56} /></span>
-              <span className={styles.tabText}><strong>Todas</strong><small>las válvulas</small></span>
+              <span className={styles.tabText}><strong>{t.all}</strong><small>{t.allSub}</small></span>
             </button>
             {GROUPS.map((entry) => {
               const total = count(entry.id);
               return (
                 <button key={entry.id} type="button" role="tab" aria-selected={group === entry.id} className={group === entry.id ? styles.tabActive : styles.tab} onClick={() => setGroup(group === entry.id ? "todas" : entry.id)}>
                   <span className={styles.tabThumb}><Image src={entry.image} alt="" width={56} height={56} /></span>
-                  <span className={styles.tabText}><strong>{entry.label}</strong><small>{total} {total === 1 ? "producto" : "productos"}</small></span>
+                  <span className={styles.tabText}><strong>{groupLabel[entry.id]}</strong><small>{total} {unit(total)}</small></span>
                 </button>
               );
             })}
@@ -91,57 +97,60 @@ export function W03Valvulas() {
 
           <div className={styles.toolbar}>
             <label className={styles.search}>
-              <span className="sr-only">Buscar válvula por nombre o referencia</span>
+              <span className="sr-only">{t.searchLabel}</span>
               <Search size={18} strokeWidth={1.8} aria-hidden="true" />
-              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar válvula por nombre o referencia…" autoComplete="off" />
+              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
             </label>
             <label className={styles.select}>
               <Filter size={17} strokeWidth={1.8} aria-hidden="true" />
-              <span>Filtrar</span>
+              <span>{t.filter}</span>
               <ChevronDown size={16} aria-hidden="true" />
-              <select value={group} onChange={(event) => setGroup(event.target.value as Group)} aria-label="Filtrar por tipo de válvula">
-                <option value="todas">Todas las válvulas</option>
-                {GROUPS.map((entry) => <option key={entry.id} value={entry.id}>{entry.label}</option>)}
+              <select value={group} onChange={(event) => setGroup(event.target.value as Group)} aria-label={t.filterLabel}>
+                <option value="todas">{t.allValves}</option>
+                {GROUPS.map((entry) => <option key={entry.id} value={entry.id}>{groupLabel[entry.id]}</option>)}
               </select>
             </label>
             <label className={styles.select}>
               <ArrowUpDown size={17} strokeWidth={1.8} aria-hidden="true" />
-              <span>Ordenar por</span>
+              <span>{t.sort}</span>
               <ChevronDown size={16} aria-hidden="true" />
-              <select value={sort} onChange={(event) => setSort(event.target.value as SortMode)} aria-label="Ordenar válvulas">
-                <option value="destacados">Destacados</option>
-                <option value="az">Nombre (A–Z)</option>
-                <option value="za">Nombre (Z–A)</option>
+              <select value={sort} onChange={(event) => setSort(event.target.value as SortMode)} aria-label={t.sortLabel}>
+                <option value="destacados">{t.sorts.destacados}</option>
+                <option value="az">{t.sorts.az}</option>
+                <option value="za">{t.sorts.za}</option>
               </select>
             </label>
           </div>
 
           <div className={styles.sectionHeading}>
-            <h2>Explora nuestras válvulas</h2>
-            <p aria-live="polite">{visible.length} {visible.length === 1 ? "producto" : "productos"}</p>
+            <h2>{t.explore}</h2>
+            <p aria-live="polite">{visible.length} {unit(visible.length)}</p>
           </div>
 
           {visible.length ? (
             <div className={styles.grid}>
-              {visible.map((valve) => (
+              {visible.map((valve) => {
+                const info = text[valve.id];
+                return (
                 <article key={valve.id} className={styles.card}>
-                  <Link href={valve.href} className={styles.cardImage} aria-label={"Ver ficha de " + valve.name}>
-                    <Image src={valve.image} alt={valve.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
-                    {valve.badge && <span className={styles.cardBadge}>{valve.badge}</span>}
+                  <Link href={valve.href} className={styles.cardImage} aria-label={t.viewSheetOf + info.name}>
+                    <Image src={valve.image} alt={info.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
+                    {info.badge && <span className={styles.cardBadge}>{info.badge}</span>}
                   </Link>
                   <div className={styles.cardBody}>
-                    <h3>{valve.name}</h3>
-                    <p>{valve.description}</p>
-                    <Link href={valve.href} className={styles.cardButton}>Ver ficha <ArrowRight size={15} aria-hidden="true" /></Link>
+                    <h3>{info.name}</h3>
+                    <p>{info.description}</p>
+                    <Link href={valve.href} className={styles.cardButton}>{t.viewSheet} <ArrowRight size={15} aria-hidden="true" /></Link>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className={styles.empty} role="status">
-              <h3>No encontramos válvulas con esos datos</h3>
-              <p>Prueba con otra búsqueda o muestra todas las válvulas.</p>
-              <button type="button" className={styles.darkButton} onClick={() => { setQuery(""); setGroup("todas"); }}>Ver todas las válvulas <ArrowRight size={15} aria-hidden="true" /></button>
+              <h3>{t.emptyTitle}</h3>
+              <p>{t.emptyText}</p>
+              <button type="button" className={styles.darkButton} onClick={() => { setQuery(""); setGroup("todas"); }}>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></button>
             </div>
           )}
         </div>
@@ -154,10 +163,10 @@ export function W03Valvulas() {
         <div className={styles.contentWidth + " " + styles.adviceInner}>
           <span className={styles.adviceIcon} aria-hidden="true"><MessageCircleMore size={46} strokeWidth={1.6} /></span>
           <div className={styles.adviceCopy}>
-            <h2 id="advice-title">¿No sabes qué válvula necesitas?</h2>
-            <p>Nuestro equipo técnico puede asesorarte en la selección del producto ideal para tu proyecto.</p>
+            <h2 id="advice-title">{t.adviceTitle}</h2>
+            <p>{t.adviceText}</p>
           </div>
-          <Link href="/contacto" className={styles.darkButton}>Solicitar asesoría <ArrowRight size={16} aria-hidden="true" /></Link>
+          <Link href="/contacto" className={styles.darkButton}>{t.adviceCta} <ArrowRight size={16} aria-hidden="true" /></Link>
         </div>
       </section>
 
@@ -165,20 +174,20 @@ export function W03Valvulas() {
         <div className={styles.resourcesBackdrop} aria-hidden="true" />
         <div className={styles.contentWidth + " " + styles.resourcesInner}>
           <div className={styles.resourcesCopy}>
-            <p className={styles.eyebrow}>Recursos técnicos</p>
-            <h2 id="valvulas-resources-title">Catálogos y documentación</h2>
-            <p>Descarga nuestros catálogos, fichas técnicas y documentación para conocer más sobre nuestras válvulas y sus aplicaciones.</p>
-            <Link href="/recursos" className={styles.darkButton}>Ver todos los recursos <ArrowRight size={16} aria-hidden="true" /></Link>
+            <p className={styles.eyebrow}>{t.resEyebrow}</p>
+            <h2 id="valvulas-resources-title">{t.resTitle}</h2>
+            <p>{t.resText}</p>
+            <Link href="/recursos" className={styles.darkButton}>{t.resCta} <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
           <div className={styles.book}>
-            <Image src="/media/productos-page/catalogo-general-cover-cutout.png" alt="Catálogo general de productos FUNDIGSAC" fill sizes="(min-width: 1100px) 420px, 70vw" />
+            <Image src="/media/productos-page/catalogo-general-cover-cutout.png" alt={t.coverAlt} fill sizes="(min-width: 1100px) 420px, 70vw" />
           </div>
           <article className={styles.downloadCard}>
-            <h3>Catálogo general<br />de productos</h3>
-            <p>Descubre nuestra línea completa de válvulas, con información técnica y aplicaciones.</p>
+            <h3>{t.cardTitle[0]}<br />{t.cardTitle[1]}</h3>
+            <p>{t.cardText}</p>
             <Link href={catalogDocument.href} className={styles.downloadButton}>
               {catalogDocument.download ? <Download size={16} aria-hidden="true" /> : <Mail size={16} aria-hidden="true" />}
-              {catalogDocument.download ? "Descargar PDF (12 MB)" : "Solicitar catálogo PDF"}
+              {catalogDocument.download ? t.download : t.request}
             </Link>
           </article>
         </div>

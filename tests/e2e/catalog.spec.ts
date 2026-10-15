@@ -571,3 +571,38 @@ test.describe("W22 búsqueda", () => {
     await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
   });
 });
+
+test.describe("W03 válvulas · idioma", () => {
+  test("el selector cambia toda la pantalla a inglés y vuelve a español, sin perder filtros ni búsqueda", async ({ page, isMobile }) => {
+    await page.goto("/productos/valvulas");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvulas");
+    const pick = async (name: string) => {
+      if (isMobile) {
+        await page.getByRole("button", { name: "Abrir menú" }).or(page.getByRole("button", { name: "Open menu" })).click();
+        await page.locator(".lp-mobile").getByRole("button", { name, exact: true }).click();
+        await page.getByRole("button", { name: "Cerrar menú" }).or(page.getByRole("button", { name: "Close menu" })).click();
+      } else {
+        await page.locator(".lp-lang__btn").click();
+        await page.locator(".lp-lang__menu").getByRole("button", { name, exact: true }).click();
+      }
+    };
+    await pick("English");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Valves");
+    const cards = page.locator("section[aria-label='Valve catalog'] article");
+    await expect(cards).toHaveCount(8);
+    await expect(cards.filter({ hasText: "Extended warranty" })).toHaveCount(1);
+    await expect(page.locator("main").getByText("Garantía extendida")).toHaveCount(0);
+    await page.getByPlaceholder("Search valves by name or reference…").fill("butterfly");
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first().getByRole("heading")).toHaveText("Butterfly valve");
+    await page.getByPlaceholder("Search valves by name or reference…").fill("zzzz");
+    await expect(page.getByRole("heading", { name: "We couldn’t find valves matching that" })).toBeVisible();
+    await page.getByRole("button", { name: "Show all valves" }).click();
+    await expect(cards).toHaveCount(8);
+    await pick("Español");
+    await expect(page.locator("html")).toHaveAttribute("lang", "es-PE");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvulas");
+    await expect(page.locator("section[aria-label='Catálogo de válvulas'] article").filter({ hasText: "Garantía extendida" })).toHaveCount(1);
+  });
+});

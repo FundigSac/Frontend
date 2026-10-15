@@ -2848,3 +2848,9 @@ html[data-lp-theme="dark"] .lp-nav__link.is-active {
 html[data-lp-theme="dark"] .lp-eyebrow {
   color: #b4c2d4;
 }
+
+/* Con el menú móvil abierto, ni los botones flotantes ni el aviso de cookies deben tapar el selector de idioma ni el CTA. */
+body:has(.lp-mobile.is-open) .lp-float,
+body:has(.lp-mobile.is-open) .ck {
+  display: none;
+}
