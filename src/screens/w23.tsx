@@ -6,7 +6,7 @@ const downloads = ["Modelo tridimensional · STEP", "Plano técnico · DWG", "Fi
 
 export function ScreenW23() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background pt-0 text-on-surface">
       <div className="mx-auto w-full max-w-[1200px] space-y-5 px-4 py-5 sm:px-6 lg:px-8">
         <nav aria-label="Migas de pan" className="overflow-x-auto whitespace-nowrap py-1 font-ui-label text-ui-label text-text-muted"><ol className="flex items-center gap-2"><li><Link href="/">Inicio</Link></li><li aria-hidden="true">/</li><li><Link href="/productos">Catálogo</Link></li><li aria-hidden="true">/</li><li><Link href="/productos/valvulas">Válvulas</Link></li><li aria-hidden="true">/</li><li><Link href="/productos/valvulas/valvula-compuerta">Ficha de producto</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-semibold text-on-surface">Visor 3D</li></ol></nav>
 

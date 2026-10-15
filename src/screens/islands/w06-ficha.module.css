@@ -6,7 +6,7 @@
   --paper: #eef5fb;
   --blue: #0a6ea8;
   min-height: 100vh;
-  padding-top: 88px;
+  padding-top: 28px;
   color: var(--ink);
   background: linear-gradient(180deg, #e6f0f9 0%, #f4f8fc 38%, #f4f8fc 100%);
 }
@@ -374,7 +374,7 @@
 }
 
 @media (max-width: 760px) {
-  .page { padding-top: 70px; }
+  .page { padding-top: 16px; }
   .wrap { width: calc(100% - 36px); }
   .panel { grid-template-columns: 1fr; }
   .col { padding: 22px 18px 24px; }
@@ -731,6 +731,9 @@
 .docPreviewHint { position: absolute; left: 50%; bottom: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; background: rgba(17, 28, 33, .82); color: #fff; font-size: 13px; font-weight: 600; transform: translateX(-50%); opacity: 0; transition: opacity .2s ease; pointer-events: none; }
 .docCover:hover .docPreviewHint, .docCover:focus-visible .docPreviewHint { opacity: 1; }
 @media (hover: none) { .docPreviewHint { opacity: 1; } }
+.docRequest { display: grid; place-items: center; align-content: center; gap: 12px; min-height: 220px; padding: 24px; border-radius: 10px; background: #fff; color: var(--ink-soft); text-align: center; }
+.docRequest svg { color: var(--blue); }
+.docRequest p { max-width: 30ch; margin: 0; font-size: 14px; line-height: 1.6; }
 
 .docModal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 20px; background: rgba(10, 16, 20, .72); backdrop-filter: blur(4px); animation: docFade .18s ease-out; }
 @keyframes docFade { from { opacity: 0; } to { opacity: 1; } }
@@ -762,3 +765,262 @@
   .docNavPrev { left: 4px; }
   .docNavNext { right: 4px; }
 }
+
+/* ===== Tema oscuro de /productos (generado por scripts/gen-products-dark.mjs) ===== */
+/* dark:begin */
+:global(html[data-lp-theme="dark"]) .page {
+  --ink: #eef3fa;
+  --ink-soft: #c3cfde;
+  --ink-muted: #9db0c7;
+  --line: rgb(255 255 255 / 14%);
+  --paper: #08121f;
+  background: linear-gradient(180deg, #1a2c3d 0%, #08121f 38%, #08121f 100%);
+  --ink-btn: #2b4670;
+}
+:global(html[data-lp-theme="dark"]) .mainImage {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .zoom {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .thumb,
+:global(html[data-lp-theme="dark"]) .thumbActive {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .tag {
+  background: #1a2f3d;
+}
+:global(html[data-lp-theme="dark"]) .size,
+:global(html[data-lp-theme="dark"]) .sizeActive {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .secondary {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .badges li {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .warranty {
+  background: #3d291a;
+}
+:global(html[data-lp-theme="dark"]) .warranty svg {
+  color: #ff9a62;
+}
+:global(html[data-lp-theme="dark"]) .warranty strong {
+  color: #ff9a62;
+}
+:global(html[data-lp-theme="dark"]) .panel {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .doc {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .docCover {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .docButton {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .relCard {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .relImage {
+  background: #14253f;
+}
+:global(html[data-lp-theme="dark"]) .badge3d {
+  background: rgb(28 48 80 / 92%);
+}
+:global(html[data-lp-theme="dark"]) .thumb3d,
+:global(html[data-lp-theme="dark"]) .thumb3dActive {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .thumb3d:hover {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .thumb3dActive {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .lightbox {
+  background: rgb(28 48 80 / 95%);
+}
+:global(html[data-lp-theme="dark"]) .lbStage {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .lbClose,
+:global(html[data-lp-theme="dark"]) .lbPrev,
+:global(html[data-lp-theme="dark"]) .lbNext {
+  background: rgb(15 29 50 / 70%);
+}
+:global(html[data-lp-theme="dark"]) .lbClose:hover,
+:global(html[data-lp-theme="dark"]) .lbPrev:hover,
+:global(html[data-lp-theme="dark"]) .lbNext:hover {
+  background: rgb(15 29 50 / 75%);
+}
+:global(html[data-lp-theme="dark"]) .lbDot,
+:global(html[data-lp-theme="dark"]) .lbDotActive {
+  background: rgb(15 29 50 / 79%);
+}
+:global(html[data-lp-theme="dark"]) .lbDotActive {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .view3d,
+:global(html[data-lp-theme="dark"]) .view3dOn {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .view3d:hover {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .table th,
+:global(html[data-lp-theme="dark"]) .table td,
+:global(html[data-lp-theme="dark"]) .dims th,
+:global(html[data-lp-theme="dark"]) .dims td {
+  border-bottom: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .table th {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .table tr:nth-child(even) td {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .dims tbody tr:nth-child(even) th,
+:global(html[data-lp-theme="dark"]) .dims tbody tr:nth-child(even) td {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .dims tbody tr:hover th,
+:global(html[data-lp-theme="dark"]) .dims tbody tr:hover td {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .dims tbody .rowOn th,
+:global(html[data-lp-theme="dark"]) .dims tbody .rowOn td {
+  background: #1a2f3d;
+}
+:global(html[data-lp-theme="dark"]) .pn {
+  background: #1a2f3d;
+}
+:global(html[data-lp-theme="dark"]) .panel1 {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .flange td,
+:global(html[data-lp-theme="dark"]) .flange tbody th {
+  border-bottom: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .flange tbody tr:nth-child(even) td,
+:global(html[data-lp-theme="dark"]) .flange tbody tr:nth-child(even) th {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .sizes {
+  background: rgb(15 29 50 / 84%);
+}
+:global(html[data-lp-theme="dark"]) .size:hover {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .page {
+  --paper: #14253f;
+  background: linear-gradient(180deg, #14253f 0%, #08121f 40%, #08121f 100%);
+}
+:global(html[data-lp-theme="dark"]) .sizes {
+  background: rgb(15 29 50 / 86%);
+  border-color: rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .relImage {
+  background: #14253f;
+}
+:global(html[data-lp-theme="dark"]) .table th,
+:global(html[data-lp-theme="dark"]) .dims tbody tr:nth-child(even) th,
+:global(html[data-lp-theme="dark"]) .dims tbody tr:nth-child(even) td,
+:global(html[data-lp-theme="dark"]) .flange tbody tr:nth-child(even) td,
+:global(html[data-lp-theme="dark"]) .flange tbody tr:nth-child(even) th {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .table tr:nth-child(even) td {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .doc {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .page {
+  --paper: #08121f;
+  background: linear-gradient(180deg, #08121f 0%, #08121f 45%, #08121f 100%);
+}
+:global(html[data-lp-theme="dark"]) .mainImage {
+  background: #e8eef6;
+  border: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .thumb,
+:global(html[data-lp-theme="dark"]) .thumbActive {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .facts {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .facts > div + div {
+  border-left: 1px solid rgb(255 255 255 / 14%);
+}
+@media (max-width: 760px) {
+  :global(html[data-lp-theme="dark"]) .facts > div:nth-child(n+3) {
+    border-top: 1px solid rgb(255 255 255 / 14%);
+  }
+}
+:global(html[data-lp-theme="dark"]) .panel > .col:first-child .features li {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .fIcon {
+  background: #1a2f3d;
+}
+:global(html[data-lp-theme="dark"]) .mainImage {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .thumb,
+:global(html[data-lp-theme="dark"]) .thumbActive {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .docCover {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .docPreviewHint {
+  background: rgb(28 48 80 / 94%);
+}
+:global(html[data-lp-theme="dark"]) .docRequest {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .docModal {
+  background: rgb(28 48 80 / 90%);
+}
+:global(html[data-lp-theme="dark"]) .docPanel {
+  background: #14253f;
+}
+:global(html[data-lp-theme="dark"]) .docBar {
+  background: #0f1d32;
+  border-bottom: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .docBarBtn {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .docBarClose {
+  background: #14253f;
+}
+:global(html[data-lp-theme="dark"]) .docBarClose:hover {
+  background: #14253f;
+}
+:global(html[data-lp-theme="dark"]) .docPage {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .docNavPrev,
+:global(html[data-lp-theme="dark"]) .docNavNext {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: rgb(15 29 50 / 98%);
+}
+:global(html[data-lp-theme="dark"]) .docDots {
+  background: #0f1d32;
+  border-top: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .docDot,
+:global(html[data-lp-theme="dark"]) .docDotOn {
+  background: #332e24;
+}
+/* dark:end */

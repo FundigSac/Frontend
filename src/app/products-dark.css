@@ -1,0 +1,33 @@
+/*
+ * Tema oscuro del catálogo (/productos y sus fichas).
+ * Las pantallas hechas con utilidades Tailwind (referencias visuales, visor 3D) leen sus colores de los
+ * tokens --c-*; aquí se redefinen con la paleta oscura de inicio. Se activa solo en el árbol de productos:
+ * la cabecera de inicio lleva .lp-header--catalog en esas rutas (sin parpadeo: viene del HTML del servidor).
+ * Las pantallas con módulos CSS (listados y ficha) llevan su propio bloque oscuro.
+ */
+html[data-lp-theme="dark"]:has(.lp-header--catalog) {
+  color-scheme: dark;
+  --c-background: #08121f;
+  --c-surface: #0a1626;
+  --c-surface-bright: #14253f;
+  --c-surface-elevated: #14253f;
+  --c-surface-container-lowest: #0f1d32;
+  --c-surface-container-low: #0c1a2d;
+  --c-surface-container: #14253f;
+  --c-surface-container-high: #1a2e4a;
+  --c-surface-container-highest: #22385a;
+  --c-surface-variant: #1a2e4a;
+  --c-surface-dim: #0b1727;
+  --c-on-background: #eef3fa;
+  --c-on-surface: #eef3fa;
+  --c-on-surface-variant: #c3cfde;
+  --c-text-secondary: #b4c2d4;
+  --c-text-muted: #9db0c7;
+  --c-border: rgb(255 255 255 / 14%);
+  --c-outline: #7f93ab;
+  --c-outline-variant: #34496a;
+  --c-primary: #3a8fb5;
+  --c-primary-container: #2b7396;
+  --c-on-primary-container: #eaf6fd;
+  --c-focus: #7fb6ff;
+}

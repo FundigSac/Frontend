@@ -53,6 +53,7 @@ export function W04Tuberias() {
   return (
     <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="tuberias-title">
+        <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>
           <nav aria-label="Migas de pan" className={styles.breadcrumbs}>
             <Link href="/">Inicio</Link><span aria-hidden="true">›</span><Link href="/productos">Productos</Link><span aria-hidden="true">›</span><span aria-current="page">Tuberías</span>

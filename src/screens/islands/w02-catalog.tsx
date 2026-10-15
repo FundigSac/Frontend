@@ -33,7 +33,7 @@ type FeaturedProduct = {
 
 const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
   { id: "compuerta", family: "valvulas", name: "Válvula de compuerta bridada", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta azul", href: "/productos/valvulas/valvula-compuerta", terms: "válvula compuerta cierre agua hierro dúctil" },
-  { id: "compuerta-fundigsac", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac/f-07.webp", alt: "Válvula de compuerta azul FUNDIGSAC con el logotipo en relieve", href: "/productos/valvulas/valvula-compuerta-fundigsac", terms: "válvula compuerta fundigsac cierre agua hierro dúctil" },
+  { id: "compuerta-fundigsac", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC", descriptor: "DN 50 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac/f-07.webp", alt: "Válvula de compuerta azul FUNDIGSAC con el logotipo en relieve", href: "/productos/valvulas/valvula-compuerta-fundigsac", terms: "válvula compuerta fundigsac cierre agua hierro dúctil" },
   { id: "compuerta-garantia-extendida", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC", badge: "Garantía extendida", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac-cuadrante/q-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con cuadrante de maniobra", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", terms: "válvula compuerta fundigsac garantía extendida cuadrante cierre agua hierro dúctil" },
   { id: "mariposa", family: "valvulas", name: "Válvula mariposa", descriptor: "DN 50 – DN 1200  |  PN 10/16", image: "/media/productos-page/featured-mariposa.jpg", alt: "Válvula mariposa azul con accionamiento manual", href: "/productos/valvulas/valvula-mariposa", terms: "válvula mariposa palanca control" },
   { id: "hdpe-pipe", family: "tuberias", name: "Tubería HDPE PE100", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tuberia.jpg", alt: "Tuberías HDPE negras con franja azul", href: "/productos/tuberias", terms: "tubería hdpe pe100 pead conducción" },
@@ -189,6 +189,7 @@ export function W02Catalog({
   return (
     <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="catalog-title">
+        <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>
           <nav aria-label="Migas de pan" className={styles.breadcrumbs}>
             <Link href="/">Inicio</Link><span aria-hidden="true">›</span><span aria-current="page">Productos</span>

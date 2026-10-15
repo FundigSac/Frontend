@@ -7,7 +7,7 @@ const details = ["Materiales", "Unión y accesorios", "Instalación", "Mantenimi
 
 export function ScreenW08() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background pt-0 text-on-surface">
       <div className="mx-auto max-w-[1200px] px-4 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         <nav aria-label="Ruta de navegación" className="mb-7 font-ui-label text-ui-label text-text-muted"><ol className="flex flex-wrap items-center gap-2"><li><Link href="/">Inicio</Link></li><li aria-hidden="true">/</li><li><Link href="/productos">Productos</Link></li><li aria-hidden="true">/</li><li><Link href="/productos/tuberias">Tuberías</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-semibold text-on-surface">Ficha de producto</li></ol></nav>
         <section aria-labelledby="product-title" className="grid items-start gap-8 pb-12 lg:grid-cols-12 lg:gap-8 lg:pb-16">

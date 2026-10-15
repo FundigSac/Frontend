@@ -7,10 +7,11 @@ import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, ShoppingCart
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
 import { openCookiePreferences } from "./cookie-events";
-import { isHeroOverlayHeader } from "./landing-paths";
+import { isHeroOverlayHeader, isProductPath } from "./landing-paths";
 import { useHome } from "./home-copy";
 import { COPY, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
+import "../../app/products-dark.css";
 
 type NavLink = { href: string; label: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
@@ -79,7 +80,7 @@ export function LandingHeader() {
   }, []);
 
   return (
-    <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
+    <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${isProductPath(pathname) ? " lp-header--catalog" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
       <div className="lp-shell lp-header__bar">
         <Link className="lp-header__brand" href="/" aria-label="FUNDIGSAC, inicio">
           <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" priority />

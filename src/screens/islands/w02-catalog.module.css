@@ -7,8 +7,10 @@
   --white: #fff;
   --orange: #ed762b;
   --blue: #dfeaf0;
+  /* La cabecera de inicio (sticky, 84 px) flota sobre el hero: el hero sube por detrás de ella. */
+  --bar: 84px;
   min-height: 100vh;
-  padding-top: 78px;
+  margin-top: calc(-1 * var(--bar));
   color: var(--ink);
   background: var(--paper);
 }
@@ -20,6 +22,8 @@
 
 .hero {
   position: relative;
+  box-sizing: content-box;
+  padding-top: var(--bar);
   min-height: clamp(430px, 23vw, 480px);
   overflow: hidden;
   isolation: isolate;
@@ -941,7 +945,7 @@
 
 @media (max-width: 640px) {
   .page {
-    padding-top: 64px;
+    padding-top: 0;
   }
 
   .contentWidth,
@@ -1257,7 +1261,7 @@
 
   .heroCopy {
     width: 100%;
-    padding-top: 78px;
+    padding-top: 60px;
   }
 
   .hero::before {
@@ -1291,3 +1295,175 @@
   line-height: 1.2;
   box-shadow: 0 3px 10px rgba(237, 118, 43, .35);
 }
+
+/* Velo superior: asegura el contraste de la cabecera de inicio sobre la foto del hero. */
+.topVeil {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(var(--bar) + 56px);
+  background: linear-gradient(180deg, rgba(251, 250, 247, .94) 0%, rgba(251, 250, 247, .8) 50%, rgba(251, 250, 247, 0) 100%);
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .page {
+    --bar: 72px;
+  }
+}
+
+/* ===== Tema oscuro de /productos (generado por scripts/gen-products-dark.mjs) ===== */
+/* dark:begin */
+:global(html[data-lp-theme="dark"]) .page {
+  --ink: #eef3fa;
+  --ink-soft: #c3cfde;
+  --ink-muted: #9db0c7;
+  --line: rgb(255 255 255 / 14%);
+  --paper: #08121f;
+  --white: #0f1d32;
+  --blue: #14253f;
+  --ink-btn: #2b4670;
+}
+:global(html[data-lp-theme="dark"]) .hero {
+  background-color: #1a2e4a;
+}
+:global(html[data-lp-theme="dark"]) .hero::before {
+  background: linear-gradient(90deg, rgb(8 18 31 / 99%) 0%, rgb(8 18 31 / 96%) 27%, rgb(8 18 31 / 78%) 38%, rgb(8 18 31 / 30%) 47%, rgb(8 18 31 / 3%) 56%, rgb(28 48 80 / 3%) 100%);
+}
+:global(html[data-lp-theme="dark"]) .breadcrumbs span[aria-hidden] {
+  color: #9db0c7;
+}
+:global(html[data-lp-theme="dark"]) .eyebrow {
+  color: #9db0c7;
+}
+:global(html[data-lp-theme="dark"]) .heroDescription {
+  color: #c3cfde;
+}
+:global(html[data-lp-theme="dark"]) .searchForm {
+  background: rgb(15 29 50 / 98%);
+}
+:global(html[data-lp-theme="dark"]) .searchIcon {
+  color: #eef3fa;
+}
+:global(html[data-lp-theme="dark"]) .searchField input::placeholder {
+  color: #9db0c7;
+}
+:global(html[data-lp-theme="dark"]) .searchButton,
+:global(html[data-lp-theme="dark"]) .darkButton {
+  border: 1px solid var(--ink-btn);
+  background: var(--ink-btn);
+}
+:global(html[data-lp-theme="dark"]) .filterPill,
+:global(html[data-lp-theme="dark"]) .filterActive {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: rgb(15 29 50 / 94%);
+  color: #eef3fa;
+}
+:global(html[data-lp-theme="dark"]) .filterPill:hover {
+  border-color: var(--ink-btn);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .filterActive {
+  border-color: var(--ink-btn);
+  background: var(--ink-btn);
+}
+:global(html[data-lp-theme="dark"]) .qualityStamp {
+  color: #eef3fa;
+}
+:global(html[data-lp-theme="dark"]) .categoriesSection,
+:global(html[data-lp-theme="dark"]) .featuredSection {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .categoryCard {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .categoryImage {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .categoryArrow {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .benefitsSection {
+  background: #14253f;
+}
+:global(html[data-lp-theme="dark"]) .benefitItem {
+  border-left: 1px solid rgb(255 255 255 / 14%);
+}
+:global(html[data-lp-theme="dark"]) .productCard {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .productImage {
+  background: #e8eef6;
+}
+:global(html[data-lp-theme="dark"]) .productName:hover {
+  color: #ff9a62;
+}
+:global(html[data-lp-theme="dark"]) .productDescriptor {
+  color: #9db0c7;
+}
+:global(html[data-lp-theme="dark"]) .secondaryButton,
+:global(html[data-lp-theme="dark"]) .darkButton {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .secondaryButton:hover {
+  border-color: rgb(255 255 255 / 14%);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .productActions .darkButton {
+  border-color: var(--ink-btn);
+  background: var(--ink-btn);
+}
+:global(html[data-lp-theme="dark"]) .emptyState {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .resourcesSection {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .resourcesBackdrop {
+  background-image: linear-gradient(90deg, #08121f 0%, rgb(8 18 31 / 88%) 29%, rgb(8 18 31 / 54%) 69%, rgb(8 18 31 / 90%) 100%), url("/media/home-ref-blueprint.webp");
+}
+:global(html[data-lp-theme="dark"]) .resourcesCopy .darkButton {
+  border-color: var(--ink-btn);
+  background: var(--ink-btn);
+}
+:global(html[data-lp-theme="dark"]) .downloadCard {
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .downloadButton {
+  border: 1px solid rgb(255 255 255 / 14%);
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .downloadButton:hover {
+  border-color: var(--ink-btn);
+  background: #0f1d32;
+}
+:global(html[data-lp-theme="dark"]) .supportSection {
+  background: #08121f;
+}
+:global(html[data-lp-theme="dark"]) .supportInner {
+  background-color: #14253f;
+  background-image: linear-gradient(90deg, rgb(20 37 63 / 97%) 0%, rgb(20 37 63 / 92%) 58%, rgb(20 37 63 / 78%) 100%), url("/media/productos-page/productos7.jpg");
+}
+@media (max-width: 860px) {
+  :global(html[data-lp-theme="dark"]) .hero::before {
+    background: linear-gradient(180deg, rgb(8 18 31 / 97%) 0%, rgb(8 18 31 / 90%) 55%, rgb(8 18 31 / 30%) 82%, rgb(8 18 31 / 0%) 100%);
+  }
+}
+@media (max-width: 640px) {
+  :global(html[data-lp-theme="dark"]) .hero::before {
+    background: linear-gradient(90deg, rgb(8 18 31 / 98%) 0%, rgb(8 18 31 / 90%) 55%, rgb(8 18 31 / 38%) 100%), linear-gradient(0deg, rgb(28 48 80 / 4%), rgb(28 48 80 / 4%));
+  }
+  :global(html[data-lp-theme="dark"]) .benefitItem,
+:global(html[data-lp-theme="dark"]) .benefitItem:first-child {
+    border-top: 1px solid rgb(255 255 255 / 14%);
+  }
+  :global(html[data-lp-theme="dark"]) .hero::before {
+    background: linear-gradient(180deg, #08121f 0%, #08121f calc(100% - 360px), rgb(8 18 31 / 60%) calc(100% - 290px), rgb(8 18 31 / 0%) calc(100% - 200px));
+  }
+}
+:global(html[data-lp-theme="dark"]) .topVeil {
+  background: linear-gradient(180deg, rgb(8 18 31 / 94%) 0%, rgb(8 18 31 / 80%) 50%, rgb(8 18 31 / 0%) 100%);
+}
+/* dark:end */
