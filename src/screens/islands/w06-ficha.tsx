@@ -344,18 +344,12 @@ export function W06Ficha(props: { variant?: Variant }) {
       </div>
 
       <div className={styles.body}>
-        <div className={styles.bar}>
-          <div className={styles.barInner}>
-            <nav className={styles.tabs} aria-label={t.tabsLabel}>
-              {TAB_IDS.map((id) => (
-                <a key={id} href={`#${id}`} className={id === tab ? styles.tabOn : styles.tab} aria-current={id === tab ? "true" : undefined} onClick={goTo(id)}>{t.tabs[id]}</a>
-              ))}
-            </nav>
-            <Link href="/cotizar" className={styles.barCta}>{t.barQuote} <ArrowRight size={15} aria-hidden="true" /></Link>
-          </div>
-        </div>
-
         <div className={styles.wrap}>
+          <nav className={styles.tabs} aria-label={t.tabsLabel}>
+            {TAB_IDS.map((id) => (
+              <a key={id} href={`#${id}`} className={id === tab ? styles.tabOn : styles.tab} aria-current={id === tab ? "true" : undefined} onClick={goTo(id)}>{t.tabs[id]}</a>
+            ))}
+          </nav>
           <section id="descripcion" className={styles.desc} aria-label={t.description}>
             <div className={styles.descGrid}>
               <div className={styles.descMain} data-reveal>
@@ -436,6 +430,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 </fieldset>
               </div>
 
+              <div className={styles.dimsRight}>
               <div className={styles.dimsAside} data-reveal style={{ ["--d" as string]: "120ms" }}>
                 {dimRow && (
                   <section className={styles.measureCard} aria-label={`${t.measures} · ${size}`} key={`m-${size}`}>
@@ -479,7 +474,6 @@ export function W06Ficha(props: { variant?: Variant }) {
                   </section>
                 )}
               </div>
-            </div>
 
             <div className={styles.dimsTable} data-reveal>
               <h3>{t.table}</h3>
@@ -496,13 +490,21 @@ export function W06Ficha(props: { variant?: Variant }) {
                 </table>
               </div>
             </div>
+              </div>
+            </div>
           </section>
 
+        </div>
+      </div>
+
           <section id="documentacion" className={styles.docSection} aria-label={t.docs} data-reveal>
+            <div className={styles.docInner}>
             <h2>{t.docs}</h2>
             {doc ? (
               <div className={styles.doc}>
                 <div className={styles.docStack}>
+                  {docPages[1] && <span className={`${styles.docLeaf} ${styles.docLeafA}`} aria-hidden="true"><Image src={docPages[1].src} alt="" fill sizes="260px" /></span>}
+                  {docPages[2] && <span className={`${styles.docLeaf} ${styles.docLeafB}`} aria-hidden="true"><Image src={docPages[2].src} alt="" fill sizes="260px" /></span>}
                   <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label={t.previewLabel} title={t.previewLabel}>
                     <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 260px, 70vw" />
                     <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> {t.preview}</span>
@@ -549,9 +551,8 @@ export function W06Ficha(props: { variant?: Variant }) {
                 </div>
               </div>
             )}
+            </div>
           </section>
-        </div>
-      </div>
 
       <div className={styles.wrap}>
         <section className={styles.related} aria-labelledby="related-title" data-reveal>
@@ -575,8 +576,10 @@ export function W06Ficha(props: { variant?: Variant }) {
             })}
           </div>
         </section>
+      </div>
 
-        <section className={styles.cta} aria-labelledby="ficha-cta-title" data-reveal>
+      <section className={styles.cta} aria-labelledby="ficha-cta-title" data-reveal>
+        <div className={styles.ctaInner}>
           <div className={styles.ctaCopy}>
             <h2 id="ficha-cta-title">{t.ctaTitle}</h2>
             <p className={styles.ctaText}>{t.ctaText}</p>
@@ -588,15 +591,15 @@ export function W06Ficha(props: { variant?: Variant }) {
               <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={styles.ctaGhost}><MessageCircle size={17} aria-hidden="true" /> {t.ctaWhatsApp}</a>
             </div>
           </div>
-          <div className={styles.ctaVisual}>
+        </div>
+        <div className={styles.ctaVisual}>
             <Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
             <div className={styles.ctaContact}>
               <a href={site.phoneHref}><Phone size={16} aria-hidden="true" /> {site.phone}</a>
               <span><Clock size={16} aria-hidden="true" /> {t.ctaHours}: {site.hours}</span>
             </div>
           </div>
-        </section>
-      </div>
+      </section>
 
       {lightbox && (
         <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={t.gallery} onClick={() => setLightbox(false)}>
