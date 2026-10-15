@@ -2,9 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { SITE_INDEXABLE } from "@/shared/config/env";
 import { SITE } from "@/shared/config/site";
-import { SiteFooter } from "@/shared/layout/site-footer";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
-import { SiteHeader } from "@/shared/layout/site-header";
+import { LandingFooter, LandingHeader } from "@/shared/layout/landing-chrome";
 import { LazyWarmup } from "@/shared/media/lazy-warmup";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { SourceGuard } from "@/shared/security/source-guard";
@@ -42,9 +41,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             ]}
           />
           <a className="skip-link" href="#contenido">Saltar al contenido</a>
-          <SiteHeader />
+          <LandingHeader />
           <div id="contenido">{children}</div>
-          <SiteFooter />
+          <LandingFooter />
           <CookieBanner />
           <LazyWarmup />
         </ToastProvider>
