@@ -149,6 +149,44 @@ test.describe("W15 Contacto", () => {
     await expect(form.locator('input[name="fullName"]')).toHaveValue("Ing. Prueba");
   });
 
+  test("el selector cambia la pantalla a inglés y vuelve a español", async ({ page, isMobile }) => {
+    await go(page, "/contacto", "#contacto-form");
+    const pick = async (name: string) => {
+      if (isMobile) {
+        await page.getByRole("button", { name: "Abrir menú" }).or(page.getByRole("button", { name: "Open menu" })).click();
+        await page.locator(".lp-mobile").getByRole("button", { name, exact: true }).click();
+        await page.getByRole("button", { name: "Cerrar menú" }).or(page.getByRole("button", { name: "Close menu" })).click();
+      } else {
+        await page.locator(".lp-lang__btn").click();
+        await page.locator(".lp-lang__menu").getByRole("button", { name, exact: true }).click();
+      }
+    };
+    await pick("English");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contact us");
+    await expect(page.getByRole("button", { name: /Send message/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Find us in Lima" })).toBeVisible();
+    await expect(page.getByText("Jirón Acomayo N° 199, Lot 18, Block E")).toBeVisible();
+    await pick("Español");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contáctanos");
+  });
+});
+
+async function fillQuoteGeneral(page: Page) {
+  await page.locator("#razonSocial").fill("Consorcio Prueba E2E S.A.C.");
+  await page.locator("#rucEmpresa").fill("20100070970");
+  await page.locator("#tipoProyecto").selectOption("saneamiento");
+  await page.locator("#departamentoDestino").fill("Lima");
+  await page.locator("#nombreSolicitante").fill("Ing. Prueba");
+  await page.locator("#cargoSolicitante").fill("Jefe de Compras");
+  await page.locator("#correoCorporativo").fill("compras@prueba.com.pe");
+  await page.locator("#celularContacto").fill("+51 987 654 321");
+  await page.locator("#familiaPrincipal").selectOption("valvulas");
+  await page.locator("#diametrosNominales").fill("DN 150");
+  await page.locator("#cantidadMetrado").fill("12 unds");
+  await page.locator("#consentimiento").check();
+}
+
+test.describe("W16 / W17 / W24 Cotización", () => {
   test("cotización general: validación nativa del RUC y envío → confirmación", async ({ page }) => {
     await go(page, "/cotizar", "#razonSocial");
 
