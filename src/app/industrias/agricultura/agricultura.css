@@ -224,6 +224,11 @@
   font-size: 14px;
 }
 
+/* Producto destacado: los botones bajan hacia el hueco libre de la columna (la mitad del espacio sobrante), sin agrandar la sección. */
+.ag-featured__copy > .ag-actions {
+  margin-block: auto;
+}
+
 /* ===== Línea para agricultura ===== */
 .ag-line {
   padding: clamp(34px, 4vw, 56px) 0 clamp(40px, 4.5vw, 64px);
