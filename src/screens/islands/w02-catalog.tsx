@@ -268,6 +268,7 @@ export function W02Catalog({
           </div>
           <div className={styles.catalogMockup}>
             <Image src="/media/productos-page/catalogo-general-book-with-logo.png" alt="Catálogo general FUNDIGSAC con el logo oficial sobre planos técnicos" fill sizes="(min-width: 1200px) 370px, (min-width: 640px) 380px, 80vw" className={styles.catalogCover} />
+            <Image src="/media/productos-page/catalogo-general-cover-cutout.png" alt="" aria-hidden="true" fill sizes="(min-width: 1200px) 370px, (min-width: 640px) 380px, 80vw" className={styles.catalogCoverDark} />
           </div>
           <div className={styles.resourcesAside}>
             <article className={styles.downloadCard}>

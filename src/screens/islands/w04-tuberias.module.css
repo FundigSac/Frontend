@@ -936,3 +936,15 @@
   background: #e8eef6;
 }
 /* dark:end */
+
+/* dark:manual — Recursos técnicos en oscuro */
+:global(html[data-lp-theme="dark"]) .downloadButton {
+  border-color: #3c5a8c;
+  background: #2b4670;
+  color: #fff;
+}
+
+:global(html[data-lp-theme="dark"]) .downloadButton:hover {
+  border-color: var(--orange);
+  background: #34548a;
+}

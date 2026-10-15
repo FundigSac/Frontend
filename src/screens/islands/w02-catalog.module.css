@@ -1467,3 +1467,36 @@
   background: linear-gradient(180deg, rgb(8 18 31 / 94%) 0%, rgb(8 18 31 / 80%) 50%, rgb(8 18 31 / 0%) 100%);
 }
 /* dark:end */
+
+/* dark:manual — Recursos técnicos en oscuro */
+:global(html[data-lp-theme="dark"]) .downloadButton {
+  border-color: #3c5a8c;
+  background: #2b4670;
+  color: #fff;
+}
+
+:global(html[data-lp-theme="dark"]) .downloadButton:hover {
+  border-color: var(--orange);
+  background: #34548a;
+}
+
+/* La portada con planos de fondo tiene un halo claro pensado para el tema claro: en oscuro se usa el recorte limpio, sin máscara. */
+.catalogCoverDark {
+  display: none;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, .55));
+}
+
+:global(html[data-lp-theme="dark"]) .catalogCover {
+  display: none;
+}
+
+:global(html[data-lp-theme="dark"]) .catalogCoverDark {
+  display: block;
+}
+
+:global(html[data-lp-theme="dark"]) .catalogMockup {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
