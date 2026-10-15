@@ -44,12 +44,22 @@ const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
 });
 
 const REAL = "/media/valvula-hd/";
-const THUMBS = [
+const BASE_THUMBS = [
   { dir: REAL, src: "v-01.webp", alt: "Válvula de compuerta bridada, vista frontal" },
   { dir: REAL, src: "v-02.webp", alt: "Válvula de compuerta bridada DN100 PN16, vista frontal con volante y marcado en el cuerpo" },
   { dir: REAL, src: "v-03.webp", alt: "Vista superior del volante azul con indicación CLOSE y OPEN" },
   { dir: REAL, src: "v-04.webp", alt: "Válvula de compuerta bridada, vista en perspectiva con etiqueta DN100 en la brida" },
   { dir: REAL, src: "v-05.webp", alt: "Válvula de compuerta bridada, vista frontal de la brida con etiqueta DN100" },
+];
+
+/** Fotos reales de la válvula FUNDIGSAC con 1 año de garantía (recortes WebP con transparencia, 1000×1250). */
+const F1 = "/media/valvula-fundigsac-1/";
+const FUNDIGSAC_1_THUMBS = [
+  { dir: F1, src: "f1-01.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal con el logotipo en relieve en el cuerpo" },
+  { dir: F1, src: "f1-02.webp", alt: "Válvula de compuerta bridada FUNDIGSAC DN100 PN16, vista frontal con volante y marcado GGG50 en el cuerpo" },
+  { dir: F1, src: "f1-03.webp", alt: "Vista superior del volante azul de la válvula FUNDIGSAC con indicación CLOSE y OPEN" },
+  { dir: F1, src: "f1-04.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal elevada con etiqueta DN100 de 4 pulgadas en la brida" },
+  { dir: F1, src: "f1-05.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista frontal de la brida con etiqueta DN100 de 4 pulgadas" },
 ];
 
 const RELATED = [
@@ -85,14 +95,14 @@ export type Warranty = 1 | 5;
 
 /** Textos de la ficha por variante, definidos a nivel de módulo: la base (H-ITALY) o FUNDIGSAC con garantía. */
 const variantCopy = (warranty?: Warranty) => {
-  if (!warranty) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY" };
+  if (!warranty) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY", thumbs: BASE_THUMBS };
   const warrantyLabel = warranty === 1 ? "1 año de garantía" : `${warranty} años de garantía`;
-  return { warrantyLabel, productName: `Válvula de compuerta bridada FUNDIGSAC · ${warrantyLabel}`, specs: [["Marca", "FUNDIGSAC"], ["Garantía", warrantyLabel], ...SPECS.slice(1)], brand: "FUNDIGSAC" };
+  return { warrantyLabel, productName: `Válvula de compuerta bridada FUNDIGSAC · ${warrantyLabel}`, specs: [["Marca", "FUNDIGSAC"], ["Garantía", warrantyLabel], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: warranty === 1 ? FUNDIGSAC_1_THUMBS : BASE_THUMBS };
 };
 const COPY = { base: variantCopy(), 1: variantCopy(1), 5: variantCopy(5) } as const;
 
 export function W06Ficha(props: { warranty?: Warranty }) {
-  const { warrantyLabel, productName, specs, brand } = COPY[props.warranty ?? "base"];
+  const { warrantyLabel, productName, specs, brand, thumbs: THUMBS } = COPY[props.warranty ?? "base"];
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [docOpen, setDocOpen] = useState(false);
@@ -160,7 +170,7 @@ export function W06Ficha(props: { warranty?: Warranty }) {
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={REAL + "v-03.webp"} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 640px, 100vw", true)}
+              {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={THUMBS[2].dir + THUMBS[2].src} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 640px, 100vw", true)}
               <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver en 3D"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /><span>{spin ? "Fotos" : "Ver en 3D"}</span></button>
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
@@ -306,7 +316,7 @@ export function W06Ficha(props: { warranty?: Warranty }) {
           <button type="button" className={styles.lbClose} aria-label="Cerrar" onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label="Imagen anterior" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
-            {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={REAL + "v-03.webp"} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
+            {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={THUMBS[2].dir + THUMBS[2].src} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
           </div>
           <button type="button" className={styles.lbNext} aria-label="Imagen siguiente" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>

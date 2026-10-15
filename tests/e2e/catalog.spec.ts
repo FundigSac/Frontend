@@ -146,6 +146,28 @@ test.describe("W02 catálogo", () => {
     }
   });
 
+  test("ficha de 1 año: galería con 5 fotos FUNDIGSAC (la de 5 años y la base conservan las suyas)", async ({ page }) => {
+    await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-1-ano");
+    const thumbs = page.locator("[role='list'] button[role='listitem']");
+    await expect(thumbs).toHaveCount(5);
+    const main = page.locator("main img").first();
+    await expect(main).toHaveAttribute("alt", /FUNDIGSAC, vista frontal con el logotipo en relieve/);
+    const srcs = await page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
+    expect(srcs.every((s) => s.includes("/media/valvula-fundigsac-1/f1-0"))).toBe(true);
+    await thumbs.nth(3).click();
+    await expect(page.locator("main img").first()).toHaveAttribute("alt", /etiqueta DN100 de 4 pulgadas en la brida/);
+    await page.getByRole("button", { name: "Ampliar" }).click();
+    await expect(page.getByRole("dialog", { name: "Galería ampliada" })).toBeVisible();
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog", { name: "Galería ampliada" })).toBeHidden();
+    for (const slug of ["valvula-compuerta-fundigsac-5-anos", "valvula-compuerta"]) {
+      await page.goto(`/productos/valvulas/${slug}`);
+      const base = await page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
+      expect(base.every((s) => s.includes("/media/valvula-hd/v-0"))).toBe(true);
+    }
+  });
+
   test("las familias de la cuadrícula navegan a su página", async ({ page }) => {
     await page.goto("/productos");
     await page.getByRole("link", { name: "Explorar Tuberías" }).click();

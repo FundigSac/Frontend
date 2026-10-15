@@ -22,7 +22,9 @@ export function LazyWarmup() {
     const run = () => {
       if (stopped) return;
       const pending = [...document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')]
-        .filter((img) => !img.complete)
+        // Las secciones con `content-visibility: auto` aún sin pintar miden 0: forzar su carga solo provoca el aviso
+        // "fill y altura 0" de next/image; el navegador las carga solo al acercarse (y llevan placeholder borroso).
+        .filter((img) => !img.complete && img.getBoundingClientRect().height > 0)
         .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
       pending.forEach((img, i) => {
         timers.push(window.setTimeout(() => { if (!stopped) img.loading = "eager"; }, i * 90));
