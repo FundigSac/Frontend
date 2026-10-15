@@ -1,5 +1,6 @@
 "use server";
 
+import { PENDING_QUOTE_REFERENCE } from "@/modules/quote/format";
 import { isLeadFormId } from "./forms";
 import type { LeadResult } from "./types";
 import { validateLead } from "./validation";
@@ -11,5 +12,5 @@ export async function submitLead(formId: string, data: FormData): Promise<LeadRe
   if ("fieldErrors" in validated) {
     return { ok: false, message: "Revise los campos marcados.", fieldErrors: validated.fieldErrors };
   }
-  return { ok: true, reference: "COT-0000-000000" };
+  return { ok: true, reference: PENDING_QUOTE_REFERENCE };
 }

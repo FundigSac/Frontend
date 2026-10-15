@@ -22,4 +22,7 @@ const KIND_LABELS: Record<string, string> = {
 export const leadKindLabel = (kind: string): string => KIND_LABELS[kind] ?? "Solicitud";
 
 /** Folio con forma válida (PPP-YYYY-NNNNNN). No implica que exista. */
+/** Folio de marcador que devuelve la etapa de diseño (sin BD): no es un registro real. */
+export const PENDING_QUOTE_REFERENCE = "COT-0000-000000";
+
 export const isLeadReference = (value: unknown): value is string => typeof value === "string" && /^[A-Z]{3}-\d{4}-\d{6}$/.test(value);
