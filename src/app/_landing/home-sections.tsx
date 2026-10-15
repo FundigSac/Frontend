@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarRange, Mail, MapPin } from "lucide-react";
-import { MAP_DIRECTIONS, MAP_EMBED } from "@/shared/config/location";
+import { MAP_DIRECTIONS } from "@/shared/config/location";
+import { MapEmbed } from "@/shared/consent/map-embed";
 import { SITE } from "@/shared/config/site";
 import { useHome } from "@/shared/layout/home-copy";
 import { BLUR } from "@/shared/media/blur";
@@ -96,7 +97,7 @@ export function LocationSection() {
         </div>
 
         <div className="lp-location__map">
-          <iframe src={MAP_EMBED} title={t.mapTitle} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+          <MapEmbed title={t.mapTitle} />
           <div className="lp-location__pin">
             <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
             <span>{t.pin[0]}<br />{t.pin[1]}</span>

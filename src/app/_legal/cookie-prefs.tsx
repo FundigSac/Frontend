@@ -1,16 +1,17 @@
 "use client";
 
-import { ArrowRight, BarChart3, Lock, Megaphone, Settings, ShieldCheck } from "lucide-react";
+import { ArrowRight, BarChart3, Lock, MapPinned, ShieldCheck } from "lucide-react";
 import { useEffect, useId, useState } from "react";
-import { saveConsent, useConsent } from "@/modules/consent/store";
+import { expiresAt } from "@/modules/consent/consent";
+import { isGpcEnabled, saveConsent, useConsent } from "@/modules/consent/store";
+import { useLang } from "@/shared/layout/landing-prefs";
 import { COOKIES } from "./copy";
 import { useCopy } from "./use-copy";
 
-type Choices = { performance: boolean; customization: boolean };
 type StatusKey = "" | "all" | "necessary" | "saved";
 
-const CARD_KEYS = ["necessary", "performance", "customization", "ads"] as const;
-const CARD_ICONS = [ShieldCheck, BarChart3, Settings, Megaphone] as const;
+const CARD_KEYS = ["necessary", "thirdParty", "unused"] as const;
+const CARD_ICONS = [ShieldCheck, MapPinned, BarChart3] as const;
 
 function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange?: (next: boolean) => void; label: string; disabled?: boolean }) {
   return (
@@ -21,24 +22,30 @@ function Switch({ checked, onChange, label, disabled }: { checked: boolean; onCh
 /** Panel de preferencias: lee y escribe la misma cookie de consentimiento que el aviso global. */
 export function CookiePrefs() {
   const t = useCopy(COOKIES).prefs;
+  const [lang] = useLang();
   const consent = useConsent();
   const uid = useId();
-  const [choices, setChoices] = useState<Choices>({ performance: false, customization: false });
+  const [thirdParty, setThirdParty] = useState(false);
   const [status, setStatus] = useState<StatusKey>("");
+  const [gpc, setGpc] = useState(false);
 
   // Sincroniza con la decisión guardada (tras hidratar, o si cambia desde el aviso global).
   useEffect(() => {
-    const id = window.requestAnimationFrame(() => setChoices({ performance: consent?.performance ?? false, customization: consent?.customization ?? false }));
+    const id = window.requestAnimationFrame(() => {
+      setThirdParty(consent?.thirdParty ?? false);
+      setGpc(isGpcEnabled());
+    });
     return () => window.cancelAnimationFrame(id);
   }, [consent]);
 
-  const decide = (next: Choices, key: Exclude<StatusKey, "">) => {
-    saveConsent(next);
-    setChoices(next);
+  const decide = (next: boolean, key: Exclude<StatusKey, "">) => {
+    saveConsent({ thirdParty: next }, "policy");
+    setThirdParty(next);
     setStatus(key);
   };
 
   const statusText = status === "all" ? t.statusAll : status === "necessary" ? t.statusNecessary : status === "saved" ? t.statusSaved : "";
+  const dateFmt = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "es-PE", { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <section className="lg-prefs" aria-labelledby={`${uid}-title`}>
@@ -48,13 +55,13 @@ export function CookiePrefs() {
         <p>{t.text}</p>
       </div>
 
-      <ul className="lg-cookie-grid">
+      <ul className="lg-cookie-grid lg-cookie-grid--3">
         {t.cards.map((card, i) => {
           const key = CARD_KEYS[i];
           const Icon = CARD_ICONS[i];
           const locked = key === "necessary";
-          const unused = key === "ads";
-          const on = locked ? true : unused ? false : choices[key];
+          const unused = key === "unused";
+          const on = locked ? true : unused ? false : thirdParty;
           return (
             <li className="lg-cookie" key={key}>
               <span className="lg-cookie__icon" aria-hidden="true"><Icon size={28} strokeWidth={1.5} /></span>
@@ -64,7 +71,7 @@ export function CookiePrefs() {
                 {locked || unused ? (
                   <Switch checked={on} label={card.title} disabled />
                 ) : (
-                  <Switch checked={on} label={card.title} onChange={(next) => { setChoices((c) => ({ ...c, [key]: next })); setStatus(""); }} />
+                  <Switch checked={on} label={card.title} onChange={(next) => { setThirdParty(next); setStatus(""); }} />
                 )}
                 {locked ? (
                   <span className="lg-chip"><Lock aria-hidden="true" size={13} /> {t.always}</span>
@@ -80,17 +87,23 @@ export function CookiePrefs() {
       </ul>
 
       <div className="lg-prefs__actions">
-        <button type="button" className="lp-btn lp-btn--solid" onClick={() => decide({ performance: true, customization: true }, "all")}>
+        <button type="button" className="lp-btn lp-btn--solid" onClick={() => decide(true, "all")}>
           {t.acceptAll} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
         </button>
-        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide({ performance: false, customization: false }, "necessary")}>
+        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide(false, "necessary")}>
           {t.rejectOptional}
         </button>
-        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide(choices, "saved")}>
+        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide(thirdParty, "saved")}>
           {t.save}
         </button>
       </div>
       <p className="lg-prefs__status" role="status" aria-live="polite" style={{ marginTop: 14 }}>{statusText}</p>
+      {gpc && <p className="lg-prefs__note lg-prefs__note--gpc">{t.gpc}</p>}
+      {consent && (
+        <p className="lg-prefs__note lg-prefs__note--saved">
+          {t.saved} {dateFmt.format(new Date(consent.savedAt))}. {t.until} {dateFmt.format(expiresAt(consent))}.
+        </p>
+      )}
       <p className="lg-prefs__note">{t.note}</p>
     </section>
   );

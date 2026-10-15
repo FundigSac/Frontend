@@ -2,9 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   CONSENT_COOKIE,
   CONSENT_MAX_AGE_SECONDS,
+  CONSENT_VERSION,
+  OPTIONAL_CATEGORIES,
+  POLICY_VERSION,
   buildConsentCookie,
   clearConsentCookie,
   createRecord,
+  expiresAt,
   isCategoryAllowed,
   parseConsent,
   readConsentFromCookieString,
@@ -13,36 +17,63 @@ import {
 } from "@/modules/consent/consent";
 
 const NOW = new Date("2026-03-04T15:00:00.000Z");
+const enc = (value: unknown) => encodeURIComponent(JSON.stringify(value));
 
 describe("modelo de consentimiento de cookies", () => {
-  it("las necesarias siempre están activas y el registro es serializable", () => {
-    const record = createRecord({ performance: false, customization: true }, NOW);
-    expect(record).toEqual({ necessary: true, performance: false, customization: true, version: 1, savedAt: NOW.toISOString() });
+  it("las necesarias siempre están activas y el registro guarda origen, versión de la política y fecha", () => {
+    const record = createRecord({ thirdParty: true }, "preferences", NOW);
+    expect(record).toEqual({ necessary: true, thirdParty: true, version: CONSENT_VERSION, policy: POLICY_VERSION, source: "preferences", savedAt: NOW.toISOString() });
     expect(parseConsent(serializeConsent(record))).toEqual(record);
   });
 
-  it("statusOf clasifica las elecciones", () => {
-    expect(statusOf({ performance: true, customization: true })).toBe("all");
-    expect(statusOf({ performance: false, customization: false })).toBe("necessary-only");
-    expect(statusOf({ performance: true, customization: false })).toBe("custom");
+  it("el origen por omisión es el aviso", () => {
+    expect(createRecord({ thirdParty: false }, undefined, NOW).source).toBe("banner");
   });
 
-  it("parseConsent descarta datos corruptos, de otra versión o con tipos inválidos", () => {
+  it("statusOf distingue todo aceptado de solo lo necesario", () => {
+    expect(statusOf({ thirdParty: true })).toBe("all");
+    expect(statusOf({ thirdParty: false })).toBe("necessary-only");
+    expect(OPTIONAL_CATEGORIES).toEqual(["thirdParty"]);
+  });
+
+  it("parseConsent descarta datos corruptos, de otra política o con tipos inválidos", () => {
     expect(parseConsent(undefined)).toBeNull();
     expect(parseConsent("")).toBeNull();
     expect(parseConsent("%7Bno-json")).toBeNull();
-    expect(parseConsent(encodeURIComponent(JSON.stringify({ version: 2, performance: true, customization: true })))).toBeNull();
-    expect(parseConsent(encodeURIComponent(JSON.stringify({ version: 1, performance: "yes", customization: true })))).toBeNull();
+    expect(parseConsent(enc({ version: 3, thirdParty: true, policy: POLICY_VERSION }))).toBeNull();
+    expect(parseConsent(enc({ version: CONSENT_VERSION, thirdParty: "yes", policy: POLICY_VERSION }))).toBeNull();
+    expect(parseConsent(enc({ version: CONSENT_VERSION, thirdParty: true, policy: "2020-01" }))).toBeNull();
     expect(parseConsent(encodeURIComponent("[1,2]"))).toBeNull();
   });
 
-  it("no puede forzar 'necessary: false' desde la cookie", () => {
-    const raw = encodeURIComponent(JSON.stringify({ version: 1, necessary: false, performance: true, customization: false, savedAt: NOW.toISOString() }));
-    expect(parseConsent(raw)?.necessary).toBe(true);
+  it("si cambia la política vigente, la decisión anterior deja de valer y se vuelve a preguntar", () => {
+    const old = enc({ version: CONSENT_VERSION, necessary: true, thirdParty: true, policy: "2025-01", source: "banner", savedAt: NOW.toISOString() });
+    expect(parseConsent(old)).toBeNull();
+  });
+
+  it("una cookie de la versión 1 se conserva como decisión pero sin consentir contenido de terceros", () => {
+    const legacy = enc({ version: 1, necessary: true, performance: true, customization: true, savedAt: NOW.toISOString() });
+    const record = parseConsent(legacy);
+    expect(record).not.toBeNull();
+    expect(record?.thirdParty).toBe(false);
+    expect(record?.savedAt).toBe(NOW.toISOString());
+    expect(record?.version).toBe(CONSENT_VERSION);
+  });
+
+  it("no puede forzar 'necessary: false' ni un origen inventado desde la cookie", () => {
+    const raw = enc({ version: CONSENT_VERSION, necessary: false, thirdParty: true, policy: POLICY_VERSION, source: "hack", savedAt: NOW.toISOString() });
+    const record = parseConsent(raw);
+    expect(record?.necessary).toBe(true);
+    expect(record?.source).toBe("banner");
+  });
+
+  it("una fecha inválida se reemplaza por la época (la decisión queda vencida, no rota)", () => {
+    const record = parseConsent(enc({ version: CONSENT_VERSION, thirdParty: false, policy: POLICY_VERSION, source: "banner", savedAt: "ayer" }));
+    expect(record?.savedAt).toBe(new Date(0).toISOString());
   });
 
   it("la cookie es de primera parte, SameSite=Lax, 180 días y Secure sólo en https", () => {
-    const record = createRecord({ performance: true, customization: false }, NOW);
+    const record = createRecord({ thirdParty: true }, "banner", NOW);
     const http = buildConsentCookie(record, { secure: false });
     const https = buildConsentCookie(record, { secure: true });
     expect(http.startsWith(`${CONSENT_COOKIE}=`)).toBe(true);
@@ -56,8 +87,18 @@ describe("modelo de consentimiento de cookies", () => {
     expect(clearConsentCookie({ secure: true })).toContain("Max-Age=0");
   });
 
+  it("la cookie no contiene identificadores de seguimiento: solo elecciones, origen, versión y fecha", () => {
+    const record = createRecord({ thirdParty: true }, "banner", NOW);
+    expect(Object.keys(record).sort()).toEqual(["necessary", "policy", "savedAt", "source", "thirdParty", "version"]);
+  });
+
+  it("calcula hasta cuándo vale la decisión (180 días)", () => {
+    const record = createRecord({ thirdParty: true }, "banner", NOW);
+    expect(expiresAt(record).toISOString()).toBe(new Date(NOW.getTime() + 180 * 86400 * 1000).toISOString());
+  });
+
   it("lee el registro desde una cadena de cookies con otras cookies presentes", () => {
-    const record = createRecord({ performance: true, customization: true }, NOW);
+    const record = createRecord({ thirdParty: true }, "policy", NOW);
     const value = serializeConsent(record);
     expect(readConsentFromCookieString(`a=1; ${CONSENT_COOKIE}=${value}; b=2`)).toEqual(record);
     expect(readConsentFromCookieString("a=1; b=2")).toBeNull();
@@ -65,8 +106,8 @@ describe("modelo de consentimiento de cookies", () => {
   });
 
   it("sin decisión ninguna categoría opcional está permitida", () => {
-    expect(isCategoryAllowed(null, "performance")).toBe(false);
-    expect(isCategoryAllowed(createRecord({ performance: true, customization: false }, NOW), "performance")).toBe(true);
-    expect(isCategoryAllowed(createRecord({ performance: true, customization: false }, NOW), "customization")).toBe(false);
+    expect(isCategoryAllowed(null, "thirdParty")).toBe(false);
+    expect(isCategoryAllowed(createRecord({ thirdParty: true }, "banner", NOW), "thirdParty")).toBe(true);
+    expect(isCategoryAllowed(createRecord({ thirdParty: false }, "banner", NOW), "thirdParty")).toBe(false);
   });
 });

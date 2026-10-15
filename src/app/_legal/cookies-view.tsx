@@ -3,7 +3,7 @@
 import { FloatingActions } from "../_landing/floating-actions";
 import { LegalMotion } from "./motion";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Scale } from "lucide-react";
 import { AnimatedDetails } from "@/shared/ui/animated-details";
 import { COMMON, COOKIES } from "./copy";
 import { CookiePrefs } from "./cookie-prefs";
@@ -36,6 +36,51 @@ export function CookiesView({ hero, info }: { hero: string; info: readonly [stri
           ))}
         </ul>
       </div>
+
+      <section className="lp-shell lg-body lg-store" aria-labelledby="lg-store-title">
+        <div className="lg-store__head" data-reveal="">
+          <p className="lg-eyebrow">{t.inventory.eyebrow}</p>
+          <h2 id="lg-store-title" className="lg-section-title" style={{ marginTop: 14 }}>{t.inventory.title}</h2>
+          <p className="lg-text">{t.inventory.lead}</p>
+        </div>
+        <div className="lg-store__wrap" data-reveal="" style={{ ["--d" as string]: "100ms" }}>
+          <table className="lg-store__table">
+            <caption className="ck-sr">{t.inventory.title}</caption>
+            <thead>
+              <tr>{t.inventory.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr>
+            </thead>
+            <tbody>
+              {t.inventory.rows.map((row) => (
+                <tr key={row[0]}>
+                  {row.map((cell, i) => (
+                    <td key={i} data-label={t.inventory.head[i]}>{i === 0 && cell.startsWith("fundigsac-") ? <code>{cell}</code> : cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="lg-store__note" data-reveal="">{t.inventory.note}</p>
+      </section>
+
+      <section className="lp-shell lg-body lg-legalbox" aria-labelledby="lg-legal-title">
+        <div className="lg-legalbox__head" data-reveal="">
+          <span className="lg-legalbox__icon" aria-hidden="true"><Scale size={26} strokeWidth={1.6} /></span>
+          <div>
+            <p className="lg-eyebrow">{t.legal.eyebrow}</p>
+            <h2 id="lg-legal-title" className="lg-section-title" style={{ marginTop: 14 }}>{t.legal.title}</h2>
+            <p className="lg-text">{t.legal.lead}</p>
+          </div>
+        </div>
+        <ul className="lg-legalbox__grid">
+          {t.legal.items.map((item, i) => (
+            <li key={item.title} data-reveal="" style={{ ["--d" as string]: `${i * 80}ms` }}>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="lg-faq-wrap lg-body" style={{ marginTop: "clamp(28px, 4vw, 52px)" }} aria-labelledby="lg-faq-title">
         <div className="lp-shell">

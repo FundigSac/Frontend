@@ -8,7 +8,8 @@ import { COMMON } from "../_legal/copy";
 import { LegalCta, LegalHero } from "../_legal/legal-parts";
 import { LegalMotion } from "../_legal/motion";
 import { useCopy } from "../_legal/use-copy";
-import { MAP_EMBED, MAP_VIEW } from "@/shared/config/location";
+import { MAP_VIEW } from "@/shared/config/location";
+import { MapEmbed } from "@/shared/consent/map-embed";
 import { useHome } from "@/shared/layout/home-copy";
 import { ContactForm, type ContactPrefill } from "./contact-form";
 import { CONTACT } from "./copy";
@@ -81,7 +82,7 @@ export function ContactView({ site, prefill, hero, closing }: { site: ContactSit
           <p className="ct-intro">{t.offices.lead}</p>
 
           <div className="ct-map">
-            <iframe src={MAP_EMBED} title={loc.mapTitle} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+            <MapEmbed title={loc.mapTitle} />
             <div className="ct-map__pin">
               <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
               <span>{loc.pin[0]}<br />{loc.pin[1]}</span>

@@ -9,6 +9,7 @@ import {
   readConsentFromCookieString,
   type ConsentChoices,
   type ConsentRecord,
+  type ConsentSource,
   type OptionalCategory,
 } from "./consent";
 
@@ -33,18 +34,23 @@ export function getConsent(): ConsentRecord | null {
   return cachedRecord;
 }
 
-/** Atajo para condicionar herramientas opcionales: `if (hasConsent("performance")) { ... }`. */
+/** Atajo para condicionar herramientas opcionales: `if (hasConsent("thirdParty")) { ... }`. */
 export const hasConsent = (category: OptionalCategory): boolean => isCategoryAllowed(getConsent(), category);
 
 /** Guarda la elección en la cookie propia `fundigsac-consent` y avisa a los suscriptores. */
-export function saveConsent(choices: ConsentChoices): ConsentRecord {
-  const record = createRecord(choices);
+export function saveConsent(choices: ConsentChoices, source: ConsentSource = "banner"): ConsentRecord {
+  const record = createRecord(choices, source);
   const secure = typeof location !== "undefined" && location.protocol === "https:";
   document.cookie = buildConsentCookie(record, { secure });
   cachedRaw = null;
   listeners.forEach((l) => l());
   window.dispatchEvent(new CustomEvent<ConsentRecord>(EVENT, { detail: record }));
   return record;
+}
+
+/** ¿El navegador envía la señal Global Privacy Control? Si es así, nada opcional se activa sin una acción expresa. */
+export function isGpcEnabled(): boolean {
+  return typeof navigator !== "undefined" && (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
 }
 
 function subscribe(onChange: () => void) {

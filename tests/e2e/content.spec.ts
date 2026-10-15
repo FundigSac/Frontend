@@ -98,9 +98,12 @@ test.describe("W15 Contacto", () => {
     await expect(channels.getByRole("link", { name: /Escríbenos/ })).toHaveAttribute("href", "mailto:cotizaciones@fundigsac.com");
     await expect(channels.getByRole("link", { name: /WhatsApp/ })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
     await expect(channels.getByRole("link", { name: /Solicita una cotización/ })).toHaveAttribute("href", "/cotizar");
-    await expect(page.locator(".ct-map iframe")).toHaveAttribute("src", /google\.com\/maps\?q=Jir%C3%B3n%20Acomayo/);
+    // el mapa de Google solo se carga con permiso: sin él hay un recuadro y, tras aceptar, el iframe
+    await expect(page.locator(".ct-map iframe")).toHaveCount(0);
+    await page.getByRole("button", { name: "Aceptar todas" }).click();
+    await expect(page.locator(".ct-map iframe")).toHaveAttribute("src", /google\.com\/maps\/embed/);
     await expect(page.getByRole("link", { name: /Ver en Google Maps/ })).toHaveAttribute("href", /google\.com\/maps\/search/);
-    await expect(page.getByText("Jirón Acomayo N° 199, Lote 18, Mz. E")).toBeVisible();
+    await expect(page.getByText("Jirón Pacasmayo Mz. E Lt. 12").first()).toBeVisible();
     await expect(page.locator("main").getByRole("link", { name: "Solicitar una cotización" })).toHaveAttribute("href", "/cotizar");
   });
 
@@ -165,7 +168,7 @@ test.describe("W15 Contacto", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contact us");
     await expect(page.getByRole("button", { name: /Send message/ })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Find us in Lima" })).toBeVisible();
-    await expect(page.getByText("Jirón Acomayo N° 199, Lot 18, Block E")).toBeVisible();
+    await expect(page.getByText("Jirón Pacasmayo, Block E, Lot 12").first()).toBeVisible();
     await pick("Español");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contáctanos");
   });
@@ -372,19 +375,17 @@ test.describe("W19 Privacidad", () => {
 });
 
 test.describe("W20 Cookies", () => {
-  test("preferencias reales: cookie propia, estado, personalización y persistencia", async ({ page, context }) => {
+  test("preferencias reales: cookie propia, estado, contenido de terceros y persistencia", async ({ page, context }) => {
     await go(page, "/cookies", ".lg-switch:not([disabled])");
     expect((await context.cookies()).find((c) => c.name === "fundigsac-consent")).toBeUndefined();
-    const analytics = page.getByRole("switch", { name: "Cookies analíticas" });
-    const functional = page.getByRole("switch", { name: "Cookies funcionales" });
-    await expect(page.getByRole("switch", { name: "Cookies necesarias" })).toBeDisabled();
-    await expect(page.getByRole("switch", { name: "Cookies publicitarias" })).toBeDisabled();
+    const thirdParty = page.getByRole("switch", { name: "Contenido de terceros" });
+    await expect(page.getByRole("switch", { name: "Almacenamiento necesario" })).toBeDisabled();
+    await expect(page.getByRole("switch", { name: "Analítica y publicidad" })).toBeDisabled();
 
     // rechazar opcionales
     await page.getByRole("button", { name: "Rechazar opcionales" }).click();
-    await expect(page.getByRole("status").filter({ hasText: "Solo se usarán las cookies necesarias." })).toBeVisible();
-    await expect(analytics).toHaveAttribute("aria-checked", "false");
-    await expect(functional).toHaveAttribute("aria-checked", "false");
+    await expect(page.getByRole("status").filter({ hasText: "Solo se usará el almacenamiento necesario." })).toBeVisible();
+    await expect(thirdParty).toHaveAttribute("aria-checked", "false");
     const rejected = (await context.cookies()).find((c) => c.name === "fundigsac-consent");
     expect(rejected).toBeTruthy();
     expect(rejected!.sameSite).toBe("Lax");
@@ -392,27 +393,38 @@ test.describe("W20 Cookies", () => {
     const days = (rejected!.expires - Date.now() / 1000) / 86400;
     expect(days).toBeGreaterThan(179);
     expect(days).toBeLessThanOrEqual(180.01);
-    expect(JSON.parse(decodeURIComponent(rejected!.value))).toMatchObject({ necessary: true, performance: false, customization: false, version: 1 });
+    // el registro lleva versión, política, origen y fecha como evidencia; nada de identificadores
+    expect(JSON.parse(decodeURIComponent(rejected!.value))).toMatchObject({ necessary: true, thirdParty: false, version: 2, policy: "2026-10", source: "policy" });
 
-    // personalizar y guardar
-    await analytics.click();
-    await expect(analytics).toHaveAttribute("aria-checked", "true");
+    // activar y guardar
+    await thirdParty.click();
+    await expect(thirdParty).toHaveAttribute("aria-checked", "true");
     await page.getByRole("button", { name: "Guardar preferencias" }).click();
     await expect(page.getByRole("status").filter({ hasText: "Preferencias guardadas." })).toBeVisible();
     const saved = JSON.parse(decodeURIComponent((await context.cookies()).find((c) => c.name === "fundigsac-consent")!.value));
-    expect(saved).toMatchObject({ performance: true, customization: false });
+    expect(saved).toMatchObject({ thirdParty: true });
 
-    // persiste tras recargar
+    // persiste tras recargar y muestra la fecha de la decisión
     await page.reload({ waitUntil: "domcontentloaded" });
     await hydrated(page, ".lg-switch:not([disabled])");
-    await expect(analytics).toHaveAttribute("aria-checked", "true");
-    await expect(functional).toHaveAttribute("aria-checked", "false");
+    await expect(thirdParty).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByText(/Decisión guardada el .* Vale hasta el/)).toBeVisible();
 
     // aceptar todas
     await page.getByRole("button", { name: /Aceptar todas/ }).first().click();
-    await expect(analytics).toHaveAttribute("aria-checked", "true");
-    await expect(functional).toHaveAttribute("aria-checked", "true");
-    expect(JSON.parse(decodeURIComponent((await context.cookies()).find((c) => c.name === "fundigsac-consent")!.value))).toMatchObject({ performance: true, customization: true });
+    await expect(thirdParty).toHaveAttribute("aria-checked", "true");
+    expect(JSON.parse(decodeURIComponent((await context.cookies()).find((c) => c.name === "fundigsac-consent")!.value))).toMatchObject({ thirdParty: true });
+  });
+
+  test("la tabla de lo que se guarda y el marco legal están completos", async ({ page }) => {
+    await go(page, "/cookies");
+    const table = page.getByRole("table", { name: "Qué guardamos en tu dispositivo" });
+    await expect(table.getByRole("columnheader")).toHaveText(["Nombre", "Quién", "Para qué", "Duración", "Tipo"]);
+    await expect(table.getByRole("row")).toHaveCount(6);
+    for (const name of ["fundigsac-consent", "fundigsac-quote", "Cookies de Google Maps"]) await expect(table.getByText(name, { exact: false }).first()).toBeAttached();
+    await expect(page.getByRole("heading", { name: "Tu consentimiento y tus derechos" })).toBeAttached();
+    await expect(page.getByText("Ley N.º 29733").first()).toBeAttached();
+    await expect(page.getByText("D. S. N.º 016-2024-JUS").first()).toBeAttached();
   });
 
   test("las preguntas frecuentes se expanden con el teclado", async ({ page }) => {
