@@ -9,7 +9,7 @@ import { LegalCta, LegalHero } from "../_legal/legal-parts";
 import { LegalMotion } from "../_legal/motion";
 import { useCopy } from "../_legal/use-copy";
 import { ABOUT } from "./copy";
-import { BarsUpIcon, GearIcon, GemIcon, LeafIcon, TargetArrowIcon, TeamIcon } from "./icons";
+import { GearIcon, GemIcon, LeafIcon, TeamIcon } from "./icons";
 import "./about.css";
 
 const HIGHLIGHT_ICONS = [GemIcon, TeamIcon, GearIcon, LeafIcon] as const;
@@ -76,25 +76,27 @@ export function AboutView() {
           <p className="lg-eyebrow">{t.essence.eyebrow}</p>
           <h2 id="ab-essence-title" className="lg-section-title">{t.essence.title}</h2>
           <div className="ab-mv">
-            <div data-reveal="">
-              <TargetArrowIcon />
+            <article data-reveal="">
+              <span className="ab-mv__n" aria-hidden="true">01</span>
               <h3>{t.mission.title}</h3>
               <p>{t.mission.text}</p>
-            </div>
-            <div data-reveal="">
-              <BarsUpIcon />
+            </article>
+            <article data-reveal="" style={{ ["--d" as string]: "120ms" }}>
+              <span className="ab-mv__n" aria-hidden="true">02</span>
               <h3>{t.vision.title}</h3>
               <p>{t.vision.text}</p>
-            </div>
+            </article>
           </div>
           <div className="ab-values" data-reveal="">
-            <TeamIcon />
-            <div>
-              <h3>{t.values.title}</h3>
-              <ul>
-                {t.values.items.map((v) => <li key={v}>{v}</li>)}
-              </ul>
-            </div>
+            <h3>{t.values.title}</h3>
+            <ol>
+              {t.values.items.map((v, i) => (
+                <li key={v} style={{ ["--i" as string]: i }}>
+                  <span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                  {v}
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
