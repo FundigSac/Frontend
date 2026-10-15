@@ -295,7 +295,6 @@ export function LandingFooter() {
           <Link href="/cookies">{f.cookies}</Link>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
           <Link href="/reclamaciones">{f.complaints}</Link>
-          <Link href="/mapa-del-sitio">{f.sitemap}</Link>
         </div>
       </div>
     </footer>
