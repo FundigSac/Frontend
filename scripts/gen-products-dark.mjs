@@ -11,7 +11,7 @@ const pnpm = path.resolve("node_modules/.pnpm");
 const postcssDir = fs.readdirSync(pnpm).find((d) => d.startsWith("postcss@"));
 const postcss = createRequire(path.join(pnpm, postcssDir, "node_modules/postcss/"))("postcss");
 
-const FILES = ["w02-catalog", "w03-valvulas", "w04-tuberias", "w05-marcos", "w06-ficha"].map((n) => `src/screens/islands/${n}.module.css`);
+const FILES = ["w02-catalog", "w03-valvulas", "w04-tuberias", "w05-marcos"].map((n) => `src/screens/islands/${n}.module.css`);
 const DARK = 'html[data-lp-theme="dark"]';
 
 

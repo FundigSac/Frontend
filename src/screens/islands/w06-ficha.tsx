@@ -3,11 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Rotate3d, ChevronLeft, ChevronRight, Download, ExternalLink, Eye, FileText, Hexagon, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowRight, Building2, Check, ChevronLeft, ChevronRight, Download, Droplets, ExternalLink, Eye, FileText, Gauge, Layers, Maximize2, Rotate3d, Ruler, Settings, ShieldCheck, Sprout, Thermometer, Waves, X } from "lucide-react";
 import styles from "./w06-ficha.module.css";
-import { DATASHEETS, type Feature } from "./w06-ficha-data";
+import { DATASHEETS } from "./w06-ficha-data";
 import { requestDocumentHref } from "@/modules/resources/documents";
+import { useReveal } from "@/shared/ui/use-reveal";
 
 const BASE = "/media/valvula-ficha/";
 const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
@@ -51,7 +52,19 @@ const RELATED = [
   { src: "reductora-cut.webp", title: "Válvula reductora de presión", text: "Controla y estabiliza la presión en la red de distribución.", href: "/productos/valvulas" },
 ];
 
-const FEATURE_ICON = { shield: ShieldCheck, settings: Settings, layers: Layers, nut: Hexagon } satisfies Record<Feature["icon"], unknown>;
+const FACT_ICONS = [Gauge, Thermometer, Ruler, ShieldCheck] as const;
+const APPLICATIONS = [
+  { Icon: Droplets, label: "Redes de agua potable" },
+  { Icon: Sprout, label: "Sistemas de riego" },
+  { Icon: Waves, label: "Estaciones de bombeo" },
+  { Icon: Building2, label: "Infraestructura urbana" },
+] as const;
+const TABS = [
+  { id: "descripcion", label: "Descripción" },
+  { id: "especificaciones", label: "Especificaciones" },
+  { id: "dimensiones", label: "Dimensiones" },
+  { id: "documentacion", label: "Documentación" },
+] as const;
 
 /** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía extendida; sin valor es la ficha base (H-ITALY). */
 export type Variant = "fundigsac" | "extendida";
@@ -75,14 +88,39 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [spin, setSpin] = useState(false);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState("DN50");
+  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("descripcion");
+  const pageRef = useRef<HTMLElement>(null);
   const total = THUMBS.length;
   const current = THUMBS[active];
+
+  useReveal(pageRef);
 
   const pick = useCallback((i: number) => { setSpin(false); setActive(i); }, []);
   const step = useCallback((d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); }, [total]);
 
   const docCount = docPages.length;
   const stepDoc = useCallback((d: number) => setDocPage((i) => (i + d + docCount) % docCount), [docCount]);
+
+  /** La pestaña activa sigue a la sección que cruza la franja superior de la pantalla. */
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) if (entry.isIntersecting) setTab(entry.target.id as (typeof TABS)[number]["id"]);
+      },
+      { rootMargin: "-22% 0px -68% 0px" },
+    );
+    TABS.forEach(({ id }) => { const el = document.getElementById(id); if (el) io.observe(el); });
+    return () => io.disconnect();
+  }, []);
+
+  const goTo = (id: string) => (event: React.MouseEvent) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    event.preventDefault();
+    el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    setTab(id as (typeof TABS)[number]["id"]);
+  };
 
   useEffect(() => {
     if (!docOpen) return;
@@ -123,29 +161,38 @@ export function W06Ficha(props: { variant?: Variant }) {
     />
   );
 
+  const downloadCta = doc
+    ? <a href={doc.href} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
+    : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>;
+  const benefitIcons = [ShieldCheck, Settings, Layers, Check];
+
   return (
-    <main className={styles.page}>
+    <main className={styles.page} ref={pageRef}>
       <div className={styles.wrap}>
         <nav aria-label="Migas de pan" className={styles.crumbs}>
-          <Link href="/">Inicio</Link><span aria-hidden="true">/</span>
-          <Link href="/productos">Productos</Link><span aria-hidden="true">/</span>
-          <Link href="/productos/valvulas">Válvulas</Link><span aria-hidden="true">/</span>
+          <Link href="/">Inicio</Link><span aria-hidden="true">›</span>
+          <Link href="/productos">Productos</Link><span aria-hidden="true">›</span>
+          <Link href="/productos/valvulas">Válvulas</Link><span aria-hidden="true">›</span>
           <span aria-current="page">{productName}</span>
         </nav>
 
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 640px, 100vw", true)}
-              <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver en 3D"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /><span>{spin ? "Fotos" : "Ver en 3D"}</span></button>
+              {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 560px, 100vw", true)}
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
-            <div className={styles.thumbs} role="list">
-              {THUMBS.map((t, i) => (
-                <button key={t.src} type="button" role="listitem" className={i === active ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} aria-current={i === active}>
-                  <Image src={t.dir + t.src} alt="" fill sizes="120px" />
-                </button>
-              ))}
+            <div className={styles.thumbs}>
+              <div className={styles.thumbList} role="list">
+                {THUMBS.map((t, i) => (
+                  <button key={t.src} type="button" role="listitem" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} aria-current={i === active}>
+                    <Image src={t.dir + t.src} alt="" fill sizes="96px" />
+                  </button>
+                ))}
+              </div>
+              <button type="button" className={spin ? styles.thumb3dOn : styles.thumb3d} aria-label={spin ? "Volver a las fotos" : "Ver en 3D"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setSpin((v) => !v)}>
+                <Rotate3d size={22} aria-hidden="true" /><span>{spin ? "Fotos" : "Vista 3D"}</span>
+              </button>
             </div>
           </div>
 
@@ -156,68 +203,52 @@ export function W06Ficha(props: { variant?: Variant }) {
 
             {warrantyLabel && <p className={styles.warranty}><ShieldCheck size={20} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> respaldada por FUNDIGSAC</span></p>}
 
-            <dl className={styles.facts}>
-              {sheet.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
-            </dl>
-
-            <fieldset className={styles.sizes}>
-              <legend><span>Diámetro nominal (DN)</span><small>{sheet.sizeRange}</small></legend>
-              <div className={styles.sizeGrid}>
-                {sheet.sizes.map((s) => (
-                  <button key={s} type="button" aria-pressed={size === s} className={size === s ? styles.sizeActive : styles.size} onClick={() => setSize(s)}>{s}</button>
-                ))}
-              </div>
-            </fieldset>
+            <ul className={styles.benefits}>
+              {warrantyLabel && <li><span className={styles.benefitIcon}><ShieldCheck size={22} aria-hidden="true" /></span><span>{warrantyLabel}</span></li>}
+              {sheet.badges.map((b, i) => { const Icon = benefitIcons[i % benefitIcons.length]; return <li key={b}><span className={styles.benefitIcon}><Icon size={22} aria-hidden="true" /></span><span>{b}</span></li>; })}
+            </ul>
 
             <div className={styles.ctas}>
               <Link href="/cotizar" className={styles.primary}>Solicitar cotización <ArrowRight size={16} aria-hidden="true" /></Link>
-              {doc ? <a href={doc.href} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a> : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>}
+              {downloadCta}
             </div>
-
-            <ul className={styles.badges}>
-              {warrantyLabel && <li><ShieldCheck size={18} aria-hidden="true" /><span>{warrantyLabel}</span></li>}
-              {sheet.badges.map((b, i) => { const Icon = [ShieldCheck, Settings, Layers][i % 3]; return <li key={b}><Icon size={18} aria-hidden="true" /><span>{b}</span></li>; })}
-            </ul>
           </div>
         </section>
 
-        <section className={styles.panel} aria-label="Descripción y documentación">
-          <div className={styles.col}>
+        <dl className={styles.strip} data-reveal>
+          {sheet.facts.map(([k, v], i) => {
+            const Icon = FACT_ICONS[i % FACT_ICONS.length];
+            return <div key={k} style={{ ["--i" as string]: i }}><span className={styles.stripIcon}><Icon size={20} aria-hidden="true" /></span><span><dt>{k}</dt><dd>{v}</dd></span></div>;
+          })}
+        </dl>
+
+        <nav className={styles.tabs} aria-label="Secciones de la ficha" style={{ ["--n" as string]: TABS.length, ["--i" as string]: TABS.findIndex((t) => t.id === tab) }}>
+          {TABS.map((t) => (
+            <a key={t.id} href={`#${t.id}`} className={t.id === tab ? styles.tabOn : styles.tab} aria-current={t.id === tab ? "true" : undefined} onClick={goTo(t.id)}>{t.label}</a>
+          ))}
+          <span className={styles.tabInk} aria-hidden="true" />
+        </nav>
+
+        <section id="descripcion" className={styles.desc} aria-label="Descripción">
+          <div className={styles.descMain} data-reveal>
             <h2>Descripción</h2>
             <p className={styles.descLead}>Accionamiento sencillo y paso completo: una compuerta que sube y baja perpendicular al flujo.</p>
-            <p>{sheet.description ?? "Las válvulas de compuerta se destacan por su accionamiento sencillo, compuesto principalmente por una compuerta o cuchilla que se eleva y baja perpendicularmente al flujo del fluido. La eficiencia de este diseño reside en su capacidad para proporcionar un paso completo y sin obstrucciones cuando está completamente abierta, minimizando la resistencia al flujo y reduciendo las pérdidas de presión."}</p>
-            <ul className={styles.features}>
-              {sheet.features.map((f) => { const Icon = FEATURE_ICON[f.icon]; return <li key={f.title}><span className={styles.fIcon}><Icon size={20} aria-hidden="true" /></span><span><strong>{f.title}</strong>{f.text}</span></li>; })}
+            <p className={styles.descText}>{sheet.description ?? "Las válvulas de compuerta se destacan por su accionamiento sencillo, compuesto principalmente por una compuerta o cuchilla que se eleva y baja perpendicularmente al flujo del fluido. La eficiencia de este diseño reside en su capacidad para proporcionar un paso completo y sin obstrucciones cuando está completamente abierta, minimizando la resistencia al flujo y reduciendo las pérdidas de presión."}</p>
+            <ul className={styles.checks}>
+              {sheet.features.map((f) => { return <li key={f.title}><span className={styles.check}><Check size={14} strokeWidth={3} aria-hidden="true" /></span><span><strong>{f.title}</strong>{f.text}</span></li>; })}
             </ul>
           </div>
-          <div className={styles.col} id="documentacion">
-            <h2>Documentación</h2>
-            {doc ? (
-              <div className={styles.doc}>
-                <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
-                  <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 360px, 90vw" />
-                  <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
-                </button>
-                <p className={styles.docTitle}>{doc.title}</p>
-                <p className={styles.docMeta}>{doc.meta}</p>
-                <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
-              </div>
-            ) : (
-              <div className={styles.doc}>
-                <div className={styles.docRequest}>
-                  <FileText size={34} aria-hidden="true" />
-                  <p>La ficha técnica de esta válvula se entrega bajo solicitud, junto con la cotización.</p>
-                </div>
-                <p className={styles.docTitle}>Ficha técnica · {productName}</p>
-                <p className={styles.docMeta}>PDF · bajo solicitud</p>
-                <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>
-              </div>
-            )}
-          </div>
+          <aside className={styles.descSide} data-reveal style={{ ["--d" as string]: "120ms" }}>
+            <div className={styles.sidePhoto}><Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 420px, 100vw" /></div>
+            <div className={styles.apps}>
+              <h3>Aplicaciones principales</h3>
+              <ul>{APPLICATIONS.map(({ Icon, label }) => <li key={label}><Icon size={18} aria-hidden="true" /><span>{label}</span></li>)}</ul>
+            </div>
+          </aside>
         </section>
 
-        <section className={styles.panel} aria-label="Especificaciones y dimensiones">
-          <div className={styles.col}>
+        <section className={styles.tech} aria-label="Especificaciones y dimensiones">
+          <div id="especificaciones" className={styles.techCol} data-reveal>
             <h2>Especificaciones técnicas</h2>
             <table className={styles.table}>
               <tbody>
@@ -226,9 +257,17 @@ export function W06Ficha(props: { variant?: Variant }) {
             </table>
             <p className={styles.muted}>{sheet.specsNote}</p>
           </div>
-          <div className={styles.col}>
-            <h2>Dimensiones</h2>
+          <div id="dimensiones" className={styles.techCol} data-reveal style={{ ["--d" as string]: "120ms" }}>
+            <h2>Dimensiones principales</h2>
             <p className={styles.muted}>{sheet.dims.note}</p>
+            <fieldset className={styles.sizes}>
+              <legend><span>Diámetro nominal (DN)</span><small>{sheet.sizeRange}</small></legend>
+              <div className={styles.sizeGrid}>
+                {sheet.sizes.map((s) => (
+                  <button key={s} type="button" aria-pressed={size === s} className={size === s ? styles.sizeActive : styles.size} onClick={() => setSize(s)}>{s}</button>
+                ))}
+              </div>
+            </fieldset>
             <div className={styles.tableWrap}>
               <table className={styles.dims}>
                 <thead><tr>{sheet.dims.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
@@ -244,7 +283,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           </div>
         </section>
 
-        <section className={styles.panel1} aria-label="Bridas del diámetro seleccionado">
+        <section className={styles.flangePanel} aria-label="Bridas del diámetro seleccionado" data-reveal>
           <div className={styles.flangeHead}>
             <h2>{sheet.flange.title} · {size}</h2>
             <p>{sheet.flange.note}</p>
@@ -279,14 +318,43 @@ export function W06Ficha(props: { variant?: Variant }) {
           )}
         </section>
 
-        <section className={styles.related} aria-labelledby="related-title">
+        <section id="documentacion" className={styles.docSection} aria-label="Documentación" data-reveal>
+          <h2>Documentación</h2>
+          {doc ? (
+            <div className={styles.doc}>
+              <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
+                <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 320px, 90vw" />
+                <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
+              </button>
+              <div className={styles.docInfo}>
+                <p className={styles.docTitle}>{doc.title}</p>
+                <p className={styles.docMeta}>{doc.meta}</p>
+                <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.doc}>
+              <div className={styles.docRequest}>
+                <FileText size={34} aria-hidden="true" />
+                <p>La ficha técnica de esta válvula se entrega bajo solicitud, junto con la cotización.</p>
+              </div>
+              <div className={styles.docInfo}>
+                <p className={styles.docTitle}>Ficha técnica · {productName}</p>
+                <p className={styles.docMeta}>PDF · bajo solicitud</p>
+                <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className={styles.related} aria-labelledby="related-title" data-reveal>
           <div className={styles.relatedHead}>
             <h2 id="related-title">Productos relacionados</h2>
             <Link href="/productos" className={styles.allLink}>Ver todos los productos <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           <div className={styles.relatedGrid}>
-            {RELATED.map((r) => (
-              <article key={r.title} className={styles.relCard}>
+            {RELATED.map((r, i) => (
+              <article key={r.title} className={styles.relCard} style={{ ["--i" as string]: i }}>
                 <div className={styles.relImage}><Image src={BASE + r.src} alt="" fill sizes="(min-width: 1024px) 22vw, 50vw" /></div>
                 <div className={styles.relBody}>
                   <h3>{r.title}</h3>
@@ -296,6 +364,15 @@ export function W06Ficha(props: { variant?: Variant }) {
               </article>
             ))}
           </div>
+        </section>
+
+        <section className={styles.cta} aria-labelledby="ficha-cta-title" data-reveal>
+          <div className={styles.ctaPhoto} aria-hidden="true"><Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 360px, 100vw" /></div>
+          <div className={styles.ctaCopy}>
+            <h2 id="ficha-cta-title">¿Necesitas una solución a medida?</h2>
+            <p>Nuestro equipo técnico te asesora para seleccionar la válvula ideal según tu proyecto y condiciones de operación.</p>
+          </div>
+          <Link href="/contacto" className={styles.primary}>Solicitar asesoría <ArrowRight size={16} aria-hidden="true" /></Link>
         </section>
       </div>
 
