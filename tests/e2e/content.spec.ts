@@ -241,6 +241,10 @@ test.describe("W16 / W17 / W24 Cotización", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("No hay una solicitud registrada");
     await go(page, "/cotizar/confirmacion?ref=REC-2026-000001x");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("No hay una solicitud registrada");
+    // folio de marcador de la etapa de diseño: nada se guardó, no se presenta como registro
+    await go(page, "/cotizar/confirmacion?ref=COT-0000-000000");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Solicitud pendiente de conexión");
+    await expect(page.locator("#folio-code")).toHaveText("Sin folio");
   });
 });
 
