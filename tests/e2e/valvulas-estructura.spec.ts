@@ -81,24 +81,23 @@ for (const [slug, name, range, thumbsAlt] of [
       // CTAs: una sola cotización y la ficha técnica (descarga o solicitud).
       await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
       await expect(page.locator("main").getByRole("link", { name: /ficha técnica/i }).first()).toBeVisible();
-      await expect(page.locator("main").getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
+      // la banda de asesoría solo informa: no lleva botones ni tarjeta de contacto
+      await expect(page.locator("main").getByRole("link", { name: "Solicitar asesoría" })).toHaveCount(0);
 
       // Rango del selector de diámetros.
       await expect(page.getByText(range, { exact: true }).first()).toBeVisible();
       expect(await page.evaluate(NO_OVERFLOW)).toBe(true);
     });
 
-    test("las pestañas llevan a su sección y marcan la activa", async ({ page }) => {
+    test("la documentación va en una fila compacta con descarga y vista en pantalla", async ({ page }) => {
       await page.goto(`/productos/valvulas/${slug}`);
       await dismissCookies(page);
-      const tabs = page.getByRole("navigation", { name: "Secciones de la ficha" });
-      await expect(tabs.getByRole("link")).toHaveCount(4);
-      await expect(tabs.getByRole("link", { name: "Descripción" })).toHaveAttribute("aria-current", "true");
-      for (const [label, id] of [["Especificaciones", "especificaciones"], ["Dimensiones", "dimensiones"], ["Documentación", "documentacion"]] as const) {
-        await tabs.getByRole("link", { name: label }).click();
-        await expect(tabs.getByRole("link", { name: label })).toHaveAttribute("aria-current", "true");
-        await expect.poll(() => page.evaluate((i) => Math.round(document.getElementById(i)!.getBoundingClientRect().top), id), { timeout: 8000 }).toBeLessThan(260);
-      }
+      const doc = page.locator("#documentacion");
+      await expect(doc.getByRole("link", { name: /Descargar ficha técnica/ })).toHaveAttribute("href", /\.pdf$/);
+      await expect(doc.getByRole("button", { name: "Ver ficha en pantalla" })).toBeVisible();
+      // compacta: no ocupa media pantalla
+      expect((await doc.boundingBox())!.height).toBeLessThan(260);
+      await expect(page.getByRole("navigation", { name: "Secciones de la ficha" })).toHaveCount(0);
     });
 
     test("el selector de diámetro actualiza la fila resaltada y las bridas", async ({ page }) => {

@@ -12,15 +12,11 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Download,
   ExternalLink,
-  Eye,
   FileText,
   Layers,
   Maximize2,
-  MessageCircle,
-  Phone,
   Rotate3d,
   Settings2,
   ShieldCheck,
@@ -34,7 +30,6 @@ import { ValvePlan, type Cotas } from "./w06-plano";
 import { addToCart, openCart } from "@/modules/cart/cart-store";
 import { featuredBySlug } from "@/modules/cart/cart-products";
 import { requestDocumentHref } from "@/modules/resources/documents";
-import { site, whatsappLink } from "@/lib/site-info";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { useReveal } from "@/shared/ui/use-reveal";
 
@@ -80,8 +75,6 @@ const RELATED = [
   { src: "reductora-cut.webp", es: ["Válvula reductora de presión", "Controla y estabiliza la presión en la red de distribución."], en: ["Pressure reducing valve", "Controls and stabilizes pressure in distribution networks."], href: "/productos/valvulas" },
 ] as const;
 
-const TAB_IDS = ["descripcion", "especificaciones", "dimensiones", "documentacion"] as const;
-type TabId = (typeof TAB_IDS)[number];
 
 const PRESSURES = ["PN10", "PN16"] as const;
 const CART_SLUG = { base: "valvula-compuerta", fundigsac: "valvula-compuerta-fundigsac", extendida: "valvula-compuerta-fundigsac-garantia-extendida" } as const;
@@ -135,7 +128,6 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [spin, setSpin] = useState(false);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState(sheet.sizes.includes("DN100") ? "DN100" : sheet.sizes[0]);
-  const [tab, setTab] = useState<TabId>("descripcion");
   const [pn, setPn] = useState<(typeof PRESSURES)[number]>("PN16");
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number | undefined>(undefined);
@@ -170,27 +162,6 @@ export function W06Ficha(props: { variant?: Variant }) {
 
   const docCount = docPages.length;
   const stepDoc = useCallback((d: number) => setDocPage((i) => (i + d + docCount) % docCount), [docCount]);
-
-  /** La pestaña activa sigue a la sección que cruza la franja superior de la pantalla. */
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) if (entry.isIntersecting) setTab(entry.target.id as TabId);
-      },
-      { rootMargin: "-22% 0px -68% 0px" },
-    );
-    TAB_IDS.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
-    return () => io.disconnect();
-  }, []);
-
-  const goTo = (id: TabId) => (event: React.MouseEvent) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    event.preventDefault();
-    el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-    setTab(id);
-  };
 
   useEffect(() => {
     if (!docOpen) return;
@@ -231,10 +202,6 @@ export function W06Ficha(props: { variant?: Variant }) {
     />
   );
 
-  const downloadCta = doc
-    ? <a href={doc.href} download className={styles.helpDoc}><Download size={16} aria-hidden="true" /> {t.download}</a>
-    : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.helpDoc}><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>;
-
   // Qué contiene la ficha, tomado de los datos reales de esta válvula.
   const docIncludes = [t.docSpecs, `${t.docDims} ${sheet.sizeRange}`, `${sheet.flange.title} PN10 / PN16`, ...(sheet.stem ? [sheet.stem.title] : []), t.docMaterials].slice(0, 4);
   const specGroups = groupSpecs(sheet.specs);
@@ -244,7 +211,6 @@ export function W06Ficha(props: { variant?: Variant }) {
   ].map((col) => col.filter((g) => g.rows.length));
   const cotas = cotasFor(sheet, size);
   const dimRow = sheet.dims.rows.find((r) => r.dn === size);
-  const whatsapp = whatsappLink(t.whatsappText(productName.charAt(0).toLowerCase() + productName.slice(1)));
 
   return (
     <main className={styles.page} ref={pageRef}>
@@ -332,24 +298,12 @@ export function W06Ficha(props: { variant?: Variant }) {
                 <Link href="/cotizar" className={styles.secondary}>{t.quote} <ArrowRight size={17} aria-hidden="true" /></Link>
               </div>
             </div>
-            <p className={styles.help}>
-              {downloadCta}
-              <span className={styles.helpSep} aria-hidden="true" />
-              <MessageCircle size={16} aria-hidden="true" />
-              {t.help}{" "}
-              <a href={whatsapp} target="_blank" rel="noopener noreferrer">{t.helpLink}</a>
-            </p>
           </div>
         </section>
       </div>
 
       <div className={styles.body}>
         <div className={styles.wrap}>
-          <nav className={styles.tabs} aria-label={t.tabsLabel}>
-            {TAB_IDS.map((id) => (
-              <a key={id} href={`#${id}`} className={id === tab ? styles.tabOn : styles.tab} aria-current={id === tab ? "true" : undefined} onClick={goTo(id)}>{t.tabs[id]}</a>
-            ))}
-          </nav>
           <section id="descripcion" className={styles.desc} aria-label={t.description}>
             <div className={styles.descGrid}>
               <div className={styles.descMain} data-reveal>
@@ -402,6 +356,40 @@ export function W06Ficha(props: { variant?: Variant }) {
                 </div>
               ))}
             </div>
+          </section>
+
+          <section id="documentacion" className={styles.docStrip} aria-label={t.docs} data-reveal>
+            <h2 className={styles.srOnly}>{t.docs}</h2>
+            {doc ? (
+              <div className={styles.docRow}>
+                <div className={styles.docStack}>
+                  {docPages[1] && <span className={`${styles.docLeaf} ${styles.docLeafA}`} aria-hidden="true"><Image src={docPages[1].src} alt="" fill sizes="120px" /></span>}
+                  {docPages[2] && <span className={`${styles.docLeaf} ${styles.docLeafB}`} aria-hidden="true"><Image src={docPages[2].src} alt="" fill sizes="120px" /></span>}
+                  <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label={t.previewLabel} title={t.previewLabel}>
+                    <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="120px" />
+                  </button>
+                </div>
+                <div className={styles.docInfo}>
+                  <p className={styles.docTitle}>{doc.title}</p>
+                  <p className={styles.docMeta}>{doc.meta} · {docIncludes.join(" · ")}</p>
+                </div>
+                <div className={styles.docActions}>
+                  <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> {t.download}</a>
+                  <button type="button" className={styles.docGhost} onClick={() => { setDocPage(0); setDocOpen(true); }}>{t.docView}</button>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.docRow}>
+                <div className={styles.docRequest}><FileText size={28} aria-hidden="true" /></div>
+                <div className={styles.docInfo}>
+                  <p className={styles.docTitle}>Ficha técnica · {productName}</p>
+                  <p className={styles.docMeta}>{t.docOnRequest}</p>
+                </div>
+                <div className={styles.docActions}>
+                  <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>
+                </div>
+              </div>
+            )}
           </section>
 
           <section id="dimensiones" className={styles.dimsSection} aria-label={t.tabs.dimensiones}>
@@ -497,64 +485,7 @@ export function W06Ficha(props: { variant?: Variant }) {
         </div>
       </div>
 
-          <section id="documentacion" className={styles.docSection} aria-label={t.docs} data-reveal>
-            <div className={styles.docInner}>
-            <h2>{t.docs}</h2>
-            {doc ? (
-              <div className={styles.doc}>
-                <div className={styles.docStack}>
-                  {docPages[1] && <span className={`${styles.docLeaf} ${styles.docLeafA}`} aria-hidden="true"><Image src={docPages[1].src} alt="" fill sizes="260px" /></span>}
-                  {docPages[2] && <span className={`${styles.docLeaf} ${styles.docLeafB}`} aria-hidden="true"><Image src={docPages[2].src} alt="" fill sizes="260px" /></span>}
-                  <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label={t.previewLabel} title={t.previewLabel}>
-                    <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 260px, 70vw" />
-                    <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> {t.preview}</span>
-                  </button>
-                </div>
-                <div className={styles.docInfo}>
-                  <p className={styles.docKicker}><FileText size={15} aria-hidden="true" /> {t.docOfficial}</p>
-                  <p className={styles.docTitle}>{doc.title}</p>
-                  <p className={styles.docMeta}>{doc.meta}</p>
-                  <ul className={styles.docIncludes} aria-label={t.docIncludes}>
-                    {docIncludes.map((item) => <li key={item}><Check size={16} strokeWidth={2.6} aria-hidden="true" />{item}</li>)}
-                  </ul>
-                  <div className={styles.docActions}>
-                    <a href={doc.href} download className={styles.docButton}><Download size={17} aria-hidden="true" /> {t.download}</a>
-                    <button type="button" className={styles.docGhost} onClick={() => { setDocPage(0); setDocOpen(true); }}>{t.docView}</button>
-                  </div>
-                  {docPages.length > 1 && (
-                    <ul className={styles.docPages} aria-label={t.pages} style={{ ["--n" as string]: Math.min(docPages.length, 4) }}>
-                      {docPages.map((pg, i) => (
-                        <li key={pg.src}>
-                          <button type="button" onClick={() => { setDocPage(i); setDocOpen(true); }} aria-label={t.pageOf(i + 1, docPages.length)}>
-                            <Image src={pg.src} alt="" fill sizes="120px" />
-                            <span aria-hidden="true">{i + 1}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className={styles.doc}>
-                <div className={styles.docRequest}>
-                  <FileText size={34} aria-hidden="true" />
-                  <p>{t.docRequest}</p>
-                </div>
-                <div className={styles.docInfo}>
-                  <p className={styles.docKicker}><FileText size={15} aria-hidden="true" /> {t.docOfficial}</p>
-                  <p className={styles.docTitle}>Ficha técnica · {productName}</p>
-                  <p className={styles.docMeta}>{t.docOnRequest}</p>
-                  <div className={styles.docActions}>
-                    <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>
-                  </div>
-                </div>
-              </div>
-            )}
-            </div>
-          </section>
-
-      <div className={styles.wrap}>
+          <div className={styles.wrap}>
         <section className={styles.related} aria-labelledby="related-title" data-reveal>
           <div className={styles.relatedHead}>
             <h2 id="related-title">{t.related}</h2>
@@ -586,18 +517,10 @@ export function W06Ficha(props: { variant?: Variant }) {
             <ul className={styles.ctaPoints}>
               {t.ctaPoints.map((point) => <li key={point}><Check size={16} strokeWidth={2.6} aria-hidden="true" />{point}</li>)}
             </ul>
-            <div className={styles.ctaActions}>
-              <Link href="/contacto" className={styles.ctaPrimary}>{t.ctaButton} <ArrowRight size={17} aria-hidden="true" /></Link>
-              <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={styles.ctaGhost}><MessageCircle size={17} aria-hidden="true" /> {t.ctaWhatsApp}</a>
-            </div>
           </div>
         </div>
         <div className={styles.ctaVisual}>
             <Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
-            <div className={styles.ctaContact}>
-              <a href={site.phoneHref}><Phone size={16} aria-hidden="true" /> {site.phone}</a>
-              <span><Clock size={16} aria-hidden="true" /> {t.ctaHours}: {site.hours}</span>
-            </div>
           </div>
       </section>
 
