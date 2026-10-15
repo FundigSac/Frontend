@@ -472,9 +472,9 @@
 .docSection { padding-top: 56px; }
 .doc {
   display: grid;
-  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
   gap: 28px 36px;
-  align-items: center;
+  align-items: start;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -557,6 +557,13 @@
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .docPages img { object-fit: cover; object-position: 50% 0; }
+
+/* Escritorio: portada a la izquierda y, a la derecha, datos y miniaturas juntos (sin hueco en medio). */
+@media (min-width: 1101px) {
+  .docCover { grid-row: 1 / span 2; }
+  .docPages { grid-column: 2; grid-template-columns: repeat(var(--n, 3), 120px); gap: 14px; }
+  .docPages button { width: 120px; }
+}
 .docPages button:hover { transform: translateY(-3px); border-color: var(--blue); box-shadow: 0 14px 22px -14px rgb(15 27 45 / 50%); }
 .docPages span { position: absolute; right: 5px; bottom: 5px; display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: rgb(15 27 45 / 80%); color: #fff; font-size: 11px; font-weight: 700; }
 .docPages button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
