@@ -351,12 +351,7 @@ export default function AssistantPanel({
             <AssistantMascot size={46} animated={open} mood={mood} />
           </span>
           <div>
-            <h2 id={titleId}>
-              {t.title}
-              <span className="ai-head__badge" aria-hidden="true">
-                IA
-              </span>
-            </h2>
+            <h2 id={titleId}>{t.title}</h2>
             <p>
               <span className={`ai-live${liveMood ? " is-busy" : ""}`} aria-hidden="true" />
               <span className="ai-head__status">{status}</span>
