@@ -328,9 +328,10 @@ html[data-lp-theme="dark"] .ai {
   animation: m-hop 900ms cubic-bezier(0.3, 0.7, 0.3, 1) both;
 }
 
-/* El WhatsApp sube para dejar espacio al asistente y se oculta mientras el chat está abierto. */
+/* El WhatsApp sube para dejar un espacio claro sobre el asistente (≈ 30 px) y se oculta mientras el chat está abierto. */
 body:has(.ai-launch) .lp-float {
-  bottom: 96px;
+  right: 23px; /* centra el botón de WhatsApp sobre el del asistente */
+  bottom: 118px;
 }
 
 html.ai-open .lp-float__wa {
@@ -1355,7 +1356,8 @@ html[data-lp-theme="dark"] .ai-chip--follow:hover {
   }
 
   body:has(.ai-launch) .lp-float {
-    bottom: 84px;
+    right: 14px;
+    bottom: 102px;
   }
 
   .ai-icon-btn--expand {
