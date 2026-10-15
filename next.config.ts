@@ -32,7 +32,8 @@ const nextConfig: NextConfig = {
   // /reclamaciones se renderiza por petición y comprueba si existen las fotos legales en /public.
   outputFileTracingIncludes: { "/reclamaciones": ["./public/media/legal/**/*"] },
   reactStrictMode: true,
-  images: { formats: ["image/avif", "image/webp"], qualities: [60, 70, 72, 75, 85], minimumCacheTTL: 60 * 60 * 24 * 30 },
+  // Loader propio: las fotos se sirven como variantes WebP pregeneradas (ver src/shared/media/image-loader.ts).
+  images: { loader: "custom", loaderFile: "./src/shared/media/image-loader.ts", minimumCacheTTL: 60 * 60 * 24 * 30 },
   // La ficha FUNDIGSAC con garantía extendida antes tenía otra URL.
   async redirects() {
     return [{ source: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", destination: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", permanent: true }];
