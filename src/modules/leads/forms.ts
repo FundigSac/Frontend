@@ -1,4 +1,4 @@
-import type { LeadKind } from "@/server/db/schema/leads";
+import type { LeadKind } from "./types";
 
 /**
  * Registro de formularios públicos. `required` replica los atributos `required` del diseño de Stitch;

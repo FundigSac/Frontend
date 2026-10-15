@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 import { useEffect, useId, useState } from "react";
 import { ArrowRight, ChevronDown, Menu, Moon, Search, Sun, X } from "lucide-react";
-import { AccountLink } from "@/modules/auth/account-link";
 import { MAIN_NAV, isActivePath } from "@/shared/config/site";
 import { LandingHeader } from "./landing-chrome";
 import { isLandingChrome } from "./landing-paths";
@@ -91,7 +90,6 @@ export function SiteHeader() {
           <Link className="hidden xl:inline-flex items-center justify-center h-11 px-5 rounded-lg bg-primary-container text-brand-on font-button-text text-button-text hover:bg-primary transition-colors shadow-sm" href="/cotizar">
             Solicitar cotización
           </Link>
-          <AccountLink />
           <button
             type="button"
             className="xl:hidden w-11 h-11 -mr-2 flex items-center justify-center rounded-lg text-on-surface hover:bg-surface-container transition-colors"

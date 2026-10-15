@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { formatLimaDateTime, isLeadReference, leadKindLabel } from "@/modules/quote/format";
-import { findLeadSummary } from "@/modules/leads/service";
 import { ScreenW24, type ConfirmationLead } from "@/screens/w24";
 
 export const metadata: Metadata = {
@@ -10,23 +9,12 @@ export const metadata: Metadata = {
 
 type Props = { searchParams: Promise<{ ref?: string | string[] }> };
 
+/** Etapa de diseño: sin BD, el folio recibido se muestra tal cual. */
 export default async function QuoteConfirmationPage({ searchParams }: Props) {
   const raw = (await searchParams).ref;
   const ref = (Array.isArray(raw) ? raw[0] : raw)?.trim().toUpperCase();
-
-  let lead: ConfirmationLead | null = null;
-  let unavailable = false;
-  if (isLeadReference(ref)) {
-    try {
-      const summary = await findLeadSummary(ref);
-      // Sólo se confirman cotizaciones: otros folios (reclamos, contactos) no se exponen en esta ruta.
-      if (summary && summary.kind === "quote") {
-        lead = { reference: summary.reference, dateLabel: formatLimaDateTime(summary.createdAt), typeLabel: leadKindLabel(summary.kind) };
-      }
-    } catch (error) {
-      console.error("[cotizar/confirmacion] no se pudo consultar el folio", error instanceof Error ? error.message : "error");
-      unavailable = true;
-    }
-  }
-  return <ScreenW24 lead={lead} unavailable={unavailable} />;
+  const lead: ConfirmationLead | null = isLeadReference(ref)
+    ? { reference: ref, dateLabel: formatLimaDateTime(new Date()), typeLabel: leadKindLabel("quote") }
+    : null;
+  return <ScreenW24 lead={lead} unavailable={false} />;
 }
