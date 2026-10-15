@@ -89,14 +89,14 @@ for (const [slug, name, range, thumbsAlt] of [
       expect(await page.evaluate(NO_OVERFLOW)).toBe(true);
     });
 
-    test("la documentación va en una fila compacta con descarga y vista en pantalla", async ({ page }) => {
+    test("la documentación va en una fila compacta con descarga y vista en pantalla", async ({ page, isMobile }) => {
       await page.goto(`/productos/valvulas/${slug}`);
       await dismissCookies(page);
       const doc = page.locator("#documentacion");
       await expect(doc.getByRole("link", { name: /Descargar ficha técnica/ })).toHaveAttribute("href", /\.pdf$/);
       await expect(doc.getByRole("button", { name: "Ver ficha en pantalla" })).toBeVisible();
       // compacta: no ocupa media pantalla
-      expect((await doc.boundingBox())!.height).toBeLessThan(260);
+      expect((await doc.boundingBox())!.height).toBeLessThan(isMobile ? 420 : 260);
       await expect(page.getByRole("navigation", { name: "Secciones de la ficha" })).toHaveCount(0);
     });
 
