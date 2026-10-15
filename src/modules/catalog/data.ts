@@ -346,7 +346,7 @@ export const JOINT_LABEL: Record<JointId, string> = {
   tyton: "Enchufe campana Tyton",
   acerrojada: "Acerrojada Vi / Restrained",
   mecanica: "Mecánica Gibault / Universal",
-  ninguna: "—",
+  ninguna: "Ninguna",
 };
 
 export const HOMOLOGATION_LABEL: Record<HomologationId, string> = {

@@ -188,7 +188,7 @@ export const COOKIES: Pair<{
       title: "Preguntas frecuentes",
       lead: "Resolvemos las dudas más comunes sobre el uso de cookies en nuestro sitio web.",
       items: [
-        { q: "¿Qué tipos de cookies utiliza FUNDIGSAC?", a: "Utilizamos cookies necesarias para el funcionamiento del sitio y la seguridad de los formularios, y —solo si las aceptas— cookies analíticas y funcionales. Hoy no instalamos cookies publicitarias." },
+        { q: "¿Qué tipos de cookies utiliza FUNDIGSAC?", a: "Utilizamos cookies necesarias para el funcionamiento del sitio y la seguridad de los formularios y, solo si las aceptas, cookies analíticas y funcionales. Hoy no instalamos cookies publicitarias." },
         { q: "¿Puedo cambiar mis preferencias de cookies más adelante?", a: "Sí. Puedes volver a esta página o usar el enlace «Preferencias de cookies» del pie de página cuando quieras para modificar tu elección." },
         { q: "¿Cómo puedo gestionar o eliminar las cookies desde mi navegador?", a: "Todos los navegadores permiten bloquear o eliminar cookies desde su configuración de privacidad. Ten en cuenta que, si bloqueas las necesarias, algunas funciones del sitio podrían dejar de estar disponibles." },
         { q: "¿Las cookies recopilan información personal?", a: "Las cookies necesarias no recopilan datos para seguimiento. Las analíticas, si las activas, recopilan información agregada y anónima sobre el uso del sitio. Para más detalle consulta nuestra Política de Privacidad." },
@@ -232,7 +232,7 @@ export const COOKIES: Pair<{
       title: "Frequently asked questions",
       lead: "We answer the most common questions about the use of cookies on our website.",
       items: [
-        { q: "What types of cookies does FUNDIGSAC use?", a: "We use cookies that are necessary for the site to work and for form security and—only if you accept them—analytics and functional cookies. We do not install advertising cookies today." },
+        { q: "What types of cookies does FUNDIGSAC use?", a: "We use cookies that are necessary for the site to work and for form security and, only if you accept them, analytics and functional cookies. We do not install advertising cookies today." },
         { q: "Can I change my cookie preferences later?", a: "Yes. You can return to this page or use the “Cookie preferences” link in the footer at any time to change your choice." },
         { q: "How can I manage or delete cookies from my browser?", a: "All browsers let you block or delete cookies from their privacy settings. Keep in mind that, if you block the necessary ones, some site features may stop working." },
         { q: "Do cookies collect personal information?", a: "Necessary cookies do not collect data for tracking. Analytics cookies, if you enable them, collect aggregated, anonymous information about how the site is used. For more detail, see our Privacy Policy." },

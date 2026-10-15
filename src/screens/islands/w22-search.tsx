@@ -53,7 +53,7 @@ function resultOf(p: CatalogProduct): ResultView & { rows: { label: string; valu
   const dn = p.dn ? `DN ${p.dn[0]} a DN ${p.dn[1]}` : "";
   const pn = p.pn?.length ? p.pn.map((n) => `PN ${n}`).join(" / ") : "";
   const rows: { label: string; value: string; kind: "plain" | "primary" | "hm"; icon?: string; className?: string }[] = p.dn
-    ? [{ label: "Rango DN:", value: dn, kind: "plain" }, { label: "Presión Trabajo:", value: pn || "—", kind: "primary" }]
+    ? [{ label: "Rango DN:", value: dn, kind: "plain" }, { label: "Presión Trabajo:", value: pn || "-", kind: "primary" }]
     : [{ label: `${p.specs[0][0]}:`, value: p.specs[0][1], kind: "plain" }, { label: `${p.specs[1][0]}:`, value: p.specs[1][1], kind: "primary" }];
   rows.push(
     p.homologation.length
@@ -556,13 +556,13 @@ export function W22Search({ initial }: { initial: CatalogState }) {
                             </Link>
                           </th>
                           <td className="p-3 font-mono text-[12px] text-text-muted whitespace-nowrap">
-                            {p.sku ?? "—"}
+                            {p.sku ?? "-"}
                           </td>
                           <td className="p-3 whitespace-nowrap">
-                            {p.dn ? `DN ${p.dn[0]} – DN ${p.dn[1]}` : "—"}
+                            {p.dn ? `DN ${p.dn[0]} – DN ${p.dn[1]}` : "-"}
                           </td>
                           <td className="p-3 whitespace-nowrap">
-                            {p.pn?.length ? p.pn.map((n) => `PN ${n}`).join(" / ") : "—"}
+                            {p.pn?.length ? p.pn.map((n) => `PN ${n}`).join(" / ") : "-"}
                           </td>
                           <td className="p-3">
                             {p.standards.slice(0, 2).join(" · ")}

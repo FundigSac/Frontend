@@ -168,7 +168,7 @@ export function LandingHeader() {
             <button
               type="button"
               className="lp-icon-btn lp-lang__btn"
-              aria-label={`${lang.toUpperCase()} – ${t.language}`}
+              aria-label={`${lang.toUpperCase()}: ${t.language}`}
               aria-haspopup="listbox"
               aria-expanded={langOpen}
               onClick={() => setLangOpen(!langOpen)}

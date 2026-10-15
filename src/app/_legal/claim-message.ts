@@ -60,7 +60,7 @@ export function buildClaimMessage(f: ClaimFields, now: Date = new Date()): { sub
   const amount = formatClaimAmount(f.montoReclamado, f.moneda);
 
   const lines = [
-    "LIBRO DE RECLAMACIONES – HOJA DE RECLAMACIÓN",
+    "LIBRO DE RECLAMACIONES: HOJA DE RECLAMACIÓN",
     "N.° de hoja: se asigna al registrar la solicitud",
     `Fecha de registro: ${registered}`,
     "",
@@ -109,7 +109,7 @@ export function buildClaimMessage(f: ClaimFields, now: Date = new Date()): { sub
     "La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el INDECOPI. El proveedor responde por escrito en un plazo no mayor a quince (15) días hábiles, improrrogables.",
   ];
   const who = clean(f.nombresYApellidosRazon);
-  return { subject: `${kind} FUNDIGSAC${who ? ` – ${who}` : ""}`, body: lines.join("\n") };
+  return { subject: `${kind} FUNDIGSAC${who ? `: ${who}` : ""}`, body: lines.join("\n") };
 }
 
 export const mailtoUrl = (email: string, subject: string, body: string) =>

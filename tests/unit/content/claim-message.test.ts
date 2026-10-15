@@ -23,8 +23,8 @@ const FIELDS = {
 describe("mensaje del libro de reclamaciones", () => {
   it("sigue la estructura de la hoja de reclamación: proveedor, consumidor, bien contratado, detalle y pedido", () => {
     const { subject, body } = buildClaimMessage(FIELDS, new Date("2026-10-14T12:00:00"));
-    expect(subject).toBe("Reclamo FUNDIGSAC – María Pérez Rojas");
-    expect(body).toContain("HOJA DE RECLAMACIÓN");
+    expect(subject).toBe("Reclamo FUNDIGSAC: María Pérez Rojas");
+    expect(body).toContain("LIBRO DE RECLAMACIONES: HOJA DE RECLAMACIÓN");
     expect(body).toContain("Fecha de registro: 14/10/2026");
     expect(body).toContain("RUC: 20601839281");
     expect(body).toContain("Fundición y Desarrollo de Ingeniería y Gestión S.A.C.");

@@ -235,7 +235,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 <tbody>
                   {sheet.dims.rows.map(({ dn, cells }) => (
                     <tr key={dn} className={dn === size ? styles.rowOn : undefined} onClick={() => setSize(dn)}>
-                      <th scope="row">{dn}</th>{cells.map((c, i) => <td key={i}>{c ?? "—"}</td>)}
+                      <th scope="row">{dn}</th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}
                     </tr>
                   ))}
                 </tbody>
@@ -254,7 +254,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               <thead><tr>{sheet.flange.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
               <tbody>
                 {sheet.flange.rows(size).map(({ pn, cells }) => (
-                  <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "—"}</td>)}</tr>
+                  <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
                 ))}
               </tbody>
             </table>
@@ -270,7 +270,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                   <thead><tr>{sheet.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                   <tbody>
                     {sheet.stem.rows(size).map(({ pn, cells }) => (
-                      <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "—"}</td>)}</tr>
+                      <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
                     ))}
                   </tbody>
                 </table>

@@ -3,7 +3,7 @@
  * - base: H-ITALY, ficha FT-HI-100 Rev. 13.
  * - fundigsac: FUNDIGSAC con volante, ficha técnica FUNDIGSAC (H-ITALY, DIN 3352 F4, 1 año).
  * - extendida: FUNDIGSAC con garantía extendida, ficha FT-HD N° 002-2024.
- * Medidas en milímetros. Los valores se transcriben de cada ficha; "—" indica un dato ausente o ilegible.
+ * Medidas en milímetros. Los valores se transcriben de cada ficha; "-" indica un dato ausente o ilegible.
  */
 
 export type Cell = string | number | null;
@@ -30,7 +30,7 @@ export type Datasheet = {
   model3d: { src: string; alt: string };
 };
 
-const dash = (v: Cell) => (v === null || v === undefined ? "—" : v);
+const dash = (v: Cell) => (v === null || v === undefined ? "-" : v);
 
 // ---------- Base H-ITALY · FT-HI-100 Rev. 13 (idénticos a FT-HD N° 002-2024 salvo DN60/65 y BS5163) ----------
 const DN14 = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
@@ -60,7 +60,7 @@ const FLANGE = {
   },
 } as const;
 // Extremo del vástago (FT-HD N° 002-2024): Ød base, K×K cuadrado, M×h rosca y profundidad, T altura.
-// K de DN60/65 figura como "123" en la ficha (dato imposible para un cuadrado de vástago): se muestra "—".
+// K de DN60/65 figura como "123" en la ficha (dato imposible para un cuadrado de vástago): se muestra "-".
 const STEM_D = [20, 20, 24, 24, 28, 28, 28, 30, 36, 36, 38, 38, 40, 42];
 const STEM_K = [14.3, 14.3, null, 17.3, 19.3, 19.3, 19.3, 24.3, 27.3, 27.3, 27.3, 27.3, 32.3, 32.3];
 const STEM_M = [8, 8, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12];

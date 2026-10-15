@@ -25,7 +25,7 @@ export function QuoteForm(){
   function save(next:QuoteItem[]){setItems(next);localStorage.setItem("fundigsac-quote",JSON.stringify(next))}
   function submit(data:QuoteFields){
     if(!items.length)return;
-    const lines=items.map(i=>`• ${i.name}${i.variant?` / ${i.variant}`:""} — cantidad: ${i.quantity}`).join("\n");
+    const lines=items.map(i=>`• ${i.name}${i.variant?` / ${i.variant}`:""} (cantidad: ${i.quantity})`).join("\n");
     const message=`Hola FUNDIGSAC. Solicito una cotización.\n\n${lines}\n\nEmpresa: ${data.empresa}\nRUC: ${data.ruc||"No indicado"}\nNombre: ${data.nombre}\nEmail: ${data.email}\nWhatsApp: ${data.telefono}\nCiudad: ${data.ciudad}\nProyecto: ${data.proyecto||"No indicado"}`;
     window.open(`https://wa.me/51908849664?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
   }
