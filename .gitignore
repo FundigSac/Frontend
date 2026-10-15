@@ -20,8 +20,3 @@ docs/qa/screenshots/
 
 # Reportes de Lighthouse (scripts/perf)
 .perf/
-
-# Variantes WebP generadas en predev/prebuild (scripts/build-image-variants.mjs)
-public/**/*-w768.webp
-public/**/*-w1200.webp
-public/**/*-w1920.webp

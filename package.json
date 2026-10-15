@@ -13,9 +13,7 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test": "pnpm test:unit && pnpm test:e2e",
-    "perf": "node scripts/perf/lighthouse.mjs",
-    "predev": "node scripts/build-image-variants.mjs",
-    "prebuild": "node scripts/build-image-variants.mjs"
+    "perf": "node scripts/perf/lighthouse.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.8",
