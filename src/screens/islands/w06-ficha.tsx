@@ -4,40 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight, Rotate3d, ChevronLeft, ChevronRight, Download, ExternalLink, Eye, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Rotate3d, ChevronLeft, ChevronRight, Download, ExternalLink, Eye, FileText, Hexagon, Layers, Maximize2, Settings, ShieldCheck, X } from "lucide-react";
 import styles from "./w06-ficha.module.css";
+import { DATASHEETS, type Feature } from "./w06-ficha-data";
+import { requestDocumentHref } from "@/modules/resources/documents";
 
 const BASE = "/media/valvula-ficha/";
-const PDF_HREF = "/docs/ficha-tecnica-valvula-compuerta-bridada.pdf";
-const PDF_PAGES = [1, 2, 3].map((n) => ({ src: `${BASE}ficha-p${n}.webp`, alt: `Ficha técnica FT-HI-100 Rev. 13, página ${n} de 3` }));
-
-const SIZES = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
-
-// Datos de la ficha técnica FT-HI-100 Rev. 13 (mm), valores de referencia. L: DIN 3202 F4 (serie 14) / F5 (serie 15).
-const DN_LIST = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
-const L_F4 = [140, 150, 170, 180, 190, 200, 210, 230, 250, 270, 290, 310, 350, 390];
-const L_F5 = [240, 250, 270, 280, 300, 325, 350, 400, 450, 500, null, 600, 700, 800];
-const H_ = [220, 230, 265, 290, 335, 380, 415, 510, 600, 690, 790, 855, 1020, 1180];
-const OD = [180, 180, 200, 200, 250, 250, 300, 300, 500, 500, 600, 600, 600, 600];
-const FLANGE = {
-  PN10: {
-    A: [150, 165, 185, 200, 220, 250, 285, 340, 400, 455, 505, 565, 670, 780],
-    B: ["110", "125", "135/145", "160", "180", "210", "240", "295", "350", "400", "460", "515", "620", "725"],
-    C: [84, 99, 118, 132, 156, 184, 211, 266, 319, 370, 429, 480, 582, 682],
-    E: [16, 16, 16, 16, 16, 16, 16, 17, 19, 20.5, 20.5, 20.5, 22.5, 25],
-    n: [4, 4, 4, 8, 8, 8, 8, 8, 12, 12, 16, 16, 20, 20],
-    b: [19, 19, 19, 19, 19, 19, 23, 23, 23, 23, 23, 28, 28, 31],
-  },
-  PN16: {
-    A: [150, 165, 185, 200, 220, 250, 285, 340, 400, 455, 520, 580, 715, 840],
-    B: ["110", "125", "135/145", "160", "180", "210", "240", "295", "355", "410", "470", "525", "650", "770"],
-    C: [84, 99, 118, 132, 156, 184, 211, 266, 319, 370, 429, 480, 609, 720],
-    E: [16, 16, 16, 16, 16, 16, 16, 17, 19, 20.5, 22.5, 24, 27.5, 31],
-    n: [4, 4, 4, 4, 8, 8, 8, 12, 12, 12, 16, 16, 20, 20],
-    b: [19, 19, 19, 19, 19, 19, 23, 25, 28, 28, 28, 31, 34, 37],
-  },
-} as const;
-
 const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
   ssr: false,
   loading: () => <div className={styles.loading3d} role="status">Cargando modelo 3D…</div>,
@@ -79,41 +51,23 @@ const RELATED = [
   { src: "reductora-cut.webp", title: "Válvula reductora de presión", text: "Controla y estabiliza la presión en la red de distribución.", href: "/productos/valvulas" },
 ];
 
-const SPECS = [
-  ["Marca", "H-ITALY"],
-  ["Tipo", "Compuerta de cierre elástico, extremos bridados"],
-  ["Cuerpo y tapa", "GJS-500-7 (GGG-50), hierro dúctil"],
-  ["Cuña", "Núcleo GJS-500-7 con recubrimiento EPDM"],
-  ["Vástago", "Inox. 1.4021 (2Cr13 / SS420)"],
-  ["Tuerca del vástago", "Latón"],
-  ["Sellos", "EPDM · NBR · PTFE"],
-  ["Tornillería", "Inoxidable A2 / SS304"],
-  ["Revestimiento", "Epoxi azul RAL 5005, mín. 250 micras"],
-  ["Diseño", "ISO 7259 · AWWA C509 / C515"],
-  ["Brida", "ISO 7005-2 · EN 1092-2, doble perforación PN10/PN16"],
-  ["Longitud entre caras", "ISO 5752 series 14 y 15 · DIN3202 F4 / F5"],
-  ["Prueba", "EN 1171 y EN 1074"],
-  ["Norma de producto", "EN 1074-2"],
-  ["Presión máxima de trabajo", "16 bar"],
-  ["Temperatura máxima", "110 °C"],
-  ["Medio", "Agua"],
-  ["Rango dimensional", "DN40 a DN600"],
-];
+const FEATURE_ICON = { shield: ShieldCheck, settings: Settings, layers: Layers, nut: Hexagon } satisfies Record<Feature["icon"], unknown>;
 
 /** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía extendida; sin valor es la ficha base (H-ITALY). */
 export type Variant = "fundigsac" | "extendida";
 
-/** Textos de la ficha por variante, definidos a nivel de módulo: la base (H-ITALY) o FUNDIGSAC con garantía. */
+/** Textos y datos técnicos por variante, definidos a nivel de módulo: la base (H-ITALY), FUNDIGSAC con volante o FUNDIGSAC con garantía extendida. */
 const variantCopy = (variant?: Variant) => {
-  if (!variant) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY", thumbs: BASE_THUMBS };
-  if (variant === "fundigsac") return { warrantyLabel: null, productName: "Válvula de compuerta bridada FUNDIGSAC", specs: [["Marca", "FUNDIGSAC"], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: FUNDIGSAC_THUMBS };
-  const warrantyLabel = "Garantía extendida";
-  return { warrantyLabel, productName: "Válvula de compuerta bridada FUNDIGSAC", specs: [["Marca", "FUNDIGSAC"], ["Garantía", "Extendida, respaldada por FUNDIGSAC"], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: EXTENDED_THUMBS };
+  if (!variant) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", thumbs: BASE_THUMBS, sheet: DATASHEETS.base };
+  if (variant === "fundigsac") return { warrantyLabel: null, productName: "Válvula de compuerta bridada FUNDIGSAC", thumbs: FUNDIGSAC_THUMBS, sheet: DATASHEETS.fundigsac };
+  return { warrantyLabel: "Garantía extendida", productName: "Válvula de compuerta bridada FUNDIGSAC", thumbs: EXTENDED_THUMBS, sheet: DATASHEETS.extendida };
 };
 const COPY = { base: variantCopy(), fundigsac: variantCopy("fundigsac"), extendida: variantCopy("extendida") } as const;
 
 export function W06Ficha(props: { variant?: Variant }) {
-  const { warrantyLabel, productName, specs, brand, thumbs: THUMBS } = COPY[props.variant ?? "base"];
+  const { warrantyLabel, productName, thumbs: THUMBS, sheet } = COPY[props.variant ?? "base"];
+  const { doc } = sheet;
+  const docPages = doc?.pages ?? [];
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [docOpen, setDocOpen] = useState(false);
@@ -127,7 +81,8 @@ export function W06Ficha(props: { variant?: Variant }) {
   const pick = useCallback((i: number) => { setSpin(false); setActive(i); }, []);
   const step = useCallback((d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); }, [total]);
 
-  const stepDoc = useCallback((d: number) => setDocPage((i) => (i + d + PDF_PAGES.length) % PDF_PAGES.length), []);
+  const docCount = docPages.length;
+  const stepDoc = useCallback((d: number) => setDocPage((i) => (i + d + docCount) % docCount), [docCount]);
 
   useEffect(() => {
     if (!docOpen) return;
@@ -181,7 +136,7 @@ export function W06Ficha(props: { variant?: Variant }) {
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={THUMBS[2].dir + THUMBS[2].src} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 640px, 100vw", true)}
+              {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 640px, 100vw", true)}
               <button type="button" className={spin ? styles.view3dOn : styles.view3d} aria-label={spin ? "Volver a las fotos" : "Ver en 3D"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setSpin((v) => !v)}><Rotate3d size={18} aria-hidden="true" /><span>{spin ? "Fotos" : "Ver en 3D"}</span></button>
               <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
             </div>
@@ -197,21 +152,18 @@ export function W06Ficha(props: { variant?: Variant }) {
           <div className={styles.info}>
             <span className={styles.tag}>{warrantyLabel ? `Válvulas · ${warrantyLabel}` : "Válvulas"}</span>
             <h1 id="ficha-title">{productName}</h1>
-            <p className={styles.lead}>Válvula de compuerta de cierre elástico con extremos bridados, F4 serie 14 / F5 serie 15, según EN1074-2. Paso completo sin obstrucciones cuando está abierta: menor resistencia al flujo y menos pérdidas de presión.</p>
+            <p className={styles.lead}>{sheet.lead}</p>
 
             {warrantyLabel && <p className={styles.warranty}><ShieldCheck size={20} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> respaldada por FUNDIGSAC</span></p>}
 
             <dl className={styles.facts}>
-              <div><dt>Presión máx.</dt><dd>16 bar</dd></div>
-              <div><dt>Temp. máx.</dt><dd>110 °C</dd></div>
-              <div><dt>Medio</dt><dd>Agua</dd></div>
-              <div><dt>Norma</dt><dd>EN1074-2</dd></div>
+              {sheet.facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
             </dl>
 
             <fieldset className={styles.sizes}>
-              <legend><span>Diámetro nominal (DN)</span><small>DN40 – DN600</small></legend>
+              <legend><span>Diámetro nominal (DN)</span><small>{sheet.sizeRange}</small></legend>
               <div className={styles.sizeGrid}>
-                {SIZES.map((s) => (
+                {sheet.sizes.map((s) => (
                   <button key={s} type="button" aria-pressed={size === s} className={size === s ? styles.sizeActive : styles.size} onClick={() => setSize(s)}>{s}</button>
                 ))}
               </div>
@@ -219,14 +171,12 @@ export function W06Ficha(props: { variant?: Variant }) {
 
             <div className={styles.ctas}>
               <Link href="/cotizar" className={styles.primary}>Solicitar cotización <ArrowRight size={16} aria-hidden="true" /></Link>
-              <a href={PDF_HREF} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
+              {doc ? <a href={doc.href} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a> : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>}
             </div>
 
             <ul className={styles.badges}>
               {warrantyLabel && <li><ShieldCheck size={18} aria-hidden="true" /><span>{warrantyLabel}</span></li>}
-              <li><ShieldCheck size={18} aria-hidden="true" /><span>Cierre elástico</span></li>
-              <li><Settings size={18} aria-hidden="true" /><span>PN10 / PN16</span></li>
-              <li><Layers size={18} aria-hidden="true" /><span>Epoxi 250 µm</span></li>
+              {sheet.badges.map((b, i) => { const Icon = [ShieldCheck, Settings, Layers][i % 3]; return <li key={b}><Icon size={18} aria-hidden="true" /><span>{b}</span></li>; })}
             </ul>
           </div>
         </section>
@@ -235,24 +185,34 @@ export function W06Ficha(props: { variant?: Variant }) {
           <div className={styles.col}>
             <h2>Descripción</h2>
             <p className={styles.descLead}>Accionamiento sencillo y paso completo: una compuerta que sube y baja perpendicular al flujo.</p>
-            <p>Las válvulas de compuerta se destacan por su accionamiento sencillo, compuesto principalmente por una compuerta o cuchilla que se eleva y baja perpendicularmente al flujo del fluido. La eficiencia de este diseño reside en su capacidad para proporcionar un paso completo y sin obstrucciones cuando está completamente abierta, minimizando la resistencia al flujo y reduciendo las pérdidas de presión.</p>
+            <p>{sheet.description ?? "Las válvulas de compuerta se destacan por su accionamiento sencillo, compuesto principalmente por una compuerta o cuchilla que se eleva y baja perpendicularmente al flujo del fluido. La eficiencia de este diseño reside en su capacidad para proporcionar un paso completo y sin obstrucciones cuando está completamente abierta, minimizando la resistencia al flujo y reduciendo las pérdidas de presión."}</p>
             <ul className={styles.features}>
-              <li><span className={styles.fIcon}><ShieldCheck size={20} aria-hidden="true" /></span><span><strong>Mantenimiento bajo presión</strong>Con la válvula completamente abierta; 3 juntas tóricas protegen el husillo de las impurezas del agua.</span></li>
-              <li><span className={styles.fIcon}><Settings size={20} aria-hidden="true" /></span><span><strong>Bajo par de cierre</strong>La rosca del vástago se forma por compresión de rodillos, con bordes redondeados.</span></li>
-              <li><span className={styles.fIcon}><Layers size={20} aria-hidden="true" /></span><span><strong>Epoxi azul RAL 5005, mín. 250 micras</strong>Revestimientos y gomas aptos para agua potable.</span></li>
+              {sheet.features.map((f) => { const Icon = FEATURE_ICON[f.icon]; return <li key={f.title}><span className={styles.fIcon}><Icon size={20} aria-hidden="true" /></span><span><strong>{f.title}</strong>{f.text}</span></li>; })}
             </ul>
           </div>
           <div className={styles.col} id="documentacion">
             <h2>Documentación</h2>
-            <div className={styles.doc}>
-              <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
-                <Image src={PDF_PAGES[0].src} alt={PDF_PAGES[0].alt} fill sizes="(min-width: 1024px) 360px, 90vw" />
-                <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
-              </button>
-              <p className={styles.docTitle}>Ficha técnica FT-HI-100 · Rev. 13</p>
-              <p className={styles.docMeta}>PDF · 5.4 MB · 3 páginas</p>
-              <a href={PDF_HREF} download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
-            </div>
+            {doc ? (
+              <div className={styles.doc}>
+                <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
+                  <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 360px, 90vw" />
+                  <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
+                </button>
+                <p className={styles.docTitle}>{doc.title}</p>
+                <p className={styles.docMeta}>{doc.meta}</p>
+                <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
+              </div>
+            ) : (
+              <div className={styles.doc}>
+                <div className={styles.docRequest}>
+                  <FileText size={34} aria-hidden="true" />
+                  <p>La ficha técnica de esta válvula se entrega bajo solicitud, junto con la cotización.</p>
+                </div>
+                <p className={styles.docTitle}>Ficha técnica · {productName}</p>
+                <p className={styles.docMeta}>PDF · bajo solicitud</p>
+                <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>
+              </div>
+            )}
           </div>
         </section>
 
@@ -261,21 +221,21 @@ export function W06Ficha(props: { variant?: Variant }) {
             <h2>Especificaciones técnicas</h2>
             <table className={styles.table}>
               <tbody>
-                {specs.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
+                {sheet.specs.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
               </tbody>
             </table>
-            <p className={styles.muted}>Valores de referencia de la ficha FT-HI-100 Rev. 13; verificar con {brand} según la variante.</p>
+            <p className={styles.muted}>{sheet.specsNote}</p>
           </div>
           <div className={styles.col}>
             <h2>Dimensiones</h2>
-            <p className={styles.muted}>Medidas en milímetros (mm). Longitud entre caras L según DIN3202.</p>
+            <p className={styles.muted}>{sheet.dims.note}</p>
             <div className={styles.tableWrap}>
               <table className={styles.dims}>
-                <thead><tr><th scope="col">DN</th><th scope="col">L (F4)</th><th scope="col">L (F5)</th><th scope="col">H</th><th scope="col">ØD</th></tr></thead>
+                <thead><tr>{sheet.dims.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                 <tbody>
-                  {DN_LIST.map((dn, i) => (
+                  {sheet.dims.rows.map(({ dn, cells }) => (
                     <tr key={dn} className={dn === size ? styles.rowOn : undefined} onClick={() => setSize(dn)}>
-                      <th scope="row">{dn}</th><td>{L_F4[i]}</td><td>{L_F5[i] ?? "—"}</td><td>{H_[i]}</td><td>{OD[i]}</td>
+                      <th scope="row">{dn}</th>{cells.map((c, i) => <td key={i}>{c ?? "—"}</td>)}
                     </tr>
                   ))}
                 </tbody>
@@ -286,20 +246,37 @@ export function W06Ficha(props: { variant?: Variant }) {
 
         <section className={styles.panel1} aria-label="Bridas del diámetro seleccionado">
           <div className={styles.flangeHead}>
-            <h2>Bridas · {size}</h2>
-            <p>Conexión según EN1092-2, doble perforación PN10 / PN16. Medidas en mm. Selecciona otro diámetro arriba para actualizar.</p>
+            <h2>{sheet.flange.title} · {size}</h2>
+            <p>{sheet.flange.note}</p>
           </div>
           <div className={styles.tableWrap}>
             <table className={styles.flange}>
-              <thead><tr><th scope="col">PN</th><th scope="col">ØA</th><th scope="col">ØB</th><th scope="col">ØC</th><th scope="col">E</th><th scope="col">n × Øb</th></tr></thead>
+              <thead><tr>{sheet.flange.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
               <tbody>
-                {(["PN10", "PN16"] as const).map((pn) => {
-                  const i = DN_LIST.indexOf(size), F = FLANGE[pn];
-                  return <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th><td>{F.A[i]}</td><td>{F.B[i]}</td><td>{F.C[i]}</td><td>{F.E[i]}</td><td>{F.n[i]} × {F.b[i]}</td></tr>;
-                })}
+                {sheet.flange.rows(size).map(({ pn, cells }) => (
+                  <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "—"}</td>)}</tr>
+                ))}
               </tbody>
             </table>
           </div>
+          {sheet.stem && (
+            <>
+              <div className={styles.flangeHead}>
+                <h2>{sheet.stem.title} · {size}</h2>
+                <p>{sheet.stem.note}</p>
+              </div>
+              <div className={styles.tableWrap}>
+                <table className={styles.flange}>
+                  <thead><tr>{sheet.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                  <tbody>
+                    {sheet.stem.rows(size).map(({ pn, cells }) => (
+                      <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "—"}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </section>
 
         <section className={styles.related} aria-labelledby="related-title">
@@ -327,7 +304,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           <button type="button" className={styles.lbClose} aria-label="Cerrar" onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label="Imagen anterior" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
-            {spin ? <Viewer3D src="/models/valvula-compuerta.glb" poster={THUMBS[2].dir + THUMBS[2].src} alt="Modelo 3D de la válvula de compuerta bridada" className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
+            {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
           </div>
           <button type="button" className={styles.lbNext} aria-label="Imagen siguiente" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
@@ -338,27 +315,27 @@ export function W06Ficha(props: { variant?: Variant }) {
         </div>
       )}
 
-      {docOpen && (
+      {docOpen && doc && (
         <div className={styles.docModal} role="dialog" aria-modal="true" aria-label="Previsualización de la ficha técnica" onClick={() => setDocOpen(false)}>
           <div className={styles.docPanel} onClick={(e) => e.stopPropagation()}>
             <header className={styles.docBar}>
               <div className={styles.docBarTitle}>
-                <strong>Ficha técnica FT-HI-100 · Rev. 13</strong>
-                <span aria-live="polite">Página {docPage + 1} de {PDF_PAGES.length}</span>
+                <strong>{doc?.title}</strong>
+                <span aria-live="polite">Página {docPage + 1} de {docCount}</span>
               </div>
-              <a href={PDF_HREF} target="_blank" rel="noopener noreferrer" className={styles.docBarBtn}><ExternalLink size={15} aria-hidden="true" /><span>Abrir PDF</span></a>
-              <a href={PDF_HREF} download className={styles.docBarBtn}><Download size={15} aria-hidden="true" /><span>Descargar</span></a>
+              <a href={doc?.href} target="_blank" rel="noopener noreferrer" className={styles.docBarBtn}><ExternalLink size={15} aria-hidden="true" /><span>Abrir PDF</span></a>
+              <a href={doc?.href} download className={styles.docBarBtn}><Download size={15} aria-hidden="true" /><span>Descargar</span></a>
               <button type="button" className={styles.docBarClose} aria-label="Cerrar previsualización" onClick={() => setDocOpen(false)}><X size={20} aria-hidden="true" /></button>
             </header>
             <div className={styles.docBody}>
               <button type="button" className={styles.docNavPrev} aria-label="Página anterior" onClick={() => stepDoc(-1)}><ChevronLeft size={22} aria-hidden="true" /></button>
               <div className={styles.docScroll} key={docPage}>
-                <Image src={PDF_PAGES[docPage].src} alt={PDF_PAGES[docPage].alt} width={1500} height={2121} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
+                <Image src={docPages[docPage].src} alt={docPages[docPage].alt} width={1500} height={2121} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
               </div>
               <button type="button" className={styles.docNavNext} aria-label="Página siguiente" onClick={() => stepDoc(1)}><ChevronRight size={22} aria-hidden="true" /></button>
             </div>
             <div className={styles.docDots}>
-              {PDF_PAGES.map((pg, i) => (
+              {docPages.map((pg, i) => (
                 <button key={pg.src} type="button" className={i === docPage ? styles.docDotOn : styles.docDot} onClick={() => setDocPage(i)} aria-label={`Ir a la página ${i + 1}`} aria-current={i === docPage} />
               ))}
             </div>

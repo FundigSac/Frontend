@@ -32,7 +32,7 @@ export const CATEGORIES: readonly CategoryEntry[] = [
 
 export const PRODUCTS: readonly ProductEntry[] = [
   { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Screen: W06Ficha, Viewer3D: ScreenW23 },
-  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC.", Screen: W06FichaFundigsac },
+  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula compuerta bridada de asiento resiliente, DN50 a DN600, PN10/PN16, diseño DIN 3352 F4, en hierro dúctil GGG50. Marca FUNDIGSAC.", Screen: W06FichaFundigsac },
   { category: "valvulas", slug: "valvula-compuerta-fundigsac-garantia-extendida", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC con garantía extendida.", Screen: W06FichaGarantiaExtendida },
   { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW07 },
   { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW08 },
