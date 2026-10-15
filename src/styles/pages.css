@@ -313,3 +313,46 @@ a.x-contact-card:hover { transform: translateY(-3px); border-color: #9bc9d8; box
 
 .x-terms dl { margin: 0; }
 .x-contact-card p svg { display: inline-block; margin-left: 4px; vertical-align: -2px; }
+
+html[data-lp-theme="dark"] .x-chip {
+  background: #14243a;
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] a.x-chip:hover {
+  background: #1b3250;
+  border-color: #3d6b86;
+}
+
+/* Tarjetas y pasos de las páginas internas en modo oscuro (fondos blancos fijos). */
+html[data-lp-theme="dark"] .x-card,
+html[data-lp-theme="dark"] .x-pcard,
+html[data-lp-theme="dark"] .x-steps > li,
+html[data-lp-theme="dark"] .x-steps > .x-reveal {
+  background: #14243a;
+  border-color: #2a3d55;
+}
+
+html[data-lp-theme="dark"] .x-pcard-media {
+  background: radial-gradient(circle at 50% 40%, #1b3250 0%, #0f1b29 75%);
+}
+
+html[data-lp-theme="dark"] .x-pcard-name,
+html[data-lp-theme="dark"] .x-pcard-title {
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .x-note {
+  background: #2a2112;
+  color: #f1d9ae;
+  border-color: #5c4420;
+}
+
+html[data-lp-theme="dark"] .x-pcard-cat,
+html[data-lp-theme="dark"] .x-card-cat {
+  color: #7fd4e6;
+}
+
+html[data-lp-theme="dark"] .x-pcard-action {
+  color: #7fd4e6;
+}

@@ -68,6 +68,36 @@
   --c-on-secondary-fixed-variant: #3a4952;
 }
 
+/* Modo oscuro de las pantallas: redefine superficies y textos. Los componentes usan estos tokens,
+   así que el cambio llega a todas las pantallas sin tocar cada clase. La marca (--c-primary) se mantiene. */
+html[data-lp-theme="dark"] {
+  color-scheme: dark;
+  --c-background: #0b1520;
+  --c-surface: #0f1b29;
+  --c-surface-elevated: #14243a;
+  --c-surface-bright: #17293f;
+  --c-surface-dim: #0a1420;
+  --c-surface-container-lowest: #0c1826;
+  --c-surface-container-low: #102032;
+  --c-surface-container: #162940;
+  --c-surface-container-high: #1b3250;
+  --c-surface-container-highest: #223c5c;
+  --c-surface-variant: #223c5c;
+  --c-on-surface: #eef3fa;
+  --c-on-background: #eef3fa;
+  --c-on-surface-variant: #b9c6d6;
+  --c-text-secondary: #b9c6d6;
+  --c-text-muted: #93a4b9;
+  --c-secondary: #a9bccc;
+  --c-outline: #7f91a6;
+  --c-outline-variant: #34485f;
+  --c-border: #2a3d55;
+}
+
+html[data-lp-theme="dark"] .text-primary {
+  color: #9bcee7;
+}
+
 @theme inline {
   --color-on-error: var(--c-on-error);
   --color-secondary-fixed: var(--c-secondary-fixed);
@@ -255,4 +285,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Colores de estado y separadores que usan tokens fijos: versión legible sobre fondo oscuro. */
+html[data-lp-theme="dark"] .text-danger {
+  color: #ff8a93;
+}
+
+html[data-lp-theme="dark"] .text-outline-variant {
+  color: #4f6480;
 }
