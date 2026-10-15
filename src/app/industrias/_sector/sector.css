@@ -157,6 +157,19 @@
   line-height: 1.6;
 }
 
+/* Texto justificado sin cortar palabras con guiones; en pantallas angostas queda alineado a la izquierda. */
+@media (min-width: 640px) {
+  .sa-apps__lead {
+    text-align: justify;
+    text-justify: inter-word;
+    -webkit-hyphens: none;
+    hyphens: none;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-wrap: pretty;
+  }
+}
+
 .sa-apps__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
