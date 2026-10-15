@@ -10,7 +10,7 @@ import { BLUR } from "@/shared/media/blur";
 const ITEMS = [
   { href: "/productos/valvulas", image: "/media/home-v2/card-valvulas-hd.webp" },
   { href: "/productos/marcos-y-tapas", image: "/media/home-v3/card-marcos.webp" },
-  { href: "/productos?q=grifo", image: "/media/home-v3/card-grifos.webp" },
+  { href: "/cotizar", image: "/media/home-v3/card-grifos.webp" },
   { href: "/productos?q=acople", image: "/media/home-v3/card-acoples.webp" },
   { href: "/productos/tuberias", image: "/media/home-v3/card-tuberias.webp" },
 ] as const;

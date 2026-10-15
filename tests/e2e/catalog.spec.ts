@@ -32,11 +32,26 @@ test.describe("W01 inicio", () => {
     const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs.filter((h) => h === "#")).toEqual([]);
     // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
-    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=grifo", "/productos?q=acople", "/productos/tuberias", "/industrias", "/recursos", "/contacto"]) {
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/recursos", "/contacto"]) {
       expect(hrefs, `falta un enlace a ${href}`).toContain(href);
     }
     await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
     await expect(page.getByRole("link", { name: "Ver soluciones" })).toHaveAttribute("href", "/soluciones");
+  });
+
+  test("Grifos no está en el catálogo: la tarjeta lleva a cotizar y ningún acceso de búsqueda termina en un catálogo vacío", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("a.lp-card").filter({ hasText: "Grifos" })).toHaveAttribute("href", "/cotizar");
+    const homeHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    await page.goto("/mapa-del-sitio");
+    const mapHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    expect([...homeHrefs, ...mapHrefs]).not.toContain("/productos?q=grifo");
+    const searches = [...new Set([...homeHrefs, ...mapHrefs].filter((h) => h.startsWith("/productos?q=")))];
+    expect(searches.length).toBeGreaterThan(0);
+    for (const href of searches) {
+      await page.goto(href);
+      await expect(page.locator("#productos-destacados article").first(), `${href} no devuelve productos`).toBeVisible();
+    }
   });
 
   test("'Explorar productos' y 'Explorar recursos técnicos' navegan", async ({ page }) => {
