@@ -1,5 +1,5 @@
 /** Páginas legales y de atención: cabecera transparente sobre su hero. */
-const LEGAL_PATHS = new Set(["/terminos", "/privacidad", "/cookies", "/reclamaciones", "/mapa-del-sitio", "/nosotros"]);
+const LEGAL_PATHS = new Set(["/terminos", "/privacidad", "/cookies", "/reclamaciones", "/mapa-del-sitio", "/nosotros", "/contacto"]);
 
 /** Catálogo completo: /productos, las familias y las fichas comparten la cabecera y el pie de inicio. */
 export const isProductPath = (pathname: string) => pathname === "/productos" || pathname.startsWith("/productos/");

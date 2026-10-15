@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { ScreenW15 } from "@/screens/w15";
+import { site } from "@/lib/site-info";
+import { SITE } from "@/shared/config/site";
+import { ContactView } from "./contact-view";
 
 export const metadata: Metadata = {
   title: "Contacto",
-  description: "Contacta al equipo técnico-comercial de FUNDIGSAC.",
+  description: "Contacta al equipo técnico-comercial de FUNDIGSAC: llamadas, correo, WhatsApp y formulario de contacto.",
   alternates: { canonical: "/contacto" },
 };
 
@@ -16,11 +18,14 @@ export default async function ContactPage({ searchParams }: Props) {
   const motivo = first(params.motivo);
   const documento = first(params.documento)?.replace(/[\u0000-\u001F\u007F]/g, " ").trim().slice(0, 120);
   return (
-    <ScreenW15
+    <ContactView
+      site={{ email: SITE.email, phone: site.phone, phoneHref: site.phoneHref, whatsappNumber: site.whatsappNumber }}
       prefill={{
         reason: motivo === "documentacion" || motivo === "reunion" ? motivo : documento ? "documentacion" : undefined,
         document: documento || undefined,
       }}
+      hero="/media/contacto/sede.webp"
+      closing="/media/contacto/equipo.webp"
     />
   );
 }

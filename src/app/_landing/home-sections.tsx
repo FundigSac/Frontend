@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CalendarRange, Mail, MapPin } from "lucide-react";
+import { MAP_DIRECTIONS, MAP_EMBED } from "@/shared/config/location";
 import { SITE } from "@/shared/config/site";
 import { useHome } from "@/shared/layout/home-copy";
 import { BLUR } from "@/shared/media/blur";
@@ -63,10 +64,6 @@ export function DocsSection() {
     </section>
   );
 }
-
-const MAP_QUERY = "Jirón Acomayo 199, Cercado de Lima, Lima, Perú";
-const MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}&z=16&hl=es&output=embed`;
-const MAP_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAP_QUERY)}`;
 
 export function LocationSection() {
   const t = useHome().location;

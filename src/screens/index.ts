@@ -12,7 +12,6 @@ export { ScreenW11 } from "./w11";
 export { ScreenW12 } from "./w12";
 export { ScreenW13 } from "./w13";
 export { ScreenW14 } from "./w14";
-export { ScreenW15 } from "./w15";
 export { ScreenW16 } from "./w16";
 export { ScreenW17 } from "./w17";
 export { ScreenW18 } from "./w18";

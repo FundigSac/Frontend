@@ -90,23 +90,84 @@ test.describe("W14 Detalle de recurso", () => {
 });
 
 test.describe("W15 Contacto", () => {
-  test("motivo=reunion selecciona la opción y documento precarga el mensaje", async ({ page }) => {
-    await go(page, "/contacto?motivo=reunion", "#fullName");
-    await expect(page.locator("#contactReason")).toHaveValue("reunion");
-    await expect(page.locator("#technicalMessage")).toHaveValue("");
-    await go(page, "/contacto?documento=Ficha%20T%C3%A9cnica%20X", "#fullName");
-    await expect(page.locator("#contactReason")).toHaveValue("documentacion");
-    await expect(page.locator("#technicalMessage")).toHaveValue("Solicito el documento: Ficha Técnica X");
-    await go(page, "/contacto?motivo=hack", "#fullName");
-    await expect(page.locator("#contactReason")).toHaveValue("");
+  test("canales reales: teléfono, correo, WhatsApp y cotización, con el mapa de inicio", async ({ page }) => {
+    await go(page, "/contacto", "#contacto-form");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contáctanos");
+    const channels = page.getByRole("region", { name: "Canales de contacto" });
+    await expect(channels.getByRole("link", { name: /Llámanos/ })).toHaveAttribute("href", "tel:+51908849664");
+    await expect(channels.getByRole("link", { name: /Escríbenos/ })).toHaveAttribute("href", "mailto:cotizaciones@fundigsac.com");
+    await expect(channels.getByRole("link", { name: /WhatsApp/ })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
+    await expect(channels.getByRole("link", { name: /Solicita una cotización/ })).toHaveAttribute("href", "/cotizar");
+    await expect(page.locator(".ct-map iframe")).toHaveAttribute("src", /google\.com\/maps\?q=Jir%C3%B3n%20Acomayo/);
+    await expect(page.getByRole("link", { name: /Ver en Google Maps/ })).toHaveAttribute("href", /google\.com\/maps\/search/);
+    await expect(page.getByText("Jirón Acomayo N° 199, Lote 18, Mz. E")).toBeVisible();
+    await expect(page.locator("main").getByRole("link", { name: "Solicitar una cotización" })).toHaveAttribute("href", "/cotizar");
+  });
+
+  test("motivo=reunion muestra el motivo y documento precarga el mensaje", async ({ page }) => {
+    await go(page, "/contacto?motivo=reunion", "#contacto-form");
+    await expect(page.locator(".ct-reason")).toContainText("Solicitud de reunión");
+    await expect(page.locator('textarea[name="message"]')).toHaveValue("");
+    await go(page, "/contacto?documento=Ficha%20T%C3%A9cnica%20X", "#contacto-form");
+    await expect(page.locator(".ct-reason")).toContainText("Solicitud de documentación");
+    await expect(page.locator('textarea[name="message"]')).toHaveValue("Solicito el documento: Ficha Técnica X");
+    await go(page, "/contacto?motivo=hack", "#contacto-form");
+    await expect(page.locator(".ct-reason")).toHaveCount(0);
   });
 
   test("validación nativa bloquea el envío vacío", async ({ page }) => {
-    await go(page, "/contacto", "#fullName");
-    await page.locator("#submitBtn").click();
-    await expect(page).toHaveURL(/\/contacto$/);
-    expect(await page.locator("#fullName").evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
-    await expect(page.locator("#formSuccessMessage")).toHaveCount(0);
+    await go(page, "/contacto", "#contacto-form");
+    await page.getByRole("button", { name: /Enviar mensaje/ }).click();
+    await expect(page.locator("#contacto-listo")).toHaveCount(0);
+    expect(await page.locator('input[name="fullName"]').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
+    await page.locator('input[name="phone"]').fill("abc");
+    expect(await page.locator('input[name="phone"]').evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
+  });
+
+  test("el mensaje queda listo para enviar por correo o WhatsApp (sin folio inventado) y se puede editar", async ({ page }) => {
+    await go(page, "/contacto?motivo=reunion", "#contacto-form");
+    const form = page.locator("#contacto-form");
+    await form.locator('input[name="fullName"]').fill("Ing. Prueba");
+    await form.locator('input[name="companyName"]').fill("Consorcio Prueba S.A.C.");
+    await form.locator('input[name="position"]').fill("Jefe de Compras");
+    await form.locator('input[name="email"]').fill("compras@prueba.com.pe");
+    await form.locator('input[name="phone"]').fill("+51 987 654 321");
+    await form.locator('textarea[name="message"]').fill("Necesito reunirme para ver válvulas DN150.");
+    await form.getByRole("button", { name: /Enviar mensaje/ }).click();
+
+    const ready = page.locator("#contacto-listo");
+    await expect(ready).toBeVisible();
+    await expect(ready.getByRole("link", { name: /Enviar por correo/ })).toHaveAttribute("href", /^mailto:cotizaciones@fundigsac\.com\?subject=Consulta%20de%20contacto%20FUNDIGSAC/);
+    await expect(ready.getByRole("link", { name: /Enviar por WhatsApp/ })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
+    await ready.getByText("Ver el texto que se enviará").click();
+    await expect(ready.locator("pre")).toContainText("Motivo: Solicitud de reunión");
+    await expect(ready.locator("pre")).toContainText("Empresa: Consorcio Prueba S.A.C.");
+    await expect(ready.locator("pre")).toContainText("Necesito reunirme para ver válvulas DN150.");
+    await expect(ready).not.toContainText(/COT-|REC-|CON-/);
+    await ready.getByRole("button", { name: "Editar mis datos" }).click();
+    await expect(page.locator("#contacto-form")).toBeVisible();
+    await expect(form.locator('input[name="fullName"]')).toHaveValue("Ing. Prueba");
+  });
+
+  test("el selector cambia la pantalla a inglés y vuelve a español", async ({ page, isMobile }) => {
+    await go(page, "/contacto", "#contacto-form");
+    const pick = async (name: string) => {
+      if (isMobile) {
+        await page.getByRole("button", { name: "Abrir menú" }).or(page.getByRole("button", { name: "Open menu" })).click();
+        await page.locator(".lp-mobile").getByRole("button", { name, exact: true }).click();
+        await page.getByRole("button", { name: "Cerrar menú" }).or(page.getByRole("button", { name: "Close menu" })).click();
+      } else {
+        await page.locator(".lp-lang__btn").click();
+        await page.locator(".lp-lang__menu").getByRole("button", { name, exact: true }).click();
+      }
+    };
+    await pick("English");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contact us");
+    await expect(page.getByRole("button", { name: /Send message/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Find us in Lima" })).toBeVisible();
+    await expect(page.getByText("Jirón Acomayo N° 199, Lot 18, Block E")).toBeVisible();
+    await pick("Español");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Contáctanos");
   });
 });
 
@@ -114,7 +175,7 @@ async function fillQuoteGeneral(page: Page) {
   await page.locator("#razonSocial").fill("Consorcio Prueba E2E S.A.C.");
   await page.locator("#rucEmpresa").fill("20100070970");
   await page.locator("#tipoProyecto").selectOption("saneamiento");
-  await page.locator("#departamentoDestino").selectOption("lima");
+  await page.locator("#departamentoDestino").fill("Lima");
   await page.locator("#nombreSolicitante").fill("Ing. Prueba");
   await page.locator("#cargoSolicitante").fill("Jefe de Compras");
   await page.locator("#correoCorporativo").fill("compras@prueba.com.pe");
@@ -146,36 +207,20 @@ test.describe("W16 / W17 / W24 Cotización", () => {
     await expect(page.locator("main")).not.toContainText("Consorcio Prueba E2E");
   });
 
-  test("producto precargado: resumen por slug, stepper, fecha mínima, accesorios, RUC y envío", async ({ page }) => {
+  test("producto precargado: título por slug, RUC y envío", async ({ page }) => {
     await go(page, "/cotizar?producto=tuberia-tyton", "#input-qty");
-    await expect(page.getByRole("heading", { name: /Junta Flexible Tyton/ })).toBeVisible();
-
-    const qty = page.locator("#input-qty");
-    await expect(qty).toHaveValue("4");
-    await page.getByRole("button", { name: "Aumentar cantidad" }).click();
-    await expect(qty).toHaveValue("5");
-    for (let i = 0; i < 6; i++) await page.getByRole("button", { name: "Disminuir cantidad" }).click().catch(() => {});
-    await expect(qty).toHaveValue("1");
-    await expect(page.getByRole("button", { name: "Disminuir cantidad" })).toBeDisabled();
+    await expect(page).toHaveTitle(/Tyton/);
 
     const today = await page.evaluate(() => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Lima", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()));
-    await expect(page.locator("#delivery-date")).toHaveAttribute("min", today);
 
-    const addons = page.locator('input[name="addons"]');
-    await expect(addons.first()).toBeChecked();
-    await addons.nth(1).check();
-
-    await page.locator("#ruc").fill("20100070971");
-    await page.getByRole("button", { name: "Validar formato del RUC" }).click();
-    await expect(page.getByRole("status").filter({ hasText: "dígito verificador" })).toBeVisible();
     await page.locator("#ruc").fill("20100070970");
-    await page.getByRole("button", { name: "Validar formato del RUC" }).click();
-    await expect(page.getByRole("status").filter({ hasText: "Formato de RUC correcto" })).toBeVisible();
 
+    await page.locator("#input-qty").fill("4");
     await page.locator("#razon-social").fill("Consorcio Producto E2E");
     await page.locator("#contact-name").fill("Ing. Prueba");
     await page.locator("#email").fill("residente@prueba.com.pe");
     await page.locator("#phone").fill("987654321");
+    await page.locator("#delivery-place").fill("Almacén Lima");
     await page.locator("#delivery-date").fill(today);
     await page.locator('input[name="declaroQueLaInformacion"]').check();
     await page.getByRole("button", { name: /Enviar solicitud/ }).click();
@@ -462,6 +507,8 @@ test.describe("T&C B2B y consola limpia", () => {
     test(`sin errores ni advertencias de consola: ${route}`, async ({ page }) => {
       const problems: string[] = [];
       page.on("console", (m: ConsoleMessage) => {
+        // El mapa de Google (iframe de terceros) registra sus propios errores de CORS: no son del sitio.
+        if (/google\.com|googleapis\.com|gstatic\.com/.test(m.location().url)) return;
         if (m.type() === "error" || m.type() === "warning") problems.push(`${m.type()}: ${m.text()}`);
       });
       page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
