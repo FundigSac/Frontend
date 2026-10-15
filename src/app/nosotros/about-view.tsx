@@ -47,16 +47,21 @@ export function AboutView() {
             <Link className="lp-btn lp-btn--solid lp-btn--lg ab-history__cta" href="/contacto">
               {t.history.cta} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>
+            <p className="ab-since">
+              <span className="ab-since__label">{t.history.since.label}</span>
+              <span className="ab-since__year">{t.timeline[0].year}</span>
+              <span className="ab-since__text">{t.history.since.text}</span>
+            </p>
           </div>
           <ol className="ab-timeline">
             {t.timeline.map((e) => (
               <li key={e.year} data-reveal="">
                 <span className="ab-timeline__node" aria-hidden="true" />
-                <article className="ab-timeline__card">
-                  <span className="ab-timeline__year">{e.year}</span>
+                <span className="ab-timeline__year">{e.year}</span>
+                <div className="ab-timeline__body">
                   <h3>{e.title}</h3>
                   <p>{e.text}</p>
-                </article>
+                </div>
               </li>
             ))}
           </ol>

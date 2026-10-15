@@ -6,7 +6,7 @@ type About = {
   lead: string;
   highlightsLabel: string;
   highlights: readonly { title: string; text: string }[];
-  history: { eyebrow: string; title: string; text: string; cta: string };
+  history: { eyebrow: string; title: string; text: string; cta: string; since: { label: string; text: string } };
   timeline: readonly { year: string; title: string; text: string }[];
   essence: { eyebrow: string; title: string; photoAlt: string };
   mission: { title: string; text: string };
@@ -32,6 +32,7 @@ export const ABOUT: Pair<About> = {
       title: "Trayectoria que impulsa el desarrollo",
       text: "Desde nuestros inicios, hemos trabajado con el propósito de brindar soluciones confiables y de calidad para el sector saneamiento, agricultura, minería e industria, consolidándonos como un aliado estratégico en proyectos de infraestructura en todo el Perú.",
       cta: "Conoce nuestra historia",
+      since: { label: "Desde", text: "Soluciones en hierro dúctil para el agua y la infraestructura del Perú." },
     },
     timeline: [
       { year: "2005", title: "Inicio de operaciones", text: "Comenzamos nuestras actividades con el objetivo de atender la creciente demanda de soluciones en agua e infraestructura." },
@@ -62,6 +63,7 @@ export const ABOUT: Pair<About> = {
       title: "A track record that drives development",
       text: "Since the beginning, we have worked to deliver reliable, quality solutions for the sanitation, agriculture, mining and industry sectors, becoming a strategic partner in infrastructure projects across Peru.",
       cta: "Discover our story",
+      since: { label: "Since", text: "Ductile iron solutions for Peru’s water and infrastructure." },
     },
     timeline: [
       { year: "2005", title: "Start of operations", text: "We began operating to meet the growing demand for water and infrastructure solutions." },
