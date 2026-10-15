@@ -71,6 +71,15 @@
 .ab-highlights__list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* `.ab :where(ul)` anula el margin automático de .lp-shell: se vuelve a centrar. */
+  margin-inline: auto;
+}
+
+@media (min-width: 901px) {
+  /* Mismo ancho que el hero, para que la franja quede alineada con él. */
+  .ab-highlights__list {
+    width: min(100% - 2 * clamp(20px, 5vw, 96px), 1560px);
+  }
 }
 
 .ab-highlights__list li {
