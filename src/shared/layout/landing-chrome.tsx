@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSelectedLayoutSegment } from "next/navigation";
-import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, ShoppingCart, Sun, User, UserPlus, LogIn, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Globe, Menu, Moon, Search, ShoppingCart, Sun, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { SITE } from "@/shared/config/site";
 import { openCookiePreferences } from "./cookie-events";
@@ -38,7 +38,6 @@ export function LandingHeader() {
   const [lang, setLang] = useLang();
   const [theme, setTheme] = useTheme();
   const [langOpen, setLangOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
   const quoteCount = useQuoteCount();
   const t = COPY[lang];
   const NAV = buildNav(t);
@@ -59,12 +58,10 @@ export function LandingHeader() {
       setMobileOpen(false);
       setSearchOpen(false);
       setLangOpen(false);
-      setAccountOpen(false);
     };
     const onClick = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(null);
       if (!(e.target as Element).closest?.(".lp-lang")) setLangOpen(false);
-      if (!(e.target as Element).closest?.(".lp-account")) setAccountOpen(false);
     };
     // Sobre el hero la cabecera es translúcida; al desplazarse pasa a blanco sólido.
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -196,27 +193,6 @@ export function LandingHeader() {
             <Sun className="lp-theme__sun" aria-hidden="true" size={19} strokeWidth={1.8} />
             <Moon className="lp-theme__moon" aria-hidden="true" size={19} strokeWidth={1.8} />
           </button>
-          <div className="lp-account">
-            <button
-              type="button"
-              className="lp-icon-btn"
-              aria-label={t.account.label}
-              aria-haspopup="menu"
-              aria-expanded={accountOpen}
-              onClick={() => { setAccountOpen(!accountOpen); setLangOpen(false); setMobileOpen(false); }}
-            >
-              <User aria-hidden="true" size={19} strokeWidth={1.8} />
-            </button>
-            <div className={`lp-account__menu${accountOpen ? " is-open" : ""}`} role="menu" aria-label={t.account.label}>
-              <p>{t.account.hint}</p>
-              <Link href="/login" role="menuitem" className="lp-account__primary" onClick={() => setAccountOpen(false)}>
-                <LogIn aria-hidden="true" size={16} strokeWidth={2} /> {t.account.login}
-              </Link>
-              <Link href="/registro" role="menuitem" onClick={() => setAccountOpen(false)}>
-                <UserPlus aria-hidden="true" size={16} strokeWidth={2} /> {t.account.signup}
-              </Link>
-            </div>
-          </div>
           <Link href="/cotizar" className="lp-icon-btn lp-cart" aria-label={`${t.cart}${quoteCount ? ` (${quoteCount})` : ""}`}>
             <ShoppingCart aria-hidden="true" size={19} strokeWidth={1.8} />
             {quoteCount > 0 && <span className="lp-cart__badge" aria-hidden="true">{quoteCount > 99 ? "99+" : quoteCount}</span>}
@@ -230,7 +206,7 @@ export function LandingHeader() {
             aria-label={mobileOpen ? t.menuClose : t.menuOpen}
             aria-expanded={mobileOpen}
             aria-controls={mobileId}
-            onClick={() => { setMobileOpen(!mobileOpen); setAccountOpen(false); setLangOpen(false); }}
+            onClick={() => { setMobileOpen(!mobileOpen); setLangOpen(false); }}
           >
             {mobileOpen ? <X aria-hidden="true" size={24} /> : <Menu aria-hidden="true" size={24} />}
           </button>
@@ -306,8 +282,6 @@ export function LandingFooter() {
               <li>{f.place}</li>
               <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
               <li><Link href="/contacto">{f.form}</Link></li>
-              <li><Link href="/login">{tn.account.login}</Link></li>
-              <li><Link href="/registro">{tn.account.signup}</Link></li>
               <li><Link href="/cotizar">{tn.cart}</Link></li>
             </ul>
           </address>

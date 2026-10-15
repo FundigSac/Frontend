@@ -59,14 +59,6 @@ export const SITEMAP: Pair<{
           { href: "/reclamaciones", label: "Libro de reclamaciones" },
         ],
       },
-      {
-        title: "Tu cuenta",
-        text: "Accede o crea tu cuenta de FUNDIGSAC.",
-        links: [
-          { href: "/login", label: "Iniciar sesión" },
-          { href: "/registro", label: "Crear cuenta" },
-        ],
-      },
     ],
     cta: { eyebrow: "¿No encuentras lo que buscas?", title: "Estamos para ayudarte.", text: "Escríbenos y nuestro equipo te orientará hacia el producto, documento o sector que necesitas.", cta: "Contactar con nosotros" },
   },
@@ -117,14 +109,6 @@ export const SITEMAP: Pair<{
           { href: "/privacidad", label: "Privacy policy" },
           { href: "/cookies", label: "Cookie policy" },
           { href: "/reclamaciones", label: "Complaints book" },
-        ],
-      },
-      {
-        title: "Your account",
-        text: "Sign in or create your FUNDIGSAC account.",
-        links: [
-          { href: "/login", label: "Sign in" },
-          { href: "/registro", label: "Create account" },
         ],
       },
     ],
