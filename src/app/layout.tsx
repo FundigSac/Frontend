@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { AssistantLauncher } from "@/shared/assistant/assistant-launcher";
+import { CartHost } from "@/shared/cart/cart-host";
 import { SITE_INDEXABLE } from "@/shared/config/env";
 import { SITE } from "@/shared/config/site";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <LandingFooter />
           <CookieBanner />
           <AssistantLauncher />
+          <CartHost />
           <LazyWarmup />
         </ToastProvider>
       </body>

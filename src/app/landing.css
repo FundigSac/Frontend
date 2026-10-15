@@ -2389,6 +2389,50 @@ html[data-lp-theme="dark"] .lp-cart__badge {
   box-shadow: 0 0 0 2px #0b1626;
 }
 
+/* Acceso a la cuenta dentro del menú móvil. */
+.lp-mobile__account {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding-block: 10px 4px;
+}
+
+.lp-mobile__account a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--lp-line);
+  border-radius: 12px;
+  color: var(--lp-ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lp-mobile__account a:first-child {
+  border-color: var(--lp-navy);
+  background: var(--lp-navy);
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .lp-mobile__account a {
+  border-color: rgb(255 255 255 / 16%);
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
+  border-color: #1f5aa3;
+  background: #1f5aa3;
+}
+
+@media (min-width: 861px) {
+  .lp-mobile__account {
+    display: none;
+  }
+}
+
 /* Preferencias dentro del menú móvil. */
 .lp-mobile__prefs {
   display: flex;
