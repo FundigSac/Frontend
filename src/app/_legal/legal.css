@@ -1809,7 +1809,7 @@
 
 /* Texto justificado sin cortar palabras con guiones (cada palabra va completa o pasa a la línea siguiente); en pantallas angostas queda alineado a la izquierda. */
 @media (min-width: 640px) {
-  .lg :where(.lg-term p, .lg-step p, .lg-faq details > div, .lg-intro .lg-text) {
+  .lg :where(.lg-term p, .lg-step p, .lg-info p, .lg-faq details > div, .lg-intro .lg-text) {
     text-align: justify;
     text-justify: inter-word;
     -webkit-hyphens: none;
