@@ -5,6 +5,7 @@ import { SITE } from "@/shared/config/site";
 import { SiteFooter } from "@/shared/layout/site-footer";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
 import { SiteHeader } from "@/shared/layout/site-header";
+import { LazyWarmup } from "@/shared/media/lazy-warmup";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { SourceGuard } from "@/shared/security/source-guard";
 import { ToastProvider } from "@/shared/ui/toast";
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <div id="contenido">{children}</div>
           <SiteFooter />
           <CookieBanner />
+          <LazyWarmup />
         </ToastProvider>
       </body>
     </html>

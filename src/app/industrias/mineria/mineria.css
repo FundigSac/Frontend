@@ -212,12 +212,12 @@ html .sa--mi .lp-btn--outline:hover {
 
 .sa--mi .ag-actions .lp-btn:last-child {
   flex-grow: 1.2;
-  background: var(--lp-orange);
+  background: #c94f0a; /* naranja AA con texto blanco (4.5:1) */
   font-weight: 500;
 }
 
 .sa--mi .ag-actions .lp-btn:last-child:hover {
-  background: var(--lp-orange-dark);
+  background: #b04307;
 }
 
 .sa--mi .ag-actions .lp-btn svg {

@@ -106,6 +106,8 @@ export function HeroCarousel() {
               width={578}
               height={1030}
               priority={i === 0}
+              loading={i === 0 ? undefined : "eager"}
+              fetchPriority={i === 0 ? "high" : "low"}
               draggable={false}
               sizes="(max-width: 860px) 78vw, 40vw"
             />

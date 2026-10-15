@@ -2843,3 +2843,8 @@ html[data-lp-theme="dark"] .lp-cart__badge {
 html[data-lp-theme="dark"] .lp-nav__link.is-active {
   color: #ff9a62;
 }
+
+/* Etiquetas de sección en modo oscuro: el gris fijo (#4b5563) quedaba en 2.5:1 sobre fondo azul noche. */
+html[data-lp-theme="dark"] .lp-eyebrow {
+  color: #b4c2d4;
+}
