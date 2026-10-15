@@ -615,7 +615,7 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   letter-spacing: -0.04em;
 }
 
-/* --- Línea de tiempo --- */
+/* --- Línea de tiempo: todo lo que se anima con el scroll usa solo transform y opacity (compositor, sin repintar) --- */
 .ab-timeline li::before {
   background: #d3deee;
 }
@@ -629,6 +629,7 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   background: var(--lp-orange);
   content: "";
   transform-origin: top;
+  will-change: transform;
 }
 
 .ab-timeline li:first-child::after {
@@ -648,13 +649,28 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   background: #fff;
   box-shadow: none;
   transform: translate(-50%, -50%) rotate(45deg);
-  transition: background 300ms ease, border-color 300ms ease;
+  transition: none;
+}
+
+/* Relleno naranja del rombo: capa propia para animarla solo con opacity y scale */
+.ab-timeline__node::before {
+  position: absolute;
+  inset: -2px;
+  border-radius: 3px;
+  background: var(--lp-orange);
+  content: "";
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 240ms ease, transform 240ms ease;
 }
 
 .ab-timeline li:last-child .ab-timeline__node {
-  border-color: var(--lp-orange);
-  background: var(--lp-orange);
   box-shadow: 0 0 0 6px rgb(242 106 27 / 16%);
+}
+
+.ab-timeline li:last-child .ab-timeline__node::before {
+  opacity: 1;
+  transform: none;
 }
 
 .ab-timeline__year {
@@ -672,9 +688,9 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
     color: var(--lp-orange-dark);
   }
 
-  .ab-timeline li:hover .ab-timeline__node {
-    background: var(--lp-orange);
-    border-color: var(--lp-orange);
+  .ab-timeline li:hover .ab-timeline__node::before {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -685,13 +701,14 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
       transform: scaleY(0);
       animation: ab-axis linear both;
       animation-timeline: view();
-      animation-range: entry 35% cover 48%;
+      animation-range: entry 30% cover 50%;
     }
 
-    .ab-timeline li:not(:last-child) .ab-timeline__node {
-      animation: ab-node linear both;
+    .ab-timeline li:not(:last-child) .ab-timeline__node::before {
+      transition: none;
+      animation: ab-node-fill linear both;
       animation-timeline: view();
-      animation-range: entry 35% cover 42%;
+      animation-range: entry 30% cover 44%;
     }
   }
 
@@ -705,14 +722,20 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
       transform: scaleY(1);
       transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 220ms;
     }
+
+    .ab-timeline li.lg-reveal.is-in:not(:last-child) .ab-timeline__node::before {
+      opacity: 1;
+      transform: none;
+      transition-delay: 400ms;
+    }
   }
 
   .ab-timeline li.lg-reveal.is-in {
-    animation: ab-row 760ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: ab-row 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
   .ab-timeline li.lg-reveal.is-in .ab-timeline__year {
-    animation: ab-year 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms both;
+    animation: ab-year 800ms cubic-bezier(0.2, 0.7, 0.2, 1) 100ms both;
   }
 }
 
@@ -722,22 +745,22 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   }
 }
 
-@keyframes ab-node {
+@keyframes ab-node-fill {
   from {
-    border-color: #aebfd9;
-    background: #fff;
+    opacity: 0;
+    transform: scale(0.4);
   }
 
   to {
-    border-color: var(--lp-orange);
-    background: var(--lp-orange);
+    opacity: 1;
+    transform: none;
   }
 }
 
 @keyframes ab-row {
   from {
     opacity: 0;
-    transform: translateX(26px);
+    transform: translate3d(24px, 0, 0);
   }
 
   to {
@@ -748,60 +771,66 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
 
 @keyframes ab-year {
   from {
-    letter-spacing: 0.04em;
     opacity: 0;
+    transform: translate3d(0, 10px, 0);
   }
 
   to {
-    letter-spacing: -0.035em;
     opacity: 1;
+    transform: none;
   }
 }
 
-/* --- Misión y visión: dos enunciados numerados, sin íconos --- */
+/* --- Misión y visión: un solo bloque partido en dos tonos (claro y azul marino) --- */
+.ab-essence__body {
+  container-type: inline-size;
+}
+
 .ab-mv {
   display: grid;
-  grid-template-columns: 1fr;
-  margin-top: clamp(22px, 3vw, 36px);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin-top: clamp(24px, 3vw, 40px);
   padding-bottom: 0;
-  border-bottom: 0;
+  border: 1px solid #d3deee;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 30px 56px -40px rgb(11 34 68 / 55%);
 }
 
 .ab-mv > article {
   position: relative;
-  display: grid;
-  grid-template-columns: clamp(34px, 4vw, 56px) minmax(0, 1fr);
-  column-gap: clamp(10px, 1.6vw, 20px);
-  align-content: start;
-  padding: clamp(18px, 2.2vw, 28px) 0;
-  border-top: 1px solid #cddbee;
+  isolation: isolate;
+  display: block;
+  overflow: hidden;
+  padding: clamp(24px, 2.6vw, 40px);
+  background: #fff;
 }
 
-.ab-mv > article:last-child {
-  border-bottom: 1px solid #cddbee;
+.ab-mv > article + article {
+  background: linear-gradient(150deg, #1a3b74 0%, #0b2244 100%);
 }
 
-.ab-mv > article::before {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 56px;
-  height: 2px;
-  background: var(--lp-orange);
-  content: "";
-}
-
+/* Cifra grande de fondo: marca de agua estática */
 .ab-mv__n {
-  grid-row: 1 / span 2;
-  padding-top: 0.55em;
-  color: var(--lp-orange-dark);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  z-index: -1;
+  color: rgb(11 34 68 / 6%);
+  font-size: clamp(88px, 8.4vw, 140px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  user-select: none;
+}
+
+.ab-mv > article + article .ab-mv__n {
+  color: rgb(255 255 255 / 8%);
 }
 
 .ab-mv h3 {
+  margin: 0;
   color: var(--lp-navy);
   font-size: clamp(22px, 2vw, 28px);
   font-weight: 800;
@@ -809,17 +838,35 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   line-height: 1.15;
 }
 
+.ab-mv h3::before {
+  display: block;
+  width: 38px;
+  height: 3px;
+  margin-bottom: 16px;
+  background: var(--lp-orange);
+  content: "";
+  transform-origin: left;
+}
+
 .ab-mv p {
-  margin-top: 8px !important;
+  margin-top: 12px !important;
   color: var(--lp-text);
-  font-size: clamp(15.5px, 1.1vw, 17px);
+  font-size: clamp(15px, 1.05vw, 16.5px);
   line-height: 1.65;
 }
 
-/* --- Valores: lista numerada con filetes --- */
+.ab-mv > article + article h3 {
+  color: #fff;
+}
+
+.ab-mv > article + article p {
+  color: #c7d5ea;
+}
+
+/* --- Valores: cuadrícula de 3 columnas con filete que se dibuja al pasar el cursor --- */
 .ab-values {
   display: block;
-  padding-top: clamp(24px, 3vw, 38px);
+  padding-top: clamp(26px, 3.2vw, 44px);
 }
 
 .ab-values h3 {
@@ -833,30 +880,47 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
 .ab-values ol {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: clamp(20px, 3vw, 44px);
-  margin: 14px 0 0;
+  column-gap: clamp(18px, 2.4vw, 34px);
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .ab-values li {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 13px 0;
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 18px 0 20px;
   border: 0;
-  border-top: 1px solid #cddbee;
   border-radius: 0;
   background: none;
   color: var(--lp-navy);
   font-size: clamp(16px, 1.15vw, 18px);
-  font-weight: 600;
-  line-height: 1.3;
+  font-weight: 700;
+  line-height: 1.25;
   text-align: left;
 }
 
-.ab-values li:nth-last-child(-n + 2) {
-  border-bottom: 1px solid #cddbee;
+.ab-values li::before,
+.ab-values li::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  content: "";
+}
+
+.ab-values li::before {
+  height: 1px;
+  background: #cddbee;
+}
+
+.ab-values li::after {
+  height: 2px;
+  background: var(--lp-orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .ab-values li span {
@@ -864,39 +928,39 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
 }
 
 @media (hover: hover) {
   .ab-values li {
-    transition: padding-left 240ms cubic-bezier(0.2, 0.7, 0.2, 1), color 200ms ease;
+    transition: color 200ms ease;
   }
 
   .ab-values li:hover {
-    padding-left: 8px;
-    border-color: #cddbee;
+    border-color: transparent;
     color: var(--lp-orange-dark);
     transform: none;
   }
+
+  .ab-values li:hover::after {
+    transform: scaleX(1);
+  }
 }
 
-@media (max-width: 600px) {
-  .ab-mv > article,
-  .ab-mv > article + article {
-    padding: 18px 0;
-    border-left: 0;
+/* Con ancho suficiente, misión y visión van lado a lado; si no, apiladas para que la medida del texto sea cómoda. */
+@container (min-width: 760px) {
+  .ab-mv {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
 
+@container (min-width: 520px) {
   .ab-values ol {
-    grid-template-columns: 1fr;
-  }
-
-  .ab-values li:nth-last-child(2) {
-    border-bottom: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-/* --- Entrada de misión, visión y valores --- */
+/* --- Entrada de misión, visión y valores (solo transform y opacity) --- */
 @media (prefers-reduced-motion: no-preference) {
   .ab-essence__photo.lg-reveal.is-in {
     animation: none;
@@ -904,54 +968,111 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   }
 
   .ab-essence__photo.is-in img {
-    animation: ab-photo 1500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: ab-photo 1300ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
-  .ab-mv > article.lg-reveal.is-in::before {
-    animation: ab-rule 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 200ms both;
+  .ab-mv > article.lg-reveal.is-in {
+    animation: ab-panel 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: var(--d, 0ms);
+  }
+
+  .ab-mv > article.lg-reveal.is-in h3::before {
+    animation: ab-bar 700ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d, 0ms) + 260ms) both;
   }
 
   .ab-mv > article.lg-reveal.is-in .ab-mv__n {
-    animation: ab-year 800ms cubic-bezier(0.2, 0.7, 0.2, 1) 160ms both;
+    animation: ab-numeral 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--d, 0ms) + 120ms) both;
   }
 
   .ab-values.is-in li {
-    animation: ab-value 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: calc(var(--i, 0) * 80ms + 160ms);
+    animation: ab-value 560ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms + 200ms);
+  }
+
+  .ab-values.is-in li::after {
+    animation: ab-draw 700ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 70ms + 260ms);
   }
 }
 
 @keyframes ab-photo {
   from {
-    clip-path: inset(0 100% 0 0);
-    transform: scale(1.12);
+    opacity: 0.4;
+    transform: scale(1.1);
   }
 
   to {
-    clip-path: inset(0 0 0 0);
+    opacity: 1;
     transform: none;
   }
 }
 
-@keyframes ab-rule {
+@keyframes ab-panel {
   from {
-    width: 0;
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
   }
 
   to {
-    width: 56px;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ab-bar {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ab-numeral {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
 @keyframes ab-value {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translate3d(0, 12px, 0);
   }
 
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* El filete naranja se dibuja una vez y se retira, dejando el gris de base */
+@keyframes ab-draw {
+  0% {
+    transform: scaleX(0);
+  }
+
+  55% {
+    transform: scaleX(1);
+  }
+
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}
+
+/* Móvil */
+@media (max-width: 600px) {
+  .ab-timeline li::after {
+    left: 6px;
   }
 }
 
@@ -970,9 +1091,11 @@ html[data-lp-theme="dark"] .ab-timeline__node {
   box-shadow: none;
 }
 
-html[data-lp-theme="dark"] .ab-timeline li:last-child .ab-timeline__node {
-  border-color: #ff8a4d;
+html[data-lp-theme="dark"] .ab-timeline__node::before {
   background: #ff8a4d;
+}
+
+html[data-lp-theme="dark"] .ab-timeline li:last-child .ab-timeline__node {
   box-shadow: 0 0 0 6px rgb(255 138 77 / 18%);
 }
 
@@ -985,20 +1108,28 @@ html[data-lp-theme="dark"] .ab-timeline li:not(:last-child):hover .ab-timeline__
   color: #ff9a62;
 }
 
-html[data-lp-theme="dark"] .ab-mv > article,
-html[data-lp-theme="dark"] .ab-mv > article:last-child,
-html[data-lp-theme="dark"] .ab-values li,
-html[data-lp-theme="dark"] .ab-values li:nth-last-child(-n + 2) {
-  border-color: rgb(255 255 255 / 14%);
+html[data-lp-theme="dark"] .ab-mv {
+  border-color: rgb(255 255 255 / 12%);
+  box-shadow: 0 30px 56px -36px rgb(0 0 0 / 80%);
 }
 
-html[data-lp-theme="dark"] .ab-mv > article:last-child {
-  border-top-color: rgb(255 255 255 / 14%);
+html[data-lp-theme="dark"] .ab-mv > article {
+  background: #0f1d32;
 }
 
-html[data-lp-theme="dark"] .ab-mv h3,
-html[data-lp-theme="dark"] .ab-values li {
-  background: none;
+html[data-lp-theme="dark"] .ab-mv > article + article {
+  background: linear-gradient(150deg, #20509f 0%, #123268 100%);
+}
+
+html[data-lp-theme="dark"] .ab-mv__n {
+  color: rgb(255 255 255 / 5%);
+}
+
+html[data-lp-theme="dark"] .ab-mv > article + article .ab-mv__n {
+  color: rgb(255 255 255 / 10%);
+}
+
+html[data-lp-theme="dark"] .ab-mv h3 {
   color: #f2f6fc;
 }
 
@@ -1006,13 +1137,34 @@ html[data-lp-theme="dark"] .ab-mv p {
   color: #b4c2d4;
 }
 
-html[data-lp-theme="dark"] .ab-mv__n,
-html[data-lp-theme="dark"] .ab-values li span {
-  color: #ff9a62;
+html[data-lp-theme="dark"] .ab-mv > article + article p {
+  color: #d3def0;
+}
+
+html[data-lp-theme="dark"] .ab-mv h3::before {
+  background: #ff8a4d;
 }
 
 html[data-lp-theme="dark"] .ab-values h3 {
   color: #9db0c7;
+}
+
+html[data-lp-theme="dark"] .ab-values li {
+  border-color: transparent;
+  background: none;
+  color: #f2f6fc;
+}
+
+html[data-lp-theme="dark"] .ab-values li::before {
+  background: rgb(255 255 255 / 14%);
+}
+
+html[data-lp-theme="dark"] .ab-values li span {
+  color: #ff9a62;
+}
+
+html[data-lp-theme="dark"] .ab-values li::after {
+  background: #ff8a4d;
 }
 
 html[data-lp-theme="dark"] .ab-values li:hover {
