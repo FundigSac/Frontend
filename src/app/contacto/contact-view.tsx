@@ -88,9 +88,10 @@ export function ContactView({ site, prefill, hero, closing }: { site: ContactSit
             </div>
           </div>
 
+          <div className="ct-details">
           <p className="ct-address">
             <MapPin aria-hidden="true" size={26} strokeWidth={1.6} />
-            <span>{loc.address[0]}<br />{loc.address[1]}</span>
+            <span>{loc.address[0].replace(/ (E)$/, "\u00a0$1")}<br />{loc.address[1]}</span>
           </p>
 
           <div className="ct-info">
@@ -111,6 +112,7 @@ export function ContactView({ site, prefill, hero, closing }: { site: ContactSit
                 </a>
               </div>
             </div>
+          </div>
           </div>
         </section>
       </div>

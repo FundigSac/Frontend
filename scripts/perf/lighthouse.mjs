@@ -40,9 +40,7 @@ try {
       const config = factor === "desktop" ? desktopConfig : undefined;
       const result = await lighthouse(url, flags, config);
       const lhr = result.lhr;
-      // Nombre de archivo seguro: sin "/", "?" ni "=" (p. ej. /buscar?q=valvula).
-      const slug = route === "/" ? "inicio" : route.replace(/^\//, "").replace(/[^a-zA-Z0-9]+/g, "_");
-      const name = `${slug}-${factor}`;
+      const name = `${route === "/" ? "inicio" : route.replace(/\//g, "_").replace(/^_/, "")}-${factor}`;
       await writeFile(path.join(outDir, `${name}.json`), JSON.stringify(lhr, null, 2));
 
       if (lhr.runtimeError) {

@@ -4,6 +4,26 @@
   object-position: 50% 50%;
 }
 
+/* La foto se muestra completa (sin ampliarla ni recortar el edificio): ocupa el alto del hero, queda anclada
+   a la derecha y se funde hacia la izquierda con el fondo celeste del hero. */
+@media (min-width: 901px) {
+  .lg-hero--contact .lg-hero__photo {
+    inset: 0 0 0 auto !important;
+    width: auto !important;
+    max-width: 78%;
+    aspect-ratio: 1122 / 560;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 55%) 18%, #000 42%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 55%) 18%, #000 42%);
+  }
+
+  .lg-hero--contact .lg-hero__veil {
+    background:
+      linear-gradient(90deg, rgb(247 251 255 / 97%) 0%, rgb(247 251 255 / 92%) 26%, rgb(247 251 255 / 55%) 40%, rgb(247 251 255 / 10%) 54%, rgb(247 251 255 / 0%) 64%),
+      linear-gradient(180deg, rgb(214 233 250 / 55%) 0%, rgb(214 233 250 / 0%) 26%);
+  }
+}
+
 .lg-hero--contact {
   padding-bottom: clamp(34px, 4vw, 60px);
 }
@@ -37,7 +57,7 @@
 .ct-card {
   display: flex;
   height: 100%;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
   padding: 22px 18px;
   border: 1px solid var(--lg-line, #e3e8ef);
@@ -187,7 +207,7 @@
 
 .ct-privacy {
   display: flex;
-  max-width: 290px;
+  max-width: 300px;
   align-items: center;
   gap: 12px;
   margin: 0 !important;
@@ -215,6 +235,7 @@
 /* Oficinas */
 .ct-offices {
   min-width: 0;
+  padding-top: clamp(22px, 3vw, 40px);
 }
 
 .ct-map {
@@ -259,12 +280,20 @@
   height: auto;
 }
 
+.ct-details {
+  margin-top: 18px;
+  padding: clamp(18px, 2.2vw, 28px);
+  border: 1px solid var(--lg-line, #e3e8ef);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #fbfdff, #f4f8fd);
+}
+
 .ct-address {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  margin: 22px 0 0 !important;
-  padding-bottom: 22px;
+  margin: 0 !important;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--lg-line, #e3e8ef);
   color: var(--lp-ink);
   font-size: 17px;
@@ -281,7 +310,7 @@
 .ct-info {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: 22px;
+  margin-top: 20px;
 }
 
 .ct-info > div {
@@ -463,5 +492,156 @@ html[data-lp-theme="dark"] .ct-link {
 
   .ct-card:hover {
     transform: none;
+  }
+}
+
+/* Texto justificado sin cortar palabras con guiones; en pantallas angostas queda alineado a la izquierda. */
+@media (min-width: 640px) {
+  .ct :where(.ct-intro, .lg-hero--contact .lg-hero__lead) {
+    text-align: justify;
+    text-justify: inter-word;
+    -webkit-hyphens: none;
+    hyphens: none;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-wrap: pretty;
+  }
+}
+
+/* ===== Animación de entrada propia (solo opacity, transform y clip-path; sin tocar el layout) =====
+   Se activa cuando LegalMotion marca el bloque como visible; sin JavaScript todo queda visible. */
+@media (prefers-reduced-motion: no-preference) {
+  /* El formulario se "despliega" como una cortina y sus campos entran en cascada. */
+  .ct-form-wrap.lg-reveal.is-in {
+    animation: ct-curtain 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .ct-form-wrap.is-in .ct-form > *,
+  .ct-form-wrap.is-in .ct-fields > .lg-field {
+    animation: ct-pop 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .ct-form-wrap.is-in .ct-form > .lg-eyebrow { animation-delay: 140ms; }
+  .ct-form-wrap.is-in .ct-form > .ct-title { animation-delay: 200ms; }
+  .ct-form-wrap.is-in .ct-form > .ct-intro { animation-delay: 260ms; }
+  .ct-form-wrap.is-in .ct-fields > .lg-field:nth-child(1) { animation-delay: 320ms; }
+  .ct-form-wrap.is-in .ct-fields > .lg-field:nth-child(2) { animation-delay: 380ms; }
+  .ct-form-wrap.is-in .ct-fields > .lg-field:nth-child(3) { animation-delay: 440ms; }
+  .ct-form-wrap.is-in .ct-fields > .lg-field:nth-child(4) { animation-delay: 500ms; }
+  .ct-form-wrap.is-in .ct-fields > .lg-field:nth-child(5) { animation-delay: 560ms; }
+  .ct-form-wrap.is-in .ct-fields > .lg-field:nth-child(6) { animation-delay: 620ms; }
+  .ct-form-wrap.is-in .ct-form > .ct-actions { animation-delay: 700ms; }
+
+  /* El mapa se descubre de izquierda a derecha y los datos suben uno tras otro. */
+  .ct-offices.lg-reveal.is-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  .ct-offices.is-in .ct-map {
+    animation: ct-map-reveal 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) 180ms both;
+  }
+
+  .ct-offices.is-in .ct-details,
+  .ct-offices.is-in > .lg-eyebrow,
+  .ct-offices.is-in > .ct-title,
+  .ct-offices.is-in > .ct-intro {
+    animation: ct-pop 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .ct-offices.is-in > .ct-title { animation-delay: 80ms; }
+  .ct-offices.is-in > .ct-intro { animation-delay: 140ms; }
+  .ct-offices.is-in .ct-details { animation-delay: 520ms; }
+
+  /* El botón principal respira una vez al terminar la entrada. */
+  .ct-form-wrap.is-in .ct-actions .lp-btn--solid {
+    animation: ct-nudge 900ms ease 1300ms 1 both;
+  }
+}
+
+@keyframes ct-curtain {
+  from {
+    clip-path: inset(0 0 100% 0 round 12px);
+    opacity: 0.4;
+  }
+
+  to {
+    clip-path: inset(0 0 0 0 round 12px);
+    opacity: 1;
+  }
+}
+
+@keyframes ct-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ct-map-reveal {
+  from {
+    clip-path: inset(0 100% 0 0 round 8px);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0 round 8px);
+  }
+}
+
+@keyframes ct-nudge {
+  0%, 100% {
+    transform: none;
+  }
+
+  40% {
+    transform: translateY(-3px);
+  }
+}
+
+html[data-lp-theme="dark"] .ct-details {
+  border-color: rgb(255 255 255 / 12%);
+  background: linear-gradient(180deg, rgb(255 255 255 / 5%), rgb(255 255 255 / 2%));
+}
+
+@media (max-width: 640px) {
+  .ct-form-wrap {
+    padding: 22px 18px 26px;
+  }
+
+  .ct-fields .lg-field input,
+  .ct-fields .lg-field textarea {
+    min-height: 52px;
+    font-size: 16px;
+  }
+
+  .ct-fields .lg-field textarea {
+    min-height: 140px;
+  }
+
+  .ct-map {
+    min-height: 260px;
+  }
+
+  .ct-map__pin {
+    top: 10px;
+    right: 10px;
+    padding: 9px 12px;
+  }
+
+  .ct-map__pin img {
+    width: 88px;
+  }
+
+  .ct-details {
+    padding: 18px;
+  }
+
+  .ct-address {
+    font-size: 16px;
   }
 }
