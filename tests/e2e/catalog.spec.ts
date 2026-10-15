@@ -119,6 +119,59 @@ test.describe("W02 catálogo", () => {
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
+  test("navegación suave: las tarjetas con ?familia= filtran y marcan el botón de familia sin recargar", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await expect(cards.first()).toBeVisible();
+    const all = await cards.count();
+    for (const [name, label, familia, total] of [
+      ["Codo 90° HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Tee HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Reducción HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Unión flexible HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
+      ["Adaptador brida HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
+    ] as const) {
+      await familyButton(page, "Todas").click();
+      await expect(cards).toHaveCount(all);
+      await cards.filter({ hasText: name }).getByRole("link", { name: "Ver ficha", exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`familia=${familia}$`));
+      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
+      await expect(cards).toHaveCount(total);
+      await expect(cards.filter({ hasText: name })).toHaveCount(1);
+    }
+    // Atrás (popstate) vuelve al catálogo completo.
+    await page.goBack();
+    await expect(page).not.toHaveURL(/familia=/);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(all);
+  });
+
+  test("navegación suave: la URL de la carga inicial vuelve a filtrar tras quitar el filtro con los botones", async ({ page }) => {
+    await page.goto("/productos?familia=accesorios-hdpe");
+    const cards = page.locator("#productos-destacados article");
+    await expect(cards).toHaveCount(3);
+    await familyButton(page, "Todas").click();
+    await expect(cards).not.toHaveCount(3);
+    await page.getByRole("link", { name: "Explorar Accesorios HDPE" }).click();
+    await expect(page).toHaveURL(/familia=accesorios-hdpe$/);
+    await expect(familyButton(page, "Accesorios HDPE")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(3);
+  });
+
+  test("navegación suave: el filtro de familia sustituye una búsqueda previa y los espacios al teclear se conservan", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await searchbox(page).pressSequentially("tapa ");
+    await expect(searchbox(page)).toHaveValue("tapa ");
+    await expect(cards).toHaveCount(1);
+    await page.locator("section[aria-label='Familias de productos']").getByRole("link", { name: "Explorar Conexiones y fittings" }).click();
+    await expect(page).toHaveURL(/familia=conexiones-y-fittings$/);
+    await expect(searchbox(page)).toHaveValue("");
+    await expect(familyButton(page, "Conexiones y fittings")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(2);
+  });
+
   test("tarjetas: ficha, cotizar y solicitud del catálogo apuntan a rutas reales", async ({ page }) => {
     await page.goto("/productos");
     expect(await page.locator("main a[href='#']").count()).toBe(0);

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, Download, FileCheck2, Headphones, Mail, MessageCircle, Search, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import styles from "./w02-catalog.module.css";
 
@@ -58,7 +59,9 @@ function updateAddress(query: string, family: FamilyFilter) {
   if (family !== "todas") params.set("familia", family);
   const search = params.toString();
   const next = window.location.pathname + (search ? "?" + search : "") + window.location.hash;
-  window.history.replaceState(window.history.state, "", next);
+  // Con `null` Next.js completa su propio estado e informa al router de la nueva URL (useSearchParams); pasar
+  // window.history.state tal cual se salta esa integración y el router seguiría con los parámetros anteriores.
+  window.history.replaceState(null, "", next);
 }
 
 function CategoryCard({ family }: { family: (typeof FAMILIES)[number] }) {
@@ -108,21 +111,35 @@ export function W02Catalog({
   initialFamily?: FamilyFilter;
 }) {
   const [query, setQuery] = useState(initialQuery);
+  // Cambia al navegar con un enlace de la propia página (p. ej. /productos?familia=accesorios-hdpe): el componente sigue
+  // montado, así que el estado inicial no se vuelve a leer. Las escrituras de updateAddress también pasan por aquí, pero
+  // la dirección ya coincide con el estado y no cambia nada.
+  const addressKey = useSearchParams().toString();
+  const seenAddressKey = useRef(addressKey);
   const [family, setFamily] = useState<FamilyFilter>(initialFamily);
 
   useEffect(() => {
     updateAddress(query, family);
   }, [query, family]);
 
-  useEffect(() => {
-    const onPopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      setQuery(params.get("q") ?? "");
-      setFamily(readFamily(params.get("familia")));
-    };
-    window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+  const readAddress = useCallback(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nextQuery = params.get("q") ?? "";
+    // Los espacios al teclear no llegan a la URL (se recorta): no pisar lo escrito si solo difiere en eso.
+    setQuery((current) => (current.trim() === nextQuery.trim() ? current : nextQuery));
+    setFamily(readFamily(params.get("familia")));
   }, []);
+  useEffect(() => {
+    window.addEventListener("popstate", readAddress);
+    return () => window.removeEventListener("popstate", readAddress);
+  }, [readAddress]);
+
+  useEffect(() => {
+    if (seenAddressKey.current === addressKey) return;
+    seenAddressKey.current = addressKey;
+    readAddress();
+  }, [addressKey, readAddress]);
+
 
   const visibleProducts = useMemo(() => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
