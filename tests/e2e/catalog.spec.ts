@@ -250,6 +250,48 @@ test.describe("W02 catálogo", () => {
     }
   });
 
+  test("fichas de compuerta: cada una muestra los datos y el PDF de su ficha técnica", async ({ page }) => {
+    const cases = [
+      ["valvula-compuerta", "Ficha técnica FT-HI-100 · Rev. 13", "/docs/ficha-tecnica-valvula-compuerta-bridada.pdf", /^Rango dimensional DN40 a DN600/],
+      ["valvula-compuerta-fundigsac", "Ficha técnica FUNDIGSAC · Válvula compuerta bridada", "/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf", /^Diseño DIN 3352 F4/],
+      ["valvula-compuerta-fundigsac-garantia-extendida", "Ficha técnica FT-HD N° 002-2024", "/docs/ficha-tecnica-valvula-compuerta-fundigsac-ft-hd-002-2024.pdf", /^Ficha técnica FT-HD N° 002-2024/],
+    ] as const;
+    for (const [slug, title, pdf, row] of cases) {
+      await page.goto(`/productos/valvulas/${slug}`);
+      await expect(page.getByText(title, { exact: true }).first()).toBeVisible();
+      await expect(page.locator("main a[download]").first()).toHaveAttribute("href", pdf);
+      await expect(page.getByRole("row", { name: row })).toBeVisible();
+      const res = await page.request.get(pdf);
+      expect(res.status()).toBe(200);
+    }
+    // FUNDIGSAC de 1 año: pernos por PN de la ficha oficial (DN100 → M16, 8 agujeros).
+    await page.goto("/productos/valvulas/valvula-compuerta-fundigsac");
+    await page.getByRole("button", { name: "DN100", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Bridas · DN100" })).toBeVisible();
+    await expect(page.getByRole("row", { name: /PN16 220 8 M16/ })).toBeVisible();
+  });
+
+  test("Ver en 3D: cada válvula de compuerta carga su propio modelo", async ({ page }) => {
+    test.setTimeout(120_000);
+    const cases = [
+      ["valvula-compuerta", "/models/valvula-hitaly.glb"],
+      ["valvula-compuerta-fundigsac", "/models/valvula-fundigsac.glb"],
+      ["valvula-compuerta-fundigsac-garantia-extendida", "/models/valvula-fundigsac-cuadrante.glb"],
+    ] as const;
+    for (const [slug, model] of cases) {
+      await page.goto(`/productos/valvulas/${slug}`);
+      const res = await page.request.get(model);
+      expect(res.status()).toBe(200);
+      await page.getByRole("button", { name: "Ver en 3D" }).first().click();
+      const viewer = page.locator("main model-viewer").first();
+      // React asigna src como propiedad del elemento personalizado (no se refleja como atributo).
+      await expect.poll(() => viewer.evaluate((el) => (el as HTMLElement & { src?: string }).src ?? ""), { timeout: 30_000 }).toContain(model);
+      await expect.poll(() => viewer.evaluate((el) => (el as HTMLElement & { loaded?: boolean }).loaded === true), { timeout: 60_000 }).toBe(true);
+      await page.getByRole("button", { name: "Volver a las fotos" }).first().click();
+      await expect(page.locator("main model-viewer")).toHaveCount(0);
+    }
+  });
+
   test("las familias de la cuadrícula navegan a su página", async ({ page }) => {
     await page.goto("/productos");
     await page.getByRole("link", { name: "Explorar Tuberías" }).click();
@@ -556,7 +598,7 @@ test.describe("W22 búsqueda", () => {
     await page.getByRole("link", { name: "Borrar búsqueda" }).click();
     await expect(page).toHaveURL(/\/buscar$/);
     await searchbox(page).fill("tubo");
-    await page.getByRole("button", { name: "Buscar", exact: true }).click();
+    await page.locator("main").getByRole("button", { name: "Buscar", exact: true }).click();
     await expect(page).toHaveURL(/\/buscar\?q=tubo$/);
     await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Tuberías");
   });
