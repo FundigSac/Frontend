@@ -12,6 +12,13 @@ describe("enlaces de las respuestas", () => {
     expect(safeHref("https://fundigsac.com/productos")).toEqual({ kind: "internal", href: "/productos" });
   });
 
+  it("abre los archivos del sitio (PDF) como archivo, no como página", () => {
+    expect(safeHref("/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf")).toEqual({ kind: "file", href: "/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf" });
+    expect(safeHref("https://fundigsac.com/docs/ficha.pdf")?.kind).toBe("file");
+    expect(safeHref("/productos/valvulas/valvula-compuerta-fundigsac")?.kind).toBe("internal");
+    expect(safeHref("/cotizar?producto=valvula-compuerta")?.kind).toBe("internal");
+  });
+
   it("rechaza dominios ajenos, protocolos peligrosos y rutas de otro host", () => {
     expect(safeHref("https://ejemplo.invalid/login")).toBeNull();
     expect(safeHref("javascript:alert(1)")).toBeNull();

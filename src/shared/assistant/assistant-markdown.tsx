@@ -9,16 +9,22 @@ import type { ReactNode } from "react";
 const SAFE_HOSTS = new Set(["wa.me", "api.whatsapp.com", "www.instagram.com", "instagram.com", "www.google.com", "maps.google.com"]);
 const SITE_HOSTS = new Set(["fundigsac.com", "www.fundigsac.com", "fundigsac-web.vercel.app"]);
 
-type SafeLink = { kind: "internal" | "external" | "app"; href: string };
+type SafeLink = { kind: "internal" | "file" | "external" | "app"; href: string };
+
+/** Rutas del sitio que son archivos (PDF, imágenes, modelos): se abren directo, no como página. */
+const isFile = (href: string) => /\/[^/]+\.[a-z0-9]{2,5}$/i.test(href.split(/[?#]/)[0]);
 
 export function safeHref(raw: string): SafeLink | null {
   const href = raw.trim();
-  if (href.startsWith("/") && !href.startsWith("//")) return { kind: "internal", href };
+  if (href.startsWith("/") && !href.startsWith("//")) return { kind: isFile(href) ? "file" : "internal", href };
   if (/^(mailto|tel):[^\s]+$/i.test(href)) return { kind: "app", href };
   try {
     const url = new URL(href);
     if (url.protocol !== "https:") return null;
-    if (SITE_HOSTS.has(url.hostname)) return { kind: "internal", href: `${url.pathname}${url.search}${url.hash}` || "/" };
+    if (SITE_HOSTS.has(url.hostname)) {
+      const path = `${url.pathname}${url.search}${url.hash}` || "/";
+      return { kind: isFile(path) ? "file" : "internal", href: path };
+    }
     if (SAFE_HOSTS.has(url.hostname)) return { kind: "external", href: url.toString() };
   } catch {
     /* no es una URL válida: se muestra como texto */
@@ -33,12 +39,18 @@ function renderLink(label: string, target: string, key: string, onNavigate?: () 
   if (!link) return label;
   if (link.kind === "internal") {
     return (
-      <Link key={key} href={link.href} onClick={onNavigate}>
+      <Link key={key} href={link.href} prefetch={false} onClick={onNavigate}>
         {label}
       </Link>
     );
   }
   if (link.kind === "app") return <a key={key} href={link.href}>{label}</a>;
+  if (link.kind === "file")
+    return (
+      <a key={key} href={link.href} target="_blank" rel="noopener">
+        {label}
+      </a>
+    );
   return (
     <a key={key} href={link.href} target="_blank" rel="noopener noreferrer">
       {label}
