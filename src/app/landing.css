@@ -2433,6 +2433,18 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
   }
 }
 
+/* Pantallas ultra angostas (p. ej. plegables de 280 px): la cuenta queda en el menú móvil y la marca se achica. */
+@media (max-width: 359px) {
+  .lp-header__actions > .lp-account {
+    display: none;
+  }
+
+  .lp-header__brand img {
+    width: 118px;
+    height: auto;
+  }
+}
+
 /* Preferencias dentro del menú móvil. */
 .lp-mobile__prefs {
   display: flex;
