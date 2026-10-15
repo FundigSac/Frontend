@@ -140,7 +140,7 @@ function Fields() {
             <input id={`${uid}-d`} name="domicilioLegalOHabitual" required autoComplete="street-address" placeholder={f.address[1]} />
           </Field>
           <Field id={`${uid}-t`} label={f.phone[0]} required>
-            <input id={`${uid}-t`} name="telefonoDeContacto" type="tel" required pattern="[0-9+()\s\-]{7,20}" autoComplete="tel" placeholder={f.phone[1]} />
+            <input id={`${uid}-t`} name="telefonoDeContacto" type="tel" required pattern="[0-9+\s\(\)\-]{7,20}" autoComplete="tel" placeholder={f.phone[1]} />
           </Field>
           <Field id={`${uid}-c`} label={f.email[0]} required>
             <input id={`${uid}-c`} name="correoElectronico" type="email" required autoComplete="email" spellCheck={false} placeholder={f.email[1]} />
