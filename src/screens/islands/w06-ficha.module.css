@@ -849,14 +849,13 @@
 
 /* ---------- Asesoría técnica ---------- */
 .cta {
+  --veil: 251 250 247;
   position: relative;
   isolation: isolate;
   margin: clamp(72px, 8vw, 112px) 0 0;
   overflow: hidden;
-  background:
-    radial-gradient(80% 120% at 0% 0%, rgb(46 104 196 / 42%), transparent 62%),
-    linear-gradient(135deg, #0d2750 0%, #0b2145 100%);
-  color: #fff;
+  background: rgb(var(--veil));
+  color: var(--ink);
 }
 .ctaInner {
   position: relative;
@@ -864,14 +863,14 @@
   display: grid;
   width: min(1240px, calc(100% - 64px));
   min-height: clamp(420px, 34vw, 520px);
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
   margin-inline: auto;
 }
 .ctaCopy { display: grid; align-content: center; justify-items: start; gap: 18px; padding: clamp(40px, 5vw, 76px) 0; }
 .ctaCopy h2 {
   max-width: 16ch;
   margin: 0;
-  color: #fff;
+  color: var(--ink);
   font-family: var(--display);
   font-size: clamp(30px, 3.2vw, 46px);
   font-weight: 800;
@@ -879,10 +878,10 @@
   line-height: 1.06;
   text-wrap: balance;
 }
-.ctaText { max-width: 52ch; margin: 0; color: #c9d6ea; font-size: 16px; line-height: 1.7; }
+.ctaText { max-width: 52ch; margin: 0; color: var(--ink-soft); font-size: 16px; line-height: 1.7; }
 .ctaPoints { display: grid; gap: 10px; margin: 2px 0 0; padding: 0; list-style: none; }
-.ctaPoints li { display: flex; align-items: center; gap: 12px; color: #e8eef8; font-size: 15px; font-weight: 600; }
-.ctaPoints svg { flex: 0 0 auto; color: #ff9a62; }
+.ctaPoints li { display: flex; align-items: center; gap: 12px; color: var(--ink); font-size: 15px; font-weight: 600; }
+.ctaPoints svg { flex: 0 0 auto; color: var(--accent); }
 .ctaActions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
 .ctaPrimary,
 .ctaGhost {
@@ -901,42 +900,45 @@
 .ctaPrimary:hover { transform: translateY(-2px); border-color: #d4561a; background: #d4561a; }
 .ctaPrimary svg { transition: transform 0.3s var(--ease); }
 .ctaPrimary:hover svg { transform: translateX(4px); }
-.ctaGhost { border: 1px solid rgb(255 255 255 / 28%); background: rgb(255 255 255 / 6%); color: #fff; }
-.ctaGhost svg { color: #5fd28d; }
-.ctaGhost:hover { transform: translateY(-2px); border-color: #fff; background: rgb(255 255 255 / 12%); }
+.ctaGhost { border: 1px solid rgb(15 27 45 / 22%); background: rgb(255 255 255 / 70%); color: var(--ink); }
+.ctaGhost svg { color: #1a9e4f; }
+.ctaGhost:hover { transform: translateY(-2px); border-color: var(--ink); background: #fff; }
 .ctaPrimary:focus-visible,
 .ctaGhost:focus-visible,
-.ctaContact a:focus-visible { outline: 2px solid #8dbaff; outline-offset: 3px; }
+.ctaContact a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 
-.ctaVisual { position: absolute; z-index: 0; inset: 0 0 0 46%; overflow: hidden; }
-.ctaVisual img {
-  object-fit: cover;
-  object-position: 62% 30%;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 55%) 24%, #000 52%);
-  mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 55%) 24%, #000 52%);
-  transition: transform 1.6s var(--ease);
-}
+.ctaVisual { position: absolute; z-index: 0; inset: 0; overflow: hidden; }
+.ctaVisual img { object-fit: cover; object-position: 70% 30%; transition: transform 1.6s var(--ease); }
 .cta:hover .ctaVisual img { transform: scale(1.03); }
+.ctaVisual::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgb(var(--veil) / 99%) 0%, rgb(var(--veil) / 96%) 30%, rgb(var(--veil) / 72%) 42%, rgb(var(--veil) / 22%) 54%, rgb(var(--veil) / 0%) 66%);
+  content: "";
+  pointer-events: none;
+}
 .ctaContact {
   position: absolute;
   z-index: 2;
+  right: max(32px, calc((100% - 1240px) / 2 + 370px));
   bottom: clamp(22px, 3vw, 40px);
-  left: clamp(22px, 5vw, 80px);
   display: grid;
   gap: 6px;
   padding: 14px 18px;
-  border: 1px solid rgb(255 255 255 / 16%);
+  border: 1px solid rgb(255 255 255 / 55%);
   border-radius: 16px;
-  background: rgb(9 25 52 / 88%);
-  color: #c9d6ea;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 18px 36px -22px rgb(11 34 68 / 60%);
+  color: var(--ink-soft);
   font-size: 13.5px;
   line-height: 1.4;
 }
 .ctaContact a,
 .ctaContact span { display: inline-flex; align-items: center; gap: 8px; }
-.ctaContact a { color: #fff; font-size: 15px; font-weight: 800; text-decoration: none; font-variant-numeric: tabular-nums; }
-.ctaContact a:hover { color: #ffb27a; }
-.ctaContact svg { flex: 0 0 auto; color: #ff9a62; }
+.ctaContact a { color: var(--ink); font-size: 15px; font-weight: 800; text-decoration: none; font-variant-numeric: tabular-nums; }
+.ctaContact a:hover { color: var(--accent); }
+.ctaContact svg { flex: 0 0 auto; color: var(--accent); }
 
 /* ---------- Movimiento ---------- */
 @keyframes rise { from { opacity: 0; transform: translate3d(0, 18px, 0); } to { opacity: 1; transform: none; } }
@@ -1065,8 +1067,8 @@
   .ctaInner { min-height: 0; grid-template-columns: minmax(0, 1fr); }
   .ctaCopy { padding: 36px 0 44px; }
   .ctaVisual { position: relative; inset: auto; order: -1; aspect-ratio: 16 / 8; }
-  .ctaVisual img { -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent 100%); mask-image: linear-gradient(180deg, #000 45%, transparent 100%); }
-  .ctaContact { left: 18px; }
+  .ctaVisual::before { background: linear-gradient(0deg, rgb(var(--veil) / 100%) 0%, rgb(var(--veil) / 0%) 55%); }
+  .ctaContact { right: auto; left: 18px; }
 }
 
 @media (max-width: 860px) {
@@ -1208,7 +1210,11 @@
     linear-gradient(90deg, rgb(160 196 255 / 6%) 1px, transparent 1px) 0 0 / 28px 28px,
     linear-gradient(160deg, #10284c 0%, #0b1d38 100%); box-shadow: 0 0 0 1px rgb(255 255 255 / 8%); }
 :global(html[data-lp-theme="dark"]) .doc,
-:global(html[data-lp-theme="dark"]) .cta { box-shadow: 0 0 0 1px rgb(255 255 255 / 8%); }
+:global(html[data-lp-theme="dark"]) .cta { --veil: 8 18 31; }
+:global(html[data-lp-theme="dark"]) .ctaVisual img { filter: brightness(0.86) saturate(0.95); }
+:global(html[data-lp-theme="dark"]) .ctaGhost { border-color: rgb(255 255 255 / 28%); background: rgb(255 255 255 / 6%); }
+:global(html[data-lp-theme="dark"]) .ctaGhost:hover { border-color: #fff; background: rgb(255 255 255 / 12%); }
+:global(html[data-lp-theme="dark"]) .ctaContact { border-color: rgb(255 255 255 / 16%); background: rgb(9 25 52 / 88%); }
 :global(html[data-lp-theme="dark"]) .docPanel { background: #14253f; }
 :global(html[data-lp-theme="dark"]) .docPage { background: #0f1d32; }
 :global(html[data-lp-theme="dark"]) .docModal { background: rgb(8 18 31 / 88%); }
