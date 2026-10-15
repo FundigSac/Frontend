@@ -2,22 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChartColumnIncreasing, Gem, Leaf, Settings, Target, UsersRound } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { FloatingActions } from "../_landing/floating-actions";
 import { COMMON } from "../_legal/copy";
 import { LegalCta, LegalHero } from "../_legal/legal-parts";
 import { LegalMotion } from "../_legal/motion";
 import { useCopy } from "../_legal/use-copy";
 import { ABOUT } from "./copy";
+import { BarsUpIcon, GearIcon, GemIcon, LeafIcon, TargetArrowIcon, TeamIcon } from "./icons";
 import "./about.css";
 
-const HIGHLIGHT_ICONS = [Gem, UsersRound, Settings, Leaf] as const;
+const HIGHLIGHT_ICONS = [GemIcon, TeamIcon, GearIcon, LeafIcon] as const;
 
 export function AboutView() {
   const t = useCopy(ABOUT);
   const home = useCopy(COMMON.home);
 
   return (
+    <>
     <main className="lp lg ab">
       <LegalHero home={home} crumb={t.crumb} title={t.title} lead={t.lead} image="/media/nosotros/hero.webp" wide modifier="ab-hero" />
 
@@ -27,7 +29,7 @@ export function AboutView() {
             const Icon = HIGHLIGHT_ICONS[i];
             return (
               <li key={h.title} data-reveal="">
-                <Icon aria-hidden="true" size={30} strokeWidth={1.5} />
+                <Icon />
                 <h2>{h.title}</h2>
                 <p>{h.text}</p>
               </li>
@@ -69,18 +71,18 @@ export function AboutView() {
           <h2 id="ab-essence-title" className="lg-section-title">{t.essence.title}</h2>
           <div className="ab-mv">
             <div data-reveal="">
-              <Target aria-hidden="true" size={34} strokeWidth={1.5} />
+              <TargetArrowIcon />
               <h3>{t.mission.title}</h3>
               <p>{t.mission.text}</p>
             </div>
             <div data-reveal="">
-              <ChartColumnIncreasing aria-hidden="true" size={34} strokeWidth={1.5} />
+              <BarsUpIcon />
               <h3>{t.vision.title}</h3>
               <p>{t.vision.text}</p>
             </div>
           </div>
           <div className="ab-values" data-reveal="">
-            <UsersRound aria-hidden="true" size={34} strokeWidth={1.5} />
+            <TeamIcon />
             <div>
               <h3>{t.values.title}</h3>
               <ul>
@@ -93,7 +95,8 @@ export function AboutView() {
 
       <LegalCta {...t.cta} href="/cotizar" image="/media/nosotros/cierre.webp" />
       <LegalMotion />
-      <FloatingActions />
     </main>
+    <FloatingActions />
+    </>
   );
 }

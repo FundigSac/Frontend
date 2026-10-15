@@ -86,6 +86,8 @@
 }
 
 .ab-highlights__list svg {
+  width: clamp(36px, 3.1vw, 46px);
+  height: auto;
   margin-bottom: 8px;
   color: var(--lg-blue);
 }
@@ -135,6 +137,7 @@
 
   .ab-highlights__list svg {
     grid-row: span 2;
+    width: 30px;
     margin: 2px 0 0;
   }
 
@@ -292,7 +295,30 @@
 }
 
 .ab-essence svg {
+  width: clamp(36px, 3.1vw, 46px);
+  height: auto;
   color: var(--lg-blue);
+}
+
+/* Migas con chevrón, como en el boceto */
+.ab-hero .lg-crumbs > span[aria-hidden] {
+  font-size: 0;
+}
+
+.ab-hero .lg-crumbs > span[aria-hidden]::before {
+  content: "\203A";
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* Cierre más compacto */
+.ab .lg-cta h2 {
+  max-width: 24ch;
+  font-size: clamp(26px, 2.5vw, 36px);
+}
+
+.ab .lg-cta .lg-eyebrow {
+  font-size: 10.5px;
 }
 
 .ab-essence h3 {
@@ -309,7 +335,7 @@
 
 .ab-values {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-columns: clamp(36px, 3.1vw, 46px) minmax(0, 1fr);
   gap: 16px;
   align-items: start;
   padding-top: clamp(22px, 2.6vw, 34px);
@@ -379,5 +405,61 @@
 
   .ab-values ul {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ===== Modo oscuro ===== */
+html[data-lp-theme="dark"] .ab-highlights {
+  border-bottom-color: var(--lg-line);
+  background: linear-gradient(180deg, #0d1c31 0%, #08121f 100%);
+}
+
+html[data-lp-theme="dark"] .ab-highlights__list li {
+  color: #f2f6fc;
+}
+
+html[data-lp-theme="dark"] .ab-history {
+  background: #08121f;
+}
+
+html[data-lp-theme="dark"] .ab-timeline::before {
+  background: linear-gradient(180deg, var(--lg-blue) 0%, rgb(110 168 255 / 25%) 100%);
+}
+
+html[data-lp-theme="dark"] .ab-timeline li::before {
+  box-shadow: 0 0 0 4px #08121f, 0 0 0 5px rgb(110 168 255 / 35%);
+}
+
+html[data-lp-theme="dark"] .ab-timeline h3,
+html[data-lp-theme="dark"] .ab-essence h3 {
+  color: #f2f6fc;
+}
+
+html[data-lp-theme="dark"] .ab-essence {
+  background: #0d1c31;
+}
+
+html[data-lp-theme="dark"] .ab-essence__photo img {
+  filter: brightness(0.82) saturate(0.95);
+}
+
+html[data-lp-theme="dark"] .ab-mv,
+html[data-lp-theme="dark"] .ab-mv > div + div {
+  border-color: var(--lg-line);
+}
+
+html[data-lp-theme="dark"] .ab-values li {
+  border-color: var(--lg-line);
+  background: #0f1d32;
+  color: #e6edf7;
+}
+
+html[data-lp-theme="dark"] .ab-history__cta {
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  html[data-lp-theme="dark"] .ab-hero .lg-hero__photo {
+    filter: brightness(0.85) saturate(0.95);
   }
 }
