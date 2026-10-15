@@ -255,7 +255,11 @@ export const CLAIMS: Pair<{
   formIntro: string;
   formAria: string;
   legends: readonly [string, string, string, string, string, string];
+  /** Tercer apartado según el tipo: bien contratado (reclamo) o atención recibida (queja). */
+  goodLegend: { reclamo: string; queja: string };
   detailLegend: { reclamo: string; queja: string };
+  provider: { title: string; name: string; ruc: string; address: string; sheet: string; sheetValue: string };
+  notices: { filing: string; deadline: string; copy: string; indecopi: string };
   kinds: { reclamo: { title: string; text: string }; queja: { title: string; text: string } };
   fields: {
     name: [string, string];
@@ -266,6 +270,20 @@ export const CLAIMS: Pair<{
     email: [string, string];
     phone: [string, string];
     address: [string, string];
+    docHints: { DNI: string; RUC: string; CE: string; PASAPORTE: string };
+    minor: string;
+    minorHint: string;
+    repName: [string, string];
+    repDoc: [string, string];
+    goodType: string;
+    goodTypes: readonly ClaimOption[];
+    amount: [string, string];
+    amountHint: string;
+    currency: string;
+    currencies: readonly ClaimOption[];
+    place: string;
+    placeSelect: string;
+    places: readonly ClaimOption[];
     product: string;
     productSelect: string;
     products: readonly ClaimOption[];
@@ -273,8 +291,8 @@ export const CLAIMS: Pair<{
     order: [string, string];
     facts: [string, string, string];
     request: [string, string];
-    channelsHint: string;
-    channels: readonly ClaimOption[];
+    mediumHint: string;
+    mediums: readonly ClaimOption[];
   };
   consent: { pre: string; link: string };
   clear: string;
@@ -301,11 +319,19 @@ export const CLAIMS: Pair<{
     formTitle: "Formulario de reclamos y quejas",
     formIntro: "Completa la siguiente información. Todos los campos marcados con * son obligatorios.",
     formAria: "Formulario de reclamos y quejas",
-    legends: ["Tipo de solicitud", "Datos del consumidor", "Identificación del bien o servicio", "Detalle del", "Pedido del consumidor", "Canales de respuesta"],
+    legends: ["Tipo de solicitud", "Identificación del consumidor", "Identificación del bien contratado", "Detalle del", "Pedido del consumidor", "Medio de respuesta"],
+    goodLegend: { reclamo: "Identificación del bien contratado", queja: "Atención recibida" },
     detailLegend: { reclamo: "Detalle del reclamo", queja: "Detalle de la queja" },
+    provider: { title: "Datos del proveedor", name: "Razón social", ruc: "RUC", address: "Domicilio", sheet: "N.° de hoja de reclamación", sheetValue: "Se asigna al registrar tu solicitud" },
+    notices: {
+      filing: "La formulación del reclamo no impide acudir a otras vías de solución de controversias ni es requisito previo para interponer una denuncia ante el INDECOPI.",
+      deadline: "El proveedor atiende y responde por escrito, por el medio que elijas, en un plazo no mayor a quince (15) días hábiles improrrogables (Ley N.° 31435 y D.S. N.° 101-2022-PCM).",
+      copy: "Recibirás una copia de tu hoja de reclamación en el correo que indiques.",
+      indecopi: "Si no recibes respuesta en el plazo, puedes acudir al INDECOPI (Reclama Virtual, sacreclamo@indecopi.gob.pe o 224 7777 en Lima).",
+    },
     kinds: {
-      reclamo: { title: "Reclamo", text: "Disconformidad relacionada con un bien o servicio que ha afectado tu experiencia." },
-      queja: { title: "Queja", text: "Manifestación de insatisfacción sin que exista una afectación directa en el servicio." },
+      reclamo: { title: "Reclamo", text: "Disconformidad relacionada con los productos o servicios." },
+      queja: { title: "Queja", text: "Malestar o descontento respecto a la atención al público." },
     },
     fields: {
       name: ["Nombres y apellidos / razón social", "Ej. María Pérez Rojas…"],
@@ -315,19 +341,36 @@ export const CLAIMS: Pair<{
       docNumber: ["Número de documento", "Ej. 12345678…"],
       email: ["Correo electrónico", "ejemplo@correo.com…"],
       phone: ["Teléfono de contacto", "Ej. 987 654 321…"],
-      address: ["Dirección", "Ej. Av. Los Pinos 123, Lima…"],
-      product: "Producto o servicio relacionado",
+      address: ["Domicilio", "Ej. Av. Los Pinos 123, Lima…"],
+      docHints: { DNI: "El DNI tiene 8 dígitos.", RUC: "El RUC tiene 11 dígitos.", CE: "Ingresa de 6 a 12 letras o números.", PASAPORTE: "Ingresa de 6 a 12 letras o números." },
+      minor: "Soy menor de edad y presento este registro con mi padre, madre o representante",
+      minorHint: "Indica los datos de tu padre, madre o representante legal.",
+      repName: ["Nombres y apellidos del padre, madre o representante", "Ej. Luis Pérez Soto…"],
+      repDoc: ["DNI o documento del padre, madre o representante", "Ej. 12345678…"],
+      goodType: "El reclamo es sobre un",
+      goodTypes: [{ value: "PRODUCTO", label: "Producto" }, { value: "SERVICIO", label: "Servicio" }],
+      amount: ["Monto reclamado (opcional)", "Ej. 1500.00…"],
+      amountHint: "Si el reclamo no tiene un monto, déjalo vacío.",
+      currency: "Moneda",
+      currencies: [{ value: "PEN", label: "Soles (S/)" }, { value: "USD", label: "Dólares (US$)" }],
+      place: "¿Dónde ocurrió?",
+      placeSelect: "Selecciona una opción",
+      places: [
+        { value: "Atención presencial", label: "Atención presencial" }, { value: "Atención telefónica", label: "Atención telefónica" }, { value: "WhatsApp", label: "WhatsApp" },
+        { value: "Correo electrónico", label: "Correo electrónico" }, { value: "Sitio web", label: "Sitio web" }, { value: "Entrega o despacho", label: "Entrega o despacho" }, { value: "Otro", label: "Otro" },
+      ],
+      product: "Producto o servicio",
       productSelect: "Selecciona una opción",
       products: [
         { value: "Válvulas", label: "Válvulas" }, { value: "Tuberías", label: "Tuberías" }, { value: "Marcos y tapas", label: "Marcos y tapas" }, { value: "Grifos", label: "Grifos" },
-        { value: "Acoples", label: "Acoples" }, { value: "Atención o servicio al cliente", label: "Atención o servicio al cliente" }, { value: "Entrega o despacho", label: "Entrega o despacho" }, { value: "Otro", label: "Otro" },
+        { value: "Acoples", label: "Acoples" }, { value: "Entrega o despacho", label: "Entrega o despacho" }, { value: "Otro", label: "Otro" },
       ],
       date: "Fecha del suceso",
       order: ["N° de orden de compra, factura u otro (opcional)", "Ej. F001-000123…"],
       facts: ["Describe lo ocurrido", "Explica de manera clara y detallada tu reclamo…", "Explica de manera clara y detallada tu queja…"],
       request: ["¿Qué solución solicitas?", "Indica de manera clara tu pedido o expectativa…"],
-      channelsHint: "Selecciona el medio por el cual prefieres que nos comuniquemos contigo.",
-      channels: [{ value: "Correo electrónico", label: "Correo electrónico" }, { value: "Teléfono", label: "Teléfono" }, { value: "WhatsApp", label: "WhatsApp" }],
+      mediumHint: "La respuesta se te enviará por escrito. Elige el medio.",
+      mediums: [{ value: "Correo electrónico", label: "Correo electrónico" }, { value: "Carta al domicilio", label: "Carta al domicilio" }],
     },
     consent: { pre: "Declaro que la información registrada es veraz y acepto que sea tratada para la gestión de mi {kind}, de acuerdo con la ", link: "Política de privacidad" },
     clear: "Limpiar formulario",
@@ -351,18 +394,18 @@ export const CLAIMS: Pair<{
         title: "¿Cómo funciona?",
         items: [
           { title: "1. Completa el formulario", text: "Registra tu reclamo o queja con toda la información solicitada." },
-          { title: "2. Recibimos tu solicitud", text: "Te confirmaremos la recepción por el medio que elijas." },
-          { title: "3. Evaluamos tu caso", text: "Nuestro equipo analizará la información y se pondrá en contacto contigo." },
-          { title: "4. Te brindamos una respuesta", text: "Recibirás una respuesta en el menor tiempo posible, por el medio que elijas." },
+          { title: "2. Recibimos tu solicitud", text: "Te enviamos la copia de tu hoja de reclamación por correo." },
+          { title: "3. Evaluamos tu caso", text: "Nuestro equipo analiza la información y, si hace falta, se pone en contacto contigo." },
+          { title: "4. Te respondemos por escrito", text: "Dentro de 15 días hábiles, por el medio que elijas: correo electrónico o carta." },
         ],
       },
       important: {
         title: "Información importante",
         items: [
-          "Este formulario es únicamente para reclamos y quejas sobre nuestros productos y servicios.",
-          "Completa la información de manera veraz y detallada.",
-          "Nos comunicaremos contigo a través del medio seleccionado.",
-          "El plazo de atención podrá variar según la naturaleza del caso.",
+          "Reclamo: disconformidad con productos o servicios. Queja: malestar por la atención al público.",
+          "Si registras una queja que en realidad es un reclamo, se tramita como reclamo.",
+          "Respuesta por escrito en un plazo no mayor a 15 días hábiles, improrrogables.",
+          "Presentar un reclamo no te impide acudir al INDECOPI ni es requisito previo para denunciar.",
         ],
       },
       help: { title: "¿Necesitas ayuda?", text: "Si tienes consultas adicionales, puedes comunicarte con nuestro equipo de atención al cliente.", call: ["Llámanos", "Nuestro equipo te orientará."], write: "Escríbenos", whatsapp: ["WhatsApp", "Contáctanos por WhatsApp."], whatsappMsg: "Hola FUNDIGSAC. Necesito ayuda con mi reclamo o queja." },
@@ -380,11 +423,19 @@ export const CLAIMS: Pair<{
     formTitle: "Claims and complaints form",
     formIntro: "Please complete the information below. All fields marked with * are required.",
     formAria: "Claims and complaints form",
-    legends: ["Request type", "Consumer details", "Product or service identification", "Details of the", "Consumer request", "Response channels"],
+    legends: ["Request type", "Consumer identification", "Contracted good identification", "Details of the", "Consumer request", "Response method"],
+    goodLegend: { reclamo: "Contracted good identification", queja: "Service received" },
     detailLegend: { reclamo: "Claim details", queja: "Complaint details" },
+    provider: { title: "Supplier details", name: "Company name", ruc: "Tax ID (RUC)", address: "Address", sheet: "Complaint sheet no.", sheetValue: "Assigned when your request is registered" },
+    notices: {
+      filing: "Filing a claim does not prevent you from using other dispute resolution channels, nor is it a prerequisite to filing a complaint with INDECOPI.",
+      deadline: "The supplier handles and answers in writing, through the method you choose, within fifteen (15) business days at most, without extension (Law No. 31435 and Supreme Decree No. 101-2022-PCM).",
+      copy: "You will receive a copy of your complaint sheet at the email you provide.",
+      indecopi: "If you do not get an answer on time, you can go to INDECOPI (Reclama Virtual, sacreclamo@indecopi.gob.pe or +51 1 224 7777 in Lima).",
+    },
     kinds: {
-      reclamo: { title: "Claim", text: "Disagreement related to a product or service that has affected your experience." },
-      queja: { title: "Complaint", text: "Expression of dissatisfaction with no direct impact on the service." },
+      reclamo: { title: "Claim", text: "Disagreement related to products or services." },
+      queja: { title: "Complaint", text: "Discomfort or dissatisfaction with the customer service received." },
     },
     fields: {
       name: ["Full name / company name", "E.g. Maria Perez Rojas…"],
@@ -394,19 +445,36 @@ export const CLAIMS: Pair<{
       docNumber: ["Document number", "E.g. 12345678…"],
       email: ["Email address", "example@email.com…"],
       phone: ["Contact phone", "E.g. 987 654 321…"],
-      address: ["Address", "E.g. 123 Los Pinos Ave, Lima…"],
-      product: "Related product or service",
+      address: ["Home address", "E.g. 123 Los Pinos Ave, Lima…"],
+      docHints: { DNI: "The DNI has 8 digits.", RUC: "The RUC has 11 digits.", CE: "Enter 6 to 12 letters or numbers.", PASAPORTE: "Enter 6 to 12 letters or numbers." },
+      minor: "I am a minor and I am filing this with my parent or representative",
+      minorHint: "Enter the details of your parent or legal representative.",
+      repName: ["Parent or representative full name", "E.g. Luis Perez Soto…"],
+      repDoc: ["Parent or representative ID", "E.g. 12345678…"],
+      goodType: "The claim is about a",
+      goodTypes: [{ value: "PRODUCTO", label: "Product" }, { value: "SERVICIO", label: "Service" }],
+      amount: ["Amount claimed (optional)", "E.g. 1500.00…"],
+      amountHint: "If the claim has no amount, leave it empty.",
+      currency: "Currency",
+      currencies: [{ value: "PEN", label: "Soles (S/)" }, { value: "USD", label: "US dollars (US$)" }],
+      place: "Where did it happen?",
+      placeSelect: "Select an option",
+      places: [
+        { value: "Atención presencial", label: "In-person service" }, { value: "Atención telefónica", label: "Phone service" }, { value: "WhatsApp", label: "WhatsApp" },
+        { value: "Correo electrónico", label: "Email" }, { value: "Sitio web", label: "Website" }, { value: "Entrega o despacho", label: "Delivery or dispatch" }, { value: "Otro", label: "Other" },
+      ],
+      product: "Product or service",
       productSelect: "Select an option",
       products: [
         { value: "Válvulas", label: "Valves" }, { value: "Tuberías", label: "Pipes" }, { value: "Marcos y tapas", label: "Frames and covers" }, { value: "Grifos", label: "Hydrants" },
-        { value: "Acoples", label: "Couplings" }, { value: "Atención o servicio al cliente", label: "Customer service" }, { value: "Entrega o despacho", label: "Delivery or dispatch" }, { value: "Otro", label: "Other" },
+        { value: "Acoples", label: "Couplings" }, { value: "Entrega o despacho", label: "Delivery or dispatch" }, { value: "Otro", label: "Other" },
       ],
       date: "Date of the event",
       order: ["Purchase order, invoice or other no. (optional)", "E.g. F001-000123…"],
       facts: ["Describe what happened", "Explain your claim clearly and in detail…", "Explain your complaint clearly and in detail…"],
       request: ["What solution are you requesting?", "State your request or expectation clearly…"],
-      channelsHint: "Select how you prefer us to contact you.",
-      channels: [{ value: "Correo electrónico", label: "Email" }, { value: "Teléfono", label: "Phone" }, { value: "WhatsApp", label: "WhatsApp" }],
+      mediumHint: "The answer will be sent to you in writing. Choose the method.",
+      mediums: [{ value: "Correo electrónico", label: "Email" }, { value: "Carta al domicilio", label: "Letter to your home address" }],
     },
     consent: { pre: "I declare that the information provided is true and I agree to it being processed to handle my {kind}, in accordance with the ", link: "Privacy policy" },
     clear: "Clear form",
@@ -430,18 +498,18 @@ export const CLAIMS: Pair<{
         title: "How does it work?",
         items: [
           { title: "1. Complete the form", text: "Register your claim or complaint with all the requested information." },
-          { title: "2. We receive your request", text: "We will confirm receipt through the channel you choose." },
-          { title: "3. We assess your case", text: "Our team will analyze the information and get in touch with you." },
-          { title: "4. We give you a response", text: "You will receive a response as soon as possible, through the channel you choose." },
+          { title: "2. We receive your request", text: "We email you a copy of your complaint sheet." },
+          { title: "3. We assess your case", text: "Our team analyzes the information and, if needed, contacts you." },
+          { title: "4. We answer in writing", text: "Within 15 business days, through the method you choose: email or letter." },
         ],
       },
       important: {
         title: "Important information",
         items: [
-          "This form is only for claims and complaints about our products and services.",
-          "Please complete the information truthfully and in detail.",
-          "We will contact you through the channel you selected.",
-          "Response times may vary depending on the nature of the case.",
+          "Claim: disagreement with products or services. Complaint: discomfort with the customer service.",
+          "If you file a complaint that is really a claim, it is handled as a claim.",
+          "Written answer within 15 business days at most, without extension.",
+          "Filing a claim does not prevent you from going to INDECOPI nor is it a prerequisite.",
         ],
       },
       help: { title: "Need help?", text: "If you have further questions, you can contact our customer service team.", call: ["Call us", "Our team will guide you."], write: "Email us", whatsapp: ["WhatsApp", "Contact us on WhatsApp."], whatsappMsg: "Hello FUNDIGSAC. I need help with my claim or complaint." },

@@ -10,10 +10,9 @@ import { useCopy } from "./use-copy";
 
 const HOW_ICONS = [FileText, Mail, Search, ShieldCheck] as const;
 
-export function ClaimsView({ hero, closing, enabled, email, phoneHref, whatsappNumber }: {
+export function ClaimsView({ hero, closing, email, phoneHref, whatsappNumber }: {
   hero: string;
   closing: string;
-  enabled: boolean;
   email: string;
   phoneHref: string;
   whatsappNumber: string;
@@ -34,7 +33,7 @@ export function ClaimsView({ hero, closing, enabled, email, phoneHref, whatsappN
 
       <div className="lp-shell" style={{ paddingBottom: "clamp(40px, 6vw, 84px)" }}>
         <div className="lg-claims">
-          <ClaimForm enabled={enabled} email={email} whatsappNumber={whatsappNumber} />
+          <ClaimForm email={email} whatsappNumber={whatsappNumber} />
 
           <aside className="lg-side" aria-label={s.aria}>
             <div data-reveal="" style={{ ["--d" as string]: "0ms" }} className="lg-side__card lg-side__card--blue">

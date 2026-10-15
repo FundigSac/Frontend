@@ -10,16 +10,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/reclamaciones" },
 };
 
-/** El registro depende de la base de datos: se evalúa en cada petición, no en el build. */
-export const dynamic = "force-dynamic";
-
 export default function ComplaintsPage() {
-  const registryEnabled = Boolean(process.env.DATABASE_URL) || process.env.NODE_ENV !== "production";
   return (
     <ClaimsView
       hero={claimsHeroImage()}
       closing={claimsClosingImage()}
-      enabled={registryEnabled}
       email={SITE.email}
       phoneHref={site.phoneHref}
       whatsappNumber={site.whatsappNumber}

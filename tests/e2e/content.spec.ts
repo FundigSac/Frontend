@@ -277,13 +277,18 @@ test.describe("W16 / W17 / W24 Cotización", () => {
 });
 
 test.describe("W18 Libro de Reclamaciones", () => {
-  test("tipo de solicitud accesible, validación nativa y registro real con folio REC", async ({ page }) => {
+  test("hoja de reclamación: datos del proveedor, tipo accesible, validación nativa y solicitud lista para enviar", async ({ page }) => {
     await go(page, "/reclamaciones");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Libro de Reclamaciones");
 
     await hydrated(page, "#reclamaciones-form");
     const form = page.locator("#reclamaciones-form");
+    // Datos del proveedor (Anexo I del D.S. 101-2022-PCM)
+    await expect(form.locator(".lg-provider")).toContainText("20601839281");
+    await expect(form.locator(".lg-provider")).toContainText("Fundición y Desarrollo de Ingeniería y Gestión S.A.C.");
     await expect(form.getByRole("radio", { name: /Reclamo/ })).toBeChecked();
+    await expect(form.getByText("Disconformidad relacionada con los productos o servicios.")).toBeVisible();
+    await expect(form.getByText("Malestar o descontento respecto a la atención al público.")).toBeVisible();
     await form.getByRole("radio", { name: /Queja/ }).check();
     await expect(form.getByRole("radio", { name: /Reclamo/ })).not.toBeChecked();
     await expect(form.getByRole("button", { name: /Enviar queja/ })).toBeVisible();
@@ -296,12 +301,17 @@ test.describe("W18 Libro de Reclamaciones", () => {
 
     await form.locator('input[name="nombresYApellidosRazon"]').fill("Usuario de Prueba");
     await form.locator('select[name="tipoDeDocumento"]').selectOption("DNI");
+    // el DNI exige 8 dígitos
+    await form.locator('input[name="numeroDeDocumento"]').fill("1234");
+    expect(await form.locator('input[name="numeroDeDocumento"]').evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
     await form.locator('input[name="numeroDeDocumento"]').fill("72489102");
     await form.locator('input[name="correoElectronico"]').fill("prueba@correo.pe");
     await form.locator('input[name="telefonoDeContacto"]').fill("+51 987 654 321");
     await form.locator('input[name="domicilioLegalOHabitual"]').fill("Av. Prueba 123, Lima");
+    await expect(form.getByRole("radio", { name: "Producto", exact: true })).toBeChecked();
     await form.locator('select[name="descripcionDelProductoO"]').selectOption("Válvulas");
     await form.locator('input[name="fechaDelSuceso"]').fill("2026-10-10");
+    await form.locator('input[name="montoReclamado"]').fill("1500.50");
     await form.locator('textarea[name="detalleDeLosHechos"]').fill("Detalle de prueba automatizada.");
     await form.locator('textarea[name="pedidoConcretoOPretension"]').fill("Respuesta técnica formal.");
 
@@ -321,10 +331,51 @@ test.describe("W18 Libro de Reclamaciones", () => {
       await expect(ready.getByRole("link", { name: /Enviar por correo/ })).toHaveAttribute("href", /^mailto:cotizaciones@fundigsac\.com\?subject=Reclamo/);
       await expect(ready.getByRole("link", { name: /Enviar por WhatsApp/ })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
       await expect(ready.locator("pre")).toContainText("Usuario de Prueba");
+      await expect(ready.locator("pre")).toContainText("Monto reclamado: S/ 1,500.50");
+      await expect(ready.locator("pre")).toContainText("RUC: 20601839281");
       await ready.getByRole("button", { name: "Editar mis datos" }).click();
       await expect(page.locator("#reclamaciones-form")).toBeVisible();
       await expect(form.locator('input[name="nombresYApellidosRazon"]')).toHaveValue("Usuario de Prueba");
     }
+  });
+
+  test("la queja pide el lugar de atención (no el bien ni el monto) y el menor de edad debe indicar a su representante", async ({ page }) => {
+    await go(page, "/reclamaciones");
+    await hydrated(page, "#reclamaciones-form");
+    const form = page.locator("#reclamaciones-form");
+
+    await form.getByRole("radio", { name: /Queja/ }).check();
+    await expect(form.getByText("Atención recibida")).toBeVisible();
+    await expect(form.locator('select[name="lugarDeAtencion"]')).toBeVisible();
+    await expect(form.locator('select[name="descripcionDelProductoO"]')).toHaveCount(0);
+    await expect(form.locator('input[name="montoReclamado"]')).toHaveCount(0);
+    await form.getByRole("radio", { name: /Reclamo/ }).check();
+    await expect(form.locator('input[name="montoReclamado"]')).toBeVisible();
+    await expect(form.locator('select[name="lugarDeAtencion"]')).toHaveCount(0);
+
+    // menor de edad: aparecen los datos del padre, madre o representante y son obligatorios
+    await expect(form.locator('input[name="representanteNombre"]')).toHaveCount(0);
+    await form.getByLabel(/Soy menor de edad/).check();
+    await expect(form.locator('input[name="representanteNombre"]')).toBeVisible();
+    expect(await form.locator('input[name="representanteNombre"]').evaluate((el: HTMLInputElement) => el.required)).toBe(true);
+    expect(await form.locator('input[name="representanteDocumento"]').evaluate((el: HTMLInputElement) => el.required)).toBe(true);
+    await form.getByLabel(/Soy menor de edad/).uncheck();
+    await expect(form.locator('input[name="representanteNombre"]')).toHaveCount(0);
+
+    // el tipo de documento define el formato del número
+    await form.locator('select[name="tipoDeDocumento"]').selectOption("RUC");
+    await form.locator('input[name="numeroDeDocumento"]').fill("20601839281");
+    expect(await form.locator('input[name="numeroDeDocumento"]').evaluate((el: HTMLInputElement) => el.validity.valid)).toBe(true);
+    await form.locator('input[name="numeroDeDocumento"]').fill("2060183928");
+    expect(await form.locator('input[name="numeroDeDocumento"]').evaluate((el: HTMLInputElement) => el.validity.patternMismatch)).toBe(true);
+  });
+
+  test("avisos legales: plazo de 15 días hábiles, copia por correo, vía INDECOPI", async ({ page }) => {
+    await go(page, "/reclamaciones");
+    const notices = page.locator(".lg-notices");
+    await expect(notices).toContainText("quince (15) días hábiles");
+    await expect(notices).toContainText("INDECOPI");
+    await expect(notices).toContainText("copia de tu hoja de reclamación");
   });
 });
 
