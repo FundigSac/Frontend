@@ -4,10 +4,34 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Download, ExternalLink, Eye, FileText, Maximize2, Rotate3d, ShieldCheck, X } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Bolt,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Download,
+  ExternalLink,
+  Eye,
+  FileText,
+  Layers,
+  Maximize2,
+  MessageCircle,
+  Phone,
+  Rotate3d,
+  Settings2,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 import styles from "./w06-ficha.module.css";
-import { DATASHEETS } from "./w06-ficha-data";
+import { DATASHEETS, type Datasheet, type Feature } from "./w06-ficha-data";
+import { FICHA_COPY } from "./w06-ficha-copy";
+import { ValvePlan, type Cotas } from "./w06-plano";
 import { requestDocumentHref } from "@/modules/resources/documents";
+import { site, whatsappLink } from "@/lib/site-info";
+import { useLang } from "@/shared/layout/landing-prefs";
 import { useReveal } from "@/shared/ui/use-reveal";
 
 const BASE = "/media/valvula-ficha/";
@@ -46,19 +70,16 @@ const EXTENDED_THUMBS = [
 ];
 
 const RELATED = [
-  { src: "mariposa-cut.webp", title: "Válvula mariposa", text: "Diseño compacto y de bajo torque para grandes diámetros.", href: "/productos/valvulas/valvula-mariposa" },
-  { src: "check-cut.webp", title: "Válvula check", text: "Evita el retorno de flujo en sistemas de conducción.", href: "/productos/valvulas" },
-  { src: "aire-cut.webp", title: "Válvula de aire", text: "Elimina y admite aire en redes de agua, mejorando la eficiencia.", href: "/productos/valvulas" },
-  { src: "reductora-cut.webp", title: "Válvula reductora de presión", text: "Controla y estabiliza la presión en la red de distribución.", href: "/productos/valvulas" },
-];
-
-const APPLICATIONS = ["Redes de agua potable", "Sistemas de riego", "Estaciones de bombeo", "Infraestructura urbana"] as const;
-const TABS = [
-  { id: "descripcion", label: "Descripción" },
-  { id: "especificaciones", label: "Especificaciones" },
-  { id: "dimensiones", label: "Dimensiones" },
-  { id: "documentacion", label: "Documentación" },
+  { src: "mariposa-cut.webp", es: ["Válvula mariposa", "Diseño compacto y de bajo torque para grandes diámetros."], en: ["Butterfly valve", "Compact, low-torque design for large diameters."], href: "/productos/valvulas/valvula-mariposa" },
+  { src: "check-cut.webp", es: ["Válvula check", "Evita el retorno de flujo en sistemas de conducción."], en: ["Check valve", "Prevents backflow in conveyance systems."], href: "/productos/valvulas" },
+  { src: "aire-cut.webp", es: ["Válvula de aire", "Elimina y admite aire en redes de agua, mejorando la eficiencia."], en: ["Air valve", "Releases and admits air in water networks for better efficiency."], href: "/productos/valvulas" },
+  { src: "reductora-cut.webp", es: ["Válvula reductora de presión", "Controla y estabiliza la presión en la red de distribución."], en: ["Pressure reducing valve", "Controls and stabilizes pressure in distribution networks."], href: "/productos/valvulas" },
 ] as const;
+
+const TAB_IDS = ["descripcion", "especificaciones", "dimensiones", "documentacion"] as const;
+type TabId = (typeof TAB_IDS)[number];
+
+const FEATURE_ICONS: Record<Feature["icon"], typeof ShieldCheck> = { shield: ShieldCheck, settings: Settings2, layers: Layers, nut: Bolt };
 
 /** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía extendida; sin valor es la ficha base (H-ITALY). */
 export type Variant = "fundigsac" | "extendida";
@@ -71,7 +92,32 @@ const variantCopy = (variant?: Variant) => {
 };
 const COPY = { base: variantCopy(), fundigsac: variantCopy("fundigsac"), extendida: variantCopy("extendida") } as const;
 
+/** Reparte las especificaciones en tres grupos legibles, sin cambiar ni reordenar los valores de la ficha. */
+const MATERIAL_KEY = /cuerpo|tapa|cuña|^compuerta$|vástago|tuerca|junta|anillo|perno|tornill|arandela|guardapolvo|volante|sellos|revestimiento|recubrimiento/i;
+const STANDARD_KEY = /^dise|^brida|cara a cara|longitud entre caras|^prueba|presiones de prueba|norma de producto|conformidad|marcado/i;
+function groupSpecs(specs: Datasheet["specs"]) {
+  const materials: Datasheet["specs"] = [];
+  const standards: Datasheet["specs"] = [];
+  const general: Datasheet["specs"] = [];
+  for (const row of specs) (MATERIAL_KEY.test(row[0]) ? materials : STANDARD_KEY.test(row[0]) ? standards : general).push(row);
+  return { general, materials, standards };
+}
+
+/** Cotas del plano para un diámetro, tomadas de las tablas de la ficha. */
+function cotasFor(sheet: Datasheet, dn: string): Cotas {
+  const row = sheet.dims.rows.find((r) => r.dn === dn);
+  const get = (label: string) => {
+    const i = sheet.dims.head.indexOf(label);
+    return i > 0 && row ? row.cells[i - 1] : null;
+  };
+  const flange = sheet.flange.rows(dn).map((r) => r.cells[0]).filter((v) => v !== null && v !== undefined).map(String);
+  const outer = flange.length ? [...new Set(flange)].join(" / ") : get("D") === null ? null : String(get("D"));
+  return { dn, L: get("L (F4)") ?? get("L"), H: get("H"), OD: get("ØD"), A: outer, aLabel: sheet.flange.head[1] ?? "D" };
+}
+
 export function W06Ficha(props: { variant?: Variant }) {
+  const [lang] = useLang();
+  const t = FICHA_COPY[lang];
   const { warrantyLabel, productName, thumbs: THUMBS, sheet } = COPY[props.variant ?? "base"];
   const { doc } = sheet;
   const docPages = doc?.pages ?? [];
@@ -81,11 +127,13 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [docPage, setDocPage] = useState(0);
   const [spin, setSpin] = useState(false);
   const [broken, setBroken] = useState<Record<string, boolean>>({});
-  const [size, setSize] = useState("DN50");
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("descripcion");
+  const [size, setSize] = useState(sheet.sizes.includes("DN100") ? "DN100" : sheet.sizes[0]);
+  const [tab, setTab] = useState<TabId>("descripcion");
   const pageRef = useRef<HTMLElement>(null);
   const total = THUMBS.length;
   const current = THUMBS[active];
+  const brand = sheet.specs.find(([k]) => k === "Marca")?.[1];
+  const series = sheet.specs.find(([k]) => k === "Serie")?.[1];
 
   useReveal(pageRef);
 
@@ -100,20 +148,20 @@ export function W06Ficha(props: { variant?: Variant }) {
     if (typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) if (entry.isIntersecting) setTab(entry.target.id as (typeof TABS)[number]["id"]);
+        for (const entry of entries) if (entry.isIntersecting) setTab(entry.target.id as TabId);
       },
       { rootMargin: "-22% 0px -68% 0px" },
     );
-    TABS.forEach(({ id }) => { const el = document.getElementById(id); if (el) io.observe(el); });
+    TAB_IDS.forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
     return () => io.disconnect();
   }, []);
 
-  const goTo = (id: string) => (event: React.MouseEvent) => {
+  const goTo = (id: TabId) => (event: React.MouseEvent) => {
     const el = document.getElementById(id);
     if (!el) return;
     event.preventDefault();
     el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-    setTab(id as (typeof TABS)[number]["id"]);
+    setTab(id);
   };
 
   useEffect(() => {
@@ -156,148 +204,197 @@ export function W06Ficha(props: { variant?: Variant }) {
   );
 
   const downloadCta = doc
-    ? <a href={doc.href} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
-    : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>;
+    ? <a href={doc.href} download className={styles.secondary}><Download size={17} aria-hidden="true" /> {t.download}</a>
+    : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>;
+
   // Qué contiene la ficha, tomado de los datos reales de esta válvula.
-  const docIncludes = [
-    "Especificaciones técnicas",
-    `Dimensiones ${sheet.sizeRange}`,
-    `${sheet.flange.title} PN10 / PN16`,
-    ...(sheet.stem ? [sheet.stem.title] : []),
-    "Materiales y normas",
-  ].slice(0, 4);
-  // Las especificaciones se reparten en dos tablas para que la sección no sea una columna larguísima.
-  const specHalf = Math.ceil(sheet.specs.length / 2);
-  const specColumns = [sheet.specs.slice(0, specHalf), sheet.specs.slice(specHalf)];
+  const docIncludes = [t.docSpecs, `${t.docDims} ${sheet.sizeRange}`, `${sheet.flange.title} PN10 / PN16`, ...(sheet.stem ? [sheet.stem.title] : []), t.docMaterials].slice(0, 4);
+  const specGroups = groupSpecs(sheet.specs);
+  const specColumns = [
+    [{ id: "general", title: t.groups.general, rows: specGroups.general }, { id: "standards", title: t.groups.standards, rows: specGroups.standards }],
+    [{ id: "materials", title: t.groups.materials, rows: specGroups.materials }],
+  ].map((col) => col.filter((g) => g.rows.length));
+  const cotas = cotasFor(sheet, size);
+  const dimRow = sheet.dims.rows.find((r) => r.dn === size);
+  const whatsapp = whatsappLink(t.whatsappText(productName.charAt(0).toLowerCase() + productName.slice(1)));
 
   return (
     <main className={styles.page} ref={pageRef}>
       <div className={styles.wrap}>
-        <nav aria-label="Migas de pan" className={styles.crumbs}>
-          <Link href="/">Inicio</Link><span aria-hidden="true">›</span>
-          <Link href="/productos">Productos</Link><span aria-hidden="true">›</span>
-          <Link href="/productos/valvulas">Válvulas</Link><span aria-hidden="true">›</span>
+        <nav aria-label={t.crumbs.label} className={styles.crumbs}>
+          <Link href="/">{t.crumbs.home}</Link><ChevronRight size={14} aria-hidden="true" />
+          <Link href="/productos">{t.crumbs.products}</Link><ChevronRight size={14} aria-hidden="true" />
+          <Link href="/productos/valvulas">{t.crumbs.valves}</Link><ChevronRight size={14} aria-hidden="true" />
           <span aria-current="page">{productName}</span>
         </nav>
 
         <section className={styles.top} aria-labelledby="ficha-title">
           <div className={styles.gallery}>
-            <div className={styles.mainImage}>
-              {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("(min-width: 1024px) 560px, 100vw", true)}
-              <button type="button" className={styles.zoom} aria-label="Ampliar" title="Ampliar" onClick={() => setLightbox(true)}><Maximize2 size={16} aria-hidden="true" /></button>
+            <div className={styles.stage}>
+              {spin ? (
+                <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} />
+              ) : (
+                photo("(min-width: 1024px) 640px, 100vw", true)
+              )}
+              {!spin && (
+                <>
+                  <button type="button" className={styles.stagePrev} aria-label={t.prev} onClick={() => step(-1)}><ChevronLeft size={20} aria-hidden="true" /></button>
+                  <button type="button" className={styles.stageNext} aria-label={t.next} onClick={() => step(1)}><ChevronRight size={20} aria-hidden="true" /></button>
+                  <span className={styles.stageCount} aria-hidden="true">{String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+                </>
+              )}
+              <button type="button" className={styles.zoom} aria-label={t.zoom} title={t.zoom} onClick={() => setLightbox(true)}><Maximize2 size={17} aria-hidden="true" /></button>
             </div>
             <div className={styles.thumbs}>
-              <div className={styles.thumbList} role="list">
-                {THUMBS.map((t, i) => (
-                  <button key={t.src} type="button" role="listitem" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} aria-current={i === active}>
-                    <Image src={t.dir + t.src} alt="" fill sizes="96px" />
+              <div className={styles.thumbList} role="list" aria-label={t.photos}>
+                {THUMBS.map((p, i) => (
+                  <button key={p.src} type="button" role="listitem" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${p.alt}`} aria-current={i === active}>
+                    <Image src={p.dir + p.src} alt="" fill sizes="96px" />
                   </button>
                 ))}
               </div>
               <button type="button" className={spin ? styles.thumb3dOn : styles.thumb3d} aria-pressed={spin} onClick={() => setSpin((v) => !v)}>
-                <Rotate3d size={22} aria-hidden="true" /><span>{spin ? "Volver a las fotos" : "Ver en 3D"}</span>
+                <Rotate3d size={20} aria-hidden="true" /><span>{spin ? t.back3d : t.view3d}</span>
               </button>
             </div>
           </div>
 
           <div className={styles.info}>
-            <p className={styles.eyebrow}>{warrantyLabel ? `Válvulas · ${warrantyLabel}` : "Válvulas"}</p>
+            <div className={styles.tags}>
+              {brand && <span className={styles.tagBrand}><span className={styles.tagLabel}>{t.brand}</span>{brand}{series ? ` · ${series}` : ""}</span>}
+              <span className={styles.tag}>{sheet.sizeRange}</span>
+            </div>
             <h1 id="ficha-title">{productName}</h1>
+            <ul className={styles.badges}>{sheet.badges.map((b) => <li key={b}><Check size={15} strokeWidth={2.6} aria-hidden="true" />{b}</li>)}</ul>
+            {warrantyLabel && (
+              <p className={styles.warranty}><ShieldCheck size={18} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
+            )}
             <p className={styles.lead}>{sheet.lead}</p>
 
-            <ul className={styles.facts} aria-label="Datos principales">
+            <ul className={styles.facts} aria-label={t.facts}>
               {sheet.facts.map(([k, v], i) => (
                 <li key={k} style={{ ["--i" as string]: i }}><span className={styles.factLabel}>{k}</span><strong>{v}</strong></li>
               ))}
             </ul>
 
-            {warrantyLabel && <p className={styles.warranty}><ShieldCheck size={20} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> respaldada por FUNDIGSAC</span></p>}
-
-            <ul className={styles.benefits}>
-              {sheet.badges.map((b) => <li key={b}><span className={styles.tick}><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{b}</li>)}
-            </ul>
-
             <div className={styles.ctas}>
-              <Link href="/cotizar" className={styles.primary}>Solicitar cotización <ArrowRight size={16} aria-hidden="true" /></Link>
+              <Link href="/cotizar" className={styles.primary}>{t.quote} <ArrowRight size={17} aria-hidden="true" /></Link>
               {downloadCta}
             </div>
+            <p className={styles.help}>
+              <MessageCircle size={16} aria-hidden="true" />
+              {t.help}{" "}
+              <a href={whatsapp} target="_blank" rel="noopener noreferrer">{t.helpLink}</a>
+            </p>
           </div>
         </section>
+      </div>
 
-        <div className={styles.body}>
-          <nav className={styles.tabs} aria-label="Secciones de la ficha" style={{ ["--n" as string]: TABS.length, ["--i" as string]: TABS.findIndex((t) => t.id === tab) }}>
-            {TABS.map((t) => (
-              <a key={t.id} href={`#${t.id}`} className={t.id === tab ? styles.tabOn : styles.tab} aria-current={t.id === tab ? "true" : undefined} onClick={goTo(t.id)}>{t.label}</a>
-            ))}
-            <span className={styles.tabInk} aria-hidden="true" />
-          </nav>
+      <div className={styles.body}>
+        <div className={styles.bar}>
+          <div className={styles.barInner}>
+            <nav className={styles.tabs} aria-label={t.tabsLabel}>
+              {TAB_IDS.map((id) => (
+                <a key={id} href={`#${id}`} className={id === tab ? styles.tabOn : styles.tab} aria-current={id === tab ? "true" : undefined} onClick={goTo(id)}>{t.tabs[id]}</a>
+              ))}
+            </nav>
+            <Link href="/cotizar" className={styles.barCta}>{t.barQuote} <ArrowRight size={15} aria-hidden="true" /></Link>
+          </div>
+        </div>
 
-          <section id="descripcion" className={styles.desc} aria-label="Descripción">
-            <div className={styles.descMain} data-reveal>
-              <h2>Descripción</h2>
-              <p className={styles.descLead}>Accionamiento sencillo y paso completo: una compuerta que sube y baja perpendicular al flujo.</p>
-              <p className={styles.descText}>{sheet.description ?? "Las válvulas de compuerta se destacan por su accionamiento sencillo, compuesto principalmente por una compuerta o cuchilla que se eleva y baja perpendicularmente al flujo del fluido. La eficiencia de este diseño reside en su capacidad para proporcionar un paso completo y sin obstrucciones cuando está completamente abierta, minimizando la resistencia al flujo y reduciendo las pérdidas de presión."}</p>
-              <ul className={styles.checks}>
-                {sheet.features.map((f) => <li key={f.title}><span className={styles.tick}><Check size={13} strokeWidth={3} aria-hidden="true" /></span><span><strong>{f.title}</strong>{f.text}</span></li>)}
-              </ul>
-            </div>
-            <aside className={styles.descSide} data-reveal style={{ ["--d" as string]: "120ms" }}>
-              <div className={styles.sidePhoto}><Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 420px, 100vw" /></div>
-              <div className={styles.apps}>
-                <h3>Aplicaciones principales</h3>
-                <ol>{APPLICATIONS.map((label, i) => <li key={label}><span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{label}</li>)}</ol>
+        <div className={styles.wrap}>
+          <section id="descripcion" className={styles.desc} aria-label={t.description}>
+            <div className={styles.descGrid}>
+              <div className={styles.descMain} data-reveal>
+                <h2>{t.description}</h2>
+                <p className={styles.descLead}>{t.descLead}</p>
+                <p className={styles.descText}>{sheet.description ?? t.descFallback}</p>
               </div>
-            </aside>
+              <figure className={styles.descPhoto} data-reveal style={{ ["--d" as string]: "120ms" }}>
+                <Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 520px, 100vw" />
+                <figcaption>
+                  <span className={styles.appsTitle}>{t.applications}</span>
+                  <ul className={styles.apps}>{t.apps.map((label) => <li key={label}>{label}</li>)}</ul>
+                </figcaption>
+              </figure>
+            </div>
+
+            <h3 className={styles.srOnly}>{t.advantages}</h3>
+            <ul className={styles.features} data-reveal>
+              {sheet.features.map((f, i) => {
+                const Icon = FEATURE_ICONS[f.icon];
+                return (
+                  <li key={f.title} style={{ ["--i" as string]: i }}>
+                    <Icon size={22} strokeWidth={1.8} aria-hidden="true" />
+                    <strong>{f.title}</strong>
+                    <span>{f.text}</span>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
 
-          <section id="especificaciones" className={styles.specs} aria-label="Especificaciones técnicas">
-            <div className={styles.sectionHead} data-reveal>
-              <h2>Especificaciones técnicas</h2>
+          <section id="especificaciones" className={styles.specs} aria-label={t.specs}>
+            <header className={styles.sectionHead} data-reveal>
+              <h2>{t.specs}</h2>
               <p className={styles.muted}>{sheet.specsNote}</p>
-            </div>
+            </header>
             <div className={styles.specGrid}>
-              {specColumns.map((rows, c) => (
-                <table key={c} className={styles.table} data-reveal style={{ ["--d" as string]: `${c * 120}ms` }}>
-                  <tbody>
-                    {rows.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
-                  </tbody>
-                </table>
+              {specColumns.map((col, c) => (
+                <div key={c} className={styles.specCol} data-reveal style={{ ["--d" as string]: `${c * 120}ms` }}>
+                  {col.map((group) => (
+                    <div key={group.id} className={styles.specGroup}>
+                      <h3>{group.title}</h3>
+                      <table className={styles.table}>
+                        <tbody>
+                          {group.rows.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
+                </div>
               ))}
             </div>
           </section>
 
-          <section id="dimensiones" className={styles.dimsSection} aria-label="Dimensiones">
-            <div className={styles.sectionHead} data-reveal>
-              <h2>Dimensiones principales</h2>
+          <section id="dimensiones" className={styles.dimsSection} aria-label={t.tabs.dimensiones}>
+            <header className={styles.sectionHead} data-reveal>
+              <h2>{t.dims}</h2>
               <p className={styles.muted}>{sheet.dims.note}</p>
-            </div>
-            <div className={styles.dimsGrid}>
-              <div className={styles.dimsMain} data-reveal>
-                <div className={styles.tableWrap}>
-                  <table className={styles.dims}>
-                    <thead><tr>{sheet.dims.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
-                    <tbody>
-                      {sheet.dims.rows.map(({ dn, cells }) => (
-                        <tr key={dn} className={dn === size ? styles.rowOn : undefined} onClick={() => setSize(dn)}>
-                          <th scope="row">{dn}</th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            </header>
 
-              <div className={styles.dimsAside} data-reveal style={{ ["--d" as string]: "120ms" }}>
+            <div className={styles.dimsTop}>
+              <div className={styles.plan} data-reveal>
+                <div className={styles.planHead}>
+                  <span>{t.plan}</span>
+                  <span className={styles.planRange}>{sheet.sizeRange}</span>
+                </div>
+                <div className={styles.planDraw}>
+                  <ValvePlan cotas={cotas} label={t.plan} />
+                </div>
                 <fieldset className={styles.sizes}>
-                  <legend><span>Diámetro nominal (DN)</span><small>{sheet.sizeRange}</small></legend>
+                  <legend>{t.dn}</legend>
                   <div className={styles.sizeGrid}>
                     {sheet.sizes.map((s) => (
                       <button key={s} type="button" aria-pressed={size === s} className={size === s ? styles.sizeActive : styles.size} onClick={() => setSize(s)}>{s}</button>
                     ))}
                   </div>
+                  <p className={styles.planHint}>{t.planHint}</p>
                 </fieldset>
+              </div>
 
-                <section className={styles.flangeCard} aria-label="Bridas del diámetro seleccionado" key={`f-${size}`}>
+              <div className={styles.dimsAside} data-reveal style={{ ["--d" as string]: "120ms" }}>
+                {dimRow && (
+                  <section className={styles.measureCard} aria-label={`${t.measures} · ${size}`} key={`m-${size}`}>
+                    <h3>{t.measures} · {size}</h3>
+                    <dl className={styles.measure}>
+                      {sheet.dims.head.slice(1).map((h, i) => (
+                        <div key={h}><dt>{h}</dt><dd>{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
+                      ))}
+                    </dl>
+                  </section>
+                )}
+                <section className={styles.flangeCard} aria-label={`${sheet.flange.title} · ${size}`} key={`f-${size}`}>
                   <h3>{sheet.flange.title} · {size}</h3>
                   <p>{sheet.flange.note}</p>
                   <div className={styles.tableWrap}>
@@ -313,7 +410,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 </section>
 
                 {sheet.stem && (
-                  <section className={styles.flangeCard} aria-label="Extremo del vástago del diámetro seleccionado" key={`s-${size}`}>
+                  <section className={styles.flangeCard} aria-label={`${sheet.stem.title} · ${size}`} key={`s-${size}`}>
                     <h3>{sheet.stem.title} · {size}</h3>
                     <p>{sheet.stem.note}</p>
                     <div className={styles.tableWrap}>
@@ -330,34 +427,50 @@ export function W06Ficha(props: { variant?: Variant }) {
                 )}
               </div>
             </div>
+
+            <div className={styles.dimsTable} data-reveal>
+              <h3>{t.table}</h3>
+              <div className={styles.tableWrap}>
+                <table className={styles.dims}>
+                  <thead><tr>{sheet.dims.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                  <tbody>
+                    {sheet.dims.rows.map(({ dn, cells }) => (
+                      <tr key={dn} className={dn === size ? styles.rowOn : undefined} onClick={() => setSize(dn)}>
+                        <th scope="row">{dn}</th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </section>
 
-          <section id="documentacion" className={styles.docSection} aria-label="Documentación" data-reveal>
-            <h2>Documentación</h2>
+          <section id="documentacion" className={styles.docSection} aria-label={t.docs} data-reveal>
+            <h2>{t.docs}</h2>
             {doc ? (
               <div className={styles.doc}>
                 <div className={styles.docStack}>
-                  <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
+                  <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label={t.previewLabel} title={t.previewLabel}>
                     <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 260px, 70vw" />
-                    <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
+                    <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> {t.preview}</span>
                   </button>
                 </div>
                 <div className={styles.docInfo}>
-                  <p className={styles.docKicker}>Ficha técnica oficial</p>
+                  <p className={styles.docKicker}><FileText size={15} aria-hidden="true" /> {t.docOfficial}</p>
                   <p className={styles.docTitle}>{doc.title}</p>
                   <p className={styles.docMeta}>{doc.meta}</p>
-                  <ul className={styles.docIncludes} aria-label="Qué incluye la ficha">
-                    {docIncludes.map((item) => <li key={item}><span className={styles.tick}><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{item}</li>)}
+                  <ul className={styles.docIncludes} aria-label={t.docIncludes}>
+                    {docIncludes.map((item) => <li key={item}><Check size={16} strokeWidth={2.6} aria-hidden="true" />{item}</li>)}
                   </ul>
                   <div className={styles.docActions}>
-                    <a href={doc.href} download className={styles.docButton}><Download size={17} aria-hidden="true" /> Descargar ficha técnica</a>
-                    <button type="button" className={styles.docGhost} onClick={() => { setDocPage(0); setDocOpen(true); }}>Ver ficha en pantalla</button>
+                    <a href={doc.href} download className={styles.docButton}><Download size={17} aria-hidden="true" /> {t.download}</a>
+                    <button type="button" className={styles.docGhost} onClick={() => { setDocPage(0); setDocOpen(true); }}>{t.docView}</button>
                   </div>
                   {docPages.length > 1 && (
-                    <ul className={styles.docPages} aria-label="Páginas de la ficha" style={{ ["--n" as string]: Math.min(docPages.length, 4) }}>
+                    <ul className={styles.docPages} aria-label={t.pages} style={{ ["--n" as string]: Math.min(docPages.length, 4) }}>
                       {docPages.map((pg, i) => (
                         <li key={pg.src}>
-                          <button type="button" onClick={() => { setDocPage(i); setDocOpen(true); }} aria-label={`Ver la página ${i + 1} de ${docPages.length}`}>
+                          <button type="button" onClick={() => { setDocPage(i); setDocOpen(true); }} aria-label={t.pageOf(i + 1, docPages.length)}>
                             <Image src={pg.src} alt="" fill sizes="120px" />
                             <span aria-hidden="true">{i + 1}</span>
                           </button>
@@ -371,89 +484,105 @@ export function W06Ficha(props: { variant?: Variant }) {
               <div className={styles.doc}>
                 <div className={styles.docRequest}>
                   <FileText size={34} aria-hidden="true" />
-                  <p>La ficha técnica de esta válvula se entrega bajo solicitud, junto con la cotización.</p>
+                  <p>{t.docRequest}</p>
                 </div>
                 <div className={styles.docInfo}>
-                  <p className={styles.docKicker}>Ficha técnica</p>
+                  <p className={styles.docKicker}><FileText size={15} aria-hidden="true" /> {t.docOfficial}</p>
                   <p className={styles.docTitle}>Ficha técnica · {productName}</p>
-                  <p className={styles.docMeta}>PDF · bajo solicitud</p>
+                  <p className={styles.docMeta}>{t.docOnRequest}</p>
                   <div className={styles.docActions}>
-                    <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={17} aria-hidden="true" /> Solicitar ficha técnica</Link>
+                    <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>
                   </div>
                 </div>
               </div>
             )}
           </section>
         </div>
+      </div>
 
+      <div className={styles.wrap}>
         <section className={styles.related} aria-labelledby="related-title" data-reveal>
           <div className={styles.relatedHead}>
-            <h2 id="related-title">Productos relacionados</h2>
-            <Link href="/productos" className={styles.allLink}>Ver todos los productos <ArrowRight size={15} aria-hidden="true" /></Link>
+            <h2 id="related-title">{t.related}</h2>
+            <Link href="/productos" className={styles.allLink}>{t.allProducts} <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
           <div className={styles.relatedGrid}>
-            {RELATED.map((r, i) => (
-              <article key={r.title} className={styles.relCard} style={{ ["--i" as string]: i }}>
-                <div className={styles.relImage}><Image src={BASE + r.src} alt="" fill sizes="(min-width: 1024px) 22vw, 50vw" /></div>
-                <div className={styles.relBody}>
-                  <h3>{r.title}</h3>
-                  <p>{r.text}</p>
-                  <Link href={r.href} className={styles.relLink}>Ver ficha <ArrowRight size={14} aria-hidden="true" /></Link>
-                </div>
-              </article>
-            ))}
+            {RELATED.map((r, i) => {
+              const [title, text] = r[lang];
+              return (
+                <Link key={r.src} href={r.href} className={styles.relCard} style={{ ["--i" as string]: i }} aria-label={`${t.seeSheet}: ${title}`}>
+                  <span className={styles.relImage}><Image src={BASE + r.src} alt="" fill sizes="(min-width: 1024px) 22vw, 50vw" /></span>
+                  <span className={styles.relBody}>
+                    <strong>{title}</strong>
+                    <span>{text}</span>
+                  </span>
+                  <span className={styles.relArrow} aria-hidden="true"><ArrowUpRight size={18} /></span>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
         <section className={styles.cta} aria-labelledby="ficha-cta-title" data-reveal>
-          <div className={styles.ctaPhoto} aria-hidden="true"><Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 520px, 100vw" /></div>
           <div className={styles.ctaCopy}>
-            <p className={styles.ctaEyebrow}>Asesoría técnica</p>
-            <h2 id="ficha-cta-title">¿Necesitas una solución a medida?</h2>
-            <p>Nuestro equipo técnico te asesora para seleccionar la válvula ideal según tu proyecto y condiciones de operación.</p>
-            <Link href="/contacto" className={styles.primary}>Solicitar asesoría <ArrowRight size={16} aria-hidden="true" /></Link>
+            <h2 id="ficha-cta-title">{t.ctaTitle}</h2>
+            <p className={styles.ctaText}>{t.ctaText}</p>
+            <ul className={styles.ctaPoints}>
+              {t.ctaPoints.map((point) => <li key={point}><Check size={16} strokeWidth={2.6} aria-hidden="true" />{point}</li>)}
+            </ul>
+            <div className={styles.ctaActions}>
+              <Link href="/contacto" className={styles.ctaPrimary}>{t.ctaButton} <ArrowRight size={17} aria-hidden="true" /></Link>
+              <a href={whatsapp} target="_blank" rel="noopener noreferrer" className={styles.ctaGhost}><MessageCircle size={17} aria-hidden="true" /> {t.ctaWhatsApp}</a>
+            </div>
+          </div>
+          <div className={styles.ctaVisual}>
+            <Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
+            <div className={styles.ctaContact}>
+              <a href={site.phoneHref}><Phone size={16} aria-hidden="true" /> {site.phone}</a>
+              <span><Clock size={16} aria-hidden="true" /> {t.ctaHours}: {site.hours}</span>
+            </div>
           </div>
         </section>
       </div>
 
       {lightbox && (
-        <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label="Galería ampliada" onClick={() => setLightbox(false)}>
-          <button type="button" className={styles.lbClose} aria-label="Cerrar" onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
-          <button type="button" className={styles.lbPrev} aria-label="Imagen anterior" onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
+        <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={t.gallery} onClick={() => setLightbox(false)}>
+          <button type="button" className={styles.lbClose} aria-label={t.close} onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
+          <button type="button" className={styles.lbPrev} aria-label={t.prev} onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
             {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
           </div>
-          <button type="button" className={styles.lbNext} aria-label="Imagen siguiente" onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
+          <button type="button" className={styles.lbNext} aria-label={t.next} onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
-            {THUMBS.map((t, i) => (
-              <button key={t.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={`Ver ${t.alt}`} />
+            {THUMBS.map((p, i) => (
+              <button key={p.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={`Ver ${p.alt}`} />
             ))}
           </div>
         </div>
       )}
 
       {docOpen && doc && (
-        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label="Previsualización de la ficha técnica" onClick={() => setDocOpen(false)}>
+        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label={t.docDialog} onClick={() => setDocOpen(false)}>
           <div className={styles.docPanel} onClick={(e) => e.stopPropagation()}>
             <header className={styles.docBar}>
               <div className={styles.docBarTitle}>
-                <strong>{doc?.title}</strong>
-                <span aria-live="polite">Página {docPage + 1} de {docCount}</span>
+                <strong>{doc.title}</strong>
+                <span aria-live="polite">{t.page(docPage + 1, docCount)}</span>
               </div>
-              <a href={doc?.href} target="_blank" rel="noopener noreferrer" className={styles.docBarBtn}><ExternalLink size={15} aria-hidden="true" /><span>Abrir PDF</span></a>
-              <a href={doc?.href} download className={styles.docBarBtn}><Download size={15} aria-hidden="true" /><span>Descargar</span></a>
-              <button type="button" className={styles.docBarClose} aria-label="Cerrar previsualización" onClick={() => setDocOpen(false)}><X size={20} aria-hidden="true" /></button>
+              <a href={doc.href} target="_blank" rel="noopener noreferrer" className={styles.docBarBtn}><ExternalLink size={15} aria-hidden="true" /><span>{t.openPdf}</span></a>
+              <a href={doc.href} download className={styles.docBarBtn}><Download size={15} aria-hidden="true" /><span>{t.downloadShort}</span></a>
+              <button type="button" className={styles.docBarClose} aria-label={t.closePreview} onClick={() => setDocOpen(false)}><X size={20} aria-hidden="true" /></button>
             </header>
             <div className={styles.docBody}>
-              <button type="button" className={styles.docNavPrev} aria-label="Página anterior" onClick={() => stepDoc(-1)}><ChevronLeft size={22} aria-hidden="true" /></button>
+              <button type="button" className={styles.docNavPrev} aria-label={t.prevPage} onClick={() => stepDoc(-1)}><ChevronLeft size={22} aria-hidden="true" /></button>
               <div className={styles.docScroll} key={docPage}>
                 <Image src={docPages[docPage].src} alt={docPages[docPage].alt} width={1500} height={2121} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
               </div>
-              <button type="button" className={styles.docNavNext} aria-label="Página siguiente" onClick={() => stepDoc(1)}><ChevronRight size={22} aria-hidden="true" /></button>
+              <button type="button" className={styles.docNavNext} aria-label={t.nextPage} onClick={() => stepDoc(1)}><ChevronRight size={22} aria-hidden="true" /></button>
             </div>
             <div className={styles.docDots}>
               {docPages.map((pg, i) => (
-                <button key={pg.src} type="button" className={i === docPage ? styles.docDotOn : styles.docDot} onClick={() => setDocPage(i)} aria-label={`Ir a la página ${i + 1}`} aria-current={i === docPage} />
+                <button key={pg.src} type="button" className={i === docPage ? styles.docDotOn : styles.docDot} onClick={() => setDocPage(i)} aria-label={t.goPage(i + 1)} aria-current={i === docPage} />
               ))}
             </div>
           </div>
