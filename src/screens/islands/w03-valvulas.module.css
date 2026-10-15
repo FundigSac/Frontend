@@ -5,7 +5,7 @@
   --line: #e4e3df;
   --paper: #fbfaf7;
   --orange: #ed762b;
-  --orange-btn: #cf5a1c;
+  --orange-btn: #b84a12;
   --link: #1d5fd1;
   --ease: cubic-bezier(.2, .7, .2, 1);
   /* La cabecera de inicio (sticky, 84 px) flota sobre el hero: el hero sube por detrás de ella. */
@@ -40,10 +40,13 @@
   overflow: hidden;
   isolation: isolate;
   background-color: #dfe3e6;
-  background-image: url("/media/valvulas-page/hero-valvula.webp");
-  background-position: center 10%;
-  background-repeat: no-repeat;
-  background-size: cover;
+}
+
+/* Foto del hero como imagen real: variantes responsivas y precarga con prioridad. */
+.heroPhoto {
+  z-index: -2;
+  object-fit: cover;
+  object-position: center 10%;
 }
 
 .hero::after {
@@ -636,7 +639,13 @@
   .hero {
     min-height: 0;
     padding-bottom: 372px;
-    background: var(--paper) url("/media/valvulas-page/hero-valvula.webp") 70% 100% / auto 360px no-repeat;
+    background: var(--paper);
+  }
+
+  .heroPhoto {
+    top: auto !important;
+    height: 360px !important;
+    object-position: 70% 100%;
   }
 
   .hero::after {
@@ -909,8 +918,8 @@
 
 .orangeButton:hover {
   transform: translateY(-2px);
-  border-color: #b84a12;
-  background: #b84a12;
+  border-color: #9f3f0d;
+  background: #9f3f0d;
 }
 
 .orangeButton svg {
@@ -1209,7 +1218,7 @@
 
 :global(html[data-lp-theme="dark"]) .page {
   --link: #6ea8ff;
-  --orange-btn: #d45a1a;
+  --orange-btn: #bf4e14;
 }
 
 :global(html[data-lp-theme="dark"]) .heroEyebrow {

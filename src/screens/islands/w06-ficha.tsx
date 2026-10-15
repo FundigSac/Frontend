@@ -190,8 +190,8 @@ export function W06Ficha(props: { variant?: Variant }) {
                   </button>
                 ))}
               </div>
-              <button type="button" className={spin ? styles.thumb3dOn : styles.thumb3d} aria-label={spin ? "Volver a las fotos" : "Ver en 3D"} aria-pressed={spin} title={spin ? "Volver a las fotos" : "Ver en 3D"} onClick={() => setSpin((v) => !v)}>
-                <Rotate3d size={22} aria-hidden="true" /><span>{spin ? "Fotos" : "Vista 3D"}</span>
+              <button type="button" className={spin ? styles.thumb3dOn : styles.thumb3d} aria-pressed={spin} onClick={() => setSpin((v) => !v)}>
+                <Rotate3d size={22} aria-hidden="true" /><span>{spin ? "Volver a las fotos" : "Ver en 3D"}</span>
               </button>
             </div>
           </div>
@@ -215,12 +215,12 @@ export function W06Ficha(props: { variant?: Variant }) {
           </div>
         </section>
 
-        <dl className={styles.strip} data-reveal>
+        <ul className={styles.strip} data-reveal aria-label="Datos principales">
           {sheet.facts.map(([k, v], i) => {
             const Icon = FACT_ICONS[i % FACT_ICONS.length];
-            return <div key={k} style={{ ["--i" as string]: i }}><span className={styles.stripIcon}><Icon size={20} aria-hidden="true" /></span><span><dt>{k}</dt><dd>{v}</dd></span></div>;
+            return <li key={k} style={{ ["--i" as string]: i }}><span className={styles.stripIcon}><Icon size={20} aria-hidden="true" /></span><span><span className={styles.stripLabel}>{k}</span><strong>{v}</strong></span></li>;
           })}
-        </dl>
+        </ul>
 
         <nav className={styles.tabs} aria-label="Secciones de la ficha" style={{ ["--n" as string]: TABS.length, ["--i" as string]: TABS.findIndex((t) => t.id === tab) }}>
           {TABS.map((t) => (

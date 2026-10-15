@@ -76,6 +76,7 @@ export function W03Valvulas() {
   return (
     <main className={styles.page} ref={pageRef}>
       <section className={styles.hero} aria-labelledby="valvulas-title">
+        <Image className={styles.heroPhoto} src="/media/valvulas-page/hero-valvula.webp" alt="" fill priority fetchPriority="high" sizes="100vw" quality={85} />
         <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>
           <nav aria-label={t.crumbsLabel} className={styles.breadcrumbs}>
