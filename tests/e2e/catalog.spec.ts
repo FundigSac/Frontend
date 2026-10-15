@@ -57,14 +57,14 @@ test.describe("W02 catálogo", () => {
   const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" });
   const familyButton = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 
-  test("muestra 5 familias y 10 productos destacados", async ({ page }) => {
+  test("muestra 5 familias y 12 productos destacados", async ({ page }) => {
     await page.goto("/productos");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
     const families = page.locator('section[aria-label="Familias de productos"] article');
     await expect(families).toHaveCount(5);
     const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
-    await expect(page.locator("#productos-destacados article")).toHaveCount(10);
+    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -79,7 +79,7 @@ test.describe("W02 catálogo", () => {
     await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
     await expect(cards).toHaveCount(0);
     await page.getByRole("button", { name: /Ver todos los productos/ }).click();
-    await expect(cards).toHaveCount(10);
+    await expect(cards).toHaveCount(12);
     await expect(searchbox(page)).toHaveValue("");
     await expect(page).not.toHaveURL(/q=/);
   });
@@ -87,7 +87,7 @@ test.describe("W02 catálogo", () => {
   test("filtros por familia: cada botón filtra, repetir el clic lo quita y se combina con la búsqueda", async ({ page }) => {
     await page.goto("/productos");
     const cards = page.locator("#productos-destacados article");
-    for (const [label, familia, total] of [["Válvulas", "valvulas", 3], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
+    for (const [label, familia, total] of [["Válvulas", "valvulas", 5], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
       await familyButton(page, label).click();
       await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
       await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
@@ -95,7 +95,7 @@ test.describe("W02 catálogo", () => {
       await expect(page).toHaveURL(new RegExp(`familia=${familia}`));
     }
     await familyButton(page, "Conexiones y fittings").click(); // segundo clic: vuelve a "Todas"
-    await expect(cards).toHaveCount(10);
+    await expect(cards).toHaveCount(12);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
     await expect(page).not.toHaveURL(/familia=/);
 
@@ -115,7 +115,7 @@ test.describe("W02 catálogo", () => {
     await expect(searchbox(page)).toHaveValue("tapa");
     await expect(familyButton(page, "Marcos y tapas")).toHaveAttribute("aria-pressed", "true");
     await page.goto("/productos?familia=inexistente");
-    await expect(page.locator("#productos-destacados article")).toHaveCount(10);
+    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -130,6 +130,20 @@ test.describe("W02 catálogo", () => {
     await expect(tapa.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/marcos-y-tapas/marco-tapa-d400");
     const catalogo = page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ });
     await expect(catalogo).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
+  });
+
+  test("fichas FUNDIGSAC de compuerta con 1 y 5 años de garantía salen del catálogo y usan la plantilla de la ficha", async ({ page }) => {
+    for (const [slug, years, label] of [["valvula-compuerta-fundigsac-1-ano", "1", "1 año de garantía"], ["valvula-compuerta-fundigsac-5-anos", "5", "5 años de garantía"]] as const) {
+      await page.goto("/productos");
+      const card = page.locator("#productos-destacados article").filter({ hasText: `FUNDIGSAC · ${label}` });
+      await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", `/productos/valvulas/${slug}`);
+      await card.getByRole("link", { name: "Ver ficha", exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`/productos/valvulas/${slug}$`));
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Válvula de compuerta bridada FUNDIGSAC · ${label}`);
+      await expect(page.getByText(`${label} respaldada por FUNDIGSAC`)).toBeVisible();
+      await expect(page.getByRole("row", { name: new RegExp(`^Garantía ${years}`) })).toBeVisible();
+      await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
+    }
   });
 
   test("las familias de la cuadrícula navegan a su página", async ({ page }) => {
@@ -231,7 +245,7 @@ lineTests({
   describe: "W03 válvulas",
   route: "/productos/valvulas",
   region: "Catálogo de válvulas",
-  total: 6,
+  total: 8,
   search: { label: "Buscar válvula por nombre o referencia", hit: "mariposa", hitCount: 1 },
   filterLabel: "Filtrar por tipo de válvula",
   sortLabel: "Ordenar válvulas",
@@ -241,7 +255,7 @@ lineTests({
   za: "Válvula reductora de presión",
   emptyHeading: "No encontramos válvulas con esos datos",
   resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC · 1 año de garantía", "/productos/valvulas/valvula-compuerta-fundigsac-1-ano"], ["Válvula de compuerta FUNDIGSAC · 5 años de garantía", "/productos/valvulas/valvula-compuerta-fundigsac-5-anos"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
 });
 
 lineTests({

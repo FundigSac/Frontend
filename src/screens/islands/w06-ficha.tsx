@@ -80,7 +80,19 @@ const SPECS = [
   ["Rango dimensional", "DN40 a DN600"],
 ];
 
-export function W06Ficha() {
+/** Garantía FUNDIGSAC de las variantes del catálogo (1 o 5 años); sin valor es la ficha base. */
+export type Warranty = 1 | 5;
+
+/** Textos de la ficha por variante, definidos a nivel de módulo: la base (H-ITALY) o FUNDIGSAC con garantía. */
+const variantCopy = (warranty?: Warranty) => {
+  if (!warranty) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY" };
+  const warrantyLabel = warranty === 1 ? "1 año de garantía" : `${warranty} años de garantía`;
+  return { warrantyLabel, productName: `Válvula de compuerta bridada FUNDIGSAC · ${warrantyLabel}`, specs: [["Marca", "FUNDIGSAC"], ["Garantía", warrantyLabel], ...SPECS.slice(1)], brand: "FUNDIGSAC" };
+};
+const COPY = { base: variantCopy(), 1: variantCopy(1), 5: variantCopy(5) } as const;
+
+export function W06Ficha(props: { warranty?: Warranty }) {
+  const { warrantyLabel, productName, specs, brand } = COPY[props.warranty ?? "base"];
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [docOpen, setDocOpen] = useState(false);
@@ -142,7 +154,7 @@ export function W06Ficha() {
           <Link href="/">Inicio</Link><span aria-hidden="true">/</span>
           <Link href="/productos">Productos</Link><span aria-hidden="true">/</span>
           <Link href="/productos/valvulas">Válvulas</Link><span aria-hidden="true">/</span>
-          <span aria-current="page">Válvula de compuerta bridada</span>
+          <span aria-current="page">{productName}</span>
         </nav>
 
         <section className={styles.top} aria-labelledby="ficha-title">
@@ -162,9 +174,11 @@ export function W06Ficha() {
           </div>
 
           <div className={styles.info}>
-            <span className={styles.tag}>Válvulas</span>
-            <h1 id="ficha-title">Válvula de compuerta bridada</h1>
+            <span className={styles.tag}>{warrantyLabel ? `Válvulas · ${warrantyLabel}` : "Válvulas"}</span>
+            <h1 id="ficha-title">{productName}</h1>
             <p className={styles.lead}>Válvula de compuerta de cierre elástico con extremos bridados, F4 serie 14 / F5 serie 15, según EN1074-2. Paso completo sin obstrucciones cuando está abierta: menor resistencia al flujo y menos pérdidas de presión.</p>
+
+            {warrantyLabel && <p className={styles.warranty}><ShieldCheck size={20} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> respaldada por FUNDIGSAC</span></p>}
 
             <dl className={styles.facts}>
               <div><dt>Presión máx.</dt><dd>16 bar</dd></div>
@@ -188,6 +202,7 @@ export function W06Ficha() {
             </div>
 
             <ul className={styles.badges}>
+              {warrantyLabel && <li><ShieldCheck size={18} aria-hidden="true" /><span>{warrantyLabel}</span></li>}
               <li><ShieldCheck size={18} aria-hidden="true" /><span>Cierre elástico</span></li>
               <li><Settings size={18} aria-hidden="true" /><span>PN10 / PN16</span></li>
               <li><Layers size={18} aria-hidden="true" /><span>Epoxi 250 µm</span></li>
@@ -225,10 +240,10 @@ export function W06Ficha() {
             <h2>Especificaciones técnicas</h2>
             <table className={styles.table}>
               <tbody>
-                {SPECS.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
+                {specs.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
               </tbody>
             </table>
-            <p className={styles.muted}>Valores de referencia de la ficha FT-HI-100 Rev. 13; verificar con H-ITALY según la variante.</p>
+            <p className={styles.muted}>Valores de referencia de la ficha FT-HI-100 Rev. 13; verificar con {brand} según la variante.</p>
           </div>
           <div className={styles.col}>
             <h2>Dimensiones</h2>
