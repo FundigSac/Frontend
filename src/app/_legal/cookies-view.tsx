@@ -37,7 +37,7 @@ export function CookiesView({ hero, info }: { hero: string; info: readonly [stri
         </ul>
       </div>
 
-      <section className="lg-faq-wrap lg-body" style={{ marginTop: "clamp(40px, 6vw, 80px)" }} aria-labelledby="lg-faq-title">
+      <section className="lg-faq-wrap lg-body" style={{ marginTop: "clamp(28px, 4vw, 52px)" }} aria-labelledby="lg-faq-title">
         <div className="lp-shell">
           <div className="lg-faq-head">
             <div>

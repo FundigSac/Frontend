@@ -798,6 +798,8 @@
 
 /* ===== FAQ ===== */
 .lg-faq-wrap {
+  /* Franja más compacta: menos aire arriba y abajo para que no quede un hueco grande entre secciones. */
+  padding-block: clamp(32px, 4vw, 56px);
   background: #f7f9fc;
 }
 
