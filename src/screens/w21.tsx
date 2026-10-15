@@ -8,7 +8,7 @@ const families = [
 
 export function ScreenW21() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <section className="relative overflow-hidden px-5 py-12 sm:py-16 lg:py-20">
         <div aria-hidden="true" className="pointer-events-none absolute -top-32 left-1/2 h-[380px] w-[720px] -translate-x-1/2 rounded-full bg-primary-fixed-dim/20 blur-[100px]" />
         <div className="relative mx-auto flex max-w-[1200px] flex-col items-center text-center">

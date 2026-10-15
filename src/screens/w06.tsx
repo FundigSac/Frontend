@@ -12,7 +12,7 @@ const related = [
 
 export function ScreenW06() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <div className="mx-auto max-w-[1200px] px-4 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         <nav aria-label="Ruta de navegación" className="mb-7 font-ui-label text-ui-label text-text-muted">
           <ol className="flex flex-wrap items-center gap-2">

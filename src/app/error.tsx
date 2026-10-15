@@ -10,7 +10,7 @@ export default function RouteError({ error, reset }: { error: Error & { digest?:
   }, [error]);
 
   return (
-    <main className="w-full pt-[76px] bg-background min-h-screen">
+    <main className="w-full bg-background min-h-screen">
       <div className="max-w-[1200px] mx-auto px-6 py-16 lg:py-24 flex flex-col items-center text-center gap-6">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-surface-container text-primary font-ui-label text-ui-label tracking-wider uppercase shadow-sm">
           <span aria-hidden="true" className="w-2 h-2 rounded-full bg-danger" />

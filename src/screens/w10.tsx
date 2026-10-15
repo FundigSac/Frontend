@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function ScreenW10() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <section aria-labelledby="solutions-title" className="bg-surface-bright">
         <div className="mx-auto grid max-w-[1200px] items-center gap-8 px-4 py-9 sm:px-6 sm:py-14 lg:grid-cols-[.9fr_1.1fr] lg:gap-14 lg:px-8 lg:py-20">
           <div className="max-w-xl">

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function ScreenW11() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <div className="mx-auto max-w-[1200px] px-4 pb-16 pt-6 sm:px-6 sm:pt-8 lg:px-8 lg:pb-24">
         <nav aria-label="Ruta de navegación" className="mb-7 text-[13px] text-text-secondary">
           <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">

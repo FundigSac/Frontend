@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function ScreenW12() {
   return (
-    <main className="min-h-screen w-full bg-background pt-[76px]">
+    <main className="min-h-screen w-full bg-background">
       <section aria-labelledby="about-title" className="bg-surface-container-low">
         <div className="mx-auto max-w-[1200px] px-6 py-10 sm:py-14 lg:py-16">
           <nav aria-label="Migas de pan" className="mb-7 font-ui-label text-ui-label text-text-muted">

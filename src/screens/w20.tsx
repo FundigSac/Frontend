@@ -6,7 +6,7 @@ const card = "rounded-lg border border-border bg-surface p-4";
 
 export function ScreenW20() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <div className="sticky top-[76px] z-30 h-1 bg-surface-container"><ContentScrollProgress id="scrollProgressBar" className="h-full bg-primary-container transition-all duration-150 motion-reduce:transition-none" minPercent={0} initialWidth="0%" updateOnMount={false} /></div>
       <div className="mx-auto w-full max-w-[1200px] space-y-8 px-5 py-8 sm:px-6 lg:px-8 lg:py-10">
         <nav aria-label="Migas de pan" className="flex flex-wrap items-center gap-2 font-ui-label text-ui-label text-text-muted"><Link href="/" className="hover:text-primary">Inicio</Link><span aria-hidden="true">/</span><span>Marco institucional</span><span aria-hidden="true">/</span><span aria-current="page" className="text-on-surface">Cookies</span></nav>

@@ -46,7 +46,7 @@ export function ScreenW13() {
   }
 
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <section aria-labelledby="resources-title" className="bg-surface-container-low">
         <div className="mx-auto max-w-[1200px] px-4 py-9 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
           <nav aria-label="Migas de pan" className="mb-8 font-ui-label text-ui-label text-text-muted">

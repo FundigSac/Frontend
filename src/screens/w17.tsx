@@ -18,7 +18,7 @@ export function ScreenW17({ slug = "valvula-compuerta" }: { slug?: QuoteProductS
   const productName = PRODUCT_LABELS[slug];
 
   return (
-    <main className="min-h-screen w-full bg-background pt-[76px]">
+    <main className="min-h-screen w-full bg-background">
       <section aria-labelledby="quote-title" className="bg-surface-container-low">
         <div className="mx-auto max-w-[1200px] px-6 py-8 sm:py-11">
           <nav aria-label="Migas de pan" className="mb-6 font-ui-label text-ui-label text-text-muted">

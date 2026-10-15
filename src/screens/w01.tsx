@@ -4,7 +4,7 @@ import Link from "next/link";
 export function ScreenW01() {
   return (
     <>
-    <main className="w-full pt-[76px] bg-background min-h-screen">
+    <main className="w-full bg-background min-h-screen">
       <div className="flex flex-col w-full">
         {/* 1. HERO INDUSTRIAL (Dos columnas equilibradas: 45% texto / 55% visual) */}
         <section className="w-full bg-surface py-12 lg:py-20">

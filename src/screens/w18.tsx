@@ -6,7 +6,7 @@ import { W18GuardianToggle } from "./islands/w18-fields";
 export function ScreenW18() {
   return (
     <>
-    <main className="w-full pt-[76px] bg-background min-h-screen">
+    <main className="w-full bg-background min-h-screen">
       <div className="flex flex-col w-full">
         <div className="w-full bg-surface-container-low py-8 px-6">
           <div className="max-w-[1200px] mx-auto flex flex-col gap-5">

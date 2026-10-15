@@ -4,7 +4,7 @@ import { W14ShareButton } from "@/screens/islands/w14-share-button";
 
 export function ScreenW14() {
   return (
-    <main className="min-h-screen bg-background pt-[76px] text-on-surface">
+    <main className="min-h-screen bg-background text-on-surface">
       <section className="border-b border-border bg-surface-container-low py-6">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <nav aria-label="Migas de pan" className="font-ui-label text-ui-label text-text-muted">
