@@ -60,7 +60,8 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
   if (failed) return null;
 
   const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const valveStudio = src.includes("valvula-compuerta.glb");
+  // Válvulas de compuerta modeladas por SDF (scripts/valve3d): estudio de producto propio y vista 3/4 frontal.
+  const valveStudio = src.startsWith("/models/valvula-");
 
   return ready
     // React forwards this callback to the custom element; it never reads the ref during render.
@@ -68,18 +69,18 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=enamel-42`,
+        src: `${src}?v=sdf-1`,
         poster,
         alt,
         "camera-controls": "",
         "touch-action": "pan-y",
-        "shadow-intensity": valveStudio ? "0.8" : "0.65",
-        "shadow-softness": valveStudio ? "0.85" : "1",
-        exposure: valveStudio ? 0.45 : 0.95,
+        "shadow-intensity": valveStudio ? "0.75" : "0.65",
+        "shadow-softness": valveStudio ? "0.9" : "1",
+        exposure: valveStudio ? 1 : 0.95,
         ...(valveStudio ? { "tone-mapping": "neutral" } : {}),
-        "camera-orbit": valveStudio ? "-90deg 85deg auto" : "55deg 78deg auto",
+        "camera-orbit": valveStudio ? "32deg 70deg auto" : "55deg 78deg auto",
         "field-of-view": "30deg",
-        "environment-image": valveStudio ? "/models/valvula-estudio-esmalte.hdr" : "neutral",
+        "environment-image": valveStudio ? "/models/valvula-estudio-blanco.hdr" : "neutral",
         "interaction-prompt": "none",
         ...(reduce ? {} : { "auto-rotate": "", "auto-rotate-delay": "6000", "rotation-per-second": "12deg" }),
         style: { width: "100%", height: "100%", background: "transparent", "--poster-color": "transparent" },

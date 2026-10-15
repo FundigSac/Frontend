@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control visual 3D</title>
+<script type="module" src="/mv.js"></script>
+<style>
+  body { margin: 0; font: 13px system-ui, sans-serif; background: #fff; color: #222; }
+  header { position: sticky; top: 0; z-index: 2; display: flex; gap: 12px; align-items: center; padding: 8px 12px; background: #f3f3f3; border-bottom: 1px solid #ddd; }
+  main { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 10px; padding: 10px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #ddd; }
+  .pair h3 { grid-column: 1 / -1; margin: 0; padding: 4px 8px; font-size: 12px; background: #fafafa; }
+  .cell { position: relative; aspect-ratio: 4 / 5; background: #fff; }
+  .cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+  model-viewer { position: absolute; inset: 0; width: 100%; height: 100%; --poster-color: transparent; }
+  .over img.ov { opacity: .45; pointer-events: none; z-index: 1; }
+  img.ov { display: none; }
+  body.solo header { display: none; }
+  body.solo main { display: block; padding: 0; }
+  body.solo .pair { display: flex; border: 0; height: 100vh; }
+  body.solo .pair h3 { display: none; }
+  body.solo .cell { flex: 1 1 0; min-width: 0; overflow: hidden; aspect-ratio: auto; height: 100vh; }
+  body.solo.model .pair > .cell:nth-of-type(1) { display: none; }
+  .over img.ov { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <label>Válvula <select id="v"><option>hitaly</option><option>fundigsac</option><option>cuadrante</option></select></label>
+  <label><input type="checkbox" id="ov"> Superponer foto</label>
+  <label>Exposición <input id="ex" type="number" step="0.05" value="1"></label>
+  <span id="info"></span>
+</header>
+<main id="grid"></main>
+<script>
+const V = {
+  hitaly: { src: '/models/valvula-hitaly.glb', shots: [
+    ['/media/valvula-hd/v-01.webp', '0deg 60deg 0.62m', '46deg'], ['/media/valvula-hd/v-02.webp', '180deg 62deg 0.62m', '46deg'],
+    ['/media/valvula-hd/v-03.webp', '200deg 8deg 0.62m', '46deg'], ['/media/valvula-hd/v-04.webp', '95deg 48deg 0.62m', '46deg'],
+    ['/media/valvula-hd/v-05.webp', '90deg 45deg 0.62m', '46deg']] },
+  fundigsac: { src: '/models/valvula-fundigsac.glb', shots: [
+    ['/media/valvula-fundigsac/f-07.webp', '0deg 80deg 0.62m', '46deg'], ['/media/valvula-fundigsac/f-02.webp', '180deg 74deg 0.62m', '46deg'],
+    ['/media/valvula-fundigsac/f-03.webp', '90deg 6deg 0.62m', '46deg'], ['/media/valvula-fundigsac/f-04.webp', '90deg 58deg 0.62m', '46deg'],
+    ['/media/valvula-fundigsac/f-06.webp', '55deg 66deg 0.62m', '46deg']] },
+  cuadrante: { src: '/models/valvula-fundigsac-cuadrante.glb', shots: [
+    ['/media/valvula-fundigsac-cuadrante/q-01.webp', '0deg 80deg 0.62m', '46deg'], ['/media/valvula-fundigsac-cuadrante/q-02.webp', '60deg 58deg 0.62m', '46deg'],
+    ['/media/valvula-fundigsac-cuadrante/q-03.webp', '180deg 76deg 0.62m', '46deg'], ['/media/valvula-fundigsac-cuadrante/q-04.webp', '120deg 48deg 0.62m', '46deg'],
+    ['/media/valvula-fundigsac-cuadrante/q-05.webp', '0deg 0.01deg 0.62m', '46deg']] },
+};
+const q = new URLSearchParams(location.search), sel = document.getElementById('v');
+sel.value = q.get('v') ?? 'hitaly';
+document.getElementById('ex').value = q.get('ex') ?? '1';
+function render() {
+  const cfg = V[sel.value], grid = document.getElementById('grid'), ex = document.getElementById('ex').value, stamp = Date.now();
+  grid.innerHTML = '';
+  const solo = q.get('solo');
+  document.body.classList.toggle('solo', solo !== null);
+  document.body.classList.toggle('model', q.get('only') === 'model');
+  cfg.shots.forEach(([img, orbit, fov], i) => {
+    if (solo !== null && String(i) !== solo) return;
+    const pair = document.createElement('section'); pair.className = 'pair';
+    pair.innerHTML = `<h3>${img.split('/').pop()} · ${orbit} · ${fov}</h3><div class="cell"><img src="${img}"></div>
+      <div class="cell"><img class="ov" src="${img}"><model-viewer src="${cfg.src}?t=${stamp}" camera-orbit="${orbit}" field-of-view="${fov}" camera-target="auto auto auto"
+      environment-image="/models/valvula-estudio-blanco.hdr" tone-mapping="neutral" exposure="${ex}" shadow-intensity="0.7" shadow-softness="0.9" interaction-prompt="none" camera-controls max-field-of-view="70deg" min-field-of-view="8deg" max-camera-orbit="Infinity 180deg 4m" min-camera-orbit="-Infinity 0deg 0.1m"></model-viewer></div>`;
+    grid.append(pair);
+  });
+}
+sel.onchange = () => { history.replaceState(null, '', '?v=' + sel.value); render(); };
+document.getElementById('ov').onchange = (e) => document.body.classList.toggle('over', e.target.checked);
+document.getElementById('ex').onchange = render;
+window.setShot = (i, orbit, fov) => { const mv = document.querySelectorAll('model-viewer')[i]; mv.cameraOrbit = orbit; if (fov) mv.fieldOfView = fov; };
+render();
+</script>
+</body>
+</html>
