@@ -62,7 +62,7 @@ function render() {
     const pair = document.createElement('section'); pair.className = 'pair';
     pair.innerHTML = `<h3>${img.split('/').pop()} · ${orbit} · ${fov}</h3><div class="cell"><img src="${img}"></div>
       <div class="cell"><img class="ov" src="${img}"><model-viewer src="${cfg.src}?t=${stamp}" camera-orbit="${orbit}" field-of-view="${fov}" camera-target="auto auto auto"
-      environment-image="/models/valvula-estudio-blanco.hdr" tone-mapping="neutral" exposure="${ex}" shadow-intensity="0.7" shadow-softness="0.9" interaction-prompt="none" camera-controls max-field-of-view="70deg" min-field-of-view="8deg" max-camera-orbit="Infinity 180deg 4m" min-camera-orbit="-Infinity 0deg 0.1m"></model-viewer></div>`;
+      environment-image="/models/valvula-estudio-producto.hdr" tone-mapping="neutral" exposure="${ex}" shadow-intensity="0.7" shadow-softness="0.9" interaction-prompt="none" camera-controls max-field-of-view="70deg" min-field-of-view="8deg" max-camera-orbit="Infinity 180deg 4m" min-camera-orbit="-Infinity 0deg 0.1m"></model-viewer></div>`;
     grid.append(pair);
   });
 }

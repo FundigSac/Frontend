@@ -278,6 +278,10 @@ test.describe("W02 catálogo", () => {
       ["valvula-compuerta-fundigsac", "/models/valvula-fundigsac.glb"],
       ["valvula-compuerta-fundigsac-garantia-extendida", "/models/valvula-fundigsac-cuadrante.glb"],
     ] as const;
+    // Texturas externas del mismo origen: ningún blob: bloqueado por la CSP ni textura sin cargar.
+    const errors: string[] = [];
+    page.on("console", (m) => { if (m.type() === "error" && /Content Security Policy|texture|GLTFLoader/i.test(m.text())) errors.push(m.text()); });
+    page.on("response", (r) => { if (r.url().includes("/models/") && r.status() >= 400) errors.push(`${r.status()} ${r.url()}`); });
     for (const [slug, model] of cases) {
       await page.goto(`/productos/valvulas/${slug}`);
       const res = await page.request.get(model);
@@ -290,6 +294,7 @@ test.describe("W02 catálogo", () => {
       await page.getByRole("button", { name: "Volver a las fotos" }).first().click();
       await expect(page.locator("main model-viewer")).toHaveCount(0);
     }
+    expect(errors).toEqual([]);
   });
 
   test("las familias de la cuadrícula navegan a su página", async ({ page }) => {

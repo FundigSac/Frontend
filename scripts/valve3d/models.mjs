@@ -23,6 +23,8 @@ export const CONFIG = {
     textFront: { lines: [{ text: 'H-ITALY', height: 10, tracking: 0.1 }], y: 30, relief: 1.0 },
     textBack: { lines: [{ text: 'DN100', height: 10.4 }, { text: 'PN16', height: 10.4 }, { text: 'GGG50', height: 10.4 }], gap: 3.4, y: 14, relief: 1.0 },
     wheelText: { open: 'OPEN', close: 'CLOSE', openAt: 0, closeAt: Math.PI },
+    // Placa de aluminio negro remachada en el canto superior de la brida (v-01, v-02).
+    nameplate: { side: -1, angle: 0.62, length: 52, width: 13.5, R: 110, lines: [['H-ITALY', 170], ['GATE VALVE  DN100  PN16', 110], ['GGG50   EN1074-2', 110]] },
   },
   fundigsac: {
     bolts: [[-45, -76], [45, -76], [-45, 76], [45, 76]],
@@ -33,14 +35,15 @@ export const CONFIG = {
     operator: 'handwheel', wheel: { y: 268, R: 125, h: 30 },
     textFront: { logo: 30, logoWide: 1.3, logoY: 33, lines: [{ text: 'FUNDIG', height: 10.5, tracking: 0.1 }, { text: 'SAC', height: 10.5, tracking: 0.1 }], gap: 2.8, y: -10, relief: 1.0 },
     textBack: { lines: [{ text: 'DN100', height: 10.4 }, { text: 'PN16', height: 10.4 }, { text: 'GGG50', height: 10.4 }], gap: 3.4, y: 14, relief: 1.0 },
-    wheelText: { open: 'OPEN', close: 'CLOSE', openAt: Math.PI * 1.25, closeAt: Math.PI * 0.25 },
+    // f-03 (vista superior, eje del tubo horizontal): CLOSE arriba (−Z), OPEN abajo a la izquierda.
+    wheelText: { open: 'OPEN', close: 'CLOSE', openAt: Math.PI * 0.75, closeAt: -Math.PI * 0.42 },
   },
   cuadrante: {
     bolts: [[-47, -74], [47, -74], [-61, 0], [61, 0], [-47, 74], [47, 74]],
     plate: { hx: 59, hz: 87, r: 22, boss: 13 },
     bossTop: 110,
     nose: { hxTop: 40, hxBottom: 28.5 },
-    bonnet: 'fundig6', domeTop: 142, neckTop: 230,
+    bonnet: 'fundig6', domeTop: 158, neckTop: 230,
     operator: 'cap', cap: { y0: 272, yF: 283, yT: 355 },
     textFront: { logo: 28, logoWide: 1.3, logoY: 42, lines: [{ text: 'FundigSac', height: 10.6 }, { text: '0721124', height: 10.6 }, { text: 'DN500-7', height: 10.6 }], gap: 3.4, y: -8, relief: 1.0 },
     textBack: { lines: [{ text: 'DN100', height: 10 }, { text: 'PN16/10', height: 10 }, { text: 'GGG50', height: 10 }], gap: 3.2, y: 14, relief: 1.0 },
@@ -73,7 +76,8 @@ function bodySdf(c, F) {
   };
   return (x, y, z) => {
     const ax = Math.abs(x), r = Math.hypot(y, z);
-    const box = S.sdBox(x, y - (SEAM - 112) / 2, z, L2 + 1, (SEAM + 112) / 2 + 1, 114);
+    // Cota rápida: cuerpo central hasta la junta y las dos bridas completas (Ø220, sin recorte superior).
+    const box = Math.min(S.sdBox(x, y - (SEAM - 112) / 2, z, L2 + 1, (SEAM + 112) / 2 + 1, 114), S.sdCylinderAxis(r, ax - (L2 - 11), FL_R + 2, 12));
     if (box > 4) return box;
     // Bridas con resalte, estrías y 8 taladros Ø19 en Ø180.
     const xc = L2 - RF_H - FL_T / 2;
@@ -129,12 +133,12 @@ function domeFor(c) {
       const h = top - y1, cy = (y1 + top) / 2 - 4;
       const yz = S.sdRoundRect2(z, y - cy, 69, h / 2 + 4, y > cy ? 56 : 6);
       const t = clamp((y - y1) / h, 0, 1);
-      let d = I(yz, (Math.abs(x) - mix(53, 40, t)) * 0.99, 14);
+      let d = I(yz, (Math.abs(x) - mix(55, 47, t * t)) * 0.99, 16);
       d = I(d, y1 - 6 - y, 2);
       const ph = (top - 12 - y1) / 2;
       const panel = I(I(yz - 2.6, S.sdTrapezoid2(x, y - (y1 + ph), 31, 21, ph), 2.5), 30 - Math.abs(z), 1);
       d = U(d, panel, 1.6);
-      const neck = S.sdCylY(x, y - (nt + top - 24) / 2, z, 30 + 3 * smoothstep(top, top - 24, y), (nt - top + 24) / 2, 3);
+      const neck = S.sdCylY(x, y - (nt + top - 24) / 2, z, 33.5 + 3 * smoothstep(top, top - 24, y), (nt - top + 24) / 2, 3);
       return U(d, neck, 12);
     };
   }
@@ -146,8 +150,8 @@ function domeFor(c) {
     let d = I(S.sdRoundRect2(x, z, hx, hz, 26) * 0.95, y - top, 22);
     d = I(d, y1 - 6 - y, 2);
     for (const s of [-1, 1]) d = U(d, S.sdRoundCone(x, y, z, 0, y1 + 2, s * 64, 0, top - 6, s * 30, 8, 6), 8);
-    const neck = S.sdCylY(x, y - (nt + top - 26) / 2, z, 33.5 + 3.5 * smoothstep(top, top - 26, y), (nt - top + 26) / 2, 2);
-    return U(d, neck, 14);
+    const neck = S.sdCylY(x, y - (nt + top - 26) / 2, z, 37.5 + 3.5 * smoothstep(top, top - 26, y), (nt - top + 26) / 2, 2);
+    return U(d, neck, 24);
   };
 }
 
@@ -161,8 +165,8 @@ function bonnetSdf(c, F) {
     for (const [bx, bz] of c.bolts) d = U(d, S.sdCylY(x - bx, y - (y0 + c.bossTop) / 2, z - bz, 12, (c.bossTop - y0) / 2, 2.6), 5);
     // Pernos embutidos con tapón blanco (FUNDIGSAC).
     if (capped) for (const [bx, bz] of c.bolts) d = D(d, S.sdCylY(x - bx, y - c.bossTop, z - bz, 8.6, 3.2, 0.4), 0.6);
-    // Marcado en la brida de la tapa (q-02): DN100 / QT450, lado X+.
-    if (F.bonnet && x > 40 && y > y1 - 2 && y < y1 + 4) d = U(d, relief(F.bonnet, -z - 40, 56 - x, y - y1, 0.8), 0.25);
+    // Marcado en la brida de la tapa (q-02): DN100 / QT450 en la franja delantera, a la izquierda.
+    if (F.bonnet && z > 66 && z < 89 && Math.abs(x + 24) < 18 && y > y1 - 2 && y < y1 + 4) d = U(d, relief(F.bonnet, x + 24, 79.5 - z, y - y1, 0.8), 0.25);
     // Paso del vástago y cámara interior (pared de 7 mm, abierta hacia el cuerpo).
     d = D(d, S.sdCylY(x, y - top, z, 15, 60), 0.8);
     const shell = I(domeD + 7, y - (top - 40), 4);
@@ -208,7 +212,7 @@ function buildSpoke(R, Ri, hubR, yMid) {
   for (let s = 0; s < 3; s++) {
     const a0 = s * Math.PI * 2 / 3 + 0.35, pts = [];
     for (let i = 0; i <= N; i++) {
-      const t = i / N, rr = mix(hubR - 6, Ri + 7, t), a = a0 + 0.62 * Math.pow(t, 1.4);
+      const t = i / N, rr = mix(hubR - 6, Ri + 7, t), a = a0 + 0.78 * Math.pow(t, 1.35);
       pts.push([rr * Math.cos(a), yMid + 2.5 * t, rr * Math.sin(a), t]);
     }
     paths.push(pts);
@@ -222,7 +226,7 @@ function buildSpoke(R, Ri, hubR, yMid) {
       const qx = ax + ex * h, qz = az + ez * h, qy = ay + (by - ay) * h, t = ta + (tb - ta) * h;
       const lat = (-(x - qx) * ez + (z - qz) * ex) / el;
       const slab = Math.max(-hu * el, (hu - 1) * el) - 1.5;
-      const hw = 11 + 5 * t * t + 4 * (1 - t) * (1 - t), hh = 8;
+      const hw = 13 + 5 * t * t + 4 * (1 - t) * (1 - t), hh = 8.5;
       let cs = S.sdRoundRect2(lat, y - qy, hw, hh, 5.5);
       cs = D(cs, Math.hypot(lat, y - qy - hh - 1.2) - 3.4, 1.2);
       const d = Math.hypot(Math.max(cs, 0), Math.max(slab, 0)) + Math.min(Math.max(cs, slab), 0);
@@ -243,7 +247,7 @@ function capSdf(c, F) {
     let d = U(flange, socket, 8);
     d = D(d, S.sdCylY(x, y - yT, z, 20, 36), 1.4);
     d = D(d, S.sdBox(x, y - y0, z, 10, 26, 10, 1), 0.6);
-    if (F.capOpen && z > 28 && y > yF - 3 && y < yF + 2) d = U(d, relief(F.capOpen, x, z - 37, y - yF + 0.4, 0.9), 0.2);
+    if (F.capOpen && z > 28 && y > yF - 3 && y < yF + 2) d = U(d, relief(F.capOpen, x, 37 - z, y - yF + 0.4, 0.9), 0.2);
     return d;
   };
 }
@@ -287,7 +291,7 @@ function steelSdf(c) {
 
 function brassSdf(c) {
   const top = c.neckTop;
-  if (c.operator === 'cap') return (x, y, z) => D(S.sdCylinderAxis(Math.hypot(x, z), y - (top + 2.5), 35.5, 2.5, 0.8), Math.hypot(x, z) - 14, 0.4);
+  if (c.operator === 'cap') return (x, y, z) => D(S.sdCylinderAxis(Math.hypot(x, z), y - (top + 2.5), 39.5, 2.5, 0.8), Math.hypot(x, z) - 14, 0.4);
   if (c.bonnet === 'hitaly') return (x, y, z) => {
     // Collarín y hexágono solapados (sin plano de contacto de espesor cero).
     const collar = S.sdCylY(x, y - (top + 2.5), z, 27, 2.5, 0.8);
@@ -307,7 +311,7 @@ function rubberSdf(c) {
   return (x, y, z) => {
     const r = Math.hypot(x, z);
     // Guardapolvo de caucho (q-01, q-02): perfil redondeado, más ancho abajo.
-    const seal = S.sdCylinderAxis(r, y - (y0 + 11), mix(37, 32, smoothstep(y0, y0 + 22, y)), 11, 4.5);
+    const seal = S.sdCylinderAxis(r, y - (y0 + 11), mix(41, 35, smoothstep(y0, y0 + 22, y)), 11, 4.5);
     return Math.min(gasket(x, y, z), D(seal, r - 14, 1));
   };
 }
@@ -324,11 +328,11 @@ function capsWhiteSdf(c) {
 export function buildParts(assets) {
   const c = CONFIG[assets.variant], F = assets.fields;
   const parts = {
-    cuerpo: { sdf: bodySdf(c, F), bounds: [[-97, -114, -114], [97, SEAM + 4, 114]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
+    cuerpo: { sdf: bodySdf(c, F), bounds: [[-97, -114, -114], [97, 114, 114]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
     bonete: { sdf: bonnetSdf(c, F), bounds: [[-76, SEAM + GASKET - 2, -98], [76, c.neckTop + 3, 98]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
     cuna: { sdf: wedgeSdf(), bounds: [[-32, -26, -70], [32, 152, 70]], voxel: 0.5, material: 'epdm', error: 0.12, ratio: 0.005 },
     acero: { sdf: steelSdf(c), bounds: [[-72, Y_BONNET - 2, -88], [72, c.operator === 'cap' ? c.cap.y0 + 4 : c.wheel.y + c.wheel.h + 10, 88]], voxel: 0.3, material: 'acero', error: 0.08, ratio: 0.005, aoWeight: 0.1 },
-    laton: { sdf: brassSdf(c), bounds: [[-38, c.neckTop - 2, -38], [38, c.neckTop + 22, 38]], voxel: 0.3, material: 'laton', error: 0.1, ratio: 0.005, aoWeight: 0.08 },
+    laton: { sdf: brassSdf(c), bounds: [[-42, c.neckTop - 2, -42], [42, c.neckTop + 22, 42]], voxel: 0.3, material: 'laton', error: 0.1, ratio: 0.005, aoWeight: 0.08 },
     caucho: { sdf: rubberSdf(c), bounds: [[-74, SEAM - 2, -98], [74, c.operator === 'cap' ? c.neckTop + 30 : SEAM + 4, 98]], voxel: 0.35, material: 'caucho', error: 0.1, ratio: 0.005 },
   };
   if (c.operator === 'handwheel') parts.volante = { sdf: handwheelSdf(c, F), bounds: [[-128, c.wheel.y - 14, -128], [128, c.wheel.y + c.wheel.h + 4, 128]], voxel: 0.36, material: 'epoxi', error: 0.2, ratio: 0.005, normalWeight: 0.1, aoWeight: 0.12 };
@@ -350,6 +354,7 @@ export async function prepareAssets(variant, { textBlockField, logoField }) {
     fields.close = await textBlockField([{ ...narrow, text: `${c.wheelText.close}▶` }]);
   }
   if (c.bonnetText) fields.bonnet = await textBlockField(c.bonnetText.map((t) => ({ text: t, height: 4.2 })), { gap: 1.4 });
-  if (c.operator === 'cap') fields.capOpen = await textBlockField([{ text: 'OPEN', height: 4.5 }]);
+  // q-05: flecha ▲ sobre OPEN en la brida del cuadrante.
+  if (c.operator === 'cap') fields.capOpen = await textBlockField([{ text: '▲', height: 2.6 }, { text: 'OPEN', height: 4.5 }], { gap: 0.9 });
   return { variant, fields };
 }

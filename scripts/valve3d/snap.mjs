@@ -26,7 +26,7 @@ export const SHOTS = {
     ['media/valvula-fundigsac-cuadrante/q-01.webp', '0deg 78deg 0.78m', '36deg', '0m 0.125m 0m'],
     ['media/valvula-fundigsac-cuadrante/q-02.webp', '62deg 56deg 0.78m', '38deg', '0m 0.12m 0m'],
     ['media/valvula-fundigsac-cuadrante/q-03.webp', '180deg 74deg 0.78m', '36deg', '0m 0.125m 0m'],
-    ['media/valvula-fundigsac-cuadrante/q-04.webp', '125deg 46deg 0.78m', '38deg', '0m 0.12m 0m'],
+    ['media/valvula-fundigsac-cuadrante/q-04.webp', '-50deg 48deg 0.78m', '38deg', '0m 0.12m 0m'],
     ['media/valvula-fundigsac-cuadrante/q-05.webp', '0deg 1deg 0.9m', '34deg', '0m 0.12m 0m'],
   ],
 };

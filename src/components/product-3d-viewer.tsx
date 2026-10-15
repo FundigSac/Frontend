@@ -69,7 +69,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=sdf-1`,
+        src: `${src}?v=sdf-2`,
         poster,
         alt,
         "camera-controls": "",
@@ -80,7 +80,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
         ...(valveStudio ? { "tone-mapping": "neutral" } : {}),
         "camera-orbit": valveStudio ? "32deg 70deg auto" : "55deg 78deg auto",
         "field-of-view": "30deg",
-        "environment-image": valveStudio ? "/models/valvula-estudio-blanco.hdr" : "neutral",
+        "environment-image": valveStudio ? "/models/valvula-estudio-producto.hdr" : "neutral",
         "interaction-prompt": "none",
         ...(reduce ? {} : { "auto-rotate": "", "auto-rotate-delay": "6000", "rotation-per-second": "12deg" }),
         style: { width: "100%", height: "100%", background: "transparent", "--poster-color": "transparent" },
