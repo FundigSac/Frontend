@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   Bolt,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -23,12 +24,15 @@ import {
   Rotate3d,
   Settings2,
   ShieldCheck,
+  ShoppingCart,
   X,
 } from "lucide-react";
 import styles from "./w06-ficha.module.css";
 import { DATASHEETS, type Datasheet, type Feature } from "./w06-ficha-data";
 import { FICHA_COPY } from "./w06-ficha-copy";
 import { ValvePlan, type Cotas } from "./w06-plano";
+import { addToCart, openCart } from "@/modules/cart/cart-store";
+import { featuredBySlug } from "@/modules/cart/cart-products";
 import { requestDocumentHref } from "@/modules/resources/documents";
 import { site, whatsappLink } from "@/lib/site-info";
 import { useLang } from "@/shared/layout/landing-prefs";
@@ -78,6 +82,9 @@ const RELATED = [
 
 const TAB_IDS = ["descripcion", "especificaciones", "dimensiones", "documentacion"] as const;
 type TabId = (typeof TAB_IDS)[number];
+
+const PRESSURES = ["PN10", "PN16"] as const;
+const CART_SLUG = { base: "valvula-compuerta", fundigsac: "valvula-compuerta-fundigsac", extendida: "valvula-compuerta-fundigsac-garantia-extendida" } as const;
 
 const FEATURE_ICONS: Record<Feature["icon"], typeof ShieldCheck> = { shield: ShieldCheck, settings: Settings2, layers: Layers, nut: Bolt };
 
@@ -129,6 +136,9 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState(sheet.sizes.includes("DN100") ? "DN100" : sheet.sizes[0]);
   const [tab, setTab] = useState<TabId>("descripcion");
+  const [pn, setPn] = useState<(typeof PRESSURES)[number]>("PN16");
+  const [added, setAdded] = useState(false);
+  const addedTimer = useRef<number | undefined>(undefined);
   const pageRef = useRef<HTMLElement>(null);
   const total = THUMBS.length;
   const current = THUMBS[active];
@@ -136,6 +146,24 @@ export function W06Ficha(props: { variant?: Variant }) {
   const series = sheet.specs.find(([k]) => k === "Serie")?.[1];
 
   useReveal(pageRef);
+  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
+
+  /** Agrega la válvula con el DN y PN elegidos al carrito de cotización y abre el panel lateral. */
+  const addCurrent = () => {
+    const slug = CART_SLUG[props.variant ?? "base"];
+    const featured = featuredBySlug(slug);
+    addToCart({
+      slug,
+      name: featured?.name[lang] ?? productName,
+      variant: `${size} · ${pn}`,
+      image: featured?.image ?? THUMBS[0].dir + THUMBS[0].src,
+      href: featured?.href ?? `/productos/valvulas/${slug}`,
+    });
+    openCart();
+    setAdded(true);
+    window.clearTimeout(addedTimer.current);
+    addedTimer.current = window.setTimeout(() => setAdded(false), 2200);
+  };
 
   const pick = useCallback((i: number) => { setSpin(false); setActive(i); }, []);
   const step = useCallback((d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); }, [total]);
@@ -204,8 +232,8 @@ export function W06Ficha(props: { variant?: Variant }) {
   );
 
   const downloadCta = doc
-    ? <a href={doc.href} download className={styles.secondary}><Download size={17} aria-hidden="true" /> {t.download}</a>
-    : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>;
+    ? <a href={doc.href} download className={styles.helpDoc}><Download size={16} aria-hidden="true" /> {t.download}</a>
+    : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.helpDoc}><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>;
 
   // Qué contiene la ficha, tomado de los datos reales de esta válvula.
   const docIncludes = [t.docSpecs, `${t.docDims} ${sheet.sizeRange}`, `${sheet.flange.title} PN10 / PN16`, ...(sheet.stem ? [sheet.stem.title] : []), t.docMaterials].slice(0, 4);
@@ -277,11 +305,36 @@ export function W06Ficha(props: { variant?: Variant }) {
               ))}
             </ul>
 
-            <div className={styles.ctas}>
-              <Link href="/cotizar" className={styles.primary}>{t.quote} <ArrowRight size={17} aria-hidden="true" /></Link>
-              {downloadCta}
+            {/* Pedido rápido: el DN es el mismo del plano y las tablas de dimensiones. */}
+            <div className={styles.order} role="group" aria-label={t.order}>
+              <div className={styles.orderFields}>
+                <label className={styles.field}>
+                  <span>{t.dnLabel}</span>
+                  <select value={size} onChange={(e) => setSize(e.target.value)}>
+                    {sheet.sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <ChevronDown size={16} aria-hidden="true" />
+                </label>
+                <div className={styles.field} role="group" aria-label={t.pnLabel}>
+                  <span aria-hidden="true">{t.pnLabel}</span>
+                  <div className={styles.segment}>
+                    {PRESSURES.map((p) => (
+                      <button key={p} type="button" aria-pressed={pn === p} className={pn === p ? styles.segmentOn : undefined} onClick={() => setPn(p)}>{p}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className={styles.ctas}>
+                <button type="button" className={styles.primary} onClick={addCurrent} data-added={added || undefined}>
+                  {added ? <Check size={18} strokeWidth={2.6} aria-hidden="true" /> : <ShoppingCart size={18} aria-hidden="true" />}
+                  {added ? t.added : t.addCart}
+                </button>
+                <Link href="/cotizar" className={styles.secondary}>{t.quote} <ArrowRight size={17} aria-hidden="true" /></Link>
+              </div>
             </div>
             <p className={styles.help}>
+              {downloadCta}
+              <span className={styles.helpSep} aria-hidden="true" />
               <MessageCircle size={16} aria-hidden="true" />
               {t.help}{" "}
               <a href={whatsapp} target="_blank" rel="noopener noreferrer">{t.helpLink}</a>
