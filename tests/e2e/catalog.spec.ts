@@ -202,23 +202,439 @@ test.describe("W02 catálogo", () => {
     await expect(catalogo).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
   });
 
-  test("ficha FUNDIGSAC de compuerta con 5 años de garantía sale del catálogo y usan la plantilla de la ficha", async ({ page }) => {
-    for (const [slug, years, label] of [["valvula-compuerta-fundigsac-5-anos", "5", "5 años de garantía"]] as const) {
-      await page.goto("/productos");
-      const card = page.locator("#productos-destacados article").filter({ hasText: `FUNDIGSAC · ${label}` });
-      await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", `/productos/valvulas/${slug}`);
-      await card.getByRole("link", { name: "Ver ficha", exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`/productos/valvulas/${slug}$`));
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Válvula de compuerta bridada FUNDIGSAC · ${label}`);
-      await expect(page.getByText(`${label} respaldada por FUNDIGSAC`)).toBeVisible();
-      await expect(page.getByRole("row", { name: new RegExp(`^Garantía ${years}`) })).toBeVisible();
-      await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
+  test("ficha FUNDIGSAC con garantía extendida sale del catálogo con etiqueta, sin años, y usa la plantilla de la ficha", async ({ page }) => {
+    const slug = "valvula-compuerta-fundigsac-garantia-extendida";
+    await page.goto("/productos");
+    const card = page.locator("#productos-destacados article").filter({ hasText: "Garantía extendida" });
+    await expect(card).toHaveCount(1);
+    await expect(card).not.toContainText("5 años");
+    await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", `/productos/valvulas/${slug}`);
+    await card.getByRole("link", { name: "Ver ficha", exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/productos/valvulas/${slug}import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
+
+/** Recoge errores/avisos de consola y excepciones de la página. */
+function watchConsole(page: Page) {
+  const problems: string[] = [];
+  page.on("console", (m: ConsoleMessage) => {
+    if (m.type() !== "error" && m.type() !== "warning") return;
+    // Chrome registra el 404 del propio documento en la ruta inexistente; no es un fallo de la página.
+    if (/Failed to load resource.*404/.test(m.text()) && page.url().includes("ruta-que-no-existe")) return;
+    // Solo en `next dev`: precarga el CSS del not-found (legal.css) en todas las rutas y Chrome avisa si la carga tarda. El build de producción no lo emite.
+    if (/legal_[\w-]+\.css was preloaded using link preload but not used/.test(m.text())) return;
+    problems.push(`${m.type()}: ${m.text()}`);
+  });
+  page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
+  return problems;
+}
+
+const ROUTES = ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/soluciones", "/soluciones/redes-matrices", "/nosotros", "/buscar?q=v%C3%A1lvula", "/ruta-que-no-existe"];
+
+test.describe("consola limpia", () => {
+  for (const route of ROUTES) {
+    test(`sin errores ni avisos en ${route}`, async ({ page }) => {
+      const problems = watchConsole(page);
+      await page.goto(route, { waitUntil: "networkidle" });
+      await page.waitForTimeout(500);
+      expect(problems).toEqual([]);
+    });
+  }
+});
+
+test.describe("W01 inicio", () => {
+  test("tarjetas de componentes y accesos apuntan a rutas reales", async ({ page }) => {
+    await page.goto("/");
+    const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs.filter((h) => h === "#")).toEqual([]);
+    // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/recursos", "/contacto"]) {
+      expect(hrefs, `falta un enlace a ${href}`).toContain(href);
+    }
+    await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
+    await expect(page.getByRole("link", { name: "Ver soluciones" })).toHaveAttribute("href", "/soluciones");
+  });
+
+  test("Grifos no está en el catálogo: la tarjeta lleva a cotizar y ningún acceso de búsqueda termina en un catálogo vacío", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("a.lp-card").filter({ hasText: "Grifos" })).toHaveAttribute("href", "/cotizar");
+    const homeHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    await page.goto("/mapa-del-sitio");
+    const mapHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    expect([...homeHrefs, ...mapHrefs]).not.toContain("/productos?q=grifo");
+    const searches = [...new Set([...homeHrefs, ...mapHrefs].filter((h) => h.startsWith("/productos?q=")))];
+    expect(searches.length).toBeGreaterThan(0);
+    for (const href of searches) {
+      await page.goto(href);
+      await expect(page.locator("#productos-destacados article").first(), `${href} no devuelve productos`).toBeVisible();
     }
   });
 
-  test("ficha FUNDIGSAC: galería con 5 fotos propias y sin garantía indicada; la de 5 años y la base conservan las suyas", async ({ page }) => {
+  test("'Explorar productos' y 'Explorar recursos técnicos' navegan", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Explorar recursos técnicos" }).click();
+    await expect(page).toHaveURL(/\/recursos$/);
+    await page.goto("/");
+    await page.getByRole("link", { name: "Explorar productos" }).click();
+    await expect(page).toHaveURL(/\/productos$/);
+  });
+});
+
+test.describe("W02 catálogo", () => {
+  // Sin desplazamiento suave: al elegir una familia la página baja a los productos y los clics siguientes deben ser estables.
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  });
+  const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" });
+  const familyButton = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
+
+  test("muestra 5 familias y 12 productos destacados", async ({ page }) => {
     await page.goto("/productos");
-    const card = page.locator("#productos-destacados article").filter({ hasText: "Válvula de compuerta FUNDIGSAC" }).filter({ hasNotText: "garantía" });
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
+    const families = page.locator('section[aria-label="Familias de productos"] article');
+    await expect(families).toHaveCount(5);
+    const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
+    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("la búsqueda filtra y actualiza la URL; el vacío ofrece restaurar", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await searchbox(page).fill("tapa");
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first()).toContainText("Tapa circular");
+    await expect(page).toHaveURL(/q=tapa/);
+    await searchbox(page).fill("zzz-inexistente");
+    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
+    await expect(cards).toHaveCount(0);
+    await page.getByRole("button", { name: /Ver todos los productos/ }).click();
+    await expect(cards).toHaveCount(12);
+    await expect(searchbox(page)).toHaveValue("");
+    await expect(page).not.toHaveURL(/q=/);
+  });
+
+  test("filtros por familia: cada botón filtra, repetir el clic lo quita y se combina con la búsqueda", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    for (const [label, familia, total] of [["Válvulas", "valvulas", 5], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
+      await familyButton(page, label).click();
+      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
+      await expect(cards).toHaveCount(total);
+      await expect(page).toHaveURL(new RegExp(`familia=${familia}`));
+    }
+    await familyButton(page, "Conexiones y fittings").click(); // segundo clic: vuelve a "Todas"
+    await expect(cards).toHaveCount(12);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+    await expect(page).not.toHaveURL(/familia=/);
+
+    await familyButton(page, "Accesorios HDPE").click();
+    await searchbox(page).fill("codo 90");
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first()).toContainText("Codo 90° HDPE");
+    await familyButton(page, "Válvulas").click();
+    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
+    await familyButton(page, "Todas").click();
+    await expect(cards).toHaveCount(1);
+  });
+
+  test("URL compartible: ?familia=&q= se aplica al cargar y una familia inválida se ignora", async ({ page }) => {
+    await page.goto("/productos?familia=marcos-y-tapas&q=tapa");
+    await expect(page.locator("#productos-destacados article")).toHaveCount(1);
+    await expect(searchbox(page)).toHaveValue("tapa");
+    await expect(familyButton(page, "Marcos y tapas")).toHaveAttribute("aria-pressed", "true");
+    await page.goto("/productos?familia=inexistente");
+    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("navegación suave: las tarjetas con ?familia= filtran y marcan el botón de familia sin recargar", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await expect(cards.first()).toBeVisible();
+    const all = await cards.count();
+    for (const [name, label, familia, total] of [
+      ["Codo 90° HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Tee HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Reducción HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Unión flexible HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
+      ["Adaptador brida HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
+    ] as const) {
+      await familyButton(page, "Todas").click();
+      await expect(cards).toHaveCount(all);
+      await cards.filter({ hasText: name }).getByRole("link", { name: "Ver ficha", exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`familia=${familia}$`));
+      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
+      await expect(cards).toHaveCount(total);
+      await expect(cards.filter({ hasText: name })).toHaveCount(1);
+    }
+    // Atrás (popstate) vuelve al catálogo completo.
+    await page.goBack();
+    await expect(page).not.toHaveURL(/familia=/);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(all);
+  });
+
+  test("navegación suave: la URL de la carga inicial vuelve a filtrar tras quitar el filtro con los botones", async ({ page }) => {
+    await page.goto("/productos?familia=accesorios-hdpe");
+    const cards = page.locator("#productos-destacados article");
+    await expect(cards).toHaveCount(3);
+    await familyButton(page, "Todas").click();
+    await expect(cards).not.toHaveCount(3);
+    await page.getByRole("link", { name: "Explorar Accesorios HDPE" }).click();
+    await expect(page).toHaveURL(/familia=accesorios-hdpe$/);
+    await expect(familyButton(page, "Accesorios HDPE")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(3);
+  });
+
+  test("navegación suave: el filtro de familia sustituye una búsqueda previa y los espacios al teclear se conservan", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await searchbox(page).pressSequentially("tapa ");
+    await expect(searchbox(page)).toHaveValue("tapa ");
+    await expect(cards).toHaveCount(1);
+    await page.locator("section[aria-label='Familias de productos']").getByRole("link", { name: "Explorar Conexiones y fittings" }).click();
+    await expect(page).toHaveURL(/familia=conexiones-y-fittings$/);
+    await expect(searchbox(page)).toHaveValue("");
+    await expect(familyButton(page, "Conexiones y fittings")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(2);
+  });
+
+  test("tarjetas: ficha, cotizar y solicitud del catálogo apuntan a rutas reales", async ({ page }) => {
+    await page.goto("/productos");
+    expect(await page.locator("main a[href='#']").count()).toBe(0);
+    const first = page.locator("#productos-destacados article").first();
+    await expect(first).toContainText("Válvula de compuerta bridada");
+    await expect(first.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
+    await expect(first.getByRole("link", { name: "Cotizar", exact: true })).toHaveAttribute("href", "/cotizar");
+    const tapa = page.locator("#productos-destacados article").filter({ hasText: "Tapa circular" });
+    await expect(tapa.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/marcos-y-tapas/marco-tapa-d400");
+    const catalogo = page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ });
+    await expect(catalogo).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
+  });
+
+));
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvula de compuerta bridada FUNDIGSAC");
+    await expect(page.getByText("Garantía extendida respaldada por FUNDIGSAC")).toBeVisible();
+    await expect(page.getByRole("row", { name: /^Garantía Extendida/ })).toBeVisible();
+    await expect(page.locator("main").getByText("5 años")).toHaveCount(0);
+    const thumbs = page.locator("[role='list'] button[role='listitem']");
+    await expect(thumbs).toHaveCount(5);
+    const srcOf = () => page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
+    expect((await srcOf()).every((u) => u.includes("/media/valvula-fundigsac-cuadrante/q-0"))).toBe(true);
+    await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
+    await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-5-anos");
+    await expect(page).toHaveURL(new RegExp(`/productos/valvulas/${slug}import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
+
+/** Recoge errores/avisos de consola y excepciones de la página. */
+function watchConsole(page: Page) {
+  const problems: string[] = [];
+  page.on("console", (m: ConsoleMessage) => {
+    if (m.type() !== "error" && m.type() !== "warning") return;
+    // Chrome registra el 404 del propio documento en la ruta inexistente; no es un fallo de la página.
+    if (/Failed to load resource.*404/.test(m.text()) && page.url().includes("ruta-que-no-existe")) return;
+    // Solo en `next dev`: precarga el CSS del not-found (legal.css) en todas las rutas y Chrome avisa si la carga tarda. El build de producción no lo emite.
+    if (/legal_[\w-]+\.css was preloaded using link preload but not used/.test(m.text())) return;
+    problems.push(`${m.type()}: ${m.text()}`);
+  });
+  page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
+  return problems;
+}
+
+const ROUTES = ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/soluciones", "/soluciones/redes-matrices", "/nosotros", "/buscar?q=v%C3%A1lvula", "/ruta-que-no-existe"];
+
+test.describe("consola limpia", () => {
+  for (const route of ROUTES) {
+    test(`sin errores ni avisos en ${route}`, async ({ page }) => {
+      const problems = watchConsole(page);
+      await page.goto(route, { waitUntil: "networkidle" });
+      await page.waitForTimeout(500);
+      expect(problems).toEqual([]);
+    });
+  }
+});
+
+test.describe("W01 inicio", () => {
+  test("tarjetas de componentes y accesos apuntan a rutas reales", async ({ page }) => {
+    await page.goto("/");
+    const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs.filter((h) => h === "#")).toEqual([]);
+    // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/recursos", "/contacto"]) {
+      expect(hrefs, `falta un enlace a ${href}`).toContain(href);
+    }
+    await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
+    await expect(page.getByRole("link", { name: "Ver soluciones" })).toHaveAttribute("href", "/soluciones");
+  });
+
+  test("Grifos no está en el catálogo: la tarjeta lleva a cotizar y ningún acceso de búsqueda termina en un catálogo vacío", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("a.lp-card").filter({ hasText: "Grifos" })).toHaveAttribute("href", "/cotizar");
+    const homeHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    await page.goto("/mapa-del-sitio");
+    const mapHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
+    expect([...homeHrefs, ...mapHrefs]).not.toContain("/productos?q=grifo");
+    const searches = [...new Set([...homeHrefs, ...mapHrefs].filter((h) => h.startsWith("/productos?q=")))];
+    expect(searches.length).toBeGreaterThan(0);
+    for (const href of searches) {
+      await page.goto(href);
+      await expect(page.locator("#productos-destacados article").first(), `${href} no devuelve productos`).toBeVisible();
+    }
+  });
+
+  test("'Explorar productos' y 'Explorar recursos técnicos' navegan", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: "Explorar recursos técnicos" }).click();
+    await expect(page).toHaveURL(/\/recursos$/);
+    await page.goto("/");
+    await page.getByRole("link", { name: "Explorar productos" }).click();
+    await expect(page).toHaveURL(/\/productos$/);
+  });
+});
+
+test.describe("W02 catálogo", () => {
+  // Sin desplazamiento suave: al elegir una familia la página baja a los productos y los clics siguientes deben ser estables.
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  });
+  const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" });
+  const familyButton = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
+
+  test("muestra 5 familias y 12 productos destacados", async ({ page }) => {
+    await page.goto("/productos");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
+    const families = page.locator('section[aria-label="Familias de productos"] article');
+    await expect(families).toHaveCount(5);
+    const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
+    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("la búsqueda filtra y actualiza la URL; el vacío ofrece restaurar", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await searchbox(page).fill("tapa");
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first()).toContainText("Tapa circular");
+    await expect(page).toHaveURL(/q=tapa/);
+    await searchbox(page).fill("zzz-inexistente");
+    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
+    await expect(cards).toHaveCount(0);
+    await page.getByRole("button", { name: /Ver todos los productos/ }).click();
+    await expect(cards).toHaveCount(12);
+    await expect(searchbox(page)).toHaveValue("");
+    await expect(page).not.toHaveURL(/q=/);
+  });
+
+  test("filtros por familia: cada botón filtra, repetir el clic lo quita y se combina con la búsqueda", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    for (const [label, familia, total] of [["Válvulas", "valvulas", 5], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
+      await familyButton(page, label).click();
+      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
+      await expect(cards).toHaveCount(total);
+      await expect(page).toHaveURL(new RegExp(`familia=${familia}`));
+    }
+    await familyButton(page, "Conexiones y fittings").click(); // segundo clic: vuelve a "Todas"
+    await expect(cards).toHaveCount(12);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+    await expect(page).not.toHaveURL(/familia=/);
+
+    await familyButton(page, "Accesorios HDPE").click();
+    await searchbox(page).fill("codo 90");
+    await expect(cards).toHaveCount(1);
+    await expect(cards.first()).toContainText("Codo 90° HDPE");
+    await familyButton(page, "Válvulas").click();
+    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
+    await familyButton(page, "Todas").click();
+    await expect(cards).toHaveCount(1);
+  });
+
+  test("URL compartible: ?familia=&q= se aplica al cargar y una familia inválida se ignora", async ({ page }) => {
+    await page.goto("/productos?familia=marcos-y-tapas&q=tapa");
+    await expect(page.locator("#productos-destacados article")).toHaveCount(1);
+    await expect(searchbox(page)).toHaveValue("tapa");
+    await expect(familyButton(page, "Marcos y tapas")).toHaveAttribute("aria-pressed", "true");
+    await page.goto("/productos?familia=inexistente");
+    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("navegación suave: las tarjetas con ?familia= filtran y marcan el botón de familia sin recargar", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await expect(cards.first()).toBeVisible();
+    const all = await cards.count();
+    for (const [name, label, familia, total] of [
+      ["Codo 90° HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Tee HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Reducción HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
+      ["Unión flexible HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
+      ["Adaptador brida HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
+    ] as const) {
+      await familyButton(page, "Todas").click();
+      await expect(cards).toHaveCount(all);
+      await cards.filter({ hasText: name }).getByRole("link", { name: "Ver ficha", exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`familia=${familia}$`));
+      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
+      await expect(cards).toHaveCount(total);
+      await expect(cards.filter({ hasText: name })).toHaveCount(1);
+    }
+    // Atrás (popstate) vuelve al catálogo completo.
+    await page.goBack();
+    await expect(page).not.toHaveURL(/familia=/);
+    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(all);
+  });
+
+  test("navegación suave: la URL de la carga inicial vuelve a filtrar tras quitar el filtro con los botones", async ({ page }) => {
+    await page.goto("/productos?familia=accesorios-hdpe");
+    const cards = page.locator("#productos-destacados article");
+    await expect(cards).toHaveCount(3);
+    await familyButton(page, "Todas").click();
+    await expect(cards).not.toHaveCount(3);
+    await page.getByRole("link", { name: "Explorar Accesorios HDPE" }).click();
+    await expect(page).toHaveURL(/familia=accesorios-hdpe$/);
+    await expect(familyButton(page, "Accesorios HDPE")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(3);
+  });
+
+  test("navegación suave: el filtro de familia sustituye una búsqueda previa y los espacios al teclear se conservan", async ({ page }) => {
+    await page.goto("/productos");
+    const cards = page.locator("#productos-destacados article");
+    await searchbox(page).pressSequentially("tapa ");
+    await expect(searchbox(page)).toHaveValue("tapa ");
+    await expect(cards).toHaveCount(1);
+    await page.locator("section[aria-label='Familias de productos']").getByRole("link", { name: "Explorar Conexiones y fittings" }).click();
+    await expect(page).toHaveURL(/familia=conexiones-y-fittings$/);
+    await expect(searchbox(page)).toHaveValue("");
+    await expect(familyButton(page, "Conexiones y fittings")).toHaveAttribute("aria-pressed", "true");
+    await expect(cards).toHaveCount(2);
+  });
+
+  test("tarjetas: ficha, cotizar y solicitud del catálogo apuntan a rutas reales", async ({ page }) => {
+    await page.goto("/productos");
+    expect(await page.locator("main a[href='#']").count()).toBe(0);
+    const first = page.locator("#productos-destacados article").first();
+    await expect(first).toContainText("Válvula de compuerta bridada");
+    await expect(first.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
+    await expect(first.getByRole("link", { name: "Cotizar", exact: true })).toHaveAttribute("href", "/cotizar");
+    const tapa = page.locator("#productos-destacados article").filter({ hasText: "Tapa circular" });
+    await expect(tapa.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/marcos-y-tapas/marco-tapa-d400");
+    const catalogo = page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ });
+    await expect(catalogo).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
+  });
+
+));
+  });
+
+  test("ficha FUNDIGSAC: galería con 5 fotos propias y sin garantía indicada; la de garantía extendida y la base conservan las suyas", async ({ page }) => {
+    await page.goto("/productos");
+    const card = page.locator("#productos-destacados article").filter({ hasText: "Válvula de compuerta FUNDIGSAC" }).filter({ hasNotText: "Garantía extendida" });
     await card.getByRole("link", { name: "Ver ficha", exact: true }).click();
     await expect(page).toHaveURL(/\/productos\/valvulas\/valvula-compuerta-fundigsac$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvula de compuerta bridada FUNDIGSAC");
@@ -236,7 +652,7 @@ test.describe("W02 catálogo", () => {
     await page.keyboard.press("ArrowRight");
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog", { name: "Galería ampliada" })).toBeHidden();
-    for (const slug of ["valvula-compuerta-fundigsac-5-anos", "valvula-compuerta"]) {
+    for (const slug of ["valvula-compuerta-fundigsac-garantia-extendida", "valvula-compuerta"]) {
       await page.goto(`/productos/valvulas/${slug}`);
       expect((await srcOf()).every((u) => u.includes("/media/valvula-hd/v-0"))).toBe(true);
     }
@@ -328,7 +744,7 @@ function lineTests(line: Line) {
       await page.goto(line.route);
       expect(await page.locator("main a[href='#']").count()).toBe(0);
       for (const [name, href] of line.cards) {
-        // Por encabezado exacto: un nombre puede ser subcadena de otro (p. ej. "…FUNDIGSAC" y "…FUNDIGSAC · 5 años de garantía").
+        // Por encabezado exacto: un nombre puede ser subcadena de otro.
         const card = cards(page).filter({ has: page.getByRole("heading", { name, exact: true }) });
         await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", href);
       }
@@ -353,7 +769,7 @@ lineTests({
   za: "Válvula reductora de presión",
   emptyHeading: "No encontramos válvulas con esos datos",
   resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC · 5 años de garantía", "/productos/valvulas/valvula-compuerta-fundigsac-5-anos"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
 });
 
 lineTests({

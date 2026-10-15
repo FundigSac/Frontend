@@ -62,6 +62,16 @@ const FUNDIGSAC_THUMBS = [
   { dir: FG, src: "f-06.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista en perspectiva con la brida y la etiqueta DN100 de 4 pulgadas" },
 ];
 
+/** Fotos reales de la válvula FUNDIGSAC con garantía extendida y cuadrante de maniobra (recortes WebP con transparencia, 1000×1250). */
+const FQ = "/media/valvula-fundigsac-cuadrante/";
+const EXTENDED_THUMBS = [
+  { dir: FQ, src: "q-01.webp", alt: "Válvula de compuerta bridada FUNDIGSAC DN500, vista frontal con cuadrante de maniobra y logotipo en relieve en el cuerpo" },
+  { dir: FQ, src: "q-02.webp", alt: "Válvula de compuerta bridada FUNDIGSAC DN100, vista en perspectiva con la brida y el cuadrante de maniobra" },
+  { dir: FQ, src: "q-03.webp", alt: "Válvula de compuerta bridada FUNDIGSAC DN100 PN16/10, vista frontal con marcado GGG50 en el cuerpo" },
+  { dir: FQ, src: "q-04.webp", alt: "Válvula de compuerta bridada FUNDIGSAC, vista elevada de la brida con el cuadrante de maniobra" },
+  { dir: FQ, src: "q-05.webp", alt: "Vista superior de la válvula FUNDIGSAC DN50 PN16 con el sentido de apertura OPEN" },
+];
+
 const RELATED = [
   { src: "mariposa-cut.webp", title: "Válvula mariposa", text: "Diseño compacto y de bajo torque para grandes diámetros.", href: "/productos/valvulas/valvula-mariposa" },
   { src: "check-cut.webp", title: "Válvula check", text: "Evita el retorno de flujo en sistemas de conducción.", href: "/productos/valvulas" },
@@ -90,17 +100,17 @@ const SPECS = [
   ["Rango dimensional", "DN40 a DN600"],
 ];
 
-/** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía de 5 años; sin valor es la ficha base (H-ITALY). */
-export type Variant = "fundigsac" | 5;
+/** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía extendida; sin valor es la ficha base (H-ITALY). */
+export type Variant = "fundigsac" | "extendida";
 
 /** Textos de la ficha por variante, definidos a nivel de módulo: la base (H-ITALY) o FUNDIGSAC con garantía. */
 const variantCopy = (variant?: Variant) => {
   if (!variant) return { warrantyLabel: null, productName: "Válvula de compuerta bridada", specs: SPECS, brand: "H-ITALY", thumbs: BASE_THUMBS };
   if (variant === "fundigsac") return { warrantyLabel: null, productName: "Válvula de compuerta bridada FUNDIGSAC", specs: [["Marca", "FUNDIGSAC"], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: FUNDIGSAC_THUMBS };
-  const warrantyLabel = `${variant} años de garantía`;
-  return { warrantyLabel, productName: `Válvula de compuerta bridada FUNDIGSAC · ${warrantyLabel}`, specs: [["Marca", "FUNDIGSAC"], ["Garantía", warrantyLabel], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: BASE_THUMBS };
+  const warrantyLabel = "Garantía extendida";
+  return { warrantyLabel, productName: "Válvula de compuerta bridada FUNDIGSAC", specs: [["Marca", "FUNDIGSAC"], ["Garantía", "Extendida, respaldada por FUNDIGSAC"], ...SPECS.slice(1)], brand: "FUNDIGSAC", thumbs: EXTENDED_THUMBS };
 };
-const COPY = { base: variantCopy(), fundigsac: variantCopy("fundigsac"), 5: variantCopy(5) } as const;
+const COPY = { base: variantCopy(), fundigsac: variantCopy("fundigsac"), extendida: variantCopy("extendida") } as const;
 
 export function W06Ficha(props: { variant?: Variant }) {
   const { warrantyLabel, productName, specs, brand, thumbs: THUMBS } = COPY[props.variant ?? "base"];

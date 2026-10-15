@@ -23,6 +23,7 @@ type FeaturedProduct = {
   id: string;
   family: FamilyId;
   name: string;
+  badge?: string;
   descriptor: string;
   image: string;
   alt: string;
@@ -33,7 +34,7 @@ type FeaturedProduct = {
 const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
   { id: "compuerta", family: "valvulas", name: "Válvula de compuerta bridada", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta azul", href: "/productos/valvulas/valvula-compuerta", terms: "válvula compuerta cierre agua hierro dúctil" },
   { id: "compuerta-fundigsac", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac/f-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con el logotipo en relieve", href: "/productos/valvulas/valvula-compuerta-fundigsac", terms: "válvula compuerta fundigsac cierre agua hierro dúctil" },
-  { id: "compuerta-5-anos", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC · 5 años de garantía", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con 5 años de garantía", href: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", terms: "válvula compuerta fundigsac garantía 5 años cierre agua hierro dúctil" },
+  { id: "compuerta-garantia-extendida", family: "valvulas", name: "Válvula de compuerta FUNDIGSAC", badge: "Garantía extendida", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac-cuadrante/q-01.webp", alt: "Válvula de compuerta azul FUNDIGSAC con cuadrante de maniobra", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", terms: "válvula compuerta fundigsac garantía extendida cuadrante cierre agua hierro dúctil" },
   { id: "mariposa", family: "valvulas", name: "Válvula mariposa", descriptor: "DN 50 – DN 1200  |  PN 10/16", image: "/media/productos-page/featured-mariposa.jpg", alt: "Válvula mariposa azul con accionamiento manual", href: "/productos/valvulas/valvula-mariposa", terms: "válvula mariposa palanca control" },
   { id: "hdpe-pipe", family: "tuberias", name: "Tubería HDPE PE100", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tuberia.jpg", alt: "Tuberías HDPE negras con franja azul", href: "/productos/tuberias", terms: "tubería hdpe pe100 pead conducción" },
   { id: "tapa-d400", family: "marcos-y-tapas", name: "Tapa circular", descriptor: "Clase B125 – D400", image: "/media/productos-page/featured-tapa.jpg", alt: "Tapa circular de hierro dúctil", href: "/productos/marcos-y-tapas/marco-tapa-d400", terms: "tapa circular marco calzada hierro dúctil" },
@@ -95,6 +96,7 @@ function ProductCard({ product }: { product: FeaturedProduct }) {
     <article className={styles.productCard}>
       <Link href={product.href} className={styles.productImage} aria-label={"Ver ficha de " + product.name}>
         <ProductPhoto product={product} />
+        {product.badge && <span className={styles.productBadge}>{product.badge}</span>}
       </Link>
       <div className={styles.productBody}>
         <Link href={product.href} className={styles.productName}>{product.name}</Link>

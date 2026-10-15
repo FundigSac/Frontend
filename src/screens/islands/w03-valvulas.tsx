@@ -19,10 +19,10 @@ const GROUPS: readonly { id: GroupId; label: string; image: string }[] = [
   { id: "control", label: "Control", image: "/media/valvulas-page/check-swing.webp" },
 ];
 
-const VALVES: readonly { id: string; group: GroupId; name: string; description: string; image: string; href: string }[] = [
+const VALVES: readonly { id: string; group: GroupId; name: string; badge?: string; description: string; image: string; href: string }[] = [
   { id: "compuerta", group: "compuerta", name: "Válvula de compuerta bridada", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga para redes de agua.", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta" },
   { id: "compuerta-fundigsac", group: "compuerta", name: "Válvula de compuerta FUNDIGSAC", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga. Marca FUNDIGSAC.", image: "/media/valvula-fundigsac/f-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
-  { id: "compuerta-5-anos", group: "compuerta", name: "Válvula de compuerta FUNDIGSAC · 5 años de garantía", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga. Marca FUNDIGSAC con 5 años de garantía.", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos" },
+  { id: "compuerta-garantia-extendida", group: "compuerta", name: "Válvula de compuerta FUNDIGSAC", badge: "Garantía extendida", description: "Cierre elástico con extremos bridados, paso completo y baja pérdida de carga. Marca FUNDIGSAC con garantía extendida.", image: "/media/valvula-fundigsac-cuadrante/q-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
   { id: "mariposa", group: "mariposa", name: "Válvula mariposa", description: "Diseño compacto y de bajo torque para grandes diámetros, ideal para regular o cerrar el flujo.", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
   { id: "check-swing", group: "control", name: "Válvula check swing", description: "Evita el retorno de flujo en sistemas de conducción y protege bombas y tuberías de inversiones de caudal.", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
   { id: "check-flex", group: "control", name: "Válvula check flex", description: "Solución confiable para redes de agua y alcantarillado, que impide el retorno del flujo y protege el sistema.", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },
@@ -126,6 +126,7 @@ export function W03Valvulas() {
                 <article key={valve.id} className={styles.card}>
                   <Link href={valve.href} className={styles.cardImage} aria-label={"Ver ficha de " + valve.name}>
                     <Image src={valve.image} alt={valve.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
+                    {valve.badge && <span className={styles.cardBadge}>{valve.badge}</span>}
                   </Link>
                   <div className={styles.cardBody}>
                     <h3>{valve.name}</h3>

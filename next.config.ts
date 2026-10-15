@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: { "/reclamaciones": ["./public/media/legal/**/*"] },
   reactStrictMode: true,
   images: { formats: ["image/avif", "image/webp"], qualities: [60, 70, 72, 75, 85], minimumCacheTTL: 60 * 60 * 24 * 30 },
+  // La ficha FUNDIGSAC con garantía extendida antes tenía otra URL.
+  async redirects() {
+    return [{ source: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", destination: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", permanent: true }];
+  },
   async headers() {
     return [
       {
