@@ -384,9 +384,6 @@ export default function AssistantPanel({
         {messages.length === 0 ? (
           <div className="ai-welcome">
             <div className="ai-welcome__hero">
-              <span className="ai-orb" aria-hidden="true">
-                <AssistantMascot size={84} animated={open} mood={reaction ?? "idle"} />
-              </span>
               <h3>{t.welcomeTitle}</h3>
               <p>{t.welcomeLead}</p>
             </div>
