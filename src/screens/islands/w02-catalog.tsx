@@ -111,12 +111,12 @@ export function W02Catalog({
   initialFamily?: FamilyFilter;
 }) {
   const [query, setQuery] = useState(initialQuery);
+  const [family, setFamily] = useState<FamilyFilter>(initialFamily);
   // Cambia al navegar con un enlace de la propia página (p. ej. /productos?familia=accesorios-hdpe): el componente sigue
   // montado, así que el estado inicial no se vuelve a leer. Las escrituras de updateAddress también pasan por aquí, pero
   // la dirección ya coincide con el estado y no cambia nada.
   const addressKey = useSearchParams().toString();
   const seenAddressKey = useRef(addressKey);
-  const [family, setFamily] = useState<FamilyFilter>(initialFamily);
 
   useEffect(() => {
     updateAddress(query, family);
@@ -129,6 +129,7 @@ export function W02Catalog({
     setQuery((current) => (current.trim() === nextQuery.trim() ? current : nextQuery));
     setFamily(readFamily(params.get("familia")));
   }, []);
+
   useEffect(() => {
     window.addEventListener("popstate", readAddress);
     return () => window.removeEventListener("popstate", readAddress);
@@ -139,7 +140,6 @@ export function W02Catalog({
     seenAddressKey.current = addressKey;
     readAddress();
   }, [addressKey, readAddress]);
-
 
   const visibleProducts = useMemo(() => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
