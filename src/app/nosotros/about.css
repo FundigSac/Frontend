@@ -149,7 +149,14 @@
 /* ===== Historia ===== */
 .ab-history {
   padding-block: clamp(48px, 7vw, 104px);
-  background: #fff;
+  background: linear-gradient(180deg, #fff 0%, #f5f9fe 100%);
+}
+
+@media (min-width: 901px) {
+  .ab-history__intro {
+    position: sticky;
+    top: 120px;
+  }
 }
 
 .ab-history__grid {
@@ -169,68 +176,124 @@
 }
 
 .ab-timeline {
-  position: relative;
   display: grid;
-  gap: 0;
-}
-
-.ab-timeline::before {
-  content: "";
-  position: absolute;
-  top: 18px;
-  bottom: 18px;
-  left: 5px;
-  width: 2px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, var(--lg-blue) 0%, #bcd3f2 100%);
+  gap: 16px;
 }
 
 .ab-timeline li {
   position: relative;
-  display: grid;
-  grid-template-columns: 62px minmax(0, 1fr);
-  gap: 14px;
-  margin-left: 30px;
-  padding-block: 18px;
+  padding-left: 56px;
 }
 
-.ab-timeline li + li {
-  border-top: 1px solid var(--lg-line);
-}
-
-.ab-timeline li::before {
-  content: "";
+/* El nodo y el eje comparten la misma vertical (x = 20px) y el mismo centro que la fila del año (y = 36px). */
+.ab-timeline__node {
   position: absolute;
-  top: 25px;
-  left: -30px;
+  top: 18px;
+  left: 3px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 2px solid #cfe0f8;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.ab-timeline__node::after {
+  content: "";
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background: var(--lg-blue);
-  box-shadow: 0 0 0 4px #fff, 0 0 0 5px rgb(29 95 209 / 22%);
+}
+
+.ab-timeline li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 54px;
+  left: 20px;
+  width: 2px;
+  height: calc(100% - 38px + 16px);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgb(29 95 209 / 55%), rgb(29 95 209 / 18%));
+}
+
+.ab-timeline__card {
+  display: grid;
+  gap: 4px;
+  padding: 18px 24px 20px;
+  border: 1px solid var(--lg-line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(11 34 68 / 5%), 0 14px 30px -22px rgb(11 34 68 / 32%);
 }
 
 .ab-timeline__year {
+  justify-self: start;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: var(--lg-blue-soft);
   color: var(--lg-blue);
-  font-size: clamp(18px, 1.5vw, 22px);
+  font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  line-height: 1.3;
+  letter-spacing: 0.04em;
+  line-height: 20px;
 }
 
 .ab-timeline h3 {
+  margin-top: 6px !important;
   color: var(--lp-navy);
-  font-size: clamp(16px, 1.25vw, 19px);
+  font-size: clamp(17px, 1.3vw, 20px);
   font-weight: 700;
   line-height: 1.3;
 }
 
 .ab-timeline p {
-  max-width: 52ch;
-  margin-top: 4px !important;
+  max-width: 54ch;
   color: var(--lp-text);
   font-size: 15px;
   line-height: 1.55;
+}
+
+/* Hito actual: tarjeta azul marino y nodo naranja */
+.ab-timeline li:last-child .ab-timeline__card {
+  border-color: transparent;
+  background: linear-gradient(135deg, #0b2244 0%, #14407f 100%);
+  box-shadow: 0 22px 40px -24px rgb(11 34 68 / 70%);
+}
+
+.ab-timeline li:last-child .ab-timeline__year {
+  background: var(--lp-orange);
+  color: #fff;
+}
+
+.ab-timeline li:last-child h3 {
+  color: #fff;
+}
+
+.ab-timeline li:last-child p {
+  color: rgb(255 255 255 / 82%);
+}
+
+.ab-timeline li:last-child .ab-timeline__node {
+  border-color: #ffd9c2;
+}
+
+.ab-timeline li:last-child .ab-timeline__node::after {
+  background: var(--lp-orange);
+}
+
+@media (hover: hover) {
+  .ab-timeline__card {
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  }
+
+  .ab-timeline li:not(:last-child) .ab-timeline__card:hover {
+    transform: translateX(4px);
+    border-color: #bcd3f2;
+    box-shadow: 0 1px 2px rgb(11 34 68 / 6%), 0 18px 34px -20px rgb(29 95 209 / 38%);
+  }
 }
 
 @media (max-width: 900px) {
@@ -241,13 +304,6 @@
   .ab-history__cta {
     width: 100%;
     justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .ab-timeline li {
-    grid-template-columns: 1fr;
-    gap: 2px;
   }
 }
 
@@ -419,15 +475,31 @@ html[data-lp-theme="dark"] .ab-highlights__list li {
 }
 
 html[data-lp-theme="dark"] .ab-history {
+  background: linear-gradient(180deg, #08121f 0%, #0a1829 100%);
+}
+
+html[data-lp-theme="dark"] .ab-timeline__card {
+  border-color: var(--lg-line);
+  background: #0f1d32;
+  box-shadow: 0 18px 36px -26px rgb(0 0 0 / 80%);
+}
+
+html[data-lp-theme="dark"] .ab-timeline__node {
+  border-color: rgb(110 168 255 / 35%);
   background: #08121f;
 }
 
-html[data-lp-theme="dark"] .ab-timeline::before {
-  background: linear-gradient(180deg, var(--lg-blue) 0%, rgb(110 168 255 / 25%) 100%);
+html[data-lp-theme="dark"] .ab-timeline li:not(:last-child)::before {
+  background: linear-gradient(180deg, rgb(110 168 255 / 55%), rgb(110 168 255 / 15%));
 }
 
-html[data-lp-theme="dark"] .ab-timeline li::before {
-  box-shadow: 0 0 0 4px #08121f, 0 0 0 5px rgb(110 168 255 / 35%);
+html[data-lp-theme="dark"] .ab-timeline li:last-child .ab-timeline__card {
+  background: linear-gradient(135deg, #14407f 0%, #1b57b0 100%);
+}
+
+html[data-lp-theme="dark"] .ab-timeline li:last-child .ab-timeline__year {
+  background: #ff8a4d;
+  color: #08121f;
 }
 
 html[data-lp-theme="dark"] .ab-timeline h3,

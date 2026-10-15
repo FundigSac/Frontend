@@ -40,7 +40,7 @@ export function AboutView() {
 
       <section className="ab-history" aria-labelledby="ab-history-title">
         <div className="lp-shell ab-history__grid">
-          <div data-reveal="">
+          <div className="ab-history__intro" data-reveal="">
             <p className="lg-eyebrow">{t.history.eyebrow}</p>
             <h2 id="ab-history-title" className="lg-section-title">{t.history.title}</h2>
             <p className="lg-text ab-history__text">{t.history.text}</p>
@@ -51,11 +51,12 @@ export function AboutView() {
           <ol className="ab-timeline">
             {t.timeline.map((e) => (
               <li key={e.year} data-reveal="">
-                <span className="ab-timeline__year">{e.year}</span>
-                <div>
+                <span className="ab-timeline__node" aria-hidden="true" />
+                <article className="ab-timeline__card">
+                  <span className="ab-timeline__year">{e.year}</span>
                   <h3>{e.title}</h3>
                   <p>{e.text}</p>
-                </div>
+                </article>
               </li>
             ))}
           </ol>
