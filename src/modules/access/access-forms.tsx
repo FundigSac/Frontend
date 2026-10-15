@@ -7,7 +7,7 @@ import { site } from "@/lib/site-info";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ACCESS_COPY, type AccessCopy } from "./access-copy";
 import { Divider, Field, isEmail, Notice, PasswordField, SocialButtons, StrengthMeter, passwordChecks } from "./access-fields";
-import { AccessShell, SecureNote } from "./access-shell";
+import { SecureNote } from "./access-frame";
 
 type Status = "idle" | "loading" | "done";
 
@@ -83,7 +83,7 @@ export function LoginScreen() {
   };
 
   return (
-    <AccessShell kind="login">
+    <>
       <CardHead title={t.login.title} lead={t.login.lead} />
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
@@ -107,7 +107,7 @@ export function LoginScreen() {
         {t.noAccount} <Link href="/registro">{t.signupHere}</Link>
       </p>
       <SecureNote />
-    </AccessShell>
+    </>
   );
 }
 
@@ -138,7 +138,7 @@ export function RegisterScreen() {
 
   const terms = t.terms("§a", "§b");
   return (
-    <AccessShell kind="register" wide>
+    <>
       <CardHead title={t.register.title} lead={t.register.lead} />
       <SocialButtons labels={{ google: t.googleSignup, facebook: t.facebookSignup }} onPick={setSocial} />
       {social && <SoonNotice t={t} social={social} />}
@@ -197,7 +197,7 @@ export function RegisterScreen() {
       <p className="ac-switch">
         {t.haveAccount} <Link href="/login">{t.loginHere}</Link>
       </p>
-    </AccessShell>
+    </>
   );
 }
 
@@ -229,7 +229,7 @@ export function ForgotScreen() {
 
   if (status === "done") {
     return (
-      <AccessShell kind="forgot">
+      <>
         <div className="ac-done" role="status">
           <span className="ac-done__art ac-done__art--mail" aria-hidden="true">
             <MailCheck size={38} strokeWidth={1.7} />
@@ -253,12 +253,12 @@ export function ForgotScreen() {
           </p>
           <p className="ac-preview-note">{t.previewNote}</p>
         </div>
-      </AccessShell>
+      </>
     );
   }
 
   return (
-    <AccessShell kind="forgot">
+    <>
       <CardHead title={s.title} lead={s.lead} icon={<KeyRound aria-hidden="true" size={26} strokeWidth={1.8} />} />
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={error} />
@@ -269,7 +269,7 @@ export function ForgotScreen() {
         {t.back}
       </Link>
       <SecureNote />
-    </AccessShell>
+    </>
   );
 }
 
@@ -296,7 +296,7 @@ export function ResetScreen() {
 
   if (status === "done") {
     return (
-      <AccessShell kind="reset">
+      <>
         <div className="ac-done" role="status">
           <span className="ac-done__art" aria-hidden="true">
             <CheckCircle2 size={40} strokeWidth={1.7} />
@@ -309,12 +309,12 @@ export function ResetScreen() {
           </Link>
           <p className="ac-preview-note">{t.previewNote}</p>
         </div>
-      </AccessShell>
+      </>
     );
   }
 
   return (
-    <AccessShell kind="reset">
+    <>
       <CardHead title={s.title} lead={s.lead} icon={<Lock aria-hidden="true" size={26} strokeWidth={1.8} />} />
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <PasswordField
@@ -335,6 +335,6 @@ export function ResetScreen() {
         <ArrowLeft aria-hidden="true" size={16} />
         {t.back}
       </Link>
-    </AccessShell>
+    </>
   );
 }

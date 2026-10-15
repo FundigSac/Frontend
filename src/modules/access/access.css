@@ -61,86 +61,56 @@ html[data-lp-theme="dark"] .ac {
   isolation: isolate;
 }
 
-.ac-visual__media {
+.ac-scenes {
   position: absolute;
   z-index: -3;
   inset: 0;
   overflow: hidden;
-  background: #d9e4f1;
 }
 
-.ac-visual__media img {
+.ac-scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 520ms ease;
+}
+
+.ac-scene.is-active {
+  opacity: 1;
+}
+
+.ac-scene img {
   object-fit: cover;
-  animation: ac-drift 30s ease-in-out infinite alternate;
+  object-position: var(--pos);
 }
 
-/* Velo suave solo detrás del texto: la foto conserva su color. */
+/* Velo suave solo detrás del texto y al pie (para los textos blancos): la foto conserva su color. */
 .ac-visual::before {
   position: absolute;
   z-index: -2;
   inset: 0;
   background:
-    radial-gradient(78% 62% at 16% 24%, rgb(var(--ac-haze) / 93%) 0%, rgb(var(--ac-haze) / 72%) 46%, rgb(var(--ac-haze) / 0%) 80%),
-    linear-gradient(0deg, rgb(4 18 40 / 55%) 0%, rgb(4 18 40 / 0%) 34%);
+    radial-gradient(58% 50% at 12% 22%, rgb(var(--ac-haze) / 90%) 0%, rgb(var(--ac-haze) / 62%) 46%, rgb(var(--ac-haze) / 0%) 82%),
+    linear-gradient(0deg, rgb(4 18 40 / 62%) 0%, rgb(4 18 40 / 22%) 24%, rgb(4 18 40 / 0%) 40%);
   content: "";
 }
 
-/* Franja azul traslúcida que acompaña el corte diagonal. */
-.ac-visual__band {
+/* Filete azul a lo largo del corte diagonal (sin mezcla de capas: más liviano de pintar). */
+.ac-visual::after {
   position: absolute;
   z-index: -1;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 38%;
-  background: linear-gradient(180deg, rgb(56 132 228 / 20%) 0%, rgb(29 99 196 / 62%) 72%, rgb(14 60 140 / 80%) 100%);
-  clip-path: polygon(78% 0, 100% 0, 42% 100%, 16% 100%);
-  mix-blend-mode: multiply;
-}
-
-/* Válvulas FUNDIGSAC en primer plano. */
-.ac-valves {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  pointer-events: none;
-}
-
-.ac-valve {
-  position: absolute;
-  display: block;
-  filter: drop-shadow(0 30px 36px rgb(4 18 40 / 45%)) drop-shadow(0 6px 10px rgb(4 18 40 / 30%));
-}
-
-.ac-valve img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.ac-valve--front {
-  top: clamp(400px, calc(100svh - 72px - 34vh), 640px);
-  left: -2%;
-  width: clamp(220px, 19vw, 360px);
-  animation: ac-valve-in 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 120ms both;
-}
-
-.ac-valve--back {
-  top: clamp(520px, calc(100svh - 72px - 22vh), 760px);
-  left: 15%;
-  width: clamp(120px, 10vw, 190px);
-  filter: drop-shadow(0 20px 24px rgb(4 18 40 / 40%)) brightness(0.9) saturate(0.95);
-  animation: ac-valve-in 900ms cubic-bezier(0.2, 0.8, 0.2, 1) 260ms both;
-}
-
-.ac--register .ac-valve--front,
-.ac--reset .ac-valve--front {
-  width: clamp(210px, 18vw, 340px);
+  width: 30%;
+  background: linear-gradient(180deg, rgb(47 123 224 / 14%), rgb(29 99 196 / 46%));
+  clip-path: polygon(86% 0, 100% 0, 66% 100%, 52% 100%);
+  content: "";
 }
 
 .ac-visual__copy {
   max-width: 560px;
-  animation: ac-rise 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: ac-rise 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .ac-eyebrow {
@@ -178,11 +148,17 @@ html[data-lp-theme="dark"] .ac-visual h1 {
   display: block;
 }
 
+.ac-visual h1,
+.ac-eyebrow {
+  text-shadow: 0 0 22px rgb(var(--ac-haze) / 85%);
+}
+
 .ac-lead {
   max-width: 440px;
   margin: 22px 0 0;
   color: var(--ac-navy-2);
   font: 500 clamp(16px, 1.35vw, 19px)/1.48 var(--ac-display);
+  text-shadow: 0 0 14px rgb(var(--ac-haze) / 95%), 0 0 4px rgb(var(--ac-haze) / 90%);
 }
 
 html[data-lp-theme="dark"] .ac-lead {
@@ -204,7 +180,7 @@ html[data-lp-theme="dark"] .ac-lead {
   align-items: center;
   gap: 16px;
   color: #fff;
-  animation: ac-rise 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: ac-rise 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .ac-features__icon {
@@ -265,7 +241,7 @@ html[data-lp-theme="dark"] .ac-lead {
 .ac-card {
   position: relative;
   width: min(100%, 440px);
-  animation: ac-card 640ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: ac-card 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .ac-card--wide {
@@ -947,31 +923,14 @@ html[data-lp-theme="dark"] .ac-done h2 {
 @keyframes ac-rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(8px);
   }
 }
 
 @keyframes ac-card {
   from {
     opacity: 0;
-    transform: translateY(16px);
-  }
-}
-
-@keyframes ac-drift {
-  from {
-    transform: scale(1.03) translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: scale(1.09) translate3d(-1.2%, -0.8%, 0);
-  }
-}
-
-@keyframes ac-valve-in {
-  from {
-    opacity: 0;
-    transform: translate3d(-24px, 40px, 0) scale(0.96);
+    transform: translateY(6px);
   }
 }
 
@@ -1022,9 +981,6 @@ html[data-lp-theme="dark"] .ac-done h2 {
     display: none;
   }
 
-  .ac-valve--front {
-    width: clamp(220px, 28vw, 340px);
-  }
 }
 
 @media (max-width: 960px) {
@@ -1034,7 +990,7 @@ html[data-lp-theme="dark"] .ac-done h2 {
   }
 
   .ac-visual {
-    min-height: clamp(420px, 64vw, 540px);
+    min-height: clamp(340px, 56vw, 460px);
     justify-content: flex-start;
     margin-right: 0;
     padding: 34px clamp(20px, 6vw, 48px) 40px;
@@ -1043,30 +999,30 @@ html[data-lp-theme="dark"] .ac-done h2 {
   }
 
   .ac-visual::before {
-    background:
-      radial-gradient(90% 60% at 20% 18%, rgb(var(--ac-haze) / 90%) 0%, rgb(var(--ac-haze) / 55%) 50%, rgb(var(--ac-haze) / 0%) 80%),
-      linear-gradient(0deg, rgb(4 18 40 / 35%) 0%, rgb(4 18 40 / 0%) 40%);
+    background: linear-gradient(180deg, rgb(5 20 45 / 78%) 0%, rgb(5 20 45 / 58%) 55%, rgb(5 20 45 / 40%) 100%);
   }
 
-  .ac-visual__band {
+  .ac-visual::after {
     display: none;
   }
 
-  .ac .ac-valve--front {
-    top: auto;
-    right: 5%;
-    bottom: -9%;
-    left: auto;
-    width: clamp(130px, 25vw, 230px);
+  .ac-scene img {
+    object-position: var(--pos-m);
   }
 
-  .ac .ac-valve--back {
-    top: auto;
-    right: 30%;
-    bottom: 3%;
-    left: auto;
-    width: clamp(80px, 13vw, 130px);
+  .ac-eyebrow,
+  .ac-visual h1,
+  .ac .ac-lead {
+    color: #fff;
   }
+
+  .ac-visual h1,
+  .ac .ac-lead {
+    text-shadow: 0 2px 18px rgb(0 0 0 / 35%);
+  }
+
+
+
 
   .ac-visual h1 {
     max-width: 14ch;
@@ -1074,7 +1030,7 @@ html[data-lp-theme="dark"] .ac-done h2 {
   }
 
   .ac-lead {
-    max-width: min(32ch, 60%);
+    max-width: 34ch;
   }
 
   /* El formulario sube como una hoja que cubre todo el ancho (sin tarjeta flotante). */
@@ -1095,7 +1051,7 @@ html[data-lp-theme="dark"] .ac-done h2 {
 
 @media (max-width: 560px) {
   .ac-visual {
-    min-height: 430px;
+    min-height: 330px;
     padding-top: 28px;
   }
 
@@ -1106,20 +1062,12 @@ html[data-lp-theme="dark"] .ac-done h2 {
   }
 
   .ac-lead {
-    max-width: 58%;
+    max-width: none;
     margin-top: 14px;
     font-size: 15px;
   }
 
-  .ac .ac-valve--front {
-    right: 4%;
-    bottom: -6%;
-    width: 118px;
-  }
 
-  .ac .ac-valve--back {
-    display: none;
-  }
 
   .ac-brand {
     width: 168px;
@@ -1143,8 +1091,6 @@ html[data-lp-theme="dark"] .ac-done h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ac-visual__media img,
-  .ac-valve,
   .ac-visual__copy,
   .ac-features li,
   .ac-card,
@@ -1156,7 +1102,8 @@ html[data-lp-theme="dark"] .ac-done h2 {
   }
 
   .ac-submit,
-  .ac-social__btn {
+  .ac-social__btn,
+  .ac-scene {
     transition: none;
   }
 }
