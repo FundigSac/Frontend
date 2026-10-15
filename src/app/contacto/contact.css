@@ -193,10 +193,32 @@
   grid-column: 1 / -1;
 }
 
+/* La tarjeta del formulario se estira hasta la altura de las oficinas: la fila de envío baja y queda centrada en el espacio sobrante. */
+.ct-form-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.ct-form-wrap > .ct-form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.ct-form-wrap > .ct-form[hidden] {
+  display: none;
+}
+
+.ct-form:not(.ct-ready) .ct-actions {
+  margin-block: auto;
+  padding-block: 34px 6px;
+}
+
 .ct-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 18px 24px;
   margin-top: 26px;
 }
