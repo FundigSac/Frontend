@@ -158,6 +158,14 @@ export function W06Ficha(props: { variant?: Variant }) {
   const downloadCta = doc
     ? <a href={doc.href} download className={styles.secondary}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
     : <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.secondary}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>;
+  // Qué contiene la ficha, tomado de los datos reales de esta válvula.
+  const docIncludes = [
+    "Especificaciones técnicas",
+    `Dimensiones ${sheet.sizeRange}`,
+    `${sheet.flange.title} PN10 / PN16`,
+    ...(sheet.stem ? [sheet.stem.title] : []),
+    "Materiales y normas",
+  ].slice(0, 4);
   // Las especificaciones se reparten en dos tablas para que la sección no sea una columna larguísima.
   const specHalf = Math.ceil(sheet.specs.length / 2);
   const specColumns = [sheet.specs.slice(0, specHalf), sheet.specs.slice(specHalf)];
@@ -328,29 +336,36 @@ export function W06Ficha(props: { variant?: Variant }) {
             <h2>Documentación</h2>
             {doc ? (
               <div className={styles.doc}>
-                <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
-                  <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 320px, 90vw" />
-                  <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
-                </button>
+                <div className={styles.docStack}>
+                  <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label="Previsualizar la ficha técnica" title="Previsualizar la ficha técnica">
+                    <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="(min-width: 1024px) 260px, 70vw" />
+                    <span className={styles.docPreviewHint}><Eye size={16} aria-hidden="true" /> Previsualizar</span>
+                  </button>
+                </div>
                 <div className={styles.docInfo}>
+                  <p className={styles.docKicker}>Ficha técnica oficial</p>
                   <p className={styles.docTitle}>{doc.title}</p>
                   <p className={styles.docMeta}>{doc.meta}</p>
-                  <div className={styles.docActions}>
-                    <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> Descargar ficha técnica</a>
-                  </div>
-                </div>
-                {docPages.length > 1 && (
-                  <ul className={styles.docPages} aria-label="Páginas de la ficha" style={{ ["--n" as string]: Math.min(docPages.length, 4) }}>
-                    {docPages.map((pg, i) => (
-                      <li key={pg.src}>
-                        <button type="button" onClick={() => { setDocPage(i); setDocOpen(true); }} aria-label={`Ver la página ${i + 1} de ${docPages.length}`}>
-                          <Image src={pg.src} alt="" fill sizes="140px" />
-                          <span aria-hidden="true">{i + 1}</span>
-                        </button>
-                      </li>
-                    ))}
+                  <ul className={styles.docIncludes} aria-label="Qué incluye la ficha">
+                    {docIncludes.map((item) => <li key={item}><span className={styles.tick}><Check size={13} strokeWidth={3} aria-hidden="true" /></span>{item}</li>)}
                   </ul>
-                )}
+                  <div className={styles.docActions}>
+                    <a href={doc.href} download className={styles.docButton}><Download size={17} aria-hidden="true" /> Descargar ficha técnica</a>
+                    <button type="button" className={styles.docGhost} onClick={() => { setDocPage(0); setDocOpen(true); }}>Ver ficha en pantalla</button>
+                  </div>
+                  {docPages.length > 1 && (
+                    <ul className={styles.docPages} aria-label="Páginas de la ficha" style={{ ["--n" as string]: Math.min(docPages.length, 4) }}>
+                      {docPages.map((pg, i) => (
+                        <li key={pg.src}>
+                          <button type="button" onClick={() => { setDocPage(i); setDocOpen(true); }} aria-label={`Ver la página ${i + 1} de ${docPages.length}`}>
+                            <Image src={pg.src} alt="" fill sizes="120px" />
+                            <span aria-hidden="true">{i + 1}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             ) : (
               <div className={styles.doc}>
@@ -359,10 +374,11 @@ export function W06Ficha(props: { variant?: Variant }) {
                   <p>La ficha técnica de esta válvula se entrega bajo solicitud, junto con la cotización.</p>
                 </div>
                 <div className={styles.docInfo}>
+                  <p className={styles.docKicker}>Ficha técnica</p>
                   <p className={styles.docTitle}>Ficha técnica · {productName}</p>
                   <p className={styles.docMeta}>PDF · bajo solicitud</p>
                   <div className={styles.docActions}>
-                    <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> Solicitar ficha técnica</Link>
+                    <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={17} aria-hidden="true" /> Solicitar ficha técnica</Link>
                   </div>
                 </div>
               </div>
