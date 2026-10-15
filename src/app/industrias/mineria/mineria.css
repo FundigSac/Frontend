@@ -285,6 +285,18 @@ html .sa--mi .lp-btn--outline:hover {
   font-style: normal;
 }
 
+/* Al pasar el mouse, la barra "/" solo cambia de color: no se rellena con un bloque naranja. */
+.sa--mi .sa-app__n i {
+  transition: color 300ms ease;
+}
+
+.sa--mi .sa-app:hover .sa-app__n i,
+.sa--mi .sa-app:focus-visible .sa-app__n i {
+  width: auto;
+  background: none;
+  color: var(--lp-orange);
+}
+
 .sa--mi .sa-app strong {
   font-size: clamp(18px, 1.8vw, 28px);
   line-height: 1.2;

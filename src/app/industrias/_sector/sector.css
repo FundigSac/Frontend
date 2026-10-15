@@ -191,18 +191,23 @@
   transition: opacity 500ms ease;
 }
 
-.sa-app::before {
+.sa-app__more {
+  position: relative;
+  justify-self: start; /* la franja mide lo que el texto, no el ancho de la tarjeta */
+  padding-bottom: 7px;
+}
+
+.sa-app__more::after {
   position: absolute;
-  z-index: 1;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 3px;
+  height: 2px;
   background: var(--lp-orange);
   content: "";
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .sa-app__body {
@@ -261,8 +266,8 @@
   transform: scale(1.07);
 }
 
-.sa-app:hover::before,
-.sa-app:focus-visible::before {
+.sa-app:hover .sa-app__more::after,
+.sa-app:focus-visible .sa-app__more::after {
   transform: scaleX(1);
 }
 
@@ -444,7 +449,7 @@ html[data-lp-theme="dark"] .sa-docs__media {
   }
 
   .sa-app img,
-  .sa-app::before,
+  .sa-app__more::after,
   .sa-docs__media {
     transition: none;
   }
