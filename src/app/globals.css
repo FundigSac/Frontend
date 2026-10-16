@@ -178,8 +178,9 @@ html[data-lp-theme="dark"] .text-primary {
   --text-button-text--line-height: 20px;
   --text-button-text--letter-spacing: 0.01em;
   --text-button-text--font-weight: 600;
-  --text-headline-hero: 56px;
-  --text-headline-hero--line-height: 62px;
+  /* Fluido: 56 px en escritorio y ~37 px en móvil (antes 56 px fijos: "documentación" se salía de la pantalla). */
+  --text-headline-hero: clamp(2.125rem, 1.4rem + 3.6vw, 3.5rem);
+  --text-headline-hero--line-height: 1.1;
   --text-headline-hero--letter-spacing: -0.025em;
   --text-headline-hero--font-weight: 700;
   --text-headline-section: 34px;
