@@ -350,6 +350,12 @@
   border-left: 1px solid var(--lg-line, #e3e8ef);
 }
 
+/* Texto de "Cómo llegar" justificado, sin cortar palabras. */
+.ct-info > div + div p {
+  text-align: justify;
+  hyphens: manual;
+}
+
 /* Horario centrado: icono, título y texto en el centro de su columna. */
 .ct-info > div:first-child {
   flex-direction: column;
