@@ -8,6 +8,7 @@ import { FEATURED_PRODUCTS, productVisual } from "@/modules/cart/cart-products";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { CART_COPY } from "./cart-copy";
 import { CartThumb, QtyStepper, Suggestions } from "./cart-ui";
+import "./cart.css";
 
 /** Panel lateral del carrito: se abre desde el ícono de la cabecera. */
 export default function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {

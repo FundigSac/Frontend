@@ -2,9 +2,8 @@
 
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { OPEN_CART_EVENT } from "@/modules/cart/cart-store";
-import "./cart.css";
 
-// El panel se descarga la primera vez que alguien abre el carrito.
+// El panel (y su CSS) se descarga la primera vez que alguien abre el carrito.
 const CartDrawer = lazy(() => import("./cart-drawer"));
 
 export function CartHost() {

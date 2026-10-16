@@ -1,42 +1,37 @@
 import type { ComponentType } from "react";
-import { W03Valvulas } from "@/screens/islands/w03-valvulas";
-import { W04Tuberias } from "@/screens/islands/w04-tuberias";
-import { W05Marcos } from "@/screens/islands/w05-marcos";
-import { W06Ficha } from "@/screens/islands/w06-ficha";
-import { W06FichaFundigsac, W06FichaGarantiaExtendida } from "@/screens/islands/w06-ficha-garantia";
-import { ScreenW07 } from "@/screens/w07";
-import { ScreenW08 } from "@/screens/w08";
-import { ScreenW09 } from "@/screens/w09";
 import { ScreenW11 } from "@/screens/w11";
 import { ScreenW14 } from "@/screens/w14";
 import { ScreenW23 } from "@/screens/w23";
 
 export type CategorySlug = "valvulas" | "tuberias" | "marcos-y-tapas";
 
-export type CategoryEntry = { slug: CategorySlug; name: string; description: string; Screen: ComponentType };
+/**
+ * Solo datos (y pantallas de servidor sin CSS propio). Las pantallas del catálogo con CSS module (válvulas, tuberías,
+ * marcos, fichas) las importa cada ruta: si estuvieran aquí, todas las páginas que usan el registro cargarían ese CSS.
+ */
+export type CategoryEntry = { slug: CategorySlug; name: string; description: string };
 export type ProductEntry = {
   category: CategorySlug;
   slug: string;
   name: string;
   description: string;
-  Screen: ComponentType;
   /** W23: visor 3D del producto (solo existe diseño para la válvula de compuerta). */
   Viewer3D?: ComponentType;
 };
 
 export const CATEGORIES: readonly CategoryEntry[] = [
-  { slug: "valvulas", name: "Válvulas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: W03Valvulas },
-  { slug: "tuberias", name: "Tuberías", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: W04Tuberias },
-  { slug: "marcos-y-tapas", name: "Marcos y tapas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial.", Screen: W05Marcos },
+  { slug: "valvulas", name: "Válvulas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial." },
+  { slug: "tuberias", name: "Tuberías", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial." },
+  { slug: "marcos-y-tapas", name: "Marcos y tapas", description: "Familia de referencia visual; variantes y datos técnicos pendientes de validación en el catálogo oficial." },
 ];
 
 export const PRODUCTS: readonly ProductEntry[] = [
-  { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Screen: W06Ficha, Viewer3D: ScreenW23 },
-  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula compuerta bridada de asiento resiliente, DN50 a DN600, PN10/PN16, diseño DIN 3352 F4, en hierro dúctil GGG50. Marca FUNDIGSAC.", Screen: W06FichaFundigsac },
-  { category: "valvulas", slug: "valvula-compuerta-fundigsac-garantia-extendida", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC con garantía extendida.", Screen: W06FichaGarantiaExtendida },
-  { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW07 },
-  { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW08 },
-  { category: "marcos-y-tapas", slug: "marco-tapa-d400", name: "Referencia visual de marco y tapa", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación.", Screen: ScreenW09 },
+  { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Viewer3D: ScreenW23 },
+  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula compuerta bridada de asiento resiliente, DN50 a DN600, PN10/PN16, diseño DIN 3352 F4, en hierro dúctil GGG50. Marca FUNDIGSAC." },
+  { category: "valvulas", slug: "valvula-compuerta-fundigsac-garantia-extendida", name: "Válvula de compuerta bridada FUNDIGSAC", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2. Marca FUNDIGSAC con garantía extendida." },
+  { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
+  { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
+  { category: "marcos-y-tapas", slug: "marco-tapa-d400", name: "Referencia visual de marco y tapa", description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
 ];
 
 export const SOLUTIONS = [

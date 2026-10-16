@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { NotFoundView } from "./_legal/not-found-view";
+import { NotFoundView } from "./_legal/not-found-lazy";
 
 export const metadata: Metadata = { title: "Página no encontrada", robots: { index: false, follow: false } };
 

@@ -10,6 +10,7 @@ import { SITE } from "@/shared/config/site";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { CART_COPY, type CartCopy } from "./cart-copy";
 import { CartThumb, QtyStepper, Suggestions } from "./cart-ui";
+import "./cart.css";
 
 const TRUST_ICONS = { file: FileText, headset: Headset, truck: Truck } as const;
 

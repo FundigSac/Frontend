@@ -27,6 +27,7 @@ import { ASSISTANT_COPY, suggestionsFor, whatsappHref } from "./assistant-copy";
 import { AssistantMarkdown } from "./assistant-markdown";
 import { AssistantMascot, type MascotMood } from "./assistant-mascot";
 import { MAX_INPUT, parseReply, useAssistantChat, type ChatMessage, type Settled } from "./use-assistant-chat";
+import "./assistant-panel.css";
 
 type Copy = (typeof ASSISTANT_COPY)[keyof typeof ASSISTANT_COPY];
 
