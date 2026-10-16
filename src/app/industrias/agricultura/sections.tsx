@@ -56,7 +56,7 @@ export function AgricultureSections() {
     <main className="lp ag" ref={root}>
       {/* Hero */}
       <section className="ag-hero" aria-labelledby="ag-title">
-        <Image className="ag-hero__photo" src="/media/agricultura/hero-poster.webp" alt={t.hero.alt} fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/hero-poster.webp"]} sizes="100vw" />
+        <Image className="ag-hero__photo" src="/media/agricultura/hero-poster-v2.webp" alt={t.hero.alt} fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/hero-poster-v2.webp"]} sizes="100vw" />
         <HeroMotion video={HERO_VIDEO} />
         <div className="ag-hero__veil" aria-hidden="true" />
         <div className="lp-shell ag-hero__inner">
