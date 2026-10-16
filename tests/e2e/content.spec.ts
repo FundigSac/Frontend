@@ -493,9 +493,9 @@ test.describe("Términos y condiciones", () => {
 });
 
 test.describe("Mapa del sitio", () => {
-  test("el enlace del pie abre una página real con todos los grupos y enlaces válidos", async ({ page }) => {
-    await go(page, "/");
-    await page.locator("footer.lp-footer").getByRole("link", { name: "Mapa del sitio" }).click();
+  test("la página real muestra todos los grupos y enlaces válidos", async ({ page }) => {
+    // el pie ya no enlaza al mapa (c59b973): se entra directo a la ruta
+    await go(page, "/mapa-del-sitio");
     await expect(page).toHaveURL(/\/mapa-del-sitio$/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Mapa del sitio");
     // cuatro grupos: el de cuenta se retiró hasta que exista el área de clientes
