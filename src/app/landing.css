@@ -110,6 +110,13 @@
   color: #fff;
 }
 
+/* Respuesta inmediata al pulsar: el botón cede un poco (100 ms) y vuelve al soltar. */
+.lp-btn:active,
+.lp-header .lp-header__quote:active {
+  transform: translateY(1px) scale(0.98);
+  transition-duration: 100ms;
+}
+
 .lp-btn--lg {
   min-height: 58px;
   padding: 0 30px;
