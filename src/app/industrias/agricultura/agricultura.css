@@ -745,6 +745,18 @@ html[data-lp-theme="dark"] .ag-docs__book {
   opacity: 1;
 }
 
+/* Dos copias apiladas: la segunda entra con un fundido al final de cada vuelta (ver hero-motion.tsx). */
+.ag-hero__motion video {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.ag-hero__motion video:nth-of-type(2) {
+  z-index: 0;
+  opacity: 0;
+}
+
 .ag-hero__motion canvas,
 .ag-hero__motion video {
   display: block;

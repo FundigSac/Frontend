@@ -17,17 +17,23 @@ import { useAgri } from "./copy";
  *   cargar, se queda la foto estática (el LCP no se ve afectado).
  */
 type VideoFiles = { webm?: string; mp4?: string };
-export type HeroVideo = VideoFiles & { full?: VideoFiles; small?: VideoFiles };
+/** Clips que se reproducen uno tras otro y vuelven al primero (siempre el original 1080p, sin versiones reducidas). */
+export type HeroVideo = { clips: VideoFiles[] };
 
-/** 1080p solo en pantallas grandes (≥1700 px físicos) y buena conexión; liviano en móvil; medio en el resto. */
-function pickSource(v: HeroVideo): VideoFiles {
+/** Con conexión muy lenta no se descarga video (quedan la foto y el resto de la página). */
+function pickSource(v: HeroVideo): VideoFiles[] {
   const conn = (navigator as unknown as { connection?: { effectiveType?: string; downlink?: number } }).connection;
   const slow = /2g/.test(conn?.effectiveType ?? "") || (conn?.downlink ?? 10) < 1;
-  const w = window.innerWidth;
-  if (v.small && (w < 860 || slow)) return v.small;
-  if (v.full && w * (window.devicePixelRatio || 1) >= 1700) return v.full;
-  return v;
+  return slow ? [] : v.clips;
 }
+
+/** Archivo de un clip. */
+function fileOf(f: VideoFiles) {
+  return f.mp4 ?? f.webm ?? "";
+}
+
+/** Duración (s) del fundido encadenado entre el final del video y su inicio: el bucle no se nota. */
+const FADE = 1;
 
 const LOOP = 16;
 const FPS = 30;
@@ -204,13 +210,18 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const drops = useRef<HTMLCanvasElement>(null);
-  const videoEl = useRef<HTMLVideoElement>(null);
+  // Dos copias del mismo video: mientras una llega al final, la otra arranca desde el inicio y entra con un fundido.
+  const vids = useRef<(HTMLVideoElement | null)[]>([null, null]);
+  const cur = useRef(0);
+  const fading = useRef(false);
+  const clip = useRef(0); // índice del clip que se ve al frente
+  const loaded = useRef<string[]>(["", ""]); // archivo cargado en cada copia
   const playingRef = useRef(true);
   const [playing, setPlaying] = useState(true);
   const [live, setLive] = useState(false);
   // Fuente elegida al montar (liviana en pantallas pequeñas); null hasta que la página esté lista.
-  const [src, setSrc] = useState<{ webm?: string; mp4?: string } | null>(null);
-  const armed = src !== null;
+  const [src, setSrc] = useState<VideoFiles[] | null>(null);
+  const armed = src !== null && src.length > 0;
   const [ready, setReady] = useState(false);
   const [reduced, setReduced] = useState(true);
 
@@ -243,25 +254,117 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     };
   }, [video, reduced]);
 
+  // Carga el primer clip al frente y deja el siguiente precargándose en la otra copia.
+  useEffect(() => {
+    const [a, b] = vids.current;
+    if (!src || !src.length || !a || !b) return;
+    const files = src.map(fileOf);
+    const put = (v: HTMLVideoElement, i: number, file: string) => {
+      if (loaded.current[i] === file) return;
+      loaded.current[i] = file;
+      v.src = file;
+      v.load();
+    };
+    clip.current = 0;
+    cur.current = 0;
+    fading.current = false;
+    put(a, 0, files[0]);
+    const preload = () => put(b, 1, files[1 % files.length]);
+    a.addEventListener("canplaythrough", preload, { once: true });
+    const late = window.setTimeout(preload, 6000);
+    return () => {
+      a.removeEventListener("canplaythrough", preload);
+      window.clearTimeout(late);
+    };
+  }, [src]);
+
   // Reproduce solo si está en pantalla, la pestaña visible y el usuario no lo pausó.
   useEffect(() => {
-    const v = videoEl.current;
     const box = wrap.current;
-    if (!v || !box || reduced) return;
+    const [a, b] = vids.current;
+    if (!a || !b || !box || reduced) return;
     let visible = true;
-    const sync = () => {
-      if (playing && visible && !document.hidden) void v.play().catch(() => undefined);
-      else v.pause();
+    let raf = 0;
+    const front = () => vids.current[cur.current]!;
+    const next = () => vids.current[1 - cur.current]!;
+    const play = (v: HTMLVideoElement) => void v.play().catch(() => undefined);
+    const files = () => (src ?? []).map(fileOf);
+
+    // La copia que entra pasa a ser la principal; la anterior se detiene y queda lista para el próximo ciclo.
+    const swap = () => {
+      const old = front();
+      cur.current = 1 - cur.current;
+      fading.current = false;
+      front().style.zIndex = "1";
+      old.pause();
+      old.style.transition = "none";
+      old.style.opacity = "0";
+      old.style.zIndex = "0";
+      clip.current = (clip.current + 1) % files().length;
+      const upcoming = files()[(clip.current + 1) % files().length];
+      if (loaded.current[1 - cur.current] === upcoming) old.currentTime = 0;
+      else {
+        loaded.current[1 - cur.current] = upcoming;
+        old.src = upcoming;
+        old.load();
+      }
     };
+    const startFade = () => {
+      const n = next();
+      fading.current = true;
+      n.currentTime = 0;
+      n.style.zIndex = "2";
+      n.style.transition = "none";
+      n.style.opacity = "0";
+      play(n);
+      void n.offsetWidth;
+      n.style.transition = `opacity ${FADE}s linear`;
+      n.style.opacity = "1";
+    };
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const f = front();
+      const d = f.duration;
+      if (!Number.isFinite(d) || d <= FADE * 2) return;
+      if (!fading.current) {
+        if (f.currentTime >= d - FADE) {
+          if (next().readyState >= 3) startFade();
+          else if (f.currentTime >= d - 0.2) { f.currentTime = 0; play(f); } // el siguiente no llegó: se repite este clip
+        }
+      } else if (next().currentTime >= FADE || f.ended) swap();
+    };
+    const sync = () => {
+      if (playing && visible && !document.hidden) {
+        play(front());
+        if (fading.current) play(next());
+        if (!raf) raf = requestAnimationFrame(tick);
+      } else {
+        a.pause();
+        b.pause();
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    };
+    // Si un video termina sin que el ciclo lo haya relevado (pestaña lenta), se releva o reinicia aquí.
+    const onEnded = (e: Event) => {
+      if (e.target !== front()) return;
+      if (fading.current) swap();
+      else { front().currentTime = 0; play(front()); }
+    };
+    a.addEventListener("ended", onEnded);
+    b.addEventListener("ended", onEnded);
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }, { threshold: 0 });
     io.observe(box);
     document.addEventListener("visibilitychange", sync);
     sync();
     return () => {
+      cancelAnimationFrame(raf);
       io.disconnect();
+      a.removeEventListener("ended", onEnded);
+      b.removeEventListener("ended", onEnded);
       document.removeEventListener("visibilitychange", sync);
     };
-  }, [playing, reduced, armed]);
+  }, [playing, reduced, armed, src]);
 
   useEffect(() => {
     if (video || reduced) return;
@@ -408,22 +511,19 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
     <>
       <div ref={wrap} className={`ag-hero__motion${live || (video && ready) ? " is-live" : ""}`} aria-hidden="true">
         {video ? (
-          armed && (
+          armed && [0, 1].map((i) => (
             <video
-              ref={videoEl}
+              key={i}
+              ref={(el) => { vids.current[i] = el; }}
               muted
-              loop
               playsInline
-              autoPlay
+              autoPlay={i === 0}
               preload="auto"
               disablePictureInPicture
               disableRemotePlayback
-              onPlaying={() => setReady(true)}
-            >
-              {src?.webm && <source src={src.webm} type="video/webm" />}
-              {src?.mp4 && <source src={src.mp4} type="video/mp4" />}
-            </video>
-          )
+              onPlaying={i === 0 ? () => setReady(true) : undefined}
+            />
+          ))
         ) : (
           <>
             <canvas ref={canvas} />
