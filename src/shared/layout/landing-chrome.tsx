@@ -372,6 +372,7 @@ export function LandingFooter() {
           <Link href="/terminos">{f.terms}</Link>
           <Link href="/privacidad">{f.privacy}</Link>
           <Link href="/cookies">{f.cookies}</Link>
+          <Link href="/eliminar-cuenta">{f.deletion}</Link>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
           <Link href="/reclamaciones">{f.complaints}</Link>
         </div>

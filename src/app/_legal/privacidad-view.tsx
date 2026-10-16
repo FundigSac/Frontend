@@ -4,7 +4,7 @@ import { FloatingActions } from "../_landing/floating-actions";
 import { LegalMotion } from "./motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, FileText, Lock, Mail, ScrollText, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, FileText, Lock, Mail, ScrollText, ShieldCheck, UserX, Users } from "lucide-react";
 import { SITE } from "@/shared/config/site";
 import { COMMON, PRIVACY, UPDATED } from "./copy";
 import { LegalCta, LegalHero } from "./legal-parts";
@@ -89,6 +89,13 @@ export function PrivacyView({ hero, aside, closing }: { hero: string; aside: str
                 <div>
                   <strong>{t.aside.request}</strong>
                   <span>{t.aside.requestText}</span>
+                </div>
+              </li>
+              <li>
+                <UserX aria-hidden="true" size={26} strokeWidth={1.5} />
+                <div>
+                  <strong>{t.aside.deletion}</strong>
+                  <Link href="/eliminar-cuenta">{t.aside.deletionText}</Link>
                 </div>
               </li>
               <li>

@@ -72,7 +72,7 @@ export const PRIVACY: Pair<{
   callout: { small: string; title: string; text: string; label: string };
   pillars: readonly { title: string; text: string }[];
   steps: readonly { title: string; text: string }[];
-  aside: { alt: string; title: string; text: string; button: string; also: string; mail: string; request: string; requestText: string; updated: string };
+  aside: { alt: string; title: string; text: string; button: string; also: string; mail: string; request: string; requestText: string; deletion: string; deletionText: string; updated: string };
   cta: Cta;
 }> = {
   es: {
@@ -97,7 +97,7 @@ export const PRIVACY: Pair<{
       { title: "Seguridad de la información", text: "Implementamos medidas técnicas, administrativas y organizativas para proteger tus datos personales contra el acceso no autorizado, pérdida, alteración o divulgación indebida." },
       { title: "Cambios en esta política", text: "Podemos actualizar esta Política de Privacidad para reflejar cambios en nuestras prácticas o en la normativa aplicable. Te recomendamos revisarla periódicamente. Cualquier modificación será publicada en esta misma página." },
     ],
-    aside: { alt: "Profesional de FUNDIGSAC revisando documentación técnica", title: "¿Tienes preguntas sobre tu privacidad?", text: "Si tienes consultas sobre el tratamiento de tus datos personales o deseas ejercer tus derechos, puedes contactarnos a través de nuestros canales oficiales.", button: "Ir al formulario de contacto", also: "También puedes", mail: "Escríbenos por correo", request: "Envía tu solicitud", requestText: "Indica el tipo de solicitud y tus datos de contacto.", updated: "Última actualización" },
+    aside: { alt: "Profesional de FUNDIGSAC revisando documentación técnica", title: "¿Tienes preguntas sobre tu privacidad?", text: "Si tienes consultas sobre el tratamiento de tus datos personales o deseas ejercer tus derechos, puedes contactarnos a través de nuestros canales oficiales.", button: "Ir al formulario de contacto", also: "También puedes", mail: "Escríbenos por correo", request: "Envía tu solicitud", requestText: "Indica el tipo de solicitud y tus datos de contacto.", deletion: "Eliminar tu cuenta y tus datos", deletionText: "Conoce el procedimiento y los plazos.", updated: "Última actualización" },
     cta: { eyebrow: "Trabajamos con confianza", title: "Construyamos proyectos de agua de forma segura y transparente.", text: "Estamos a tu disposición para resolver cualquier consulta y brindarte la información que necesites.", cta: "Solicitar cotización" },
   },
   en: {
@@ -122,7 +122,7 @@ export const PRIVACY: Pair<{
       { title: "Information security", text: "We implement technical, administrative and organizational measures to protect your personal data against unauthorized access, loss, alteration or improper disclosure." },
       { title: "Changes to this policy", text: "We may update this Privacy Policy to reflect changes in our practices or in applicable regulations. We recommend reviewing it periodically. Any change will be published on this same page." },
     ],
-    aside: { alt: "FUNDIGSAC professional reviewing technical documentation", title: "Questions about your privacy?", text: "If you have questions about how your personal data is processed or wish to exercise your rights, you can contact us through our official channels.", button: "Go to the contact form", also: "You can also", mail: "Email us", request: "Send your request", requestText: "State the type of request and your contact details.", updated: "Last updated" },
+    aside: { alt: "FUNDIGSAC professional reviewing technical documentation", title: "Questions about your privacy?", text: "If you have questions about how your personal data is processed or wish to exercise your rights, you can contact us through our official channels.", button: "Go to the contact form", also: "You can also", mail: "Email us", request: "Send your request", requestText: "State the type of request and your contact details.", deletion: "Delete your account and data", deletionText: "See the procedure and deadlines.", updated: "Last updated" },
     cta: { eyebrow: "We work with trust", title: "Let’s build water projects safely and transparently.", text: "We are at your disposal to answer any question and provide the information you need.", cta: "Request a quote" },
   },
 };

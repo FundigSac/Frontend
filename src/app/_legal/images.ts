@@ -42,3 +42,9 @@ export const cookiesInfoImages = (): [string, string, string] => [
 
 /** Planta de agua al atardecer con farolas (banda de cierre de Privacidad). */
 export const privacyClosingImage = () => pick("cierre-privacidad.webp", "/media/saneamiento/cierre.webp");
+
+/** Manos sobre una laptop (hero de Eliminar cuenta). */
+export const deletionHeroImage = () => pick("aside-privacidad.webp", privacyHeroImage());
+
+/** Edificio corporativo al anochecer (banda de cierre de Eliminar cuenta). */
+export const deletionClosingImage = () => claimsClosingImage();

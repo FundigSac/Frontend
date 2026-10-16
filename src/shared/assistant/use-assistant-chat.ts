@@ -19,6 +19,7 @@ export type ChatMessage = {
 export type Settled = "done" | "error";
 
 const STORAGE_KEY = "fundigsac-assistant-v1";
+const CLEAR_EVENT = "fundigsac:assistant-clear";
 const MAX_STORED = 40;
 /** Límites del servidor (src/modules/assistant/limits.ts): se respetan aquí para no recibir rechazos. */
 export const MAX_INPUT = 1500;
@@ -69,6 +70,26 @@ function save(messages: ChatMessage[]) {
 }
 
 /** Historial que se envía: últimas respuestas completas (sin las sugerencias), dentro de los límites, empezando por el usuario. */
+/** Mensajes guardados en esta pestaña (para /eliminar-cuenta). */
+export function storedConversationLength(): number {
+  try {
+    const data: unknown = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(data) ? data.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** Borra la conversación de esta pestaña, también la que tenga abierta el panel (/eliminar-cuenta). */
+export function clearStoredConversation() {
+  try {
+    window.sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    /* sin almacenamiento: no hay nada guardado */
+  }
+  window.dispatchEvent(new Event(CLEAR_EVENT));
+}
+
 export function historyFor(messages: ChatMessage[]): { role: "user" | "assistant"; content: string }[] {
   const turns = messages
     .filter((m) => m.content.trim() && (m.role === "user" || m.status === "done"))
@@ -230,6 +251,11 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
     messagesRef.current = [];
     setMessages([]);
   }, []);
+
+  useEffect(() => {
+    window.addEventListener(CLEAR_EVENT, reset);
+    return () => window.removeEventListener(CLEAR_EVENT, reset);
+  }, [reset]);
 
   return { messages, busy, send, stop, retry, rate, reset };
 }
