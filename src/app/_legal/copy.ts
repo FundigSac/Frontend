@@ -197,6 +197,8 @@ export const COOKIES: Pair<{
       head: ["Nombre", "Quién", "Para qué", "Duración", "Tipo"],
       rows: [
         ["fundigsac-consent", "FUNDIGSAC (propia)", "Recordar tu elección sobre cookies, con fecha y versión de esta política.", "180 días", "Necesaria · cookie"],
+        ["fundigsac-session", "FUNDIGSAC (propia)", "Mantener tu sesión iniciada con Google (nombre, correo y foto de tu perfil, firmados). Solo se crea si eliges iniciar sesión.", "30 días o hasta cerrar sesión", "Necesaria · cookie"],
+        ["fundigsac-oauth", "FUNDIGSAC (propia)", "Proteger el inicio de sesión con Google contra suplantaciones mientras lo completas.", "10 minutos", "Necesaria · cookie"],
         ["fundigsac-lang · fundigsac-theme", "FUNDIGSAC (propia)", "Recordar el idioma y el tema (claro u oscuro) que tú eliges.", "Hasta que los borres", "Necesaria · almacenamiento local"],
         ["fundigsac-quote", "FUNDIGSAC (propia)", "Conservar en tu equipo los productos de tu cotización.", "Hasta que envíes o borres la cotización", "Necesaria · almacenamiento local"],
         ["fundigsac-assistant-v1 · fundigsac-assistant-teaser", "FUNDIGSAC (propia)", "Mantener la conversación con el asistente virtual mientras navegas.", "Hasta cerrar la pestaña", "Necesaria · almacenamiento de sesión"],
@@ -269,6 +271,8 @@ export const COOKIES: Pair<{
       head: ["Name", "Who", "Purpose", "Duration", "Type"],
       rows: [
         ["fundigsac-consent", "FUNDIGSAC (first party)", "Remember your cookie choice, with the date and the version of this policy.", "180 days", "Necessary · cookie"],
+        ["fundigsac-session", "FUNDIGSAC (first party)", "Keep you signed in with Google (name, email and profile photo, signed). Only created if you choose to sign in.", "30 days or until you sign out", "Necessary · cookie"],
+        ["fundigsac-oauth", "FUNDIGSAC (first party)", "Protect the Google sign-in against impersonation while you complete it.", "10 minutes", "Necessary · cookie"],
         ["fundigsac-lang · fundigsac-theme", "FUNDIGSAC (first party)", "Remember the language and theme (light or dark) you choose.", "Until you clear them", "Necessary · local storage"],
         ["fundigsac-quote", "FUNDIGSAC (first party)", "Keep the products in your quote on your device.", "Until you send or clear the quote", "Necessary · local storage"],
         ["fundigsac-assistant-v1 · fundigsac-assistant-teaser", "FUNDIGSAC (first party)", "Keep your conversation with the virtual assistant while you browse.", "Until you close the tab", "Necessary · session storage"],

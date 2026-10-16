@@ -1,0 +1,110 @@
+/* Sesión iniciada con Google: avatar y menú de la cabecera (tokens --lp-* de landing.css). */
+.lp-avatar {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--lp-navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  object-fit: cover;
+}
+
+.lp-account__menu .lp-account__who {
+  display: grid;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+
+.lp-account__who strong {
+  color: var(--lp-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.lp-account__menu button[role="menuitem"] {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--lp-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.lp-account__menu button[role="menuitem"]:hover {
+  background: rgb(255 255 255 / 55%);
+  color: var(--lp-orange-dark);
+}
+
+html[data-lp-theme="dark"] .lp-account__menu button[role="menuitem"] {
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .lp-account__menu button[role="menuitem"]:hover {
+  background: rgb(255 255 255 / 10%);
+}
+
+html[data-lp-theme="dark"] .lp-account__who strong {
+  color: #fff;
+}
+
+.lp-mobile__account--user {
+  grid-template-columns: 1fr;
+}
+
+.lp-mobile__account--user p {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  color: var(--lp-ink);
+}
+
+.lp-mobile__account--user p span {
+  display: grid;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.lp-mobile__account--user small {
+  color: var(--lp-text);
+  font-size: 12.5px;
+}
+
+.lp-mobile__account--user button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--lp-line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--lp-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+html[data-lp-theme="dark"] .lp-mobile__account--user p,
+html[data-lp-theme="dark"] .lp-mobile__account--user button {
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .lp-mobile__account--user button {
+  border-color: rgb(255 255 255 / 16%);
+}

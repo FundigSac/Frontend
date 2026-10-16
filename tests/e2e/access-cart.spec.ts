@@ -29,8 +29,10 @@ test("acceso: inicio de sesión valida, muestra el aviso y enlaza registro y rec
   await page.getByRole("button", { name: "Iniciar sesión" }).click();
   await expect(page.getByText("La zona de clientes llega muy pronto")).toBeVisible();
 
-  await page.getByRole("button", { name: "Continuar con Google" }).click();
-  await expect(page.getByText("El acceso con Google se activará")).toBeVisible();
+  // Google es un inicio de sesión real (enlace a /api/auth/google); Facebook sigue siendo diseño.
+  await expect(page.getByRole("link", { name: "Continuar con Google" })).toHaveAttribute("href", "/api/auth/google?from=login&hl=es");
+  await page.getByRole("button", { name: "Continuar con Facebook" }).click();
+  await expect(page.getByText("El acceso con Facebook se activará")).toBeVisible();
   await expect(page.getByRole("link", { name: "¿Olvidaste tu contraseña?" })).toHaveAttribute("href", "/recuperar");
   await expect(page.getByRole("link", { name: "Regístrate aquí" })).toHaveAttribute("href", "/registro");
   expect(errors).toEqual([]);
@@ -39,7 +41,7 @@ test("acceso: inicio de sesión valida, muestra el aviso y enlaza registro y rec
 test("acceso: registro exige términos y mide la seguridad de la contraseña", async ({ page, baseURL }) => {
   await prepare(page, baseURL);
   await page.goto("/registro");
-  await expect(page.getByRole("button", { name: "Registrarme con Google" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Registrarme con Google" })).toHaveAttribute("href", /from=registro/);
   await expect(page.getByRole("button", { name: "Registrarme con Facebook" })).toBeVisible();
   await page.getByLabel("Nombres y apellidos").fill("María Quispe");
   await page.getByLabel("Correo electrónico").fill("maria@constructora.pe");

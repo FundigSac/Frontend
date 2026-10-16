@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSelectedLayoutSegment } from "next/navigation";
-import { ArrowRight, Check, ChevronDown, Globe, LogIn, Menu, Moon, Search, ShoppingCart, Sun, UserPlus, UserRound, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Globe, LogIn, LogOut, Menu, Moon, Search, ShoppingCart, Sun, UserPlus, UserRound, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { useAuth, signOut, type AuthUser } from "@/modules/auth/use-auth";
 import { openCart } from "@/modules/cart/cart-store";
 import { SITE } from "@/shared/config/site";
 import { openCookiePreferences } from "./cookie-events";
@@ -13,6 +14,7 @@ import { useHome } from "./home-copy";
 import { COPY, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
 import "../../app/products-dark.css";
+import "../../modules/auth/auth.css";
 
 type NavLink = { href: string; label: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
@@ -32,6 +34,17 @@ function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
   ];
 }
 
+function Avatar({ user }: { user: AuthUser }) {
+  const [broken, setBroken] = useState(false);
+  return user.picture && !broken ? (
+    // Foto de perfil de Google (CSP: img-src https://*.googleusercontent.com); sin referrer para no filtrar la ruta.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className="lp-avatar" src={user.picture} alt="" width={28} height={28} referrerPolicy="no-referrer" onError={() => setBroken(true)} />
+  ) : (
+    <span className="lp-avatar lp-avatar--initial" aria-hidden="true">{(user.name.trim()[0] ?? "?").toUpperCase()}</span>
+  );
+}
+
 export function LandingHeader() {
   const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -41,6 +54,7 @@ export function LandingHeader() {
   const [langOpen, setLangOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const quoteCount = useQuoteCount();
+  const { user } = useAuth();
   const t = COPY[lang];
   const NAV = buildNav(t);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -201,21 +215,38 @@ export function LandingHeader() {
             <button
               type="button"
               className="lp-icon-btn lp-account__btn"
-              aria-label={t.account.label}
+              aria-label={user ? `${t.account.label}: ${user.name}` : t.account.label}
               aria-haspopup="menu"
               aria-expanded={accountOpen}
               onClick={() => { setAccountOpen(!accountOpen); setLangOpen(false); }}
             >
-              <UserRound aria-hidden="true" size={19} strokeWidth={1.8} />
+              {user ? <Avatar user={user} /> : <UserRound aria-hidden="true" size={19} strokeWidth={1.8} />}
             </button>
             <div className={`lp-account__menu${accountOpen ? " is-open" : ""}`} role="menu" aria-label={t.account.label}>
-              <p>{t.account.hint}</p>
-              <Link role="menuitem" className="lp-account__primary" href="/login" onClick={() => setAccountOpen(false)}>
-                <LogIn aria-hidden="true" size={17} strokeWidth={2} /> {t.account.login}
-              </Link>
-              <Link role="menuitem" href="/registro" onClick={() => setAccountOpen(false)}>
-                <UserPlus aria-hidden="true" size={17} strokeWidth={2} /> {t.account.signup}
-              </Link>
+              {user ? (
+                <>
+                  <p className="lp-account__who">
+                    <strong>{user.name}</strong>
+                    <span>{user.email}</span>
+                  </p>
+                  <Link role="menuitem" href="/carrito" onClick={() => setAccountOpen(false)}>
+                    <ShoppingCart aria-hidden="true" size={17} strokeWidth={2} /> {t.cart}
+                  </Link>
+                  <button type="button" role="menuitem" onClick={() => { setAccountOpen(false); void signOut(); }}>
+                    <LogOut aria-hidden="true" size={17} strokeWidth={2} /> {t.account.logout}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>{t.account.hint}</p>
+                  <Link role="menuitem" className="lp-account__primary" href="/login" onClick={() => setAccountOpen(false)}>
+                    <LogIn aria-hidden="true" size={17} strokeWidth={2} /> {t.account.login}
+                  </Link>
+                  <Link role="menuitem" href="/registro" onClick={() => setAccountOpen(false)}>
+                    <UserPlus aria-hidden="true" size={17} strokeWidth={2} /> {t.account.signup}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
           <button type="button" className="lp-icon-btn lp-cart" aria-label={`${t.cart}${quoteCount ? ` (${quoteCount})` : ""}`} aria-haspopup="dialog" onClick={() => { openCart(); setMobileOpen(false); }}>
@@ -265,14 +296,29 @@ export function LandingHeader() {
               {theme === "dark" ? t.theme.toLight : t.theme.toDark}
             </button>
           </div>
-          <div className="lp-mobile__account">
-            <Link href="/login" onClick={() => setMobileOpen(false)}>
-              <LogIn aria-hidden="true" size={16} strokeWidth={2} /> {t.account.login}
-            </Link>
-            <Link href="/registro" onClick={() => setMobileOpen(false)}>
-              <UserPlus aria-hidden="true" size={16} strokeWidth={2} /> {t.account.signup}
-            </Link>
-          </div>
+          {user ? (
+            <div className="lp-mobile__account lp-mobile__account--user">
+              <p>
+                <Avatar user={user} />
+                <span>
+                  <strong>{user.name}</strong>
+                  <small>{user.email}</small>
+                </span>
+              </p>
+              <button type="button" onClick={() => { setMobileOpen(false); void signOut(); }}>
+                <LogOut aria-hidden="true" size={16} strokeWidth={2} /> {t.account.logout}
+              </button>
+            </div>
+          ) : (
+            <div className="lp-mobile__account">
+              <Link href="/login" onClick={() => setMobileOpen(false)}>
+                <LogIn aria-hidden="true" size={16} strokeWidth={2} /> {t.account.login}
+              </Link>
+              <Link href="/registro" onClick={() => setMobileOpen(false)}>
+                <UserPlus aria-hidden="true" size={16} strokeWidth={2} /> {t.account.signup}
+              </Link>
+            </div>
+          )}
           <Link href="/cotizar" className="lp-btn lp-btn--solid" onClick={() => setMobileOpen(false)}>
             {t.quote} <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>

@@ -1,12 +1,13 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Building2, CheckCircle2, KeyRound, Loader2, Lock, Mail, MailCheck, Phone, RotateCcw, ShoppingCart, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, CheckCircle2, KeyRound, Loader2, Lock, LogOut, Mail, MailCheck, Phone, RotateCcw, ShoppingCart, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { site } from "@/lib/site-info";
+import { signOut, useAuth, type AuthUser } from "@/modules/auth/use-auth";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ACCESS_COPY, type AccessCopy } from "./access-copy";
-import { Divider, Field, isEmail, Notice, PasswordField, SocialButtons, StrengthMeter, passwordChecks } from "./access-fields";
+import { Divider, Field, isEmail, Notice, PasswordField, SocialButtons, StrengthMeter, passwordChecks, useQueryParam } from "./access-fields";
 import { SecureNote } from "./access-frame";
 
 type Status = "idle" | "loading" | "done";
@@ -36,6 +37,46 @@ function Submit({ status, label, t }: { status: Status; label: string; t: Access
         </>
       )}
     </button>
+  );
+}
+
+/** Código de error que deja el callback de Google en `?error=`. */
+const useAuthError = () => useQueryParam("error");
+
+function AuthError({ t, code }: { t: AccessCopy; code: string | null }) {
+  if (!code) return null;
+  const known = t.auth.errors as Record<string, string>;
+  return <Notice tone="error">{known[code] ?? t.auth.errors.unknown}</Notice>;
+}
+
+/** Con la sesión abierta, login y registro muestran quién está conectado en lugar del formulario. */
+function SignedIn({ t, user }: { t: AccessCopy; user: AuthUser }) {
+  const [broken, setBroken] = useState(false);
+  return (
+    <div className="ac-signed" role="status">
+      {user.picture && !broken ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="ac-signed__avatar" src={user.picture} alt="" width={72} height={72} referrerPolicy="no-referrer" onError={() => setBroken(true)} />
+      ) : (
+        <span className="ac-signed__avatar" aria-hidden="true">
+          {(user.name.trim()[0] ?? "?").toUpperCase()}
+        </span>
+      )}
+      <h2>{t.auth.signedTitle}</h2>
+      <p>
+        <strong>{user.name}</strong>
+        <br />
+        {t.auth.signedText(user.email)}
+      </p>
+      <Link href="/" className="ac-submit">
+        {t.auth.home}
+        <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
+      </Link>
+      <button type="button" className="ac-ghost" onClick={() => void signOut()}>
+        <LogOut aria-hidden="true" size={16} />
+        {t.auth.logout}
+      </button>
+    </div>
   );
 }
 
@@ -70,6 +111,8 @@ export function LoginScreen() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [social, setSocial] = useState<string | null>(null);
   const { status, run } = useFakeSubmit();
+  const { user } = useAuth();
+  const authError = useAuthError();
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -82,9 +125,11 @@ export function LoginScreen() {
     if (!next.email && !next.password) run();
   };
 
+  if (user) return <SignedIn t={t} user={user} />;
   return (
     <>
       <CardHead title={t.login.title} lead={t.login.lead} />
+      <AuthError t={t} code={authError} />
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
         <PasswordField t={t} label={t.password} icon={Lock} autoComplete="current-password" placeholder={t.passwordPh} value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
@@ -102,7 +147,7 @@ export function LoginScreen() {
         {(status === "done" || social) && <SoonNotice t={t} social={social} />}
       </form>
       <Divider>{t.or}</Divider>
-      <SocialButtons labels={{ google: t.google, facebook: t.facebook }} onPick={setSocial} />
+      <SocialButtons labels={{ google: t.google, facebook: t.facebook, connecting: t.auth.connecting }} onPick={setSocial} from="login" lang={lang} />
       <p className="ac-switch">
         {t.noAccount} <Link href="/registro">{t.signupHere}</Link>
       </p>
@@ -119,6 +164,8 @@ export function RegisterScreen() {
   const [errors, setErrors] = useState<Partial<Record<"name" | "email" | "password" | "confirm" | "terms", string>>>({});
   const [social, setSocial] = useState<string | null>(null);
   const { status, run } = useFakeSubmit();
+  const { user } = useAuth();
+  const authError = useAuthError();
   const set = (k: keyof typeof form) => (e: ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
 
   const onSubmit = (e: FormEvent) => {
@@ -137,10 +184,12 @@ export function RegisterScreen() {
   };
 
   const terms = t.terms("§a", "§b");
+  if (user) return <SignedIn t={t} user={user} />;
   return (
     <>
       <CardHead title={t.register.title} lead={t.register.lead} />
-      <SocialButtons labels={{ google: t.googleSignup, facebook: t.facebookSignup }} onPick={setSocial} />
+      <AuthError t={t} code={authError} />
+      <SocialButtons labels={{ google: t.googleSignup, facebook: t.facebookSignup, connecting: t.auth.connecting }} onPick={setSocial} from="registro" lang={lang} />
       {social && <SoonNotice t={t} social={social} />}
       <Divider>{t.orEmail}</Divider>
       <form className="ac-form" onSubmit={onSubmit} noValidate>

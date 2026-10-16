@@ -9,6 +9,7 @@ playwright-report/
 test-results/
 .data/
 .env*
+!.env.example
 .legacy-2026-10-08/
 .playwright-cli/
 .playwright-mcp/

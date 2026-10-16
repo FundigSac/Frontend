@@ -610,6 +610,53 @@ html[data-lp-theme="dark"] .ac-link {
   transform: translateY(-1px);
 }
 
+a.ac-social__btn {
+  text-decoration: none;
+}
+
+.ac-social__btn[aria-busy="true"] {
+  cursor: progress;
+  opacity: 0.8;
+}
+
+.ac-signed {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.ac-signed__avatar {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ac-navy);
+  color: #fff;
+  font: 700 28px/1 var(--ac-display);
+  object-fit: cover;
+}
+
+.ac-signed h2 {
+  margin: 0;
+  color: var(--ac-ink);
+  font: 800 24px/1.2 var(--ac-display);
+}
+
+.ac-signed > p {
+  margin: 0;
+  color: var(--ac-text);
+  overflow-wrap: anywhere;
+}
+
+.ac-signed .ac-submit,
+.ac-signed .ac-ghost {
+  width: 100%;
+}
+
 .ac-social__btn svg {
   flex: none;
 }
@@ -688,6 +735,24 @@ html[data-lp-theme="dark"] .ac-secure > span {
   font-size: 13.5px;
   line-height: 1.5;
   animation: ac-rise 320ms ease both;
+}
+
+.ac-notice--error {
+  border-color: rgb(200 40 40 / 30%);
+  background: rgb(200 40 40 / 7%);
+}
+
+.ac-notice--error > svg {
+  color: #c62828;
+}
+
+html[data-lp-theme="dark"] .ac-notice--error {
+  border-color: rgb(255 120 120 / 34%);
+  background: rgb(255 90 90 / 10%);
+}
+
+html[data-lp-theme="dark"] .ac-notice--error > svg {
+  color: #ff8a8a;
 }
 
 .ac-notice > svg {

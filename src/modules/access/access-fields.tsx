@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Check, Eye, EyeOff, Info, type LucideIcon } from "lucide-react";
-import { useId, useState, type InputHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useId, useState, useSyncExternalStore, type InputHTMLAttributes, type ReactNode } from "react";
 import type { AccessCopy } from "./access-copy";
 
 type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
@@ -123,13 +123,51 @@ export function FacebookIcon() {
   );
 }
 
-export function SocialButtons({ labels, onPick }: { labels: { google: string; facebook: string }; onPick: (provider: "Google" | "Facebook") => void }) {
+/** Parámetro de la URL actual (null en el servidor y durante la hidratación; luego el valor real). */
+export function useQueryParam(name: string): string | null {
+  return useSyncExternalStore(
+    (notify) => {
+      window.addEventListener("popstate", notify);
+      return () => window.removeEventListener("popstate", notify);
+    },
+    () => new URLSearchParams(window.location.search).get(name),
+    () => null,
+  );
+}
+
+/** Inicio de sesión real con Google: es un enlace (navegación completa a /api/auth/google, que redirige a accounts.google.com). */
+function GoogleLink({ label, busyLabel, from, lang }: { label: string; busyLabel: string; from: "login" | "registro"; lang: string }) {
+  const next = useQueryParam("next") ?? "";
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    // Al volver con «Atrás» la página puede restaurarse desde caché con el botón aún ocupado.
+    const reset = () => setBusy(false);
+    window.addEventListener("pageshow", reset);
+    return () => window.removeEventListener("pageshow", reset);
+  }, []);
+  const qs = new URLSearchParams({ from, hl: lang, ...(next ? { next } : {}) });
+  return (
+    <a href={`/api/auth/google?${qs}`} className="ac-social__btn" aria-busy={busy || undefined} onClick={() => setBusy(true)}>
+      <GoogleIcon />
+      <span>{busy ? busyLabel : label}</span>
+    </a>
+  );
+}
+
+export function SocialButtons({
+  labels,
+  onPick,
+  from,
+  lang,
+}: {
+  labels: { google: string; facebook: string; connecting: string };
+  onPick: (provider: "Facebook") => void;
+  from: "login" | "registro";
+  lang: string;
+}) {
   return (
     <div className="ac-social">
-      <button type="button" className="ac-social__btn" onClick={() => onPick("Google")}>
-        <GoogleIcon />
-        <span>{labels.google}</span>
-      </button>
+      <GoogleLink label={labels.google} busyLabel={labels.connecting} from={from} lang={lang} />
       <button type="button" className="ac-social__btn" onClick={() => onPick("Facebook")}>
         <FacebookIcon />
         <span>{labels.facebook}</span>
@@ -146,10 +184,10 @@ export function Divider({ children }: { children: ReactNode }) {
   );
 }
 
-export function Notice({ title, children, tone = "info" }: { title?: string; children: ReactNode; tone?: "info" | "success" }) {
+export function Notice({ title, children, tone = "info" }: { title?: string; children: ReactNode; tone?: "info" | "success" | "error" }) {
   return (
-    <div className={`ac-notice ac-notice--${tone}`} role="status">
-      <Info aria-hidden="true" size={18} />
+    <div className={`ac-notice ac-notice--${tone}`} role={tone === "error" ? "alert" : "status"}>
+      {tone === "error" ? <AlertCircle aria-hidden="true" size={18} /> : <Info aria-hidden="true" size={18} />}
       <div>
         {title && <strong>{title}</strong>}
         <div>{children}</div>
