@@ -11,9 +11,9 @@ const MAIN = {
 };
 
 const VIEWS: readonly View[] = [
-  { src: "/images/stitch/09565b0ba8.jpg", label: "Vista referencial 1", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-on-surface font-medium" },
-  { src: "/images/stitch/e2a8bdba20.jpg", label: "Vista referencial 2", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-text-secondary" },
-  { src: "/images/stitch/cc33a8c3d9.jpg", label: "Vista referencial 3", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-text-secondary" },
+  { src: "/images/stitch/09565b0ba8-limpia.jpg", label: "Vista referencial 1", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-on-surface font-medium" },
+  { src: "/images/stitch/e2a8bdba20-limpia.jpg", label: "Vista referencial 2", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-text-secondary" },
+  { src: "/images/stitch/cc33a8c3d9-limpia.jpg", label: "Vista referencial 3", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-text-secondary" },
   { src: "/images/stitch/0d604b6425.jpg", label: "Vista referencial 4", alt: "Vista referencial de una válvula industrial.", thumbClass: "text-text-secondary" },
 ];
 

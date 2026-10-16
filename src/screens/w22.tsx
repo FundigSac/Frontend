@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const families = [
   { label: "Válvulas", href: "/productos/valvulas", image: "/media/valvula-hd/v-01.webp", alt: "Imagen referencial de válvula", terms: ["valvula", "valvulas", "compuerta", "mariposa"] },
-  { label: "Tuberías", href: "/productos/tuberias", image: "/images/stitch/b018bc2b92.jpg", alt: "Imagen referencial de tubería", terms: ["tuberia", "tuberias", "tubo", "tubos", "cano", "canos"] },
+  { label: "Tuberías", href: "/productos/tuberias", image: "/images/stitch/b018bc2b92-limpia.jpg", alt: "Imagen referencial de tubería", terms: ["tuberia", "tuberias", "tubo", "tubos", "cano", "canos"] },
   { label: "Marcos y tapas", href: "/productos/marcos-y-tapas", image: "/images/stitch/245160faac.jpg", alt: "Imagen referencial de marco y tapa", terms: ["marco", "marcos", "tapa", "tapas", "buzon", "buzones"] },
 ] as const;
 const valveReferences = [

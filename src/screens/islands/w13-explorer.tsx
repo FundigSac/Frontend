@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 const families = [
   { key: "valvulas", name: "Válvulas", href: "/productos/valvulas", image: "/images/stitch/21934d3fa9.jpg", alt: "Válvula industrial; imagen referencial." },
   { key: "tuberias", name: "Tuberías", href: "/productos/tuberias", image: "/images/stitch/60efb938f5.jpg", alt: "Tuberías industriales; imagen referencial." },
-  { key: "marcos", name: "Marcos y tapas", href: "/productos/marcos-y-tapas", image: "/images/stitch/b2bccfdcb3.jpg", alt: "Marco y tapa; imagen referencial." },
+  { key: "marcos", name: "Marcos y tapas", href: "/productos/marcos-y-tapas", image: "/images/stitch/b2bccfdcb3-limpia.jpg", alt: "Marco y tapa; imagen referencial." },
 ] as const;
 
 export function W13Explorer() {

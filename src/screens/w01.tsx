@@ -131,7 +131,7 @@ export function ScreenW01() {
               <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
                 <div>
                   <div className="w-full aspect-[4/3] rounded-lg overflow-hidden mb-6 bg-surface relative">
-                    <Image src="/images/stitch/b2bccfdcb3.jpg" alt="Imagen referencial Stitch de marcos y tapas" width={1408} height={768} sizes="(min-width: 1024px) 33vw, 100vw" className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />
+                    <Image src="/images/stitch/b2bccfdcb3-limpia.jpg" alt="Imagen referencial Stitch de marcos y tapas" width={1408} height={768} sizes="(min-width: 1024px) 33vw, 100vw" className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300" />
                     {" "}
                     <span className="absolute top-3 left-3 bg-primary text-brand-on font-ui-label text-ui-label px-2.5 py-1 rounded">
                       03 · Coronamiento

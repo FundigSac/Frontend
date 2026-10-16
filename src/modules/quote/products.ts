@@ -103,7 +103,7 @@ export const QUOTE_PRODUCTS: Record<QuoteProductSlug, QuoteProduct> = {
     category: { name: "Tuberías de Hierro Dúctil", href: "/productos/tuberias" },
     productHref: "/productos/tuberias/tuberia-tyton",
     badge: "NTP ISO 2531:2020",
-    image: { src: "/images/stitch/b018bc2b92.jpg", alt: "Corte técnico de un tubo de hierro dúctil con campana de junta Tyton y revestimiento interior de mortero" },
+    image: { src: "/images/stitch/b018bc2b92-limpia.jpg", alt: "Corte técnico de un tubo de hierro dúctil con campana de junta Tyton y revestimiento interior de mortero" },
     material: "Hierro Dúctil Centrifugado · Clase C40",
     title: "Tubería de Hierro Dúctil Junta Flexible Tyton Clase C40",
     summary: "Tubos centrifugados de 6.00 m de longitud útil con junta de empuje flexible que absorbe deflexiones y asentamientos del terreno.",

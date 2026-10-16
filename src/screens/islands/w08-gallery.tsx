@@ -6,15 +6,15 @@ import { useState } from "react";
 type View = { src: string; label: string; alt: string };
 
 const MAIN = {
-  src: "/images/stitch/b018bc2b92.jpg",
+  src: "/images/stitch/b018bc2b92-limpia.jpg",
   alt: "Imagen referencial de una tubería industrial.",
 };
 
 const VIEWS: readonly View[] = [
-  { src: "/images/stitch/02da4b0467.jpg", label: "Vista referencial 1", alt: "Vista referencial de una tubería industrial." },
-  { src: "/images/stitch/ca20261b68.jpg", label: "Vista referencial 2", alt: "Vista referencial de una tubería industrial." },
+  { src: "/images/stitch/02da4b0467-limpia.jpg", label: "Vista referencial 1", alt: "Vista referencial de una tubería industrial." },
+  { src: "/images/stitch/ca20261b68-limpia.jpg", label: "Vista referencial 2", alt: "Vista referencial de una tubería industrial." },
   { src: "/images/stitch/0efed1ef0d.jpg", label: "Vista referencial 3", alt: "Vista referencial de una tubería industrial." },
-  { src: "/images/stitch/d6fbc56855.jpg", label: "Vista referencial 4", alt: "Vista referencial de una tubería industrial." },
+  { src: "/images/stitch/d6fbc56855-limpia.jpg", label: "Vista referencial 4", alt: "Vista referencial de una tubería industrial." },
 ];
 
 /** Imagen principal y mosaico de miniaturas; `children` son las superposiciones estáticas del marco. */

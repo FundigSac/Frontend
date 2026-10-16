@@ -11,7 +11,7 @@ const cards = [
   ["/images/stitch/b546c7bb30.jpg", "Referencia visual 02"],
   ["/images/stitch/c2800fd46b.jpg", "Referencia visual 03"],
   ["/images/stitch/d159b5925c.jpg", "Referencia visual 04"],
-  ["/images/stitch/4ffdfc51b2.jpg", "Referencia visual 05"],
+  ["/images/stitch/4ffdfc51b2-limpia.jpg", "Referencia visual 05"],
   ["/images/stitch/6ebbc4278b.jpg", "Referencia visual 06"],
 ] as const;
 const items: W03Item[] = cards.map(([src, title], index) => ({

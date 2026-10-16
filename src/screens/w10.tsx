@@ -108,7 +108,7 @@ const COPY: Pair<{
 };
 
 const BLOCK_STYLE = [
-  { id: "drainage-title", image: "/images/stitch/337606625a.jpg", side: "image-first" },
+  { id: "drainage-title", image: "/images/stitch/337606625a-recorte.jpg", side: "image-first" },
   { id: "roads-title", image: "/images/stitch/25544873b5.jpg", side: "text-first" },
   { id: "mining-title", image: "/images/stitch/60b8c5f890.jpg", side: "image-first" },
 ] as const;
