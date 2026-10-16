@@ -108,8 +108,7 @@ test.describe("diseño", () => {
     expect(size).toBeGreaterThanOrEqual(24);
   });
 
-  test("navegar entre páginas usa una transición de vista (Chromium)", async ({ page, browserName }) => {
-    test.skip(browserName !== "chromium", "View Transitions API solo en Chromium en esta suite");
+  test("cambiar de sección es instantáneo: sin transición que lave la pantalla ni tape la cabecera", async ({ page }) => {
     await withConsent(page);
     await page.addInitScript(() => {
       const w = window as unknown as { __vt: number };
@@ -120,8 +119,18 @@ test.describe("diseño", () => {
     await page.goto("/");
     await page.locator("footer a[href='/productos/valvulas']").first().click();
     await expect(page).toHaveURL(/\/productos\/valvulas$/);
-    expect(await page.evaluate(() => (window as unknown as { __vt: number }).__vt)).toBeGreaterThan(0);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    // Una transición de vista dibujaba las capturas de página encima de la cabecera fija y fundía todo a blanco.
+    expect(await page.evaluate(() => (window as unknown as { __vt: number }).__vt)).toBe(0);
+    await expect(page.locator("header.lp-header")).toBeVisible();
+  });
+
+  test("las fotos hero llegan con miniatura difuminada (sin hueco blanco al navegar)", async ({ request }) => {
+    for (const path of ["/terminos", "/privacidad", "/cookies", "/nosotros", "/contacto", "/productos/valvulas"]) {
+      const html = await (await request.get(path)).text();
+      const hero = html.match(/<img[^>]*class="(?:lg-hero__photo|[^"]*heroPhoto)"[^>]*>/)?.[0] ?? "";
+      expect(hero, path).toContain("background-image");
+    }
   });
 });
 

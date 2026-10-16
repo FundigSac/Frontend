@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { blurBackdrop } from "@/shared/media/blur-backdrop";
+import { BLUR_LEGAL } from "@/shared/media/blur-legal";
 import "./legal.css";
 
 export const LEGAL_UPDATED = "14 de octubre de 2026";
@@ -21,7 +23,7 @@ export function LegalHero({ home = "Inicio", crumb, eyebrow, title, lead, image,
 }) {
   return (
     <section className={`lg-hero${modifier ? ` ${modifier}` : ""}`} aria-labelledby="lg-title">
-      <Image className="lg-hero__photo" src={image} alt={alt ?? ""} fill priority fetchPriority="high" quality={85} sizes="100vw" />
+      <Image className="lg-hero__photo" src={image} alt={alt ?? ""} fill priority fetchPriority="high" quality={85} sizes="100vw" style={blurBackdrop(BLUR_LEGAL[image], "70% 58%")} />
       <div className="lg-hero__veil" aria-hidden="true" />
       <div className="lp-shell">
         {eyebrow ? (

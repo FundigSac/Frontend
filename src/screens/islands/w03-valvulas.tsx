@@ -9,6 +9,8 @@ import { useLang } from "@/shared/layout/landing-prefs";
 import { useReveal } from "@/shared/ui/use-reveal";
 import { DATASHEETS } from "./w06-ficha-data";
 import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
+import { blurBackdrop } from "@/shared/media/blur-backdrop";
+import { BLUR_VALVULAS } from "@/shared/media/blur-valvulas";
 import styles from "./w03-valvulas.module.css";
 
 type Group = "todas" | GroupId;
@@ -76,7 +78,7 @@ export function W03Valvulas() {
   return (
     <main className={styles.page} ref={pageRef}>
       <section className={styles.hero} aria-labelledby="valvulas-title">
-        <Image className={styles.heroPhoto} src="/media/valvulas-page/hero-valvula.webp" alt="" fill priority fetchPriority="high" sizes="100vw" quality={85} />
+        <Image className={styles.heroPhoto} src="/media/valvulas-page/hero-valvula.webp" alt="" fill priority fetchPriority="high" sizes="100vw" quality={85} style={blurBackdrop(BLUR_VALVULAS["/media/valvulas-page/hero-valvula.webp"], "center 10%")} />
         <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>
           <nav aria-label={t.crumbsLabel} className={styles.breadcrumbs}>
