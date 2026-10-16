@@ -77,7 +77,7 @@ test.describe("W02 catálogo", () => {
   test("muestra 5 familias y 12 productos destacados", async ({ page }) => {
     await page.goto("/productos");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
-    const families = page.locator('section[aria-label="Familias de productos"] article');
+    const families = page.getByRole("region", { name: "Familias de productos" }).locator("article");
     await expect(families).toHaveCount(5);
     const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
@@ -182,7 +182,7 @@ test.describe("W02 catálogo", () => {
     await searchbox(page).pressSequentially("tapa ");
     await expect(searchbox(page)).toHaveValue("tapa ");
     await expect(cards).toHaveCount(1);
-    await page.locator("section[aria-label='Familias de productos']").getByRole("link", { name: "Explorar Conexiones y fittings" }).click();
+    await page.getByRole("region", { name: "Familias de productos" }).getByRole("link", { name: "Explorar Conexiones y fittings" }).click();
     await expect(page).toHaveURL(/familia=conexiones-y-fittings$/);
     await expect(searchbox(page)).toHaveValue("");
     await expect(familyButton(page, "Conexiones y fittings")).toHaveAttribute("aria-pressed", "true");
@@ -517,7 +517,13 @@ test.describe("W05 formulario de requerimiento", () => {
     if (page.url().includes("/cotizar/confirmacion")) {
       const ref = new URL(page.url()).searchParams.get("ref");
       expect(ref).toMatch(/^COT-/);
-      await expect(page.getByText(ref!).first()).toBeVisible();
+      if (ref === "COT-0000-000000") {
+        // Etapa de diseño (sin base de datos): el folio marcador nunca se muestra como registrado (commit 5d21f03).
+        await expect(page.getByRole("heading", { level: 1, name: "Solicitud pendiente de conexión" })).toBeVisible();
+        await expect(page.locator("#folio-code")).toHaveText("Sin folio");
+      } else {
+        await expect(page.getByText(ref!).first()).toBeVisible();
+      }
     } else {
       await expect(err).toBeVisible();
       await expect(err).not.toHaveText("");

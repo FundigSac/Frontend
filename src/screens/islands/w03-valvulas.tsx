@@ -159,7 +159,7 @@ export function W03Valvulas() {
                 const range = RANGES[valve.id];
                 return (
                 <article key={valve.id} className={styles.card} style={{ ["--i" as string]: index % 3 }}>
-                  <Link href={valve.href} className={styles.cardImage} aria-label={t.viewSheetOf + info.name}>
+                  <Link href={valve.href} className={styles.cardImage} aria-label={t.viewSheetOf + info.name + (info.badge ? " · " + info.badge : "")}>
                     <Image src={valve.image} alt={info.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
                     {info.badge && <span className={styles.cardBadge}>{info.badge}</span>}
                   </Link>

@@ -94,7 +94,7 @@ function ProductPhoto({ product }: { product: FeaturedProduct }) {
 function ProductCard({ product }: { product: FeaturedProduct }) {
   return (
     <article className={styles.productCard}>
-      <Link href={product.href} className={styles.productImage} aria-label={"Ver ficha de " + product.name}>
+      <Link href={product.href} className={styles.productImage} aria-label={"Ver ficha de " + product.name + (product.badge ? " · " + product.badge : "")}>
         <ProductPhoto product={product} />
         {product.badge && <span className={styles.productBadge}>{product.badge}</span>}
       </Link>
@@ -217,8 +217,10 @@ export function W02Catalog({
         </div>
       </section>
 
-      <section className={styles.categoriesSection} aria-label="Familias de productos">
+      <section className={styles.categoriesSection} aria-labelledby="families-title">
         <div className={styles.contentWidth}>
+          {/* Título solo para lectores de pantalla: las tarjetas usan h3 y sin él la jerarquía saltaba de h1 a h3. */}
+          <h2 id="families-title" className="sr-only">Familias de productos</h2>
           <div className={styles.categoryGrid}>{FAMILIES.map((entry) => <CategoryCard key={entry.id} family={entry} />)}</div>
         </div>
       </section>

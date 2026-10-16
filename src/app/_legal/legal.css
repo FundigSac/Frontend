@@ -1134,7 +1134,7 @@
   justify-self: end;
   margin-top: -34px;
   margin-right: 12px;
-  color: #99a3b2;
+  color: #6b7685; /* 4.6:1 sobre blanco (antes 2.5:1) */
   font-size: 12.5px;
   pointer-events: none;
 }

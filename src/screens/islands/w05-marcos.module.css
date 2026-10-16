@@ -1,7 +1,7 @@
 .page {
   --ink: #101b20;
   --ink-soft: #536067;
-  --ink-muted: #7a8387;
+  --ink-muted: #646f74;
   --line: #e4e3df;
   --paper: #fbfaf7;
   --orange: #ed762b;
@@ -21,7 +21,7 @@
 .eyebrow {
   margin: 0 0 14px;
   color: #6a7378;
-  font-size: clamp(8.1px, 0.65vw, 11px);
+  font-size: clamp(11px, 0.65vw, 11px);
   font-weight: 600;
   letter-spacing: .26em;
   line-height: 1.5;
@@ -69,7 +69,7 @@
   align-items: center;
   gap: 10px;
   color: #4d585e;
-  font-size: clamp(9.6px, 0.76vw, 13px);
+  font-size: clamp(12.1px, 0.76vw, 13px);
 }
 
 .breadcrumbs a {
@@ -120,7 +120,7 @@
   border-left: 2px solid rgba(255, 255, 255, .85);
   color: #fff;
   text-shadow: 0 1px 8px rgba(0, 0, 0, .45);
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   font-weight: 700;
   letter-spacing: .26em;
   line-height: 1;
@@ -205,7 +205,7 @@
 
 .tabText strong {
   overflow: hidden;
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   font-weight: 600;
   line-height: 1.2;
   text-overflow: ellipsis;
@@ -214,7 +214,7 @@
 
 .tabText small {
   color: var(--ink-muted);
-  font-size: clamp(8.1px, 0.65vw, 11px);
+  font-size: clamp(11px, 0.65vw, 11px);
   line-height: 1.2;
 }
 
@@ -255,7 +255,7 @@
   background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   outline: 0;
 }
 
@@ -266,7 +266,7 @@
 .select {
   justify-content: center;
   padding-inline: 16px;
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   font-weight: 500;
   color: var(--ink);
   cursor: pointer;
@@ -305,7 +305,7 @@
 .sectionHeading p {
   margin: 0;
   color: var(--ink-muted);
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
 }
 
 .grid {
@@ -369,7 +369,7 @@
   min-height: 3em;
   margin: 8px 0 22px;
   color: var(--ink-soft);
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   line-height: 1.55;
   text-wrap: pretty;
 }
@@ -386,7 +386,7 @@
   border-radius: 7px;
   background: #fafaf8;
   color: var(--ink);
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   font-weight: 600;
   text-decoration: none;
   transition: background .2s ease, color .2s ease, border-color .2s ease, gap .2s ease;
@@ -411,7 +411,7 @@
   background: var(--ink);
   color: #fff;
   font: inherit;
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -502,7 +502,7 @@
 .adviceCopy p {
   margin: 6px 0 0;
   color: var(--ink-soft);
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   line-height: 1.5;
 }
 
@@ -581,7 +581,7 @@
 .downloadCard p {
   margin: 10px 0 18px;
   color: var(--ink-soft);
-  font-size: clamp(9.6px, 0.76vw, 13px);
+  font-size: clamp(12.1px, 0.76vw, 13px);
   line-height: 1.55;
 }
 
@@ -595,7 +595,7 @@
   border-radius: 7px;
   background: #f4f4f2;
   color: var(--ink);
-  font-size: clamp(10.4px, 0.82vw, 14px);
+  font-size: clamp(12.9px, 0.82vw, 14px);
   font-weight: 600;
   text-decoration: none;
   transition: border-color .2s ease, background .2s ease;

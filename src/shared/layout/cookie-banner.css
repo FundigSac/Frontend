@@ -90,14 +90,19 @@
   transition: background 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
+.ck__btn:active {
+  transform: translateY(1px) scale(0.98);
+  transition-duration: 100ms;
+}
+
 .ck__btn--solid {
-  background: var(--ck-orange);
+  background: #c94f0a; /* AA con texto blanco (4.6:1) */
   box-shadow: 0 10px 22px -12px rgb(242 106 27 / 80%);
   color: #fff;
 }
 
 .ck__btn--solid:hover {
-  background: var(--ck-orange-dark);
+  background: #b04307;
   transform: translateY(-1px);
 }
 
@@ -212,14 +217,15 @@ html[data-lp-theme="dark"] .ck__btn--outline:hover {
   padding: 0 16px;
 }
 
+/* Naranja de marca profundo (#c94f0a, 4.6:1 con blanco) como los demás botones principales; el vivo (3:1) no llegaba a AA. */
 .ck__btn--accept {
-  background: var(--ck-orange);
+  background: #c94f0a;
   box-shadow: 0 10px 22px -12px rgb(242 106 27 / 80%);
   color: #fff;
 }
 
 .ck__btn--accept:hover {
-  background: var(--ck-orange-dark);
+  background: #b04307;
   transform: translateY(-1px);
 }
 

@@ -52,7 +52,7 @@
   --c-background: #fbfaf7;
   --c-on-secondary-container: #576670;
   --c-secondary: #51606a;
-  --c-text-muted: #61707A;
+  --c-text-muted: #56646E; /* AA también sobre los fondos azulados (antes 4.4:1 sobre surface-container) */
   --c-text-secondary: #52616B;
   --c-surface-variant: #d7e4ee;
   --c-on-primary-fixed: #001f2a;
