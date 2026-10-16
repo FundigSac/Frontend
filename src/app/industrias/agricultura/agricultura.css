@@ -49,7 +49,7 @@
 .ag-hero__photo {
   z-index: -3;
   object-fit: cover;
-  object-position: 60% 50%;
+  object-position: 60% 80%;
   animation: lp-kenburns 28s ease-in-out infinite alternate;
 }
 
@@ -414,7 +414,7 @@
   }
 
   .ag-hero__photo {
-    object-position: 68% 50%;
+    object-position: 68% 80%;
   }
 
   .ag-hero__veil {
@@ -763,7 +763,7 @@ html[data-lp-theme="dark"] .ag-docs__book {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 60% 50%;
+  object-position: 60% 80%;
 }
 
 .ag-motion-toggle {
@@ -805,7 +805,7 @@ html[data-lp-theme="dark"] .ag-hero__motion {
 @media (max-width: 860px) {
   .ag-hero__motion canvas,
   .ag-hero__motion video {
-    object-position: 68% 50%;
+    object-position: 68% 80%;
   }
 
   .ag-motion-toggle {

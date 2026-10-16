@@ -8,9 +8,9 @@ import { useAgri } from "./copy";
 import { BLUR } from "@/shared/media/blur";
 import { HeroMotion, type HeroVideo } from "./hero-motion";
 
-/** Dos animaciones originales en 1080p (sin recomprimir ni versiones reducidas), una tras otra y vuelta al inicio: cada relevo es un fundido encadenado, así el bucle no se nota. */
+/** Animación original en 1080p (sin recomprimir ni versión reducida); al terminar se funde consigo misma para que el bucle no se note. */
 const HERO_VIDEO: HeroVideo | undefined = {
-  clips: [{ mp4: "/media/agricultura/hero-1080.mp4" }, { mp4: "/media/agricultura/hero-1080-b.mp4" }],
+  clips: [{ mp4: "/media/agricultura/hero-1080.mp4" }],
 };
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
