@@ -23,6 +23,8 @@ docs/qa/screenshots/
 .perf/
 
 # Variantes WebP generadas en predev/prebuild (scripts/build-image-variants.mjs)
+public/**/*-w384.webp
+public/**/*-w640.webp
 public/**/*-w768.webp
 public/**/*-w1200.webp
 public/**/*-w1920.webp

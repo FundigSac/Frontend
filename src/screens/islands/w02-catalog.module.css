@@ -625,7 +625,7 @@
   position: absolute;
   inset: 0;
   opacity: .33;
-  background-image: linear-gradient(90deg, #f7f6f2 0%, rgba(247, 246, 242, .88) 29%, rgba(247, 246, 242, .54) 69%, rgba(247, 246, 242, .9) 100%), url("/media/home-ref-blueprint.webp");
+  background-image: linear-gradient(90deg, #f7f6f2 0%, rgba(247, 246, 242, .88) 29%, rgba(247, 246, 242, .54) 69%, rgba(247, 246, 242, .9) 100%), url("/media/home-ref-blueprint-w1200.webp");
   background-position: center, center;
   background-size: cover;
 }
@@ -778,7 +778,7 @@
   padding: 14px 24px;
   border-radius: 8px;
   background-color: #e6eff3;
-  background-image: linear-gradient(90deg, rgba(230, 239, 243, .97) 0%, rgba(230, 239, 243, .92) 58%, rgba(230, 239, 243, .78) 100%), url("/media/productos-page/productos7-1600.webp");
+  background-image: linear-gradient(90deg, rgba(230, 239, 243, .97) 0%, rgba(230, 239, 243, .92) 58%, rgba(230, 239, 243, .78) 100%), url("/media/productos-page/productos7-1600-w1200.webp");
   background-position: center, 50% 58%;
   background-size: cover;
 }
@@ -1429,7 +1429,7 @@
   background: #08121f;
 }
 :global(html[data-lp-theme="dark"]) .resourcesBackdrop {
-  background-image: linear-gradient(90deg, #08121f 0%, rgb(8 18 31 / 88%) 29%, rgb(8 18 31 / 54%) 69%, rgb(8 18 31 / 90%) 100%), url("/media/home-ref-blueprint.webp");
+  background-image: linear-gradient(90deg, #08121f 0%, rgb(8 18 31 / 88%) 29%, rgb(8 18 31 / 54%) 69%, rgb(8 18 31 / 90%) 100%), url("/media/home-ref-blueprint-w1200.webp");
 }
 :global(html[data-lp-theme="dark"]) .resourcesCopy .darkButton {
   border-color: var(--ink-btn);
@@ -1451,7 +1451,7 @@
 }
 :global(html[data-lp-theme="dark"]) .supportInner {
   background-color: #14253f;
-  background-image: linear-gradient(90deg, rgb(20 37 63 / 97%) 0%, rgb(20 37 63 / 92%) 58%, rgb(20 37 63 / 78%) 100%), url("/media/productos-page/productos7-1600.webp");
+  background-image: linear-gradient(90deg, rgb(20 37 63 / 97%) 0%, rgb(20 37 63 / 92%) 58%, rgb(20 37 63 / 78%) 100%), url("/media/productos-page/productos7-1600-w1200.webp");
 }
 @media (max-width: 860px) {
   :global(html[data-lp-theme="dark"]) .hero::before {

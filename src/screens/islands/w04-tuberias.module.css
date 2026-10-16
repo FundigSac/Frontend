@@ -37,7 +37,7 @@
   overflow: hidden;
   isolation: isolate;
   background-color: #dfe3e6;
-  background-image: url("/media/tuberias-page/hero.webp");
+  background-image: url("/media/tuberias-page/hero-w1920.webp");
   background-position: center 46%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -514,7 +514,7 @@
   position: absolute;
   inset: 0;
   opacity: .32;
-  background-image: linear-gradient(90deg, #f3f2ee 0%, rgba(243, 242, 238, .85) 30%, rgba(243, 242, 238, .5) 70%, rgba(243, 242, 238, .9) 100%), url("/media/home-ref-blueprint.webp");
+  background-image: linear-gradient(90deg, #f3f2ee 0%, rgba(243, 242, 238, .85) 30%, rgba(243, 242, 238, .5) 70%, rgba(243, 242, 238, .9) 100%), url("/media/home-ref-blueprint-w1200.webp");
   background-position: center;
   background-size: cover;
 }
@@ -649,7 +649,7 @@
   .hero {
     min-height: 0;
     padding-bottom: 372px;
-    background: var(--paper) url("/media/tuberias-page/hero.webp") 70% 100% / auto 360px no-repeat;
+    background: var(--paper) url("/media/tuberias-page/hero-w1200.webp") 70% 100% / auto 360px no-repeat;
   }
 
   .hero::after {
@@ -906,7 +906,7 @@
   background: #14253f;
 }
 :global(html[data-lp-theme="dark"]) .resourcesBackdrop {
-  background-image: linear-gradient(90deg, #14253f 0%, rgb(20 37 63 / 85%) 30%, rgb(20 37 63 / 50%) 70%, rgb(20 37 63 / 90%) 100%), url("/media/home-ref-blueprint.webp");
+  background-image: linear-gradient(90deg, #14253f 0%, rgb(20 37 63 / 85%) 30%, rgb(20 37 63 / 50%) 70%, rgb(20 37 63 / 90%) 100%), url("/media/home-ref-blueprint-w1200.webp");
 }
 :global(html[data-lp-theme="dark"]) .downloadCard {
   background: #0f1d32;
