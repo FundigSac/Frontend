@@ -1,5 +1,6 @@
 import "server-only";
 import type { NextRequest } from "next/server";
+import { isSameOriginRequest } from "@/shared/security/request-guard";
 
 /**
  * Sesión propia con Google (OAuth 2.0 + OIDC, flujo de código con PKCE). Sin base de datos ni dependencias:
@@ -108,13 +109,7 @@ export function safeNext(value: string | null | undefined): string {
 
 /** Las rutas que cambian estado (cerrar sesión) solo aceptan peticiones del propio sitio. */
 export function sameOrigin(request: NextRequest): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  try {
-    return new URL(origin).host === (request.headers.get("x-forwarded-host") || request.headers.get("host"));
-  } catch {
-    return false;
-  }
+  return isSameOriginRequest(request);
 }
 
 export function cookieOptions(request: NextRequest, maxAge: number, path = "/") {

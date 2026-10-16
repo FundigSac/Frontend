@@ -11,9 +11,15 @@ const isDev = process.env.NODE_ENV !== "production";
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // Ningún HTML del sitio usa manejadores en atributos (onclick="…"): se prohíben para cortar inyecciones por esa vía.
+  "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.googleusercontent.com",
   "font-src 'self' data:",
+  "media-src 'self'",
+  // El visor 3D decodifica las mallas en workers (draco/basis) servidos desde el propio sitio.
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
   "frame-src https://www.google.com",
   "frame-ancestors 'none'",
@@ -22,6 +28,24 @@ const csp = [
   "object-src 'none'",
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
+
+// Funciones del navegador que el sitio no usa: se niegan a la página y a cualquier iframe (el mapa de Google incluido).
+const permissionsPolicy = [
+  "accelerometer=()",
+  "autoplay=(self)",
+  "browsing-topics=()",
+  "camera=()",
+  "display-capture=()",
+  "geolocation=()",
+  "gyroscope=()",
+  "hid=()",
+  "magnetometer=()",
+  "microphone=()",
+  "midi=()",
+  "payment=()",
+  "serial=()",
+  "usb=()",
+].join(", ");
 
 const nextConfig: NextConfig = {
   // Permite varios `next dev` en paralelo (agentes/QA): NEXT_DIST_DIR=.next-xyz
@@ -48,7 +72,11 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
+          // Otras webs no pueden incrustar nuestros archivos (fotos, PDF, modelos 3D) con <img>, <script>, etc.
+          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+          { key: "Origin-Agent-Cluster", value: "?1" },
+          { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
+          { key: "Permissions-Policy", value: permissionsPolicy },
           ...(isDev ? [] : [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" }]),
         ],
       },

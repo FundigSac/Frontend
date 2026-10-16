@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { guideAnswer, withSuggestions } from "@/modules/assistant/guide";
 import { createRateLimiter, parseChatRequest } from "@/modules/assistant/limits";
 import { SYSTEM_PROMPT, visitContext } from "@/modules/assistant/prompt";
+import { isSameOriginRequest, readJsonBody } from "@/shared/security/request-guard";
 
 /**
  * FundigIA: respuesta en streaming (Server-Sent Events).
@@ -26,17 +27,6 @@ function clientKey(request: Request): string {
   return forwarded || request.headers.get("x-real-ip") || "local";
 }
 
-/** Solo el propio sitio puede usar el chat (evita que otras webs consuman la API). */
-function sameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return true;
-  try {
-    return new URL(origin).host === (request.headers.get("x-forwarded-host") || request.headers.get("host"));
-  } catch {
-    return false;
-  }
-}
-
 function errorCode(error: unknown): string {
   if (error instanceof Anthropic.AuthenticationError || error instanceof Anthropic.PermissionDeniedError) return "not_configured";
   if (error instanceof Anthropic.RateLimitError) return "busy";
@@ -55,15 +45,14 @@ const sleep = (ms: number, signal: AbortSignal) =>
   });
 
 export async function POST(request: Request) {
-  if (!sameOrigin(request)) return json(403, { error: "forbidden" });
+  // Solo el propio sitio puede usar el chat (evita que otras webs consuman la API).
+  if (!isSameOriginRequest(request)) return json(403, { error: "forbidden" });
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return json(400, { error: "invalid_body" });
-  }
-  const parsed = parseChatRequest(body);
+  // El cliente envía como mucho 30 000 caracteres (el servidor acepta 40 000): 256 KB cubre cualquier texto UTF-8 válido
+  // y corta antes de leer entero un cuerpo desmedido.
+  const body = await readJsonBody(request, 256 * 1024);
+  if (!body.ok) return json(body.status, { error: body.error });
+  const parsed = parseChatRequest(body.value);
   if (!parsed.ok) return json(400, { error: parsed.error });
 
   const limited = rateLimit(clientKey(request));
