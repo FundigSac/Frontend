@@ -7,7 +7,7 @@ export const site = {
   whatsappNumber: "51908849664",
   email: "ventas@fundigsac.com",
   address: "Jirón Pacasmayo Mz. E Lt. 12, Cercado de Lima, Lima",
-  hours: "Todos los días, de 10:00 a 18:00",
+  hours: "Todos los días, de 08:00 a 19:00",
   instagram: "https://www.instagram.com/fundigsac/",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Jirón Pacasmayo Mz. E Lt. 12, Cercado de Lima, Lima, Perú"),
 };
