@@ -1,5 +1,43 @@
 /* Páginas internas de FUNDIGSAC (todas menos la home). Prefijo x- para no chocar con globals.css. */
 
+/* ───────── Tokens ─────────
+ * Estos componentes nacieron con un globals.css que definía --ease, --muted, --navy… y .button/.text-link; ese archivo
+ * se reemplazó por los tokens de Stitch y las variables quedaron sin valor (animaciones sin curva, textos y bordes sin
+ * color, botones sin estilo). Se definen aquí, solo dentro de las páginas que usan estos componentes (.x-page). */
+.x-page {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --navy: #0b2244;
+  --text: #2c3a4a;
+  --muted: #5a6876;
+  --border: #dce3e8;
+  --bg: #f3f6f8;
+  --primary: #06759a;
+  --primary-hover: #055f7d;
+  --orange: #f26a1b;
+  /* Interlineado proporcional: el body fija 26 px y las etiquetas de 11 px quedaban con renglones muy separados. */
+  line-height: 1.6;
+}
+
+html[data-lp-theme="dark"] .x-page {
+  --navy: #eef3fa;
+  --text: #c9d4e2;
+  --muted: #9db0c7;
+  --border: #2a3d55;
+  --bg: #0c1a2d;
+  --primary: #7fd4e6;
+  --primary-hover: #a6e3f0;
+}
+
+.x-page .x-head h2 { color: var(--navy); font-size: clamp(1.6rem, 3.2vw, 2.25rem); font-weight: 650; letter-spacing: -.025em; line-height: 1.15; }
+.x-page .x-minor { color: var(--navy); font-weight: 640; }
+.x-page .text-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); font-weight: 640; text-decoration: none; transition: color .2s var(--ease); }
+.x-page .text-link svg { flex: none; transition: transform .2s var(--ease); }
+.x-page .text-link:hover { color: var(--primary-hover); text-decoration: underline; text-underline-offset: 4px; }
+.x-page .text-link:hover svg { transform: translateX(3px); }
+/* Los botones usan .lp-btn (landing.css); sus tokens --lp-* solo existen en la portada. */
+.x-page .lp-btn { --lp-orange: #c94f0a; --lp-orange-dark: #b04307; min-height: 50px; }
+.x-pcard-action { white-space: nowrap; }
+
 /* ───────── Movimiento ───────── */
 @keyframes x-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @keyframes x-settle { from { transform: translateY(14px); } to { transform: none; } }
@@ -310,7 +348,6 @@ a.x-contact-card:hover { transform: translateY(-3px); border-color: #9bc9d8; box
 
 /* Las fotos opacas con fondo blanco se funden con el fondo suave de la tarjeta */
 .x-line-media img, .x-pcard-media img, .x-gallery-stage img { mix-blend-mode: multiply; }
-
 .x-terms dl { margin: 0; }
 .x-contact-card p svg { display: inline-block; margin-left: 4px; vertical-align: -2px; }
 
@@ -333,8 +370,10 @@ html[data-lp-theme="dark"] .x-steps > .x-reveal {
   border-color: #2a3d55;
 }
 
+/* Las fotos llevan "multiply" para fundir su fondo blanco: sobre azul noche quedaban apagadas. En oscuro la foto va
+   sobre una placa clara, como en las fichas de producto. */
 html[data-lp-theme="dark"] .x-pcard-media {
-  background: radial-gradient(circle at 50% 40%, #1b3250 0%, #0f1b29 75%);
+  background: radial-gradient(circle at 50% 40%, #f6f8fa 0%, #dde5ec 75%);
 }
 
 html[data-lp-theme="dark"] .x-pcard-name,

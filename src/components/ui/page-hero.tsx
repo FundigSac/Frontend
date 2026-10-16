@@ -50,5 +50,5 @@ export function SectionHead({ eyebrow, title, lead, align = "left" }: { eyebrow?
 }
 
 export function CtaBand({ title, text, primary, secondary }: { title: string; text: string; primary: { href: string; label: string }; secondary?: { href: string; label: string; external?: boolean } }) {
-  return <section className="x-cta"><div className="container x-cta-inner"><div><h2>{title}</h2><p>{text}</p></div><div className="x-cta-actions"><Link className="button button-light" href={primary.href}>{primary.label}</Link>{secondary && (secondary.external ? <a className="x-cta-link" href={secondary.href} target="_blank" rel="noopener noreferrer">{secondary.label}</a> : <Link className="x-cta-link" href={secondary.href}>{secondary.label}</Link>)}</div></div></section>;
+  return <section className="x-cta"><div className="container x-cta-inner"><div><h2>{title}</h2><p>{text}</p></div><div className="x-cta-actions"><Link className="lp-btn lp-btn--solid" href={primary.href}>{primary.label}</Link>{secondary && (secondary.external ? <a className="x-cta-link" href={secondary.href} target="_blank" rel="noopener noreferrer">{secondary.label}</a> : <Link className="x-cta-link" href={secondary.href}>{secondary.label}</Link>)}</div></div></section>;
 }
