@@ -28,7 +28,8 @@
   overflow: hidden;
   isolation: isolate;
   background-color: #d4d8d8;
-  background-image: url("/media/productos-page/productos1-1600.webp");
+  /* Foto de planta sin texto de marca: la anterior (productos1) mostraba "FUNDISAC" y un logo que no es el oficial. */
+  background-image: url("/media/productos-page/productos7-1600.webp");
   background-position: center 64%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -37,7 +38,7 @@
 /* Móvil: variante de 1200 px. Se precarga desde la página (productos/page.tsx) para que sea el LCP temprano. */
 @media (max-width: 860px) {
   .hero {
-    background-image: url("/media/productos-page/productos1-1200.webp");
+    background-image: url("/media/productos-page/productos7-1200.webp");
   }
 }
 

@@ -28,8 +28,8 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
   return (
     <>
       {/* El hero es un fondo CSS: se precarga la variante del tamaño de pantalla para que sea el LCP temprano. */}
-      <link rel="preload" as="image" href="/media/productos-page/productos1-1600.webp" media="(min-width: 861px)" fetchPriority="high" />
-      <link rel="preload" as="image" href="/media/productos-page/productos1-1200.webp" media="(max-width: 860px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/media/productos-page/productos7-1600.webp" media="(min-width: 861px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/media/productos-page/productos7-1200.webp" media="(max-width: 860px)" fetchPriority="high" />
       <ScreenW02 initialQuery={initialQuery} initialFamily={initialFamily} />
     </>
   );

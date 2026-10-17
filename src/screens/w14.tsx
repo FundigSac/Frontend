@@ -15,7 +15,7 @@ export function ScreenW14() {
       <section aria-labelledby="document-title" className="mx-auto grid max-w-[1200px] items-start gap-8 px-4 py-9 sm:px-6 sm:py-12 lg:grid-cols-[.82fr_1.18fr] lg:gap-14 lg:px-8 lg:py-16">
         <figure className="relative m-0 overflow-hidden rounded-xl border border-border bg-surface-container-low p-4 sm:p-6">
           <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-surface">
-            <Image src="/images/stitch/dfcc89d238.jpg" alt="Composición de catálogo técnico industrial, imagen referencial; no representa un documento oficial." width={1376} height={768} sizes="(min-width: 1024px) 430px, 90vw" className="h-full w-full object-cover" />
+            <Image src="/media/productos-page/catalogo-general-cover-cutout.png" alt="Portada del catálogo general de productos FUNDIGSAC" width={1374} height={1145} sizes="(min-width: 1024px) 430px, 90vw" className="h-full w-full object-contain p-4 pb-24" />
             <div className="absolute inset-x-0 bottom-0 bg-inverse-surface/80 p-5 text-brand-on"><span className="font-ui-label text-ui-label font-semibold uppercase tracking-[.14em]">Recursos técnicos</span><p className="mt-2 font-headline-card text-headline-card font-semibold">Documento pendiente de publicación</p></div>
           </div>
           <figcaption className="mt-3 font-ui-label text-ui-label text-text-muted">Imagen referencial. No es la portada de un documento oficial.</figcaption>
