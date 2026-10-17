@@ -11,6 +11,7 @@ import { SITE } from "@/shared/config/site";
 import { submitLead } from "./actions";
 import { LEAD_FORMS, type LeadFormId } from "./forms";
 import { buildLeadMessage, formEntries, type LeadMessage } from "./lead-message";
+import type { LeadResult } from "./types";
 
 /** `offline`: datos válidos, pero aún no hay registro en línea; la solicitud queda lista para enviarse por correo o WhatsApp. */
 type Status = "idle" | "pending" | "success" | "error" | "offline";
@@ -43,7 +44,8 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
       const data = new FormData(form);
       setState({ status: "pending" });
       startTransition(async () => {
-        const result = await submitLead(formId, data);
+        // Si la acción del servidor falla (red, despliegue nuevo), se avisa sin perder lo escrito ni romper la página.
+        const result = await submitLead(formId, data).catch((): LeadResult => ({ ok: false, message: "No pudimos procesar la solicitud. Revisa tu conexión e inténtalo de nuevo." }));
         // Sin registro en línea: no se borra nada ni se navega a una confirmación vacía; se prepara el mensaje.
         if (result.ok && result.reference === PENDING_QUOTE_REFERENCE) {
           const fromCart = formId === "quote-general" && cart.length ? cartSummary(cart, "es").replace(/^.*\n/, "PRODUCTOS DEL CARRITO\n") : undefined;
