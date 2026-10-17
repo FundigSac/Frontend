@@ -7,6 +7,11 @@ import { useMemo, useState } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import styles from "./w04-tuberias.module.css";
 
+/** Sin ficha publicada: la tarjeta pide la ficha por Contacto (con el producto ya indicado) en vez de prometer verla. */
+const sheetHref = (item: { href: string; name: string }) =>
+  item.href === "/contacto" ? `/contacto?motivo=documentacion&documento=${encodeURIComponent(item.name)}` : item.href;
+const sheetLabel = (item: { href: string }) => (item.href === "/contacto" ? "Solicitar ficha" : "Ver ficha");
+
 type GroupId = "junta" | "mecanica" | "accesorios";
 type Group = "todas" | GroupId;
 type SortMode = "destacados" | "az" | "za";
@@ -124,13 +129,13 @@ export function W04Tuberias() {
             <div className={styles.grid}>
               {visible.map((valve) => (
                 <article key={valve.id} className={styles.card}>
-                  <Link href={valve.href} className={styles.cardImage} aria-label={"Ver ficha de " + valve.name}>
+                  <Link href={sheetHref(valve)} className={styles.cardImage} aria-label={sheetLabel(valve) + " de " + valve.name}>
                     <Image src={valve.image} alt={valve.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
                   </Link>
                   <div className={styles.cardBody}>
                     <h3>{valve.name}</h3>
                     <p>{valve.description}</p>
-                    <Link href={valve.href} className={styles.cardButton}>Ver ficha <ArrowRight size={15} aria-hidden="true" /></Link>
+                    <Link href={sheetHref(valve)} className={styles.cardButton}>{sheetLabel(valve)} <ArrowRight size={15} aria-hidden="true" /></Link>
                   </div>
                 </article>
               ))}

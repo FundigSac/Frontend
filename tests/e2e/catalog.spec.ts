@@ -388,7 +388,9 @@ function lineTests(line: Line) {
       for (const [name, href] of line.cards) {
         // Por encabezado exacto: un nombre puede ser subcadena de otro.
         const card = cards(page).filter({ has: page.getByRole("heading", { name, exact: true }) }).filter({ has: page.locator(`a[href="${href}"]`) });
-        await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", href);
+        // Sin ficha publicada, la tarjeta pide la ficha por Contacto con el producto indicado (no promete "Ver ficha").
+        const label = href.startsWith("/contacto") ? "Solicitar ficha" : "Ver ficha";
+        await expect(card.getByRole("link", { name: label, exact: true })).toHaveAttribute("href", href);
       }
       await expect(page.getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
       await expect(page.getByRole("link", { name: "Ver todos los recursos" })).toHaveAttribute("href", "/recursos");
@@ -411,7 +413,7 @@ lineTests({
   za: "Válvula reductora de presión",
   emptyHeading: "No encontramos válvulas con esos datos",
   resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto"]],
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto?motivo=documentacion&documento=V%C3%A1lvula%20check%20swing"]],
 });
 
 lineTests({
@@ -428,7 +430,7 @@ lineTests({
   za: "Tubería HDPE",
   emptyHeading: "No encontramos tuberías con esos datos",
   resetButton: "Ver todos los productos",
-  cards: [["Tubería HDPE", "/productos/tuberias/tuberia-tyton"], ["Tubería con bridas", "/contacto"]],
+  cards: [["Tubería HDPE", "/productos/tuberias/tuberia-tyton"], ["Tubería con bridas", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20con%20bridas"]],
 });
 
 lineTests({
@@ -445,7 +447,7 @@ lineTests({
   za: "Tapa para válvula",
   emptyHeading: "No encontramos productos con esos datos",
   resetButton: "Ver todos los productos",
-  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/contacto"]],
+  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/contacto?motivo=documentacion&documento=Rejilla%20pluvial"]],
 });
 
 test.describe("W04 / W05 / W10-W12 enlaces", () => {
@@ -495,7 +497,7 @@ test.describe("W05 formulario de requerimiento", () => {
     await expect(page).toHaveURL(/\/cotizar\?producto=tuberia-tyton$/);
   });
 
-  test("envío real: lleva a la confirmación con folio COT-… o muestra un error (nunca éxito falso)", async ({ page }) => {
+  test("envío: deja la solicitud lista para correo o WhatsApp sin borrar datos (nunca éxito falso)", async ({ page }) => {
     await page.goto("/cotizar");
     const form = page.locator("#cotizacionForm");
     await form.locator("#razonSocial").fill("Consorcio Prueba E2E");
@@ -511,23 +513,14 @@ test.describe("W05 formulario de requerimiento", () => {
     await form.locator("#cantidadMetrado").fill("10 unidades");
     await form.locator("#consentimiento").check();
     await form.getByRole("button", { name: "Enviar solicitud" }).click();
-    // El anunciador de rutas de Next también usa role=alert: se acota al aviso de error del formulario.
-    const err = form.getByRole("alert");
-    await Promise.race([page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-/, { timeout: 30_000 }), err.waitFor({ timeout: 30_000 })]);
-    if (page.url().includes("/cotizar/confirmacion")) {
-      const ref = new URL(page.url()).searchParams.get("ref");
-      expect(ref).toMatch(/^COT-/);
-      if (ref === "COT-0000-000000") {
-        // Etapa de diseño (sin base de datos): el folio marcador nunca se muestra como registrado (commit 5d21f03).
-        await expect(page.getByRole("heading", { level: 1, name: "Solicitud pendiente de conexión" })).toBeVisible();
-        await expect(page.locator("#folio-code")).toHaveText("Sin folio");
-      } else {
-        await expect(page.getByText(ref!).first()).toBeVisible();
-      }
-    } else {
-      await expect(err).toBeVisible();
-      await expect(err).not.toHaveText("");
-    }
+    // Etapa sin registro en línea: nunca un folio ni un "registrado" falso; la solicitud queda lista para enviarse.
+    await expect(form.getByRole("heading", { name: "Tu solicitud está lista para enviar" })).toBeVisible({ timeout: 30_000 });
+    await expect(page).toHaveURL(/\/cotizar$/);
+    await expect(form.locator("#razonSocial")).toHaveValue("Consorcio Prueba E2E");
+    const body = decodeURIComponent((await form.getByRole("link", { name: "Enviar por correo" }).getAttribute("href"))!);
+    expect(body).toContain("Consorcio Prueba E2E");
+    expect(body).toContain("DN 600");
+    expect(body).not.toContain("No completar este campo"); // la trampa anti-bots no viaja en el mensaje
   });
 });
 

@@ -6,7 +6,7 @@ async function dismissCookies(page: Page) {
 }
 
 /** Tarjetas de válvula del listado (excluye la tarjeta de descarga del catálogo). */
-const valveCards = (page: Page) => page.locator("main article").filter({ has: page.getByRole("link", { name: "Ver ficha", exact: true }) });
+const valveCards = (page: Page) => page.locator("main article").filter({ has: page.getByRole("link", { name: /^(Ver|Solicitar) ficha$/ }) });
 
 const NO_OVERFLOW = () => document.documentElement.scrollWidth <= window.innerWidth + 1;
 
