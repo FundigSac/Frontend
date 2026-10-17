@@ -777,13 +777,14 @@
   z-index: 1;
   padding: 5px 11px;
   border-radius: 999px;
-  background: #ed762b;
+  /* Naranja profundo de los botones (#c94f0a): el #ed762b daba 2,9:1 con texto blanco de 12 px. */
+  background: #c94f0a;
   color: #fff;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .01em;
   line-height: 1.2;
-  box-shadow: 0 3px 10px rgba(237, 118, 43, .35);
+  box-shadow: 0 3px 10px rgba(201, 79, 10, .3);
 }
 
 /* Velo superior: asegura el contraste de la cabecera de inicio sobre la foto del hero. */

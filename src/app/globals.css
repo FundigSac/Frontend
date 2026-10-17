@@ -307,3 +307,8 @@ html[data-lp-theme="dark"] .text-outline-variant {
     font-size: max(16px, 1em);
   }
 }
+
+/* La cabecera es fija (84 px): el foco con Tab y los saltos a anclas no deben quedar escondidos debajo (WCAG 2.4.11). */
+html {
+  scroll-padding-top: 96px;
+}

@@ -5,7 +5,7 @@
 .page {
   --ink: #0f1b2d;
   --ink-soft: #46525f;
-  --ink-muted: #687384;
+  --ink-muted: #5c6777; /* 5,2:1 sobre --soft (antes 4,35:1) */
   --line: #e3e1da;
   --paper: #fbfaf7;
   --card: #fff;
@@ -592,7 +592,7 @@
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.25s var(--ease);
 }
 .size:hover { transform: translateY(-1px); border-color: rgb(255 255 255 / 45%); background: rgb(255 255 255 / 12%); }
-.sizeActive { border-color: #e0661f; background: #e0661f; color: #fff; box-shadow: 0 10px 18px -10px rgb(224 102 31 / 90%); }
+.sizeActive { border-color: #c94f0a; background: #c94f0a; color: #fff; box-shadow: 0 10px 18px -10px rgb(201 79 10 / 90%); }
 .planHint { margin: 12px 0 0; color: #9db8dd; font-size: 12.5px; line-height: 1.5; }
 
 .dimsAside { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 16px; }
