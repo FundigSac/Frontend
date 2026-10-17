@@ -297,3 +297,13 @@ html[data-lp-theme="dark"] .text-danger {
 html[data-lp-theme="dark"] .text-outline-variant {
   color: #4f6480;
 }
+
+/* Pantallas táctiles: iOS amplía la página al enfocar un campo con letra menor de 16 px. Va fuera de las capas de
+   Tailwind para imponerse también a los módulos CSS de cada pantalla. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
