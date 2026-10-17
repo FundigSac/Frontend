@@ -61,6 +61,7 @@ export function LandingHeader() {
   const [query, setQuery] = useState("");
   const navRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const segment = useSelectedLayoutSegment();
@@ -70,6 +71,8 @@ export function LandingHeader() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
+      // Al cerrar el menú móvil con Escape, el foco vuelve al botón que lo abrió (no se pierde en el documento).
+      if (document.querySelector(".lp-mobile.is-open")) toggleRef.current?.focus();
       setOpen(null);
       setMobileOpen(false);
       setSearchOpen(false);
@@ -93,6 +96,21 @@ export function LandingHeader() {
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
+
+  // Menú móvil abierto: la página de atrás queda inerte (Tab no sale del menú) y el menú se cierra si la ventana
+  // pasa al ancho de escritorio, donde no se ve.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const behind = [document.getElementById("contenido"), document.querySelector<HTMLElement>(".lp-footer")].filter((el): el is HTMLElement => !!el);
+    behind.forEach((el) => (el.inert = true));
+    const desktop = window.matchMedia("(min-width: 1261px)");
+    const onWide = () => desktop.matches && setMobileOpen(false);
+    desktop.addEventListener("change", onWide);
+    return () => {
+      behind.forEach((el) => (el.inert = false));
+      desktop.removeEventListener("change", onWide);
+    };
+  }, [mobileOpen]);
 
   return (
     <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${isProductPath(pathname) ? " lp-header--catalog" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
@@ -257,6 +275,7 @@ export function LandingHeader() {
             {t.quote} <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
           <button
+            ref={toggleRef}
             type="button"
             className="lp-header__toggle"
             aria-label={mobileOpen ? t.menuClose : t.menuOpen}

@@ -1140,18 +1140,27 @@
     display: block;
     max-height: calc(100dvh - 72px);
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 8px 0 24px;
     border-top: 1px solid var(--lp-line);
   }
 
+  /* Con el menú abierto la página de atrás no se desplaza. */
+  html:has(.lp-mobile.is-open) {
+    overflow: hidden;
+  }
+
   .lp-mobile__group {
-    padding: 14px 0;
+    padding: 8px 0;
     border-bottom: 1px solid var(--lp-line);
   }
 
+  /* Objetivos táctiles de 44 px (antes 26–38 px). */
   .lp-mobile__group > a,
   .lp-mobile__group > span {
-    display: block;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--lp-ink);
     font-size: 16px;
     font-weight: 600;
@@ -1166,8 +1175,10 @@
   }
 
   .lp-mobile__group ul a {
-    display: block;
-    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 4px 0;
     color: var(--lp-text);
     font-size: 15px;
     text-decoration: none;
@@ -2927,4 +2938,45 @@ html[data-lp-theme="dark"] .lp-eyebrow {
 body:has(.lp-mobile.is-open) .lp-float,
 body:has(.lp-mobile.is-open) .ck {
   display: none;
+}
+
+/* ===== Ajustes responsive (auditoría 2026-10) ===== */
+
+/* El contador "01 / 02" del carrusel nunca se parte en dos líneas. */
+.lp-hero__count {
+  white-space: nowrap;
+}
+
+/* El logo de la cabecera es un objetivo táctil de 44 px de alto aunque la imagen se reduzca a 100 px de ancho. */
+.lp-header__brand {
+  align-items: center;
+  min-height: 44px;
+}
+
+@media (max-width: 350px) {
+  .lp-hero__controls {
+    gap: 8px;
+  }
+
+  .lp-hero__count {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+
+  .lp-hero__bars {
+    display: none;
+  }
+}
+
+/* Pie legal en móvil y tableta: al partir líneas los separadores "|" quedaban huérfanos al inicio del renglón. */
+@media (max-width: 860px) {
+  .lp-footer__legal {
+    gap: 4px 20px;
+  }
+
+  .lp-footer__legal a + a::before,
+  .lp-footer__legal a + .lp-footer__linkbtn::before,
+  .lp-footer__legal .lp-footer__linkbtn + a::before {
+    display: none;
+  }
 }
