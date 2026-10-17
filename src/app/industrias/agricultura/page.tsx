@@ -5,7 +5,7 @@ import "./agricultura.css";
 import { AgricultureSections } from "./sections";
 
 export const metadata: Metadata = {
-  title: "Agricultura",
+  title: "Válvulas y tuberías HDPE para riego agrícola",
   description: "Válvulas de compuerta, ventosas, filtros Y, tubería HDPE y válvulas de retención FUNDIGSAC para sistemas de riego agrícola.",
   alternates: { canonical: "/industrias/agricultura" },
 };

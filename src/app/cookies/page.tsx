@@ -4,7 +4,7 @@ import { cookiesHeroImage, cookiesInfoImages } from "../_legal/images";
 
 export const metadata: Metadata = {
   title: "Política de cookies",
-  description: "Qué cookies utiliza el sitio web de FUNDIGSAC, para qué sirven y cómo gestionar tus preferencias.",
+  description: "Qué cookies y almacenamiento local usa el sitio de FUNDIGSAC, para qué sirven, cuánto duran y cómo aceptar, rechazar o retirar tu consentimiento.",
   alternates: { canonical: "/cookies" },
 };
 

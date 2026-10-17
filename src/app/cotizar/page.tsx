@@ -11,7 +11,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const product = findQuoteProduct(first((await searchParams).producto));
   return {
     title: product ? `Cotizar ${product.shortName}` : "Solicitar cotización",
-    description: "Solicita una cotización técnica de productos de hierro dúctil FUNDIGSAC.",
+    description: "Solicita una cotización técnica de válvulas, tuberías, marcos y tapas de hierro dúctil FUNDIGSAC: indica familia, medidas, cantidad y destino del proyecto.",
     // La variante con producto precargado es una vista del mismo trámite: la canónica es /cotizar.
     alternates: { canonical: "/cotizar" },
   };

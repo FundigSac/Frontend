@@ -24,7 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = Object.hasOwn(RESOURCE_PAGES, slug) ? RESOURCE_PAGES[slug] : undefined;
   if (!item) return {};
-  return { title: item.name, description: item.description, alternates: { canonical: `/recursos/${slug}` } };
+  // Hoy solo muestra "Documento no publicado": no aporta a buscadores hasta que haya un documento real.
+  return { title: item.name, description: item.description, alternates: { canonical: `/recursos/${slug}` }, robots: { index: false, follow: true } };
 }
 
 export default async function ResourcePage({ params }: Props) {

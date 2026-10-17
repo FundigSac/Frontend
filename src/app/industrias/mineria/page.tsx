@@ -7,7 +7,7 @@ import "./mineria.css";
 import { MiningSections } from "./sections";
 
 export const metadata: Metadata = {
-  title: "Minería",
+  title: "Componentes de hierro dúctil para minería",
   description: "Válvulas de compuerta, tuberías HDPE, acoples y bridas FUNDIGSAC de hierro dúctil para agua de proceso, pulpas, relaves y control de procesos mineros.",
   alternates: { canonical: "/industrias/mineria" },
 };

@@ -25,7 +25,7 @@ const NEED_LINKS: Record<string, string> = {
 };
 
 export const metadata: Metadata = {
-  title: "Industrias",
+  title: "Saneamiento, minería, agricultura e industria",
   description: "Componentes FUNDIGSAC para saneamiento, minería, agricultura e industria: válvulas, hierro dúctil, tubería HDPE, acoples y medición.",
   alternates: { canonical: "/industrias" },
 };

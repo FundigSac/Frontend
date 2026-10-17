@@ -6,7 +6,7 @@ import { deletionClosingImage, deletionHeroImage } from "../_legal/images";
 
 export const metadata: Metadata = {
   title: "Eliminar cuenta y datos personales",
-  description: "Cómo solicitar la eliminación de tu cuenta de FUNDIGSAC y de tus datos personales, qué información se borra, qué se conserva por ley y en qué plazos respondemos (Ley N.° 29733).",
+  description: "Cómo solicitar la eliminación de tu cuenta FUNDIGSAC y de tus datos personales: qué se borra, qué se conserva por ley y plazos de respuesta (Ley N.° 29733).",
   alternates: { canonical: "/eliminar-cuenta" },
 };
 

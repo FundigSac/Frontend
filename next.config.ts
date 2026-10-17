@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { CANONICAL_HOST_PATTERN } from "./src/shared/config/env";
 
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -60,9 +61,23 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Loader propio: las fotos se sirven como variantes WebP pregeneradas (ver src/shared/media/image-loader.ts).
   images: { loader: "custom", loaderFile: "./src/shared/media/image-loader.ts", minimumCacheTTL: 60 * 60 * 24 * 30, qualities: [60, 70, 72, 75, 85] },
-  // La ficha FUNDIGSAC con garantía extendida antes tenía otra URL.
   async redirects() {
-    return [{ source: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", destination: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", permanent: true }];
+    return [
+      // La ficha FUNDIGSAC con garantía extendida antes tenía otra URL.
+      { source: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", destination: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", permanent: true },
+      // El visor 3D vive dentro de cada ficha ("Ver en 3D"); la página aparte era un marcador sin modelo.
+      { source: "/productos/:categoria/:producto/visor-3d", destination: "/productos/:categoria/:producto", permanent: true },
+      // URLs públicas del WordPress actual de fundigsac.com (crawl de 2026-10): conservan su tráfico al migrar el dominio.
+      { source: "/libro-de-reclamos", destination: "/reclamaciones", permanent: true },
+      { source: "/contactanos", destination: "/contacto", permanent: true },
+      { source: "/shop", destination: "/productos", permanent: true },
+      { source: "/product-category/valvulas-hierro-ductil", destination: "/productos/valvulas", permanent: true },
+      { source: "/product/valvula-compuerta-bridada", destination: "/productos/valvulas/valvula-compuerta", permanent: true },
+      { source: "/product/:slug", destination: "/productos/valvulas", permanent: true },
+      { source: "/cart", destination: "/carrito", permanent: true },
+      { source: "/checkout", destination: "/cotizar", permanent: true },
+      { source: "/my-account", destination: "/login", permanent: true },
+    ];
   },
   async headers() {
     return [
@@ -82,6 +97,8 @@ const nextConfig: NextConfig = {
           ...(isDev ? [] : [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" }]),
         ],
       },
+      // Solo el dominio canónico puede indexarse: fundigsac-web.vercel.app y las URLs de despliegue sirven la misma build.
+      { source: "/:path*", missing: [{ type: "host", value: CANONICAL_HOST_PATTERN }], headers: [{ key: "X-Robots-Tag", value: "noindex" }] },
       { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
       { source: "/images/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }] },
       { source: "/media/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }] },

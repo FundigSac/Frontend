@@ -13,7 +13,7 @@ const categoryOf = (slug: CategorySlug) => CATEGORIES.find((c) => c.slug === slu
 
 export function categoryMetadata(slug: CategorySlug): Metadata {
   const category = categoryOf(slug);
-  return { title: category.name, description: category.description, alternates: { canonical: `/productos/${category.slug}` } };
+  return { title: category.title ?? category.name, description: category.description, alternates: { canonical: `/productos/${category.slug}` } };
 }
 
 export function CategoryPage({ slug, children }: { slug: CategorySlug; children: ReactNode }) {

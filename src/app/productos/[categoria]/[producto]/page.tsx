@@ -29,7 +29,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { categoria, producto } = await params;
   const product = findProduct(categoria, producto);
   if (!product) return {};
-  return { title: product.name, description: product.description, alternates: { canonical: `/productos/${product.category}/${product.slug}` } };
+  return {
+    // `title` ya lleva la marca: sin la plantilla para no repetir "FUNDIGSAC".
+    title: product.title ? { absolute: product.title } : product.name,
+    description: product.description,
+    alternates: { canonical: `/productos/${product.category}/${product.slug}` },
+    // Las pantallas de referencia (datos sin validar) no deben aparecer en buscadores aunque el sitio se indexe.
+    ...(product.indexable === false ? { robots: { index: false, follow: true } } : {}),
+  };
 }
 
 export default async function ProductPage({ params }: Props) {

@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { AssistantLauncher } from "@/shared/assistant/assistant-launcher";
 import { CartHost } from "@/shared/cart/cart-host";
 import { SITE_INDEXABLE } from "@/shared/config/env";
+import { site } from "@/lib/site-info";
 import { SITE } from "@/shared/config/site";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
 import { LandingFooter, LandingHeader } from "@/shared/layout/landing-chrome";
@@ -18,10 +19,12 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "FUNDIGSAC | Hierro dúctil · Saneamiento e Infraestructura", template: "%s | FUNDIGSAC" },
-  description: "Válvulas, tuberías, marcos y tapas de hierro dúctil para redes de agua potable, saneamiento y minería en el Perú.",
+  title: { default: "Válvulas, tuberías y tapas de hierro dúctil | FUNDIGSAC", template: "%s | FUNDIGSAC" },
+  description: "Válvulas, tuberías, marcos y tapas de hierro dúctil para redes de agua potable, saneamiento, minería y riego en el Perú. Atención comercial en Lima.",
   robots: { index: SITE_INDEXABLE, follow: SITE_INDEXABLE },
-  openGraph: { type: "website", locale: "es_PE", siteName: SITE.name, url: SITE.url },
+  // Sin `url`: cada página que comparta este bloque heredaría la URL de inicio. La imagen sale de opengraph-image.jpg.
+  openGraph: { type: "website", locale: "es_PE", siteName: SITE.name },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
@@ -38,8 +41,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ToastProvider>
           <JsonLd
             data={[
-              { "@context": "https://schema.org", "@type": "Organization", name: SITE.name, legalName: SITE.legalName, url: SITE.url, logo: `${SITE.url}/brand/fundigsac.svg`, email: SITE.email },
-              { "@context": "https://schema.org", "@type": "WebSite", name: SITE.name, url: SITE.url, inLanguage: "es-PE", potentialAction: { "@type": "SearchAction", target: `${SITE.url}/buscar?q={search_term_string}`, "query-input": "required name=search_term_string" } },
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "@id": `${SITE.url}/#organizacion`,
+                name: SITE.name,
+                legalName: SITE.registeredName,
+                taxID: SITE.ruc,
+                url: SITE.url,
+                logo: `${SITE.url}/brand/fundigsac.svg`,
+                email: SITE.email,
+                telephone: site.phone,
+                address: { "@type": "PostalAddress", streetAddress: "Jirón Pacasmayo Mz. E Lt. 12", addressLocality: "Cercado de Lima", addressRegion: "Lima", addressCountry: "PE" },
+              },
+              { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#sitio`, name: SITE.name, url: SITE.url, inLanguage: "es-PE", publisher: { "@id": `${SITE.url}/#organizacion` } },
             ]}
           />
           <a className="skip-link" href="#contenido">Saltar al contenido</a>
