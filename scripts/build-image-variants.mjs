@@ -11,11 +11,11 @@ import sharp from "sharp";
 const root = path.resolve(import.meta.dirname, "..");
 const publicDir = path.join(root, "public");
 const SCAN_DIRS = ["media", "images"];
-// Anchos de salida: miniaturas y tarjetas (384, 640), móvil (768), laptop (1200) y escritorio amplio (1920).
+// Anchos de salida: miniaturas (256), tarjetas (384, 640), móvil (768), laptop (1200) y escritorio amplio (1920).
 // Un ancho pedido se sirve con el primero que lo cubre: sin 384/640 una tarjeta de 170 px descargaba la foto de 768 px.
-const BUCKETS = [384, 640, 768, 1200, 1920];
+const BUCKETS = [256, 384, 640, 768, 1200, 1920];
 const RASTER = /\.(jpe?g|png|webp)$/i;
-const VARIANT = /-w(384|640|768|1200|1920)\.webp$/;
+const VARIANT = /-w(256|384|640|768|1200|1920)\.webp$/;
 const QUALITY = 74;
 
 async function walk(dir) {

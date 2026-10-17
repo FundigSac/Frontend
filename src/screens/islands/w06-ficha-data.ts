@@ -190,8 +190,8 @@ const FUNDIGSAC: Datasheet = {
   },
   flange: {
     title: "Bridas",
-    note: "Bridas ISO 7005-2 / DIN según PN. D exterior, D1 círculo de pernos, D2 resalte, b – f espesor y altura del resalte, n × Φd número y diámetro de agujeros. Medidas en mm. Confirmar antes del suministro.",
-    head: ["PN", "D", "D1", "D2", "b – f", "n × Φd", "Pernos"],
+    note: "Bridas ISO 7005-2 / DIN según PN. D exterior, D1 círculo de pernos, D2 resalte, b – f espesor y altura del resalte, n × Ød número y diámetro de agujeros. Medidas en mm. Confirmar antes del suministro.",
+    head: ["PN", "D", "D1", "D2", "b – f", "n × Ød", "Pernos"],
     rows: (dn) => {
       const i = DN_F1.indexOf(dn);
       return (["PN10", "PN16"] as const).map((pn) => ({ pn, cells: [F1_D[pn][i], F1_D1[pn][i], F1_D2[pn][i], F1_BF[i], `${F1_HOLES[pn][i]} × ${F1_HOLE_D[pn][i]}`, boltFor(i, pn)] }));

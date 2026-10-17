@@ -201,7 +201,8 @@ export function W06Ficha(props: { variant?: Variant }) {
       alt={current.alt}
       fill
       sizes={sizes}
-      priority={priority}
+      // Foto LCP: en el HTML inicial y con prioridad alta (en Next 16 `priority` está obsoleto y no la sube).
+      loading={priority ? "eager" : undefined}
       fetchPriority={priority ? "high" : undefined}
       unoptimized={broken[current.src]}
       onError={() => setBroken((s) => ({ ...s, [current.src]: true }))}
@@ -234,7 +235,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               {spin ? (
                 <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} />
               ) : (
-                photo("(min-width: 1024px) 640px, 100vw", true)
+                photo("(min-width: 1100px) 600px, 92vw", true)
               )}
               {!spin && (
                 <>
@@ -249,7 +250,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               <div className={styles.thumbList} role="group" aria-label={t.photos}>
                 {THUMBS.map((p, i) => (
                   <button key={p.src} type="button" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={t.viewPhoto(p.alt)} aria-pressed={i === active && !spin}>
-                    <Image src={p.dir + p.src} alt="" fill sizes="96px" fetchPriority="low" />
+                    <Image src={p.dir + p.src} alt="" fill sizes="(max-width: 760px) 64px, 76px" fetchPriority="low" />
                   </button>
                 ))}
               </div>

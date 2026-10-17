@@ -33,7 +33,7 @@ export function W08Gallery({ children }: { children: React.ReactNode }) {
           width={1408}
           height={768}
           sizes="(min-width: 1024px) 600px, 100vw"
-          priority
+          loading="eager"
           fetchPriority="high"
           className="w-full h-full object-cover rounded-lg"
           id="main-product-img"

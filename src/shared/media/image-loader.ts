@@ -1,6 +1,7 @@
 // Loader global de next/image: cada foto se sirve como variante WebP pregenerada (scripts/build-image-variants.mjs).
 // Así la primera visita no espera una transformación en el servidor. SVG y GIF pasan tal cual.
-const BUCKETS = [384, 640, 768, 1200, 1920] as const;
+// 256: miniaturas de galería (64–78 px a DPR 2–3); antes bajaban la variante de 384 px.
+const BUCKETS = [256, 384, 640, 768, 1200, 1920] as const;
 const RASTER = /\.(jpe?g|png|webp)$/i;
 
 export default function imageLoader({ src, width }: { src: string; width: number }): string {

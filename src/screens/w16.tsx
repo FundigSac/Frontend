@@ -35,7 +35,7 @@ export function ScreenW16() {
             </p>
           </div>
           <figure className="relative m-0 aspect-[16/9] overflow-hidden rounded-xl border border-border bg-surface">
-            <Image src="/images/stitch/915091dd8b-limpia.jpg" alt="Detalle de válvula industrial, imagen referencial que no representa una cotización o producto específico." width={1408} height={768} sizes="(min-width: 1024px) 560px, 100vw" preload className="h-full w-full object-cover" />
+            <Image src="/images/stitch/915091dd8b-limpia.jpg" alt="Detalle de válvula industrial, imagen referencial que no representa una cotización o producto específico." width={1408} height={768} sizes="(min-width: 1024px) 560px, 100vw" loading="eager" fetchPriority="high" className="h-full w-full object-cover" />
             <figcaption className="absolute bottom-3 left-3 rounded-md border border-border bg-surface-elevated/95 px-3 py-2 font-ui-label text-ui-label text-text-secondary">Imagen referencial</figcaption>
           </figure>
           </div>
