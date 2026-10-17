@@ -116,7 +116,7 @@ test("ficha: Vista 3D alterna con las fotos y una miniatura vuelve a la foto", a
   const toggle = page.getByRole("button", { name: "Ver en 3D" });
   await toggle.click();
   await expect(page.getByRole("button", { name: "Volver a las fotos" })).toHaveAttribute("aria-pressed", "true");
-  await page.locator("[role='list'] button[role='listitem']").nth(2).click();
+  await page.getByRole("group", { name: "Fotos de la válvula" }).getByRole("button").nth(2).click();
   await expect(page.getByRole("button", { name: "Ver en 3D" })).toHaveAttribute("aria-pressed", "false");
   await expect(page.locator("main model-viewer")).toHaveCount(0);
 });

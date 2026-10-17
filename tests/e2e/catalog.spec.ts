@@ -215,9 +215,9 @@ test.describe("W02 catálogo", () => {
     await expect(page.getByText("Garantía extendida respaldada por FUNDIGSAC")).toBeVisible();
     await expect(page.getByRole("row", { name: /^Garantía Extendida/ })).toBeVisible();
     await expect(page.locator("main").getByText("5 años")).toHaveCount(0);
-    const thumbs = page.locator("[role='list'] button[role='listitem']");
+    const thumbs = page.getByRole("group", { name: "Fotos de la válvula" }).getByRole("button");
     await expect(thumbs).toHaveCount(5);
-    const srcOf = () => page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
+    const srcOf = () => page.getByRole("group", { name: "Fotos de la válvula" }).locator("img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
     expect((await srcOf()).every((u) => u.includes("/media/valvula-fundigsac-cuadrante/q-0"))).toBe(true);
     await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
     await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-5-anos");
@@ -232,10 +232,10 @@ test.describe("W02 catálogo", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvula de compuerta bridada FUNDIGSAC");
     await expect(page.locator("main").getByText(/garantía/i)).toHaveCount(0);
     await expect(page.getByRole("row", { name: /^Marca FUNDIGSAC/ })).toBeVisible();
-    const thumbs = page.locator("[role='list'] button[role='listitem']");
+    const thumbs = page.getByRole("group", { name: "Fotos de la válvula" }).getByRole("button");
     await expect(thumbs).toHaveCount(5);
     await expect(page.locator("main img").first()).toHaveAttribute("alt", /FUNDIGSAC, vista frontal con el logotipo en relieve/);
-    const srcOf = () => page.locator("[role='list'] img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
+    const srcOf = () => page.getByRole("group", { name: "Fotos de la válvula" }).locator("img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
     expect((await srcOf()).every((u) => u.includes("/media/valvula-fundigsac/f-0"))).toBe(true);
     await thumbs.nth(3).click();
     await expect(page.locator("main img").first()).toHaveAttribute("alt", /etiqueta DN100 de 4 pulgadas en la brida/);
