@@ -1865,8 +1865,19 @@ html[data-lp-theme="dark"] .lp-docs__campaigns-icon {
   color: #eef3fa;
 }
 
+/* La foto del folleto tiene fondo blanco: `multiply` la funde en claro, pero sobre azul marino la apaga casi entera.
+   En oscuro se muestra tal cual, como una lámina clara con esquinas redondeadas. */
 html[data-lp-theme="dark"] .lp-docs__media img {
-  filter: brightness(0.9);
+  mix-blend-mode: normal;
+  border-radius: 16px;
+  filter: brightness(0.94);
+  box-shadow: 0 24px 48px -28px rgb(0 0 0 / 70%);
+}
+
+@media (max-width: 860px) {
+  html[data-lp-theme="dark"] .lp-docs__media {
+    margin: 0 0 32px;
+  }
 }
 
 html[data-lp-theme="dark"] .lp-footer {
