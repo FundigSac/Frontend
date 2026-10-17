@@ -11,7 +11,11 @@ export function SourceGuard() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
 
-    const block = (e: Event) => e.preventDefault();
+    // En campos editables el menú contextual sigue disponible: pegar, corregir ortografía o autocompletar no expone nada.
+    const editable = (t: EventTarget | null) => t instanceof Element && !!t.closest("input, textarea, select, [contenteditable='true']");
+    const block = (e: Event) => {
+      if (!editable(e.target)) e.preventDefault();
+    };
 
     const onKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toLowerCase();
