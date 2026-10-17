@@ -1133,8 +1133,9 @@ html[data-lp-theme="dark"] .cp-muted {
 
 /* ===== Responsivo ===== */
 @media (max-width: 1024px) {
+  /* minmax(0, 1fr): con 1fr la columna tomaba el ancho mínimo de las tarjetas sugeridas y desbordaba a 320 px. */
   .cp-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .cp-summary {
@@ -1227,5 +1228,20 @@ html[data-lp-theme="dark"] .cp-muted {
   .cp-item,
   .cd-empty__art::after {
     animation: none;
+  }
+}
+
+/* Tarjetas sugeridas en pantallas angostas: el botón "Agregar" baja de renglón en vez de empujar la tarjeta. */
+@media (max-width: 480px) {
+  .ct-suggest li {
+    flex-wrap: wrap;
+  }
+
+  .ct-suggest li > div {
+    flex: 1 1 120px;
+  }
+
+  .ct-suggest .ct-add {
+    margin-left: auto;
   }
 }

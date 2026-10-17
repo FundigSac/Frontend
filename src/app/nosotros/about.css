@@ -323,8 +323,9 @@
 }
 
 @media (max-width: 900px) {
+  /* minmax(0, 1fr): sin él la columna crece con su contenido y a 320 px se salía del contenedor. */
   .ab-history__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .ab-history__cta {
