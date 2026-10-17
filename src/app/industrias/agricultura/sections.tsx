@@ -130,7 +130,7 @@ export function AgricultureSections() {
               <li key={item.href} data-reveal="up" style={{ ["--d" as string]: `${i * 90}ms` }}>
                 <Link href={item.href} className="lp-card">
                   <span className="lp-card__media">
-                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} loading="eager" fetchPriority="low" quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 640px) 90vw, (max-width: 1100px) 45vw, 280px" />
+                    <Image src={item.image} alt={t.line.items[i].alt} width={1448} height={1086} fetchPriority="low" quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 340px) 90vw, (max-width: 1100px) 45vw, 280px" />
                   </span>
                   <span className="lp-card__label">
                     {t.line.items[i].title}

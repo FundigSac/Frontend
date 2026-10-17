@@ -74,7 +74,7 @@ function CategoryCard({ family }: { family: (typeof FAMILIES)[number] }) {
   return (
     <article className={styles.categoryCard}>
       <Link href={family.href} className={styles.categoryImage} aria-label={"Explorar " + family.label}>
-        <Image src={family.image} alt={family.alt} fill sizes="(min-width: 1200px) 18vw, (min-width: 680px) 34vw, 85vw" />
+        <Image src={family.image} alt={family.alt} fill sizes="(min-width: 1181px) 18vw, (min-width: 641px) 32vw, 46vw" />
       </Link>
       <div className={styles.categoryBody}>
         <h3>{family.label}</h3>
