@@ -38,7 +38,7 @@ const sectors = [
 ];
 
 export default function Industries() {
-  return <main className="x-page">
+  return <main lang="es" className="x-page">
     <PageHero
       crumbs={[{ label: "Industrias" }]}
       eyebrow="Sectores atendidos"

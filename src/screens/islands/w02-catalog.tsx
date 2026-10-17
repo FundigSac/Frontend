@@ -187,7 +187,7 @@ export function W02Catalog({
   const catalogDocument = documentHref("Catálogo general de productos FUNDIGSAC");
 
   return (
-    <main className={styles.page}>
+    <main lang="es" className={styles.page}>
       <section className={styles.hero} aria-labelledby="catalog-title">
         <span className={styles.topVeil} aria-hidden="true" />
         <div className={styles.heroInner}>

@@ -56,7 +56,7 @@ export function W04Tuberias() {
   const catalogDocument = documentHref("Catálogo general de productos FUNDIGSAC");
 
   return (
-    <main className={styles.page}>
+    <main lang="es" className={styles.page}>
       {/* La foto del hero es un fondo CSS: se precarga con prioridad para que el LCP no espere a descubrirla en el CSS. */}
       <link rel="preload" as="image" href="/media/tuberias-page/hero-w1920.webp" media="(min-width: 761px)" fetchPriority="high" />
       <link rel="preload" as="image" href="/media/tuberias-page/hero-w1200.webp" media="(max-width: 760px)" fetchPriority="high" />

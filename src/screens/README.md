@@ -8,3 +8,7 @@ Reglas:
 - El estado inicial renderizado debe seguir coincidiendo con Stitch (`node scripts/qa/capture.mjs --only wNN` + `python3 scripts/qa/diff.py 1440 wNN`).
 - Las interacciones viven en `src/screens/islands/*` (componentes cliente) y los `wNN.tsx` siguen siendo componentes de servidor.
 - Tailwind v4 ≠ v3 (Stitch): no combinar dos utilidades de tamaño de texto en un mismo elemento (`text-body-compact text-[13px]`).
+
+## Idioma
+Las pantallas que aún no tienen versión en inglés llevan `<main lang="es">`: con la interfaz en inglés (`html[lang=en]`)
+el lector de pantalla sigue pronunciando su contenido en español (WCAG 3.1.2). Al traducir una pantalla, quitar ese atributo.
