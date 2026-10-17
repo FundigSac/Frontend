@@ -39,7 +39,7 @@ export function MapEmbed({ title }: { title: string }) {
   const t = COPY[lang];
 
   if (consent?.thirdParty || once) {
-    return <iframe src={MAP_EMBED} title={title} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />;
+    return <iframe src={MAP_EMBED} title={title} loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />;
   }
 
   return (
