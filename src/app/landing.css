@@ -1541,7 +1541,7 @@
   color: var(--lp-orange-dark);
 }
 
-.lp-lang__menu [aria-selected="true"] button {
+.lp-lang__menu button[aria-pressed="true"] {
   color: var(--lp-orange-dark);
   font-weight: 600;
 }
@@ -2109,7 +2109,8 @@ html[data-lp-theme="dark"] .lp-location__pin {
   background: #25d366;
   box-shadow: 0 12px 26px -10px rgb(18 140 70 / 70%), 0 0 0 0 rgb(37 211 102 / 45%);
   color: #fff;
-  animation: lp-wa-pulse 2.8s ease-out infinite;
+  /* Tres pulsos y quieto: un aviso que se repite sin fin distrae y no se puede pausar (WCAG 2.2.2). */
+  animation: lp-wa-pulse 2.8s ease-out 3;
   transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1), background 180ms ease;
 }
 

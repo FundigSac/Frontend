@@ -9,9 +9,10 @@ import { BLUR } from "@/shared/media/blur";
 
 // Ambas variantes comparten lienzo (578×1030): el cuerpo de la válvula queda alineado al píxel
 // y solo cambia el accionamiento superior.
+// Etiqueta y texto alternativo de cada variante: COPY[lang].hero.variants (mismo orden).
 const VARIANTS = [
-  { id: "sin-timon", label: "Sin timón", src: "/media/home-v2/compuerta-sin-timon-v4.webp", alt: "Válvula compuerta FUNDIGSAC de hierro dúctil sin timón, con dado de maniobra" },
-  { id: "con-timon", label: "Con timón", src: "/media/home-v2/compuerta-con-timon-v4.webp", alt: "Válvula compuerta FUNDIGSAC de hierro dúctil con timón de maniobra" },
+  { id: "sin-timon", src: "/media/home-v2/compuerta-sin-timon-v4.webp" },
+  { id: "con-timon", src: "/media/home-v2/compuerta-con-timon-v4.webp" },
 ] as const;
 
 const INTERVAL = 4200;
@@ -30,8 +31,12 @@ export function HeroCarousel() {
   // null = comportamiento por defecto (autoplay salvo movimiento reducido); boolean = elección del usuario.
   const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
   const reducedMotion = useSyncExternalStore(subscribeMotion, () => window.matchMedia(REDUCED_MOTION).matches, () => false);
-  const playing = userPlaying ?? !reducedMotion;
+  // Pausa mientras el puntero está sobre la válvula o los controles, o el foco está en los controles (WCAG 2.2.2).
+  const [held, setHeld] = useState(false);
+  const autoplay = userPlaying ?? !reducedMotion;
+  const playing = autoplay && !held;
   const swipeStart = useRef<number | null>(null);
+  const hold = { onMouseEnter: () => setHeld(true), onMouseLeave: () => setHeld(false) };
 
   useEffect(() => {
     if (!playing) return;
@@ -55,17 +60,13 @@ export function HeroCarousel() {
     if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
   };
 
-  const current = VARIANTS[index];
+  const currentLabel = h.variants[index].label;
 
   return (
     <section
       className="lp-hero"
       aria-labelledby="lp-hero-title"
-      aria-roledescription="carrusel"
-      onKeyDown={(e) => {
-        if (e.key === "ArrowRight") go(1);
-        if (e.key === "ArrowLeft") go(-1);
-      }}
+      aria-roledescription={h.carousel}
     >
       <Image className="lp-hero__photo" src="/media/home-v3/hero-planta.webp" alt="" fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/hero-planta.webp"]} sizes="100vw" />
       <div className="lp-hero__veil" aria-hidden="true" />
@@ -89,11 +90,12 @@ export function HeroCarousel() {
         <div
           className="lp-hero__stage"
           role="group"
-          aria-roledescription="diapositiva"
-          aria-label={`${index + 1} de ${VARIANTS.length}: válvula compuerta ${current.label.toLowerCase()}`}
+          aria-roledescription={h.slide}
+          aria-label={h.slideLabel(index + 1, VARIANTS.length, currentLabel)}
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
           onPointerCancel={() => (swipeStart.current = null)}
+          {...hold}
         >
           <span className="lp-hero__shadow" aria-hidden="true" />
           {VARIANTS.map((v, i) => (
@@ -101,7 +103,7 @@ export function HeroCarousel() {
               key={v.id}
               className={`lp-hero__valve${i === index ? " is-active" : ""}`}
               src={v.src}
-              alt={v.alt}
+              alt={h.variants[i].alt}
               aria-hidden={i !== index}
               width={578}
               height={1030}
@@ -116,8 +118,20 @@ export function HeroCarousel() {
       </div>
 
       <div className="lp-shell lp-hero__controls-row">
-        <div className="lp-hero__controls" role="group" aria-label="Controles del carrusel">
-          <button type="button" className="lp-hero__ctrl" onClick={() => go(-1)} aria-label="Variante anterior">
+        {/* Las flechas del teclado cambian de variante solo desde los controles (no desde los enlaces del hero). */}
+        <div
+          className="lp-hero__controls"
+          role="group"
+          aria-label={h.controls}
+          {...hold}
+          onFocus={() => setHeld(true)}
+          onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setHeld(false)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") go(1);
+            if (e.key === "ArrowLeft") go(-1);
+          }}
+        >
+          <button type="button" className="lp-hero__ctrl" onClick={() => go(-1)} aria-label={h.prev}>
             <ArrowLeft aria-hidden="true" size={17} strokeWidth={2} />
           </button>
           <span className="lp-hero__count" aria-hidden="true">
@@ -130,16 +144,16 @@ export function HeroCarousel() {
               </i>
             ))}
           </span>
-          <button type="button" className="lp-hero__ctrl" onClick={() => go(1)} aria-label="Variante siguiente">
+          <button type="button" className="lp-hero__ctrl" onClick={() => go(1)} aria-label={h.next}>
             <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
           </button>
           <button
             type="button"
             className="lp-hero__ctrl lp-hero__ctrl--ghost"
-            onClick={() => setUserPlaying(!playing)}
-            aria-label={playing ? "Pausar carrusel" : "Reproducir carrusel"}
+            onClick={() => setUserPlaying(!autoplay)}
+            aria-label={autoplay ? h.pause : h.play}
           >
-            {playing ? <Pause aria-hidden="true" size={15} strokeWidth={2.2} /> : <Play aria-hidden="true" size={15} strokeWidth={2.2} />}
+            {autoplay ? <Pause aria-hidden="true" size={15} strokeWidth={2.2} /> : <Play aria-hidden="true" size={15} strokeWidth={2.2} />}
           </button>
         </div>
       </div>

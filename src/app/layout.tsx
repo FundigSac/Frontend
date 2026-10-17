@@ -6,7 +6,7 @@ import { SITE_INDEXABLE } from "@/shared/config/env";
 import { site } from "@/lib/site-info";
 import { SITE } from "@/shared/config/site";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
-import { LandingFooter, LandingHeader } from "@/shared/layout/landing-chrome";
+import { LandingFooter, LandingHeader, SkipLink } from "@/shared/layout/landing-chrome";
 import { LazyWarmup } from "@/shared/media/lazy-warmup";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { SourceGuard } from "@/shared/security/source-guard";
@@ -57,7 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#sitio`, name: SITE.name, url: SITE.url, inLanguage: "es-PE", publisher: { "@id": `${SITE.url}/#organizacion` } },
             ]}
           />
-          <a className="skip-link" href="#contenido">Saltar al contenido</a>
+          <SkipLink />
           <LandingHeader />
           <div id="contenido">{children}</div>
           <LandingFooter />

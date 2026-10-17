@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { useLang } from "@/shared/layout/landing-prefs";
+import { COPY, useLang } from "@/shared/layout/landing-prefs";
 import { ACCESS_COPY, type AccessKind, type FeatureIcon } from "./access-copy";
 import "./access.css";
 
@@ -150,7 +150,7 @@ export function AccessFrame({ children }: { children: ReactNode }) {
           {t.preview}
         </span>
         <div className={`ac-card${kind === "register" ? " ac-card--wide" : ""}`} key={`card-${kind}`}>
-          <Link href="/" className="ac-brand" aria-label="FUNDIGSAC, inicio">
+          <Link href="/" className="ac-brand" aria-label={COPY[lang].a11y.home}>
             <Image src="/brand/fundigsac.svg" alt="FUNDIGSAC" width={708} height={159} priority />
           </Link>
           {children}

@@ -71,8 +71,9 @@ export function LandingHeader() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      // Al cerrar el menú móvil con Escape, el foco vuelve al botón que lo abrió (no se pierde en el documento).
+      // Al cerrar con Escape, el foco vuelve al botón que abrió el menú (no se pierde en el documento).
       if (document.querySelector(".lp-mobile.is-open")) toggleRef.current?.focus();
+      else (document.activeElement as Element | null)?.closest?.(".lp-nav__item, .lp-lang, .lp-account")?.querySelector<HTMLElement>(":scope > button")?.focus();
       setOpen(null);
       setMobileOpen(false);
       setSearchOpen(false);
@@ -115,11 +116,11 @@ export function LandingHeader() {
   return (
     <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${isProductPath(pathname) ? " lp-header--catalog" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
       <div className="lp-shell lp-header__bar">
-        <Link className="lp-header__brand" href="/" aria-label="FUNDIGSAC, inicio">
+        <Link className="lp-header__brand" href="/" aria-label={t.a11y.home}>
           <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" priority />
         </Link>
 
-        <nav className="lp-nav" aria-label="Navegación principal" ref={navRef}>
+        <nav className="lp-nav" aria-label={t.a11y.mainNav} ref={navRef}>
           {NAV.map((item) =>
             item.children ? (
               <div
@@ -127,6 +128,8 @@ export function LandingHeader() {
                 className={`lp-nav__item${open === item.label ? " is-open" : ""}`}
                 onMouseEnter={() => setOpen(item.label)}
                 onMouseLeave={() => setOpen(null)}
+                // Al salir con Tab, el submenú se cierra en vez de quedar abierto tapando la página.
+                onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setOpen((o) => (o === item.label ? null : o))}
               >
                 <button
                   type="button"
@@ -202,17 +205,17 @@ export function LandingHeader() {
               type="button"
               className="lp-icon-btn lp-lang__btn"
               aria-label={`${lang.toUpperCase()}: ${t.language}`}
-              aria-haspopup="listbox"
               aria-expanded={langOpen}
               onClick={() => setLangOpen(!langOpen)}
             >
               <Globe aria-hidden="true" size={19} strokeWidth={1.8} />
               <span aria-hidden="true">{lang.toUpperCase()}</span>
             </button>
-            <ul className={`lp-lang__menu${langOpen ? " is-open" : ""}`} role="listbox" aria-label={t.language}>
+            {/* Desplegable simple: dos botones con estado (un listbox exigiría navegación con flechas y opciones sin botones). */}
+            <ul className={`lp-lang__menu${langOpen ? " is-open" : ""}`} aria-label={t.language}>
               {([["es", "Español"], ["en", "English"]] as const).map(([code, name]) => (
-                <li key={code} role="option" aria-selected={lang === code}>
-                  <button type="button" onClick={() => { setLang(code); setLangOpen(false); }}>
+                <li key={code}>
+                  <button type="button" lang={code} aria-pressed={lang === code} onClick={() => { setLang(code); setLangOpen(false); }}>
                     <span>{name}</span>
                     {lang === code && <Check aria-hidden="true" size={15} strokeWidth={2.4} />}
                   </button>
@@ -289,7 +292,7 @@ export function LandingHeader() {
       </div>
 
       <div id={mobileId} className={`lp-mobile${mobileOpen ? " is-open" : ""}`}>
-        <nav className="lp-shell" aria-label="Navegación móvil">
+        <nav className="lp-shell" aria-label={t.a11y.mobileNav}>
           {NAV.map((item) => (
             <div className="lp-mobile__group" key={item.label}>
               <Link href={item.href} className={isActive(item.href) ? "is-active" : undefined} aria-current={isActive(item.href) && !item.children ? "page" : undefined} onClick={() => setMobileOpen(false)}>{item.label}</Link>
@@ -356,7 +359,7 @@ export function LandingFooter() {
     <footer className="lp-footer">
       <div className="lp-shell lp-footer__main">
         <div className="lp-footer__brand-column">
-          <Link className="lp-footer__brand" href="/" aria-label="FUNDIGSAC, inicio">
+          <Link className="lp-footer__brand" href="/" aria-label={tn.a11y.home}>
             <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
           </Link>
           <p>{f.about}</p>
@@ -398,4 +401,10 @@ export function LandingFooter() {
       </div>
     </footer>
   );
+}
+
+/** Enlace "Saltar al contenido" en el idioma elegido (el layout es de servidor y no conoce la preferencia). */
+export function SkipLink() {
+  const [lang] = useLang();
+  return <a className="skip-link" href="#contenido">{COPY[lang].a11y.skip}</a>;
 }
