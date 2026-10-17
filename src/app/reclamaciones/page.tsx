@@ -6,7 +6,7 @@ import { ClaimsView } from "../_legal/reclamaciones-view";
 
 export const metadata: Metadata = {
   title: "Libro de reclamaciones",
-  description: "Registra tu reclamo o queja ante FUNDIGSAC de forma rápida, segura y transparente. Recibirás un código de registro y una respuesta por el medio que elijas.",
+  description: "Presenta tu reclamo o queja ante FUNDIGSAC (Ley N.° 29571). Te respondemos por escrito, por el medio que elijas, en un plazo máximo de 15 días hábiles.",
   alternates: { canonical: "/reclamaciones" },
 };
 
