@@ -89,6 +89,8 @@ test.describe("Google: inicio del flujo", () => {
 
 test.describe("Google: callback con errores controlados", () => {
   test("cancelar en Google vuelve al login con un aviso", async ({ page, baseURL }) => {
+    // Sin credenciales el servidor responde "not_configured" antes de mirar el error de Google (igual que el resto del archivo).
+    test.skip(!configured, "Faltan GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET o AUTH_SECRET (.env.local)");
     await prepare(page, baseURL);
     await page.goto("/api/auth/callback/google?error=access_denied");
     await expect(page).toHaveURL(/\/login\?error=cancelled/);
