@@ -146,7 +146,7 @@ export function ScreenW17({ slug = "valvula-compuerta" }: { slug?: QuoteProductS
                     pending="Enviando solicitud…"
                   />
                   <p className="font-ui-label text-ui-label leading-relaxed text-text-muted">
-                    La confirmación aparecerá cuando la solicitud se registre correctamente.
+                    Al enviar, prepararemos tu solicitud con todos los datos para que la mandes por correo o WhatsApp.
                   </p>
                 </div>
               </div>

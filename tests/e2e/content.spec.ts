@@ -17,8 +17,6 @@ const go = async (page: Page, url: string, hydrateSelector?: string) => {
   if (hydrateSelector) await hydrated(page, hydrateSelector);
 };
 
-const cards = (page: Page) => page.locator("article.resource-card");
-
 test.describe("W13 Recursos técnicos", () => {
   test("filtros de tipo y familia con estado ARIA y sin descargas pendientes", async ({ page }) => {
     await go(page, "/recursos", "#resource-search");
@@ -190,7 +188,7 @@ async function fillQuoteGeneral(page: Page) {
 }
 
 test.describe("W16 / W17 / W24 Cotización", () => {
-  test("cotización general: validación nativa del RUC y envío → confirmación", async ({ page }) => {
+  test("cotización general: validación nativa del RUC y envío → solicitud lista para correo o WhatsApp", async ({ page }) => {
     await go(page, "/cotizar", "#razonSocial");
 
     await page.getByRole("button", { name: /Enviar solicitud/ }).click();
@@ -204,10 +202,16 @@ test.describe("W16 / W17 / W24 Cotización", () => {
     await page.locator("#rucEmpresa").fill("20100070970");
 
     await page.getByRole("button", { name: /Enviar solicitud/ }).click();
-    await page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-\d{4}-\d{6}/, { timeout: 60_000 });
-    // no se expone información personal en la confirmación
-    await expect(page.locator("main")).not.toContainText("compras@prueba.com.pe");
-    await expect(page.locator("main")).not.toContainText("Consorcio Prueba E2E");
+    // Sin registro en línea: no hay folio ni confirmación; la solicitud queda lista para enviarse y nada se borra.
+    const ready = page.getByRole("heading", { name: "Tu solicitud está lista para enviar" });
+    await expect(ready).toBeVisible({ timeout: 60_000 });
+    await expect(ready).toBeFocused();
+    await expect(page).toHaveURL(/\/cotizar$/);
+    await expect(page.locator("#rucEmpresa")).toHaveValue("20100070970");
+    const mail = await page.getByRole("link", { name: "Enviar por correo" }).getAttribute("href");
+    expect(mail).toMatch(/^mailto:cotizaciones@fundigsac\.com\?subject=/);
+    expect(decodeURIComponent(mail!)).toContain("20100070970");
+    await expect(page.getByRole("link", { name: "Enviar por WhatsApp" })).toHaveAttribute("href", /^https:\/\/wa\.me\/\d+\?text=/);
   });
 
   test("producto precargado: título por slug, RUC y envío", async ({ page }) => {
@@ -227,7 +231,10 @@ test.describe("W16 / W17 / W24 Cotización", () => {
     await page.locator("#delivery-date").fill(today);
     await page.locator('input[name="declaroQueLaInformacion"]').check();
     await page.getByRole("button", { name: /Enviar solicitud/ }).click();
-    await page.waitForURL(/\/cotizar\/confirmacion\?ref=COT-/, { timeout: 60_000 });
+    await expect(page.getByRole("heading", { name: "Tu solicitud está lista para enviar" })).toBeVisible({ timeout: 60_000 });
+    const mail = decodeURIComponent((await page.getByRole("link", { name: "Enviar por correo" }).getAttribute("href"))!);
+    expect(mail).toContain("Consorcio Producto E2E");
+    await expect(page.locator("#input-qty")).toHaveValue("4");
   });
 
   test("un slug desconocido muestra la cotización general (sin inyectar datos)", async ({ page }) => {
