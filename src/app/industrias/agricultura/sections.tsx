@@ -17,7 +17,7 @@ const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
 const LINE_ITEMS = [
   { href: "/productos?q=ventosa", image: "/media/agricultura/ventosa.webp" },
   { href: "/productos?q=filtro", image: "/media/agricultura/filtro-y.webp" },
-  { href: "/productos?categoria=hdpe", image: "/media/agricultura/tuberia-hdpe.webp" },
+  { href: "/productos/tuberias", image: "/media/agricultura/tuberia-hdpe.webp" },
   { href: "/productos/valvulas", image: "/media/agricultura/valvula-retencion.webp" },
 ] as const;
 
@@ -69,7 +69,7 @@ export function AgricultureSections() {
           <h1 id="ag-title">{t.hero.title}</h1>
           <p className="ag-hero__lead">{t.hero.lead}</p>
           <div className="ag-hero__actions">
-            <Link href="/productos?categoria=valvulas" className="lp-btn lp-btn--solid">
+            <Link href="/productos/valvulas" className="lp-btn lp-btn--solid">
               {t.hero.explore} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>
             <Link href="/cotizar" className="lp-btn lp-btn--outline ag-btn-glass">
@@ -100,10 +100,10 @@ export function AgricultureSections() {
             })}
           </ul>
           <div className="ag-actions">
-            <a className="lp-btn lp-btn--outline" href="/docs/ficha-tecnica-valvula-compuerta-bridada.pdf" target="_blank" rel="noopener noreferrer">
+            <a className="lp-btn lp-btn--outline" href="/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf" target="_blank" rel="noopener noreferrer">
               <FileText aria-hidden="true" size={17} strokeWidth={1.8} /> {t.featured.datasheet}
             </a>
-            <Link className="lp-btn lp-btn--outline" href="/productos/valvulas/valvula-compuerta">
+            <Link className="lp-btn lp-btn--outline" href="/productos/valvulas/valvula-compuerta-fundigsac">
               {t.featured.product} <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
             </Link>
             <Link className="lp-btn lp-btn--solid" href="/cotizar">

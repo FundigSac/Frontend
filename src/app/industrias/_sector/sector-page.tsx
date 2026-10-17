@@ -126,10 +126,10 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
             })}
           </ul>
           <div className="ag-actions">
-            <a className="lp-btn lp-btn--outline" href="/docs/ficha-tecnica-valvula-compuerta-bridada.pdf" target="_blank" rel="noopener noreferrer">
+            <a className="lp-btn lp-btn--outline" href="/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf" target="_blank" rel="noopener noreferrer">
               <FileText aria-hidden="true" size={17} strokeWidth={1.8} /> {t.featured.datasheet}
             </a>
-            <Link className="lp-btn lp-btn--outline" href="/productos/valvulas/valvula-compuerta">
+            <Link className="lp-btn lp-btn--outline" href="/productos/valvulas/valvula-compuerta-fundigsac">
               {t.featured.product} <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
             </Link>
             <Link className="lp-btn lp-btn--solid" href="/cotizar">
