@@ -29,7 +29,6 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    closeRef.current?.focus({ preventScroll: true });
     document.documentElement.classList.add("cd-lock");
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -54,6 +53,12 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
       previous?.focus?.({ preventScroll: true });
     };
   }, [open, onClose]);
+
+  // El foco entra al panel cuando ya es visible: mientras está oculto (primer cuadro de la animación) focus() no hace nada
+  // y el foco se quedaba en el botón de la cabecera, detrás del panel.
+  useEffect(() => {
+    if (open && visible) closeRef.current?.focus({ preventScroll: true });
+  }, [open, visible]);
 
   return (
     <div className="cd" data-state={open && visible ? "open" : "closed"} inert={!open}>
