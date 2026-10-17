@@ -592,25 +592,9 @@ li[data-state="active"] > .dl-status__dot::after {
   isolation: isolate;
   overflow: hidden;
   padding-block: clamp(56px, 7vw, 104px);
-  background:
-    radial-gradient(60% 90% at 88% 10%, rgb(47 123 224 / 34%) 0%, rgb(47 123 224 / 0%) 60%),
-    radial-gradient(50% 80% at 0% 100%, rgb(242 106 27 / 18%) 0%, rgb(242 106 27 / 0%) 60%),
-    linear-gradient(135deg, #0a1f40, #0d2c5c 55%, #0a2149);
+  /* Banda navy sólida de la marca: sin halos ni retícula decorativa en movimiento. */
+  background: #0b2244;
   color: #fff;
-}
-
-/* Retícula técnica muy tenue que se desplaza lentamente (solo con movimiento permitido). */
-.dl-device::before {
-  position: absolute;
-  z-index: -1;
-  inset: -40px;
-  background-image:
-    linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px);
-  background-size: 40px 40px;
-  -webkit-mask-image: radial-gradient(70% 80% at 60% 40%, #000, transparent 80%);
-  mask-image: radial-gradient(70% 80% at 60% 40%, #000, transparent 80%);
-  content: "";
 }
 
 .dl-device__inner {
@@ -1166,10 +1150,6 @@ li[data-state="active"] > .dl-status__dot::after {
     animation: dl-ring-orange 1800ms ease-out infinite;
   }
 
-  .dl-device::before {
-    animation: dl-grid 22s linear infinite;
-  }
-
   .dl-ready__check circle {
     animation: dl-draw-circle 620ms cubic-bezier(0.65, 0, 0.35, 1) both;
   }
@@ -1216,11 +1196,6 @@ li[data-state="active"] > .dl-status__dot::after {
   }
 }
 
-@keyframes dl-grid {
-  to {
-    transform: translate3d(40px, 40px, 0);
-  }
-}
 
 @keyframes dl-pop {
   from {

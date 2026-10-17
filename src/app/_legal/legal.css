@@ -1204,7 +1204,6 @@
   margin: 22px 0 28px;
   padding: 16px 20px;
   border: 1px solid var(--lg-line);
-  border-left: 3px solid var(--lp-orange);
   border-radius: 6px;
   background: var(--lg-sky, #f4f7fb);
 }
@@ -1575,11 +1574,9 @@ html[data-lp-theme="dark"] .lg .lg-nf__main > .lg-eyebrow {
   user-select: none;
 }
 
+/* Cifras del 404 en color sólido de marca (sin texto con degradado). */
 .lg-nf__code span {
-  background: linear-gradient(180deg, #17407f 0%, #0b2244 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #0b2244;
 }
 
 .lg-nf__zero {
@@ -2017,11 +2014,7 @@ html[data-lp-theme="dark"] .lg :where(.lg-term h2, .lg-step h3, .lg-info h3, .lg
 }
 
 html[data-lp-theme="dark"] .lg .lg-nf__code span {
-  background: linear-gradient(180deg, #ffffff 0%, #9dbdf0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: #f2f6fc;
 }
 
 html[data-lp-theme="dark"] .lg .lg-nf__zero {
@@ -2933,15 +2926,6 @@ html[data-lp-theme="dark"] .lg .lg-field input[type="date"] {
   background: #fff;
 }
 
-.lg-legalbox__grid li::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 3px;
-  background: var(--lp-orange);
-  content: "";
-}
 
 .lg-legalbox__grid h3 {
   margin: 0 0 8px;
