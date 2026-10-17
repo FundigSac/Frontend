@@ -138,7 +138,7 @@ export function CookieBanner() {
               {t.title} <ShieldCheck aria-hidden="true" size={16} strokeWidth={2} />
             </h2>
             <p>
-              {t.text} <Link href="/cookies">{t.policy}</Link>
+              {t.text} <Link href="/cookies" prefetch={false}>{t.policy}</Link>
             </p>
           </div>
           <div className="ck__actions">
@@ -179,7 +179,7 @@ export function CookieBanner() {
               </button>
             </header>
             <p className="ck-dialog__intro">
-              {t.prefsIntro} <Link href="/cookies" onClick={closePrefs}>{t.policy}</Link>
+              {t.prefsIntro} <Link href="/cookies" prefetch={false} onClick={closePrefs}>{t.policy}</Link>
             </p>
 
             <ul className="ck-cats">

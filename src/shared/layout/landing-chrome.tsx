@@ -260,10 +260,10 @@ export function LandingHeader() {
               ) : (
                 <>
                   <p>{t.account.hint}</p>
-                  <Link role="menuitem" className="lp-account__primary" href="/login" onClick={() => setAccountOpen(false)}>
+                  <Link role="menuitem" className="lp-account__primary" href="/login" prefetch={false} onClick={() => setAccountOpen(false)}>
                     <LogIn aria-hidden="true" size={17} strokeWidth={2} /> {t.account.login}
                   </Link>
-                  <Link role="menuitem" href="/registro" onClick={() => setAccountOpen(false)}>
+                  <Link role="menuitem" href="/registro" prefetch={false} onClick={() => setAccountOpen(false)}>
                     <UserPlus aria-hidden="true" size={17} strokeWidth={2} /> {t.account.signup}
                   </Link>
                 </>
@@ -333,10 +333,10 @@ export function LandingHeader() {
             </div>
           ) : (
             <div className="lp-mobile__account">
-              <Link href="/login" onClick={() => setMobileOpen(false)}>
+              <Link href="/login" prefetch={false} onClick={() => setMobileOpen(false)}>
                 <LogIn aria-hidden="true" size={16} strokeWidth={2} /> {t.account.login}
               </Link>
-              <Link href="/registro" onClick={() => setMobileOpen(false)}>
+              <Link href="/registro" prefetch={false} onClick={() => setMobileOpen(false)}>
                 <UserPlus aria-hidden="true" size={16} strokeWidth={2} /> {t.account.signup}
               </Link>
             </div>
@@ -393,7 +393,7 @@ export function LandingFooter() {
         <div className="lp-footer__legal">
           <Link href="/terminos">{f.terms}</Link>
           <Link href="/privacidad">{f.privacy}</Link>
-          <Link href="/cookies">{f.cookies}</Link>
+          <Link href="/cookies" prefetch={false}>{f.cookies}</Link>
           <Link href="/eliminar-cuenta">{f.deletion}</Link>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
           <Link href="/reclamaciones">{f.complaints}</Link>
