@@ -69,7 +69,7 @@ for (const [slug, name, range, thumbsAlt] of [
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
 
       // Galería: 5 fotos + tarjeta de 3D; la foto principal es la primera imagen de <main>.
-      const thumbs = page.locator("[role='list'] button[role='listitem']");
+      const thumbs = page.getByRole("group", { name: "Fotos de la válvula" }).getByRole("button");
       await expect(thumbs).toHaveCount(5);
       await expect(thumbs.first()).toHaveAttribute("aria-label", thumbsAlt);
       await expect(page.getByRole("button", { name: "Ver en 3D" })).toBeVisible();

@@ -31,6 +31,7 @@ import { addToCart, openCart } from "@/modules/cart/cart-store";
 import { featuredBySlug } from "@/modules/cart/cart-products";
 import { requestDocumentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
+import { useDialogFocus } from "@/shared/ui/use-dialog-focus";
 import { useReveal } from "@/shared/ui/use-reveal";
 
 const BASE = "/media/valvula-ficha/";
@@ -132,6 +133,10 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number | undefined>(undefined);
   const pageRef = useRef<HTMLElement>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  const docRef = useRef<HTMLDivElement>(null);
+  useDialogFocus(lightbox, lightboxRef);
+  useDialogFocus(docOpen && !!doc, docRef);
   const total = THUMBS.length;
   const current = THUMBS[active];
   const brand = sheet.specs.find(([k]) => k === "Marca")?.[1];
@@ -241,9 +246,9 @@ export function W06Ficha(props: { variant?: Variant }) {
               <button type="button" className={styles.zoom} aria-label={t.zoom} title={t.zoom} onClick={() => setLightbox(true)}><Maximize2 size={17} aria-hidden="true" /></button>
             </div>
             <div className={styles.thumbs}>
-              <div className={styles.thumbList} role="list" aria-label={t.photos}>
+              <div className={styles.thumbList} role="group" aria-label={t.photos}>
                 {THUMBS.map((p, i) => (
-                  <button key={p.src} type="button" role="listitem" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${p.alt}`} aria-current={i === active}>
+                  <button key={p.src} type="button" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={t.viewPhoto(p.alt)} aria-pressed={i === active && !spin}>
                     <Image src={p.dir + p.src} alt="" fill sizes="96px" fetchPriority="low" />
                   </button>
                 ))}
@@ -526,7 +531,7 @@ export function W06Ficha(props: { variant?: Variant }) {
       </section>
 
       {lightbox && (
-        <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={t.gallery} onClick={() => setLightbox(false)}>
+        <div className={styles.lightbox} role="dialog" aria-modal="true" aria-label={t.gallery} onClick={() => setLightbox(false)} ref={lightboxRef}>
           <button type="button" className={styles.lbClose} aria-label={t.close} onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label={t.prev} onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
@@ -535,14 +540,14 @@ export function W06Ficha(props: { variant?: Variant }) {
           <button type="button" className={styles.lbNext} aria-label={t.next} onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
             {THUMBS.map((p, i) => (
-              <button key={p.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={`Ver ${p.alt}`} />
+              <button key={p.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={t.viewPhoto(p.alt)} aria-pressed={i === active} />
             ))}
           </div>
         </div>
       )}
 
       {docOpen && doc && (
-        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label={t.docDialog} onClick={() => setDocOpen(false)}>
+        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label={t.docDialog} onClick={() => setDocOpen(false)} ref={docRef}>
           <div className={styles.docPanel} onClick={(e) => e.stopPropagation()}>
             <header className={styles.docBar}>
               <div className={styles.docBarTitle}>
