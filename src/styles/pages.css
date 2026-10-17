@@ -154,7 +154,7 @@ a.x-chip:hover { border-color: #9bc9d8; background: #eaf4f7; transform: translat
 .x-check { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .x-check li { position: relative; padding-left: 32px; color: var(--text); line-height: 1.55; }
 .x-check li::before { content: ""; position: absolute; left: 0; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #e6f3f8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.5l3 3 6-7' fill='none' stroke='%2306759a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat; }
-.x-note { display: flex; gap: 12px; padding: 18px 20px; border: 1px solid #f4d7b0; border-left: 4px solid var(--orange); border-radius: 12px; background: #fff8ef; color: #5b3d12; font-size: .93rem; line-height: 1.6; }
+.x-note { display: flex; gap: 12px; padding: 18px 20px; border: 1px solid #f4d7b0; border-radius: 12px; background: #fff8ef; color: #5b3d12; font-size: .93rem; line-height: 1.6; }
 .x-note strong { color: #3f2a0a; }
 .x-note svg { flex: none; margin-top: 2px; color: #b8650d; }
 
@@ -385,6 +385,11 @@ html[data-lp-theme="dark"] .x-note {
   background: #2a2112;
   color: #f1d9ae;
   border-color: #5c4420;
+}
+
+/* El título de la nota heredaba el marrón oscuro del tema claro: 1,2:1 sobre el fondo oscuro. */
+html[data-lp-theme="dark"] .x-note strong {
+  color: inherit;
 }
 
 html[data-lp-theme="dark"] .x-pcard-cat,

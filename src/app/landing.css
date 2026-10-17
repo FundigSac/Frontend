@@ -2393,7 +2393,7 @@ html[data-lp-theme="dark"] .lp-lang__menu {
   letter-spacing: 0;
   line-height: 1;
   box-shadow: 0 0 0 2px #fff;
-  animation: lp-badge-pop 360ms cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  animation: lp-badge-pop 360ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes lp-badge-pop {
@@ -2980,4 +2980,22 @@ body:has(.lp-mobile.is-open) .ck {
   .lp-footer__legal .lp-footer__linkbtn + a::before {
     display: none;
   }
+}
+
+/* Menús desplegables (navegación, idioma, cuenta): el vidrio esmerilado se mantiene, pero con relleno suficiente
+   para que el texto se lea sobre cualquier foto o sección que quede detrás (antes 1,5–2,1:1 en oscuro). */
+.lp-nav__menu,
+.lp-lang__menu,
+.lp-account__menu {
+  background: linear-gradient(160deg, rgb(255 255 255 / 90%), rgb(244 248 253 / 82%));
+}
+
+html[data-lp-theme="dark"] .lp-nav__menu,
+html[data-lp-theme="dark"] .lp-lang__menu,
+html[data-lp-theme="dark"] .lp-account__menu {
+  background: linear-gradient(160deg, rgb(20 34 58 / 92%), rgb(9 18 33 / 86%));
+}
+
+html[data-lp-theme="dark"] .lp-account__menu p {
+  color: #b4c2d4;
 }

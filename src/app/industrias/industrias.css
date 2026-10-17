@@ -39,7 +39,7 @@
   overflow: hidden;
   border: 1px solid rgb(242 106 27 / 28%);
   border-radius: 16px;
-  background: linear-gradient(135deg, #fff, #f3f7fc 60%, #fff4ec);
+  background: #fff;
   box-shadow: 0 22px 46px -30px rgb(11 34 68 / 50%);
   color: #13233d;
   text-decoration: none;
@@ -119,6 +119,21 @@
 
 .x-featured:hover .x-featured__cta {
   gap: 13px;
+}
+
+/* Tema oscuro: la tarjeta destacada seguía blanca, un bloque claro aislado en la página oscura. */
+html[data-lp-theme="dark"] .x-featured {
+  border-color: #2a3d55;
+  background: #14243a;
+  color: #eef3fa;
+}
+
+html[data-lp-theme="dark"] .x-featured__body > span:not(.x-featured__cta) {
+  color: #b4c2d4;
+}
+
+html[data-lp-theme="dark"] .x-featured__cta {
+  color: #ff9a62;
 }
 
 /* Al llegar desde un enlace #sector, la sección se ilumina un instante. */
