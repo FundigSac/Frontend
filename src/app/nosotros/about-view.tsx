@@ -70,7 +70,7 @@ export function AboutView() {
 
       <section className="ab-essence" aria-labelledby="ab-essence-title">
         <div className="ab-essence__photo" data-reveal="">
-          <Image src="/media/nosotros/planta.webp" alt={t.essence.photoAlt} fill quality={85} sizes="(min-width: 901px) 46vw, 100vw" />
+          <Image src="/media/nosotros/planta.webp" alt={t.essence.photoAlt} fill quality={85} sizes="(min-width: 901px) 1220px, 100vw" />
         </div>
         <div className="ab-essence__body">
           <p className="lg-eyebrow">{t.essence.eyebrow}</p>

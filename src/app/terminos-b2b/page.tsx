@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TermsB2BPage() {
   return (
-    <main lang="es" className="w-full bg-background min-h-screen">
+    <main lang="es" className="w-full bg-background">
       <section className="w-full bg-surface-container-lowest py-10 lg:py-14">
         <div className="max-w-[1200px] mx-auto px-6">
           <nav aria-label="Ruta de navegación" className="flex items-center gap-2 font-ui-label text-ui-label text-text-muted mb-6">

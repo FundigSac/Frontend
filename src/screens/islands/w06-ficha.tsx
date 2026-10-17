@@ -319,7 +319,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 <p className={styles.descText}>{sheet.description ?? t.descFallback}</p>
               </div>
               <figure className={styles.descPhoto} data-reveal style={{ ["--d" as string]: "120ms" }}>
-                <Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 520px, 100vw" />
+                <Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 860px, 100vw" />
                 <figcaption>
                   <span className={styles.appsTitle}>{t.applications}</span>
                   <ul className={styles.apps}>{t.apps.map((label) => <li key={label}>{label}</li>)}</ul>
@@ -527,7 +527,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           </div>
         </div>
         <div className={styles.ctaVisual}>
-            <Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 560px, 100vw" />
+            <Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 840px, 100vw" />
           </div>
       </section>
 

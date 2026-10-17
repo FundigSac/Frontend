@@ -367,6 +367,13 @@ body:has(.ck) .ai-teaser {
   display: none;
 }
 
+/* En la portada sube por encima de los controles del carrusel del hero, que quedan en la misma esquina. */
+@media (min-width: 861px) {
+  body:has(.lp-hero__controls-row) .ai-teaser {
+    bottom: 132px;
+  }
+}
+
 .ai-teaser__text {
   display: flex;
   align-items: center;
