@@ -197,6 +197,7 @@ export function W06Ficha(props: { variant?: Variant }) {
       fill
       sizes={sizes}
       priority={priority}
+      fetchPriority={priority ? "high" : undefined}
       unoptimized={broken[current.src]}
       onError={() => setBroken((s) => ({ ...s, [current.src]: true }))}
     />
@@ -243,7 +244,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               <div className={styles.thumbList} role="list" aria-label={t.photos}>
                 {THUMBS.map((p, i) => (
                   <button key={p.src} type="button" role="listitem" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={`Ver ${p.alt}`} aria-current={i === active}>
-                    <Image src={p.dir + p.src} alt="" fill sizes="96px" />
+                    <Image src={p.dir + p.src} alt="" fill sizes="96px" fetchPriority="low" />
                   </button>
                 ))}
               </div>

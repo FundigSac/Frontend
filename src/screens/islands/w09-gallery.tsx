@@ -36,6 +36,7 @@ export function W09Gallery({ children }: { children: React.ReactNode }) {
           height={768}
           sizes="(min-width: 1024px) 600px, 100vw"
           priority
+          fetchPriority="high"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           id="main-product-view"
         />

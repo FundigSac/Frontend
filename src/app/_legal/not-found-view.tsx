@@ -85,8 +85,9 @@ export function NotFoundView() {
 
   return (
     <main className="lp lg lg-nf">
-      {/* La foto es el LCP de esta página: priority la precarga desde el HTML inicial. */}
-      <Image className="lg-nf__photo" src="/media/legal/404/hero-404-1200.webp" loader={heroLoader} alt="" fill priority sizes="100vw" />
+      {/* La foto es el LCP de esta página: priority la precarga desde el HTML inicial y fetchPriority la pide primero
+          (en Next 16 `priority` ya no sube la prioridad de red por sí solo). */}
+      <Image className="lg-nf__photo" src="/media/legal/404/hero-404-1200.webp" loader={heroLoader} alt="" fill priority fetchPriority="high" sizes="100vw" />
       <div className="lg-nf__veil" aria-hidden="true" />
 
       <div className="lp-shell lg-nf__main">
