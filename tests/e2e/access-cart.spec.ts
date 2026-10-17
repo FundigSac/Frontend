@@ -55,13 +55,14 @@ test("acceso: registro exige términos y mide la seguridad de la contraseña", a
   await expect(page.getByText("La zona de clientes llega muy pronto")).toBeVisible();
 });
 
-test("acceso: recuperar y actualizar contraseña llegan a su confirmación", async ({ page, baseURL }) => {
+test("acceso: recuperar y actualizar contraseña validan y avisan que las cuentas llegan pronto (sin éxito simulado)", async ({ page, baseURL }) => {
   await prepare(page, baseURL);
   await page.goto("/recuperar");
   await page.getByLabel("Correo electrónico").fill("maria@constructora.pe");
   await page.getByRole("button", { name: "Enviar enlace" }).click();
-  await expect(page.getByRole("heading", { name: "Revisa tu correo" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Reenviar en \d+ s/ })).toBeDisabled();
+  // Solo hay acceso con Google: no se envía correo, así que no se muestra "Revisa tu correo".
+  await expect(page.getByText("La zona de clientes llega muy pronto")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Revisa tu correo" })).toHaveCount(0);
 
   await page.goto("/restablecer");
   await page.getByLabel("Nueva contraseña").fill("Fundig#2026");
@@ -70,8 +71,8 @@ test("acceso: recuperar y actualizar contraseña llegan a su confirmación", asy
   await expect(page.getByText("Las contraseñas no coinciden.")).toBeVisible();
   await page.getByLabel("Confirmar contraseña").fill("Fundig#2026");
   await page.getByRole("button", { name: "Actualizar contraseña" }).click();
-  await expect(page.getByRole("heading", { name: "¡Contraseña actualizada!" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Ir a iniciar sesión" })).toHaveAttribute("href", "/login");
+  await expect(page.getByText("La zona de clientes llega muy pronto")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "¡Contraseña actualizada!" })).toHaveCount(0);
 });
 
 test("carrito: agrega, cambia medida y cantidad, envía por WhatsApp y abre el panel desde la cabecera", async ({ page, baseURL }) => {

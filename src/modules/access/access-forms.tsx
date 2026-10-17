@@ -1,9 +1,8 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Building2, CheckCircle2, KeyRound, Loader2, Lock, LogOut, Mail, MailCheck, Phone, RotateCcw, ShoppingCart, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, KeyRound, Loader2, Lock, LogOut, Mail, Phone, ShoppingCart, UserRound } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
-import { site } from "@/lib/site-info";
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { signOut, useAuth, type AuthUser } from "@/modules/auth/use-auth";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ACCESS_COPY, type AccessCopy } from "./access-copy";
@@ -257,54 +256,15 @@ export function ForgotScreen() {
   const s = t.forgotScreen;
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string>();
-  const [wait, setWait] = useState(0);
-  const { status, run, reset } = useFakeSubmit();
+  const { status, run } = useFakeSubmit();
 
-  useEffect(() => {
-    if (wait <= 0) return;
-    const id = window.setTimeout(() => setWait((w) => w - 1), 1000);
-    return () => window.clearTimeout(id);
-  }, [wait]);
-
+  // Solo existe el acceso con Google: no se envía ningún correo, así que no se finge un "revisa tu bandeja".
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     const err = !email.trim() ? t.errors.email : !isEmail(email) ? t.errors.emailFormat : undefined;
     setError(err);
-    if (!err) {
-      run();
-      setWait(60);
-    }
+    if (!err) run();
   };
-
-  if (status === "done") {
-    return (
-      <>
-        <div className="ac-done" role="status">
-          <span className="ac-done__art ac-done__art--mail" aria-hidden="true">
-            <MailCheck size={38} strokeWidth={1.7} />
-          </span>
-          <h2>{s.doneTitle}</h2>
-          <p>{s.doneText(email.trim())}</p>
-          <button type="button" className="ac-ghost" disabled={wait > 0} onClick={() => { reset(); run(); setWait(60); }}>
-            <RotateCcw aria-hidden="true" size={16} />
-            {wait > 0 ? s.resendIn(wait) : s.resend}
-          </button>
-          <Link href="/login" className="ac-submit">
-            <ArrowLeft aria-hidden="true" size={18} />
-            {t.back}
-          </Link>
-          <p className="ac-help">
-            {s.spam}{" "}
-            <a href={`https://wa.me/${site.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="ac-link">
-              {s.spamLink}
-            </a>
-            .
-          </p>
-          <p className="ac-preview-note">{t.previewNote}</p>
-        </div>
-      </>
-    );
-  }
 
   return (
     <>
@@ -312,6 +272,7 @@ export function ForgotScreen() {
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={error} />
         <Submit status={status} label={s.submit} t={t} />
+        {status === "done" && <SoonNotice t={t} />}
       </form>
       <Link href="/login" className="ac-back">
         <ArrowLeft aria-hidden="true" size={16} />
@@ -343,25 +304,6 @@ export function ResetScreen() {
     if (!next.password && !next.confirm) run();
   };
 
-  if (status === "done") {
-    return (
-      <>
-        <div className="ac-done" role="status">
-          <span className="ac-done__art" aria-hidden="true">
-            <CheckCircle2 size={40} strokeWidth={1.7} />
-          </span>
-          <h2>{s.doneTitle}</h2>
-          <p>{s.doneText}</p>
-          <Link href="/login" className="ac-submit">
-            {s.goLogin}
-            <ArrowRight aria-hidden="true" size={18} />
-          </Link>
-          <p className="ac-preview-note">{t.previewNote}</p>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <CardHead title={s.title} lead={s.lead} icon={<Lock aria-hidden="true" size={26} strokeWidth={1.8} />} />
@@ -379,6 +321,7 @@ export function ResetScreen() {
         />
         <PasswordField t={t} label={t.confirmPassword} icon={KeyRound} autoComplete="new-password" placeholder={t.confirmPh} value={confirm} onChange={(e) => setConfirm(e.target.value)} error={errors.confirm} />
         <Submit status={status} label={s.submit} t={t} />
+        {status === "done" && <SoonNotice t={t} />}
       </form>
       <Link href="/login" className="ac-back">
         <ArrowLeft aria-hidden="true" size={16} />
