@@ -4,20 +4,22 @@ const isDev = process.env.NODE_ENV !== "production";
 
 /**
  * CSP: sin terceros. 'unsafe-inline' en script-src es necesario hoy por los scripts inline de Next
- * (datos de hidratación) y el script anti-flash del tema; no hay HTML de usuarios renderizado sin escapar.
- * Mejora futura: nonces por petición vía proxy (obliga a render dinámico) — ver docs/qa/SECURITY_REVIEW.md.
+ * (datos de hidratación y JSON-LD); no hay HTML de usuarios renderizado sin escapar.
+ * 'wasm-unsafe-eval' permite compilar WebAssembly (y nada más: no habilita eval de JS): el visor 3D descomprime
+ * las mallas meshopt de los GLB con un decodificador WASM incluido en el propio bundle.
+ * Mejora futura: nonces por petición vía proxy (obliga a render dinámico).
  * 'unsafe-eval' sólo en desarrollo (React Refresh).
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
   // Ningún HTML del sitio usa manejadores en atributos (onclick="…"): se prohíben para cortar inyecciones por esa vía.
   "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.googleusercontent.com",
   "font-src 'self' data:",
   "media-src 'self'",
-  // El visor 3D decodifica las mallas en workers (draco/basis) servidos desde el propio sitio.
+  // El decodificador meshopt del visor 3D puede trabajar en workers creados desde blob:.
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
