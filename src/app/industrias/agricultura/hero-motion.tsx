@@ -531,7 +531,7 @@ export function HeroMotion({ video }: { video?: HeroVideo }) {
           </>
         )}
       </div>
-      <button type="button" className="ag-motion-toggle" onClick={toggle} aria-pressed={!playing} aria-label={playing ? t.motion.pause : t.motion.play} title={playing ? t.motion.pause : t.motion.play}>
+      <button type="button" className="ag-motion-toggle" onClick={toggle} aria-label={playing ? t.motion.pause : t.motion.play} title={playing ? t.motion.pause : t.motion.play}>
         {playing ? <Pause aria-hidden="true" size={15} strokeWidth={2.2} /> : <Play aria-hidden="true" size={15} strokeWidth={2.2} />}
       </button>
     </>

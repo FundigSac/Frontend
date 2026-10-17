@@ -24,7 +24,8 @@ export function SourceGuard() {
         key === "f12" ||
         (ctrl && e.shiftKey && ["i", "j", "c", "k"].includes(key)) ||
         (e.metaKey && e.altKey && ["i", "j", "c", "u"].includes(key));
-      const viewSource = ctrl && ["u", "s"].includes(key);
+      // Sin Shift: Ctrl+Shift+U es "Leer en voz alta" en Edge y entrada Unicode en Linux.
+      const viewSource = ctrl && !e.shiftKey && ["u", "s"].includes(key);
       if (devtools || viewSource) {
         e.preventDefault();
         e.stopPropagation();

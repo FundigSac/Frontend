@@ -72,7 +72,8 @@ html[data-lp-theme="dark"] .ai {
   border-radius: 50%;
   content: "";
   pointer-events: none;
-  animation: ai-halo 3.2s ease-out infinite;
+  /* Tres pulsos y quieto (WCAG 2.2.2). */
+  animation: ai-halo 3.2s ease-out 3;
 }
 
 .ai-launch:hover {
