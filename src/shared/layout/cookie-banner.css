@@ -589,7 +589,7 @@ html[data-lp-theme="dark"] .ck-switch.is-on {
 .ck-dialog__note {
   margin: 0;
   padding: 10px 14px;
-  border-left: 3px solid var(--ck-orange);
+  border: 1px solid rgb(242 106 27 / 30%);
   border-radius: 6px;
   background: rgb(242 106 27 / 8%);
   color: var(--ck-text);
