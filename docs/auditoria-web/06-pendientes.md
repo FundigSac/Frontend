@@ -73,5 +73,5 @@ Lo que no se hizo, por qué y qué hace falta. Ordenado por impacto.
 - **Google OAuth** no se probó de extremo a extremo: no hay `.env.local` con credenciales en este equipo. La prueba e2e
   «cancelar en Google» falla por eso (`not_configured` antes que `cancelled`).
 - **Asistente con IA**: sin `ANTHROPIC_API_KEY` local responde la guía; no se probó el modo IA.
-- Producción (`fundigsac-web.vercel.app`) **no se actualizó**: todo está en commits locales de `main` a la espera de
-  autorización para `git push` y despliegue.
+- Producción (`fundigsac-web.vercel.app`) se actualizó el 2026-10-17 con autorización del dueño. Las mejoras de rendimiento
+  se midieron en local; falta confirmarlas con datos de campo.

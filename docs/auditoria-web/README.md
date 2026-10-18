@@ -13,6 +13,6 @@ Auditoría y mejora del sitio sobre el código existente (sin reconstruir págin
 | [06-pendientes.md](06-pendientes.md) | Decisiones que dependen del dueño, deuda técnica, limitaciones reales de la verificación |
 | [informes/](informes/) | Informes completos de cada agente y scripts/datos del A/B de rendimiento |
 
-**Estado:** cambios en commits locales de `main`, sin `git push` ni despliegue (requieren autorización).
+**Estado:** publicado. `git push` a `main` (`09a8d7c..eb171a2`) y despliegue a producción en https://fundigsac-web.vercel.app el 2026-10-17 (desde un clon limpio de HEAD), verificado en vivo: 14 rutas × claro ES / oscuro EN × 390 / 1920 px sin desbordes, imágenes rotas ni errores de consola; visor 3D, cotización, redirecciones y metadatos comprobados; sin errores de runtime en Vercel.
 Los informes de `informes/` citan rutas de evidencias (capturas, JSON) de la carpeta temporal de la sesión, que no se
 versiona; las conclusiones y cifras relevantes están copiadas en los documentos 01–06.

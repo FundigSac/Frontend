@@ -1,7 +1,7 @@
 # 02 · Mejoras implementadas
 
-35 commits sobre `09a8d7c` (incluido el de esta documentación), en `main` y sin publicar. Cada commit es pequeño y
-reversible por separado (`git revert <hash>`). Nada se desplegó a producción.
+Commits sobre `09a8d7c` en `main`, publicados y desplegados a producción el 2026-10-17. Cada commit es pequeño y
+reversible por separado (`git revert <hash>`).
 
 ## Agentes especializados
 `d3c61a4` — 8 subagentes en `.claude/agents/` (design-director, responsive-specialist, performance-engineer,
