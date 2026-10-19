@@ -59,7 +59,7 @@ export function DocsSection() {
         </div>
 
         <Link href="/contacto?motivo=documentacion" className="lp-docs__media" aria-label={t.mediaLabel}>
-          <Image src="/media/home-v3/ficha-plano.webp" alt={t.alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/ficha-plano.webp"]} sizes="(max-width: 860px) 100vw, 55vw" />
+          <Image src="/media/home-v3/ficha-plano-recorte.webp" alt={t.alt} width={1186} height={784} quality={75} sizes="(max-width: 860px) 100vw, 55vw" />
         </Link>
       </div>
     </section>
