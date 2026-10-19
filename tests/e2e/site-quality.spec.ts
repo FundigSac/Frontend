@@ -135,7 +135,7 @@ test.describe("diseño", () => {
 });
 
 test.describe("accesibilidad: contraste AA", () => {
-  for (const path of ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/reclamaciones", "/buscar?q=valvula", "/productos/valvulas/valvula-mariposa"]) {
+  for (const path of ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/reclamaciones", "/productos/valvulas/valvula-mariposa"]) {
     test(`sin fallos de contraste en ${path}`, async ({ page }) => {
       await page.goto(path); // con el aviso de cookies visible: su botón principal también debe cumplir
       await page.waitForTimeout(1200); // animaciones de entrada (opacidad) terminadas

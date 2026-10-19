@@ -6,7 +6,7 @@ const ROUTES = [
   "/productos/valvulas/valvula-compuerta", "/productos/valvulas/valvula-compuerta-fundigsac", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida",
   "/productos/valvulas/valvula-mariposa", "/productos/tuberias/tuberia-tyton", "/productos/marcos-y-tapas/marco-tapa-d400",
   "/industrias/saneamiento", "/industrias/agricultura", "/industrias/mineria", "/nosotros", "/soluciones", "/recursos", "/contacto",
-  "/cotizar", "/buscar", "/terminos", "/privacidad", "/cookies", "/reclamaciones", "/mapa-del-sitio",
+  "/cotizar", "/terminos", "/privacidad", "/cookies", "/reclamaciones", "/mapa-del-sitio",
 ];
 
 for (const lang of ["es", "en"] as const) {

@@ -46,7 +46,6 @@ export const SITEMAP: Pair<{
           { href: "/recursos", label: "Recursos técnicos" },
           { href: "/cotizar", label: "Solicitar cotización" },
           { href: "/contacto", label: "Contacto" },
-          { href: "/buscar", label: "Buscar en el sitio" },
         ],
       },
       {
@@ -99,7 +98,6 @@ export const SITEMAP: Pair<{
           { href: "/recursos", label: "Technical resources" },
           { href: "/cotizar", label: "Request a quote" },
           { href: "/contacto", label: "Contact" },
-          { href: "/buscar", label: "Search the site" },
         ],
       },
       {

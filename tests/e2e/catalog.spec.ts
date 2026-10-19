@@ -15,7 +15,7 @@ function watchConsole(page: Page) {
   return problems;
 }
 
-const ROUTES = ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/soluciones", "/soluciones/redes-matrices", "/nosotros", "/buscar?q=v%C3%A1lvula", "/ruta-que-no-existe"];
+const ROUTES = ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/soluciones", "/soluciones/redes-matrices", "/nosotros", "/ruta-que-no-existe"];
 
 test.describe("consola limpia", () => {
   for (const route of ROUTES) {
@@ -543,81 +543,6 @@ test.describe("W21 404", () => {
     await expect(page.locator("footer.lp-footer")).toBeVisible();
     await page.getByRole("link", { name: /Explorar productos/ }).click();
     await expect(page).toHaveURL(/\/productos$/);
-  });
-});
-
-test.describe("W22 búsqueda", () => {
-  const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar por familia" });
-  const results = (page: Page) => page.locator('section[aria-labelledby="search-results-heading"]');
-
-  test("sin término lista las 3 familias del catálogo", async ({ page }) => {
-    await page.goto("/buscar");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Familias del catálogo");
-    const families = results(page).locator("ul > li");
-    await expect(families).toHaveCount(3);
-    await expect(families.getByRole("heading", { level: 2 })).toHaveText(["Válvulas", "Tuberías", "Marcos y tapas"]);
-    const hrefs = await families.locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs).toEqual(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas"]);
-    await expect(page.getByText("3 familias disponibles")).toBeVisible();
-    await expect(page.getByText("Busca o explora las familias del catálogo")).toBeVisible();
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-  });
-
-  test("'válvula compuerta pn 16' muestra las referencias visuales de válvulas, sin inventar datos", async ({ page }) => {
-    await page.goto("/buscar?q=v%C3%A1lvula%20compuerta%20pn%2016");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Referencias visuales de válvulas");
-    const cards = results(page).locator("ul > li");
-    await expect(cards).toHaveCount(5);
-    const hrefs = await cards.locator("a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(new Set(hrefs)).toEqual(new Set(["/productos/valvulas"]));
-    await expect(cards.first()).toContainText("Imagen referencial");
-    await expect(cards.first()).toContainText("Datos pendientes");
-    await expect(page.getByText(/Coincidencias visuales para .válvula compuerta pn 16. · especificaciones pendientes/)).toBeVisible();
-    await expect(page.getByText("no constituye un listado de productos aprobados")).toBeVisible();
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
-    // 'Restablecer búsqueda' vuelve a la lista de familias sin término
-    await page.getByRole("link", { name: "Restablecer búsqueda" }).click();
-    await expect(page).toHaveURL(/\/buscar$/);
-    await expect(results(page).locator("ul > li")).toHaveCount(3);
-  });
-
-  test("un término de familia filtra y uno desconocido muestra el vacío", async ({ page }) => {
-    await page.goto("/buscar?q=tuber%C3%ADa");
-    await expect(results(page).locator("ul > li")).toHaveCount(1);
-    await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Tuberías");
-    await page.goto("/buscar?q=xyzxyz");
-    await expect(page.getByRole("heading", { name: "No encontramos una familia con esos términos" })).toBeVisible();
-    await expect(results(page).locator("ul > li")).toHaveCount(0);
-    await expect(page.getByText("0 familias disponibles")).toBeVisible();
-    await page.getByRole("link", { name: "Restablecer búsqueda" }).click();
-    await expect(page).toHaveURL(/\/buscar$/);
-    await expect(results(page).locator("ul > li")).toHaveCount(3);
-  });
-
-  test("teclado y botón: Enter y 'Buscar' ejecutan la búsqueda; 'Borrar búsqueda' la limpia", async ({ page }) => {
-    await page.goto("/buscar");
-    await searchbox(page).fill("tapa");
-    await searchbox(page).press("Enter");
-    await expect(page).toHaveURL(/\/buscar\?q=tapa$/);
-    await expect(searchbox(page)).toHaveValue("tapa");
-    await expect(results(page).locator("ul > li")).toHaveCount(1);
-    await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Marcos y tapas");
-    await page.getByRole("link", { name: "Borrar búsqueda" }).click();
-    await expect(page).toHaveURL(/\/buscar$/);
-    await searchbox(page).fill("tubo");
-    await page.locator("main").getByRole("button", { name: "Buscar", exact: true }).click();
-    await expect(page).toHaveURL(/\/buscar\?q=tubo$/);
-    await expect(results(page).getByRole("heading", { level: 2 })).toHaveText("Tuberías");
-  });
-
-  test("filtros técnicos y paginación siguen deshabilitados hasta publicar datos aprobados", async ({ page }) => {
-    await page.goto("/buscar");
-    const checkboxes = page.locator("main aside input[type='checkbox']");
-    expect(await checkboxes.count()).toBeGreaterThan(0);
-    expect(await checkboxes.evaluateAll((els) => els.every((el) => (el as HTMLInputElement).disabled))).toBe(true);
-    await expect(page.getByRole("button", { name: "Página anterior" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Página siguiente" })).toBeDisabled();
-    await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
   });
 });
 

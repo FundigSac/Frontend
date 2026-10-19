@@ -71,6 +71,8 @@ const nextConfig: NextConfig = {
       { source: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", destination: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", permanent: true },
       // La ficha técnica FT-HD N° 002-2024 (4 páginas) fue reemplazada por la ficha de 2 páginas con fecha de descarga del día.
       { source: "/docs/ficha-tecnica-valvula-compuerta-fundigsac-ft-hd-002-2024.pdf", destination: "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf", permanent: true },
+      // El buscador antiguo era una página de relleno: la búsqueda real está en el catálogo (conserva ?q=).
+      { source: "/buscar", destination: "/productos", permanent: true },
       // El visor 3D vive dentro de cada ficha ("Ver en 3D"); la página aparte era un marcador sin modelo.
       { source: "/productos/:categoria/:producto/visor-3d", destination: "/productos/:categoria/:producto", permanent: true },
       // URLs públicas del WordPress actual de fundigsac.com (crawl de 2026-10): conservan su tráfico al migrar el dominio.

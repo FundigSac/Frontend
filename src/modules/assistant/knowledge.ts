@@ -89,7 +89,7 @@ export const KNOWLEDGE = `# Conocimiento de FUNDIGSAC (fuente: sitio web oficial
 - Contacto general: /contacto. Libro de reclamaciones: /reclamaciones.
 
 ## Páginas del sitio
-- Catálogo general: /productos (búsqueda: /buscar?q=texto). Familias: /productos/valvulas, /productos/tuberias, /productos/marcos-y-tapas.
+- Catálogo general: /productos (búsqueda: /productos?q=texto). Familias: /productos/valvulas, /productos/tuberias, /productos/marcos-y-tapas.
 - Fichas de producto: /productos/valvulas/valvula-compuerta (H-ITALY), /productos/valvulas/valvula-compuerta-fundigsac (FUNDIGSAC, 1 año), /productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida (FUNDIGSAC con garantía extendida y cuadrante), /productos/valvulas/valvula-mariposa, /productos/tuberias/tuberia-tyton, /productos/marcos-y-tapas/marco-tapa-d400.
 - Sectores: /industrias/saneamiento, /industrias/agricultura, /industrias/mineria. Soluciones: /soluciones. Recursos técnicos: /recursos. Nosotros: /nosotros.
 - Las tres fichas de válvula de compuerta tienen visor 3D ("Ver en 3D") con el modelo de cada válvula.

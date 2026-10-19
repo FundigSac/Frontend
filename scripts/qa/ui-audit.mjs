@@ -27,7 +27,7 @@ export const ALL_ROUTES = [
   "/productos/valvulas/valvula-compuerta/visor-3d", "/soluciones", "/soluciones/redes-matrices", "/nosotros",
   "/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar/confirmacion", "/reclamaciones",
   "/terminos", "/privacidad", "/cookies", "/mapa-del-sitio", "/eliminar-cuenta", "/login",
-  "/registro", "/recuperar", "/restablecer", "/carrito", "/buscar?q=valvula", "/ruta-inexistente",
+  "/registro", "/recuperar", "/restablecer", "/carrito", "/ruta-inexistente",
 ];
 const routes = arg("routes", "") ? arg("routes", "").split(",") : ALL_ROUTES;
 

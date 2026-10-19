@@ -16,7 +16,7 @@ const OUT = resolve("docs/qa/screenshots");
 
 import { ROUTES as BASE_ROUTES } from "./routes.mjs";
 // Variante del grupo catálogo: W22 se captura con la misma consulta que muestra el diseño de Stitch.
-const ROUTES = { ...BASE_ROUTES, w22: "/buscar?q=v%C3%A1lvula%20compuerta%20pn%2016" };
+const ROUTES = { ...BASE_ROUTES };
 
 const FREEZE = `*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}html{scroll-behavior:auto!important}`;
 
