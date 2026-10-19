@@ -7,6 +7,7 @@ import { site } from "@/lib/site-info";
 import { SITE } from "@/shared/config/site";
 import { CookieBanner } from "@/shared/layout/cookie-banner";
 import { LandingFooter, LandingHeader, SkipLink } from "@/shared/layout/landing-chrome";
+import { ScrollToTop } from "@/shared/layout/scroll-to-top";
 import { LazyWarmup } from "@/shared/media/lazy-warmup";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { SourceGuard } from "@/shared/security/source-guard";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             ]}
           />
           <SkipLink />
+          <ScrollToTop />
           <LandingHeader />
           <div id="contenido">{children}</div>
           <LandingFooter />

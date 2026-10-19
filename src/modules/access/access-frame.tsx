@@ -141,6 +141,16 @@ export function AccessFrame({ children }: { children: ReactNode }) {
   const t = ACCESS_COPY[lang];
   const kind = kindFor(usePathname() || "/login");
 
+  // Al recargar o volver, estas pantallas empiezan siempre desde arriba (el navegador no restaura el desplazamiento).
+  useEffect(() => {
+    const previous = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    return () => {
+      window.history.scrollRestoration = previous;
+    };
+  }, []);
+
   return (
     <main className={`ac ac--${kind}`}>
       <AccessScene kind={kind} />
