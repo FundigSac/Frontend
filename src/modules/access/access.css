@@ -1115,6 +1115,58 @@ html[data-lp-theme="dark"] .ac-done h2 {
   }
 }
 
+/* Pantallas de escritorio bajas (portátiles y zoom del 125 %): el formulario se compacta para que el inicio de sesión
+   entre completo sin desplazarse y quede visible desde arriba. */
+@media (min-width: 961px) and (max-height: 900px) {
+  .ac-side {
+    padding-block: 24px 28px;
+  }
+
+  .ac-brand {
+    width: 164px;
+    margin-bottom: 16px;
+  }
+
+  .ac-head h2 {
+    font-size: clamp(28px, 2.4vw, 32px);
+  }
+
+  .ac-form {
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .ac-control input {
+    height: 46px;
+  }
+
+  .ac-submit {
+    min-height: 48px;
+  }
+
+  .ac-divider {
+    margin: 14px 0 12px;
+  }
+
+  .ac-social__btn {
+    min-height: 46px;
+  }
+
+  .ac-switch {
+    margin-top: 14px;
+  }
+
+  .ac-secure {
+    margin-top: 14px;
+    padding: 12px 16px;
+  }
+
+  .ac-secure > span {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ac-visual__copy,
   .ac-features li,
