@@ -26,7 +26,7 @@ export const ALL_ROUTES = [
   "/productos/tuberias/tuberia-tyton", "/productos/marcos-y-tapas/marco-tapa-d400",
   "/productos/valvulas/valvula-compuerta/visor-3d", "/soluciones", "/soluciones/redes-matrices", "/nosotros",
   "/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar/confirmacion", "/reclamaciones",
-  "/terminos", "/terminos-b2b", "/privacidad", "/cookies", "/mapa-del-sitio", "/eliminar-cuenta", "/login",
+  "/terminos", "/privacidad", "/cookies", "/mapa-del-sitio", "/eliminar-cuenta", "/login",
   "/registro", "/recuperar", "/restablecer", "/carrito", "/buscar?q=valvula", "/ruta-inexistente",
 ];
 const routes = arg("routes", "") ? arg("routes", "").split(",") : ALL_ROUTES;

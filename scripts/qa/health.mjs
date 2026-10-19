@@ -10,7 +10,7 @@ const base = args.base ?? process.env.QA_BASE ?? "http://127.0.0.1:3101";
 const widths = (args.widths ?? "320,375,768,1024,1440,1920").split(",").map(Number);
 const themes = (args.themes ?? "light,dark").split(",");
 const only = args.only ? args.only.split(",") : null;
-const EXTRA = { terminos: "/terminos-b2b", login: "/login", registro: "/registro", recuperar: "/recuperar", cuenta: "/cuenta" };
+const EXTRA = { login: "/login", registro: "/registro", recuperar: "/recuperar", cuenta: "/cuenta" };
 const routes = { ...ROUTES, ...EXTRA };
 const out = resolve("docs/qa/results");
 await mkdir(out, { recursive: true });
