@@ -22,7 +22,7 @@ export const FAMILY_TEXT: Pair<Record<FamilyId, { label: string; alt: string; de
   },
 };
 
-export const PRODUCT_TEXT: Pair<Record<string, { name: string; badge?: string; alt: string }>> = {
+export const PRODUCT_TEXT: Pair<Record<string, { name: string; badge?: string; alt: string; descriptor?: string }>> = {
   es: {
     compuerta: { name: "Válvula de compuerta bridada", alt: "Válvula de compuerta azul" },
     "compuerta-fundigsac": { name: "Válvula de compuerta FUNDIGSAC", alt: "Válvula de compuerta azul FUNDIGSAC con el logotipo en relieve" },
@@ -43,7 +43,7 @@ export const PRODUCT_TEXT: Pair<Record<string, { name: string; badge?: string; a
     "compuerta-garantia-extendida": { name: "FUNDIGSAC gate valve", badge: "Extended warranty", alt: "Blue FUNDIGSAC gate valve with operating cap" },
     mariposa: { name: "Butterfly valve", badge: "Data sheet under review", alt: "Blue butterfly valve with manual operation" },
     "hdpe-pipe": { name: "HDPE PE100 pipe", alt: "Black HDPE pipes with a blue stripe" },
-    "tapa-d400": { name: "Round cover", badge: "Data sheet under review", alt: "Round ductile iron cover" },
+    "tapa-d400": { name: "Round cover", badge: "Data sheet under review", alt: "Round ductile iron cover", descriptor: "Class B125 – D400" },
     "union-flexible": { name: "Flexible HDPE coupling", alt: "Blue flanged coupling for pipe" },
     "elbow-90": { name: "90° HDPE elbow", alt: "Black 90-degree elbow for HDPE pipe" },
     "tee-hdpe": { name: "HDPE tee", alt: "Black tee for HDPE pipe" },

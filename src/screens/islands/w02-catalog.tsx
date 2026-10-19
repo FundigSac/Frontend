@@ -106,7 +106,7 @@ function ProductCard({ product }: { product: FeaturedProduct }) {
       </Link>
       <div className={styles.productBody}>
         <Link href={product.href} className={styles.productName}>{text.name}</Link>
-        <p className={styles.productDescriptor}>{product.descriptor}</p>
+        <p className={styles.productDescriptor}>{text.descriptor ?? product.descriptor}</p>
         <div className={styles.productActions}>
           <Link href={product.href} className={styles.secondaryButton}>{t.viewSheet}</Link>
           <Link href="/cotizar" className={styles.darkButton}>{t.quote} <ArrowRight size={14} /></Link>
