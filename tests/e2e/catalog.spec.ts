@@ -59,7 +59,7 @@ test.describe("W01 inicio", () => {
   test("'Explorar productos' y 'Explorar recursos técnicos' navegan", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: "Explorar recursos técnicos" }).click();
-    await expect(page).toHaveURL(/\/recursos$/);
+    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion$/);
     await page.goto("/");
     await page.getByRole("link", { name: "Explorar productos" }).click();
     await expect(page).toHaveURL(/\/productos$/);

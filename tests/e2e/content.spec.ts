@@ -17,76 +17,6 @@ const go = async (page: Page, url: string, hydrateSelector?: string) => {
   if (hydrateSelector) await hydrated(page, hydrateSelector);
 };
 
-test.describe("W13 Recursos técnicos", () => {
-  test("filtros de tipo y familia con estado ARIA y sin descargas pendientes", async ({ page }) => {
-    await go(page, "/recursos", "#resource-search");
-    const articles = page.locator("section[aria-label=\"Documentos técnicos\"] article");
-    await expect(articles).toHaveCount(6);
-    await expect(page.getByRole("link", { name: /Descargar/ })).toHaveCount(0);
-
-    const fichas = page.getByRole("button", { name: "Fichas técnicas" });
-    await expect(fichas).toHaveAttribute("aria-pressed", "false");
-    await fichas.click();
-    await expect(fichas).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("button", { name: "Todos los documentos" })).toHaveAttribute("aria-pressed", "false");
-    await expect(articles).toHaveCount(2);
-    await expect(page.getByRole("status").filter({ hasText: "2 documentos en preparación." })).toHaveCount(1);
-
-    await page.getByRole("group", { name: "Filtrar por familia de producto" }).getByRole("button", { name: "Marcos y tapas" }).click();
-    await expect(articles).toHaveCount(1);
-    await expect(articles.first()).toContainText("Documentos de inspección y ensayo");
-  });
-
-  test("búsqueda de texto, estado vacío y restablecer filtros", async ({ page }) => {
-    await go(page, "/recursos", "#resource-search");
-    const articles = page.locator("section[aria-label=\"Documentos técnicos\"] article");
-    await page.locator("#resource-search").fill("xyz-no-existe");
-    await expect(articles).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "No encontramos documentos" })).toBeVisible();
-
-    await page.getByRole("button", { name: "Fichas técnicas" }).click();
-    await page.getByRole("button", { name: "Restablecer filtros" }).first().click();
-    await expect(articles).toHaveCount(6);
-    await expect(page.locator("#resource-search")).toHaveValue("");
-    await expect(page.getByRole("button", { name: "Todos los documentos" })).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("button", { name: "Todas", exact: true })).toHaveAttribute("aria-pressed", "true");
-  });
-
-  test("el teclado opera los filtros (Enter sobre el botón de familia)", async ({ page }) => {
-    await go(page, "/recursos", "#resource-search");
-    const articles = page.locator("section[aria-label=\"Documentos técnicos\"] article");
-    const tuberias = page.getByRole("button", { name: "Tuberías", exact: true });
-    await tuberias.focus();
-    await page.keyboard.press("Enter");
-    await expect(tuberias).toHaveAttribute("aria-pressed", "true");
-    await expect(articles).toHaveCount(2);
-  });
-});
-
-test.describe("W14 Detalle de recurso", () => {
-  test("compartir copia el enlace y avisa; la migas de pan y el retorno llevan a recursos", async ({ page, context, browserName }) => {
-    test.skip(browserName !== "chromium", "permisos de portapapeles sólo en chromium");
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    await go(page, "/recursos/detalle-tecnico", "#btn-share");
-    await page.locator("#btn-share").click();
-    await expect(page.getByRole("status").filter({ hasText: "Enlace técnico copiado" })).toBeVisible();
-    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(page.url());
-
-    await expect(page.getByRole("navigation", { name: "Migas de pan" }).getByRole("link", { name: "Recursos técnicos" })).toHaveAttribute("href", "/recursos");
-    await expect(page.getByRole("link", { name: "Volver a Recursos" })).toHaveAttribute("href", "/recursos");
-  });
-
-  test("si el portapapeles no está disponible muestra la URL para copiar manualmente", async ({ page }) => {
-    await page.addInitScript(() => {
-      Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denegado")) }, configurable: true });
-      document.execCommand = () => false;
-    });
-    await go(page, "/recursos/detalle-tecnico", "#btn-share");
-    await page.locator("#btn-share").click();
-    await expect(page.getByRole("status").filter({ hasText: "Copie la URL" })).toBeVisible();
-  });
-});
-
 test.describe("W15 Contacto", () => {
   test("canales reales: teléfono, correo, WhatsApp y cotización, con el mapa de inicio", async ({ page }) => {
     await go(page, "/contacto", "#contacto-form");
@@ -519,7 +449,7 @@ test.describe("Mapa del sitio", () => {
 });
 
 test.describe("Consola limpia", () => {
-  const routes = ["/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar?producto=valvula-compuerta", "/cotizar?producto=marco-tapa-d400", "/cotizar/confirmacion", "/reclamaciones", "/privacidad", "/cookies", "/terminos", "/mapa-del-sitio"];
+  const routes = ["/contacto", "/cotizar", "/cotizar?producto=valvula-compuerta", "/cotizar?producto=marco-tapa-d400", "/cotizar/confirmacion", "/reclamaciones", "/privacidad", "/cookies", "/terminos", "/mapa-del-sitio"];
   for (const route of routes) {
     test(`sin errores ni advertencias de consola: ${route}`, async ({ page }) => {
       const problems: string[] = [];

@@ -25,7 +25,7 @@ export const ALL_ROUTES = [
   "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", "/productos/valvulas/valvula-mariposa",
   "/productos/tuberias/tuberia-tyton", "/productos/marcos-y-tapas/marco-tapa-d400",
   "/productos/valvulas/valvula-compuerta/visor-3d", "/nosotros",
-  "/recursos", "/recursos/detalle-tecnico", "/contacto", "/cotizar", "/cotizar/confirmacion", "/reclamaciones",
+  "/contacto", "/cotizar", "/cotizar/confirmacion", "/reclamaciones",
   "/terminos", "/privacidad", "/cookies", "/mapa-del-sitio", "/eliminar-cuenta", "/login",
   "/registro", "/recuperar", "/restablecer", "/carrito", "/ruta-inexistente",
 ];

@@ -91,7 +91,7 @@ test.describe("diseño", () => {
     await withConsent(page);
     for (const width of [320, 360, 390, 412]) {
       await page.setViewportSize({ width, height: 860 });
-      for (const path of ["/recursos", "/recursos/detalle-tecnico", "/industrias", "/cotizar"]) {
+      for (const path of ["/industrias", "/cotizar"]) {
         await page.goto(path);
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         expect(overflow, `${path} @ ${width}px`).toBeLessThanOrEqual(1);

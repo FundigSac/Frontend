@@ -42,7 +42,6 @@ export const SITEMAP: Pair<{
         text: "Conócenos, descarga información y pide tu cotización.",
         links: [
           { href: "/nosotros", label: "Nosotros" },
-          { href: "/recursos", label: "Recursos técnicos" },
           { href: "/cotizar", label: "Solicitar cotización" },
           { href: "/contacto", label: "Contacto" },
         ],
@@ -93,7 +92,6 @@ export const SITEMAP: Pair<{
         text: "Get to know us, download information and request a quote.",
         links: [
           { href: "/nosotros", label: "About us" },
-          { href: "/recursos", label: "Technical resources" },
           { href: "/cotizar", label: "Request a quote" },
           { href: "/contacto", label: "Contact" },
         ],

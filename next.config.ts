@@ -75,6 +75,9 @@ const nextConfig: NextConfig = {
       { source: "/soluciones/redes-matrices", destination: "/industrias/saneamiento", permanent: true },
       { source: "/soluciones/:slug*", destination: "/industrias", permanent: true },
       { source: "/soluciones", destination: "/industrias", permanent: true },
+      // La biblioteca de recursos solo tenía documentos "pendientes de aprobación": los documentos se piden por el formulario.
+      { source: "/recursos/:slug*", destination: "/contacto?motivo=documentacion", permanent: true },
+      { source: "/recursos", destination: "/contacto?motivo=documentacion", permanent: true },
       // El buscador antiguo era una página de relleno: la búsqueda real está en el catálogo (conserva ?q=).
       { source: "/buscar", destination: "/productos", permanent: true },
       // El visor 3D vive dentro de cada ficha ("Ver en 3D"); la página aparte era un marcador sin modelo.
