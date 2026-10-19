@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useLang } from "@/shared/layout/landing-prefs";
+import { translateRef } from "../reference-en";
 import { useState } from "react";
 
 type View = { src: string; label: string; alt: string };
@@ -19,6 +21,8 @@ const VIEWS: readonly View[] = [
 
 /** Imagen principal y mosaico de miniaturas; `children` son las superposiciones estáticas del marco. */
 export function W08Gallery({ children }: { children: React.ReactNode }) {
+  const [lang] = useLang();
+  const t = (es: string) => translateRef(lang, es);
   // null = foto principal del diseño. La primera miniatura aparece resaltada desde el inicio (fidelidad con Stitch).
   const [selected, setSelected] = useState<number | null>(null);
   const current = selected === null ? MAIN : VIEWS[selected];
@@ -29,7 +33,7 @@ export function W08Gallery({ children }: { children: React.ReactNode }) {
         <Image
           key={current.src}
           src={current.src}
-          alt={current.alt}
+          alt={t(current.alt)}
           width={1408}
           height={768}
           sizes="(min-width: 1024px) 600px, 100vw"
@@ -41,7 +45,7 @@ export function W08Gallery({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       {/* Thumbnails Mosaic */}
-      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Vistas del producto">
+      <div className="grid grid-cols-4 gap-3" role="group" aria-label={t("Vistas del producto")}>
         {VIEWS.map((view, index) => {
           const highlighted = selected === null ? index === 0 : selected === index;
           return (
@@ -55,7 +59,7 @@ export function W08Gallery({ children }: { children: React.ReactNode }) {
             >
               <Image src={view.src} alt="" width={1408} height={768} sizes="(min-width: 1024px) 140px, 22vw" className="w-full h-full object-cover rounded" />
               <div className={`absolute inset-0 ${highlighted ? "bg-primary/20 opacity-100" : "bg-primary/0"} group-hover:opacity-40 transition-opacity`} />
-              <span className="absolute bottom-1 left-1 right-1 text-[10px] leading-tight font-ui-label text-on-surface bg-surface/90 px-1 py-0.5 rounded truncate">{view.label}</span>
+              <span className="absolute bottom-1 left-1 right-1 text-[10px] leading-tight font-ui-label text-on-surface bg-surface/90 px-1 py-0.5 rounded truncate">{t(view.label)}</span>
             </button>
           );
         })}
