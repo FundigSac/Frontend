@@ -57,7 +57,11 @@ const nextConfig: NextConfig = {
   // PGlite (base de datos embebida de desarrollo) resuelve su WASM con rutas de archivo: no debe empaquetarse.
   serverExternalPackages: ["@electric-sql/pglite"],
   // /reclamaciones se renderiza por petición y comprueba si existen las fotos legales en /public.
-  outputFileTracingIncludes: { "/reclamaciones": ["./public/media/legal/**/*"] },
+  outputFileTracingIncludes: {
+    "/reclamaciones": ["./public/media/legal/**/*"],
+    // La ficha técnica con garantía extendida se estampa con la fecha de hoy al descargarla: necesita su plantilla y su tipografía.
+    "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf": ["./src/modules/datasheets/templates/*.pdf", "./src/modules/datasheets/fonts/*.ttf"],
+  },
   reactStrictMode: true,
   // Loader propio: las fotos se sirven como variantes WebP pregeneradas (ver src/shared/media/image-loader.ts).
   images: { loader: "custom", loaderFile: "./src/shared/media/image-loader.ts", minimumCacheTTL: 60 * 60 * 24 * 30, qualities: [60, 70, 72, 75, 85] },
@@ -65,6 +69,8 @@ const nextConfig: NextConfig = {
     return [
       // La ficha FUNDIGSAC con garantía extendida antes tenía otra URL.
       { source: "/productos/valvulas/valvula-compuerta-fundigsac-5-anos", destination: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", permanent: true },
+      // La ficha técnica FT-HD N° 002-2024 (4 páginas) fue reemplazada por la ficha de 2 páginas con fecha de descarga del día.
+      { source: "/docs/ficha-tecnica-valvula-compuerta-fundigsac-ft-hd-002-2024.pdf", destination: "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf", permanent: true },
       // El visor 3D vive dentro de cada ficha ("Ver en 3D"); la página aparte era un marcador sin modelo.
       { source: "/productos/:categoria/:producto/visor-3d", destination: "/productos/:categoria/:producto", permanent: true },
       // URLs públicas del WordPress actual de fundigsac.com (crawl de 2026-10): conservan su tráfico al migrar el dominio.
