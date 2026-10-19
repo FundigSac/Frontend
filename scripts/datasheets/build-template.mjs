@@ -23,7 +23,7 @@ const REMOVE = [
   [24, 795.2, 160, 802.8], // "Última actualización: 14/04/2026"
 ];
 // Párrafo "Descripción general" (página 2): se borra para reescribirlo sin guiones suaves.
-const DESCRIPTION_BOX = [24, 162, 322, 277];
+const DESCRIPTION_BOX = [24, 152, 322, 262];
 for (let i = 0; i < doc.countPages(); i++) {
   const page = doc.loadPage(i);
   for (const r of i === 1 ? [...REMOVE, DESCRIPTION_BOX] : REMOVE) { const a = page.createAnnotation("Redact"); a.setRect(r); }
@@ -51,23 +51,24 @@ for (const page of pdf.getPages()) {
 // 3) Párrafo de descripción (página 2), reflujo propio con la tipografía del documento.
 pdf.registerFontkit(fontkit);
 const font = await pdf.embedFont(fs.readFileSync("src/modules/datasheets/fonts/OpenSans-Regular.ttf"), { subset: true });
-// Mismos renglones que el original (el único corte con guion es el de la línea 1), sin los guiones suaves.
+// Mismos renglones que el original (con sus cortes de palabra con guion), sin los guiones suaves.
 const LINES = [
-  "Válvula de compuerta de cierre elástico con extremos bri-",
-  "dados para redes de agua. Diseñada para servicio confiable",
-  "en líneas primarias y secundarias, con cuerpo en GJS500-7",
-  "y revestimiento epóxico apto para agua potable. Ofrece un",
-  "cierre elástico de alta confiabilidad, baja pérdida de carga y",
-  "larga vida útil, garantizando un funcionamiento seguro y",
-  "eficiente en sistemas de distribución de agua potable.",
+  "Válvula de compuerta de cierre elástico con extremos bridados",
+  "para redes de agua. Diseñada para servicio confiable en líneas",
+  "primarias y secundarias, con cuerpo en GJS500-7 y revesti-",
+  "miento epóxico apto para agua potable. Ofrece un cierre elás-",
+  "tico de alta confiabilidad, baja pérdida de carga y larga vida",
+  "útil, garantizando un funcionamiento seguro y eficiente en",
+  "sistemas de distribución de agua potable.",
 ];
-const PARA = { x: 25.5, width: 293.2, size: 10.6, firstBaseline: 174.75, leading: 15.75, color: rgb(0.169, 0.208, 0.314) };
+// Líneas base medidas sobre el original (puntos PDF desde el borde superior).
+const PARA = { x: 25.5, width: 293.2, size: 10, baselines: [168.75, 183, 198, 212.25, 226.5, 240.75, 255.75], color: rgb(0.169, 0.208, 0.314) };
 const widthOf = (t) => font.widthOfTextAtSize(t, PARA.size);
 const lines = LINES.map((l) => l.split(" "));
 for (const l of LINES) if (widthOf(l) > PARA.width + 0.5) throw new Error(`La línea no cabe: ${l}`);
 const page2 = pdf.getPages()[1];
 lines.forEach((words, i) => {
-  const y = page2.getHeight() - (PARA.firstBaseline + i * PARA.leading);
+  const y = page2.getHeight() - PARA.baselines[i];
   const isLast = i === lines.length - 1 || words.length === 1;
   const gap = isLast ? widthOf(" ") : (PARA.width - words.reduce((sum, w) => sum + widthOf(w), 0)) / (words.length - 1);
   let x = PARA.x;

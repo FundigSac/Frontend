@@ -188,7 +188,7 @@ export const FICHA_EN: Record<"base" | "fundigsac" | "extendida", FichaEn> = {
       { title: "Blue epoxy RAL 5005, min. 250 microns", text: "EPDM coatings and rubber parts suitable for drinking water, compliant with WRAS." },
     ],
     docTitle: "Datasheet FT-HD No. 002-2024",
-    docMeta: "PDF · 1.4 MB · 2 pages",
+    docMeta: "PDF · 1.6 MB · 2 pages",
     docPageAlt: (n, total) => `Datasheet FT-HD No. 002-2024, page ${n} of ${total}`,
     badges: ["Resilient seat", "PN10 / PN16", "Epoxy 250 µm"],
     model3dAlt: "3D model of the FUNDIGSAC flanged gate valve with operating cap",

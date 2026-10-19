@@ -274,11 +274,11 @@ const EXTENDIDA: Datasheet = {
   ],
   doc: {
     title: "Ficha técnica FT-HD N° 002-2024",
-    meta: "PDF · 1.4 MB · 2 páginas",
+    meta: "PDF · 1.6 MB · 2 páginas",
     // El PDF se genera al descargar: lleva la fecha de descarga de hoy y un QR a esta misma ficha (ver src/modules/datasheets/stamp.ts).
     href: "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf",
     // Las imágenes se cachean 30 días: si se vuelve a generar la vista previa, cambiar el nombre para que todos reciban la nueva.
-    pages: [1, 2].map((n) => ({ src: `/media/valvula-ficha/ficha-garantia-extendida-r2-p${n}.webp`, alt: `Ficha técnica FT-HD N° 002-2024, página ${n} de 2` })),
+    pages: [1, 2].map((n) => ({ src: `/media/valvula-ficha/ficha-garantia-extendida-r3-p${n}.webp`, alt: `Ficha técnica FT-HD N° 002-2024, página ${n} de 2` })),
   },
   badges: ["Cierre elástico", "PN10 / PN16", "Epoxi 250 µm"],
   model3d: { src: "/models/valvula-fundigsac-cuadrante.glb", alt: "Modelo 3D de la válvula de compuerta bridada FUNDIGSAC con cuadrante de maniobra" },
