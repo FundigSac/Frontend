@@ -38,7 +38,7 @@ test.describe("W01 inicio", () => {
       expect(hrefs, `falta un enlace a ${href}`).toContain(href);
     }
     await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
-    await expect(page.getByRole("link", { name: "Ver soluciones" })).toHaveAttribute("href", "/soluciones");
+    await expect(page.getByRole("link", { name: "Ver soluciones" })).toHaveAttribute("href", "/industrias");
   });
 
   test("Grifos no está en el catálogo: la tarjeta lleva a cotizar y ningún acceso de búsqueda termina en un catálogo vacío", async ({ page }) => {

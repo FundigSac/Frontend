@@ -96,7 +96,7 @@ export function HeroCarousel() {
             <Link href="/productos" className="lp-btn lp-btn--solid">
               {h.explore} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>
-            <Link href="/soluciones" className="lp-link">
+            <Link href="/industrias" className="lp-link">
               <span>{h.solutions}</span> <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
             </Link>
           </div>
