@@ -224,7 +224,7 @@ export function W03Valvulas() {
             <p className={styles.eyebrow}>{t.resEyebrow}</p>
             <h2 id="valvulas-resources-title">{t.resTitle}</h2>
             <p>{t.resText}</p>
-            <Link href="/recursos" className={styles.darkButton}>{t.resCta} <ArrowRight size={16} aria-hidden="true" /></Link>
+            <Link href="/contacto?motivo=documentacion" className={styles.darkButton}>{t.resCta} <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
           <div className={styles.book}>
             <Image src="/media/productos-page/catalogo-general-cover-cutout.png" alt={t.coverAlt} fill sizes="(min-width: 1100px) 420px, 70vw" />

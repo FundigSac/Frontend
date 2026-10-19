@@ -9,7 +9,7 @@ import { SITE } from "@/shared/config/site";
 import { useHome } from "@/shared/layout/home-copy";
 import { BLUR } from "@/shared/media/blur";
 
-const BACKING_LINKS = ["/industrias", "/recursos", "/contacto"] as const;
+const BACKING_LINKS = ["/industrias", "/contacto?motivo=documentacion", "/contacto"] as const;
 
 export function BackingSection() {
   const t = useHome().backing;
@@ -48,17 +48,17 @@ export function DocsSection() {
           <p className="lp-eyebrow">{t.eyebrow}</p>
           <h2 id="lp-docs-title">{t.title}</h2>
           <p className="lp-docs__lead">{t.lead}</p>
-          <Link href="/recursos" className="lp-btn lp-btn--outline">
+          <Link href="/contacto?motivo=documentacion" className="lp-btn lp-btn--outline">
             {t.cta} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
           </Link>
-          <Link href="/recursos" className="lp-docs__campaigns">
+          <Link href="/contacto?motivo=documentacion" className="lp-docs__campaigns">
             <span className="lp-docs__campaigns-icon"><CalendarRange aria-hidden="true" size={16} strokeWidth={1.8} /></span>
             {t.campaigns}
             <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
         </div>
 
-        <Link href="/recursos" className="lp-docs__media" aria-label={t.mediaLabel}>
+        <Link href="/contacto?motivo=documentacion" className="lp-docs__media" aria-label={t.mediaLabel}>
           <Image src="/media/home-v3/ficha-plano.webp" alt={t.alt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/ficha-plano.webp"]} sizes="(max-width: 860px) 100vw, 55vw" />
         </Link>
       </div>

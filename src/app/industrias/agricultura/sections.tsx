@@ -150,11 +150,11 @@ export function AgricultureSections() {
             <p className="ag-eyebrow"><span aria-hidden="true" />{t.docs.eyebrow}</p>
             <h2 id="ag-docs-title">{t.docs.title}</h2>
             <p className="ag-lead">{t.docs.lead}</p>
-            <Link href="/recursos" className="lp-btn lp-btn--solid">
+            <Link href="/contacto?motivo=documentacion" className="lp-btn lp-btn--solid">
               {t.docs.cta} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>
           </div>
-          <Link href="/recursos" className="ag-docs__media" data-reveal="right" aria-label={t.docs.cta}>
+          <Link href="/contacto?motivo=documentacion" className="ag-docs__media" data-reveal="right" aria-label={t.docs.cta}>
             <span className="ag-docs__plan">
               <Image src="/media/agricultura/plano.webp" alt={t.docs.drawingAlt} width={1448} height={1086} quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/plano.webp"]} sizes="(max-width: 860px) 70vw, 28vw" />
             </span>

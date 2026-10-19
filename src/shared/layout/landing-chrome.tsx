@@ -29,7 +29,7 @@ function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
     { href: "/productos", label: t.nav.products, children: link(PRODUCT_HREFS, t.products) },
     { href: "/industrias", label: t.nav.sectors, children: link(SECTOR_HREFS, t.sectors) },
     { href: "/nosotros", label: t.nav.about },
-    { href: "/recursos", label: t.nav.resources, children: link(["/recursos", "/recursos", "/recursos", "/recursos"], t.resources) },
+    { href: "/contacto?motivo=documentacion", label: t.nav.resources, children: link(Array(4).fill("/contacto?motivo=documentacion"), t.resources) },
     { href: "/contacto", label: t.nav.contact },
   ];
 }

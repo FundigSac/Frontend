@@ -77,7 +77,7 @@ function FlangeZero() {
 const CARD_MEDIA = [
   { href: "/productos", image: "/media/legal/404/404-productos" },
   { href: "/industrias", image: "/media/legal/404/404-sectores" },
-  { href: "/recursos", image: "/media/legal/404/404-recursos" },
+  { href: "/contacto?motivo=documentacion", image: "/media/legal/404/404-recursos" },
 ] as const;
 
 export function NotFoundView() {

@@ -34,7 +34,7 @@ test.describe("W01 inicio", () => {
     const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs.filter((h) => h === "#")).toEqual([]);
     // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
-    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/recursos", "/contacto"]) {
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/contacto?motivo=documentacion", "/contacto"]) {
       expect(hrefs, `falta un enlace a ${href}`).toContain(href);
     }
     await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
@@ -393,7 +393,7 @@ function lineTests(line: Line) {
         await expect(card.getByRole("link", { name: label, exact: true })).toHaveAttribute("href", href);
       }
       await expect(page.getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
-      await expect(page.getByRole("link", { name: "Ver todos los recursos" })).toHaveAttribute("href", "/recursos");
+      await expect(page.getByRole("link", { name: "Ver todos los recursos" })).toHaveAttribute("href", "/contacto?motivo=documentacion");
       await expect(page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ })).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
     });
   });
@@ -522,7 +522,7 @@ test.describe("W21 404", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Ups, esta página no se encuentra.");
     await expect(page.getByRole("link", { name: /Volver al inicio/ })).toHaveAttribute("href", "/");
     await expect(page.getByRole("link", { name: /Explorar productos/ })).toHaveAttribute("href", "/productos");
-    for (const [name, href] of [["Conoce nuestros productos", "/productos"], ["Explora por sectores", "/industrias"], ["Recursos técnicos", "/recursos"]] as const) {
+    for (const [name, href] of [["Conoce nuestros productos", "/productos"], ["Explora por sectores", "/industrias"], ["Recursos técnicos", "/contacto?motivo=documentacion"]] as const) {
       await expect(page.getByRole("link", { name: new RegExp(name) })).toHaveAttribute("href", href);
     }
     await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();

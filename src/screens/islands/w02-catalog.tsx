@@ -266,7 +266,7 @@ export function W02Catalog({
             <p className={styles.eyebrow}>Recursos técnicos</p>
             <h2 id="resources-title">Catálogos y documentación</h2>
             <p>Descarga nuestros catálogos, fichas técnicas y documentación para conocer más sobre nuestros productos y sus aplicaciones.</p>
-            <Link href="/recursos" className={styles.darkButton}>Ver todos los recursos <ArrowRight size={15} /></Link>
+            <Link href="/contacto?motivo=documentacion" className={styles.darkButton}>Ver todos los recursos <ArrowRight size={15} /></Link>
           </div>
           <div className={styles.catalogMockup}>
             <Image src="/media/productos-page/catalogo-general-book-with-logo.png" alt="Catálogo general FUNDIGSAC con el logo oficial sobre planos técnicos" fill sizes="(min-width: 1200px) 370px, (min-width: 640px) 380px, 80vw" className={styles.catalogCover} />
@@ -281,7 +281,7 @@ export function W02Catalog({
                 {catalogDocument.download ? "Descargar PDF (12 MB)" : "Solicitar catálogo PDF"}
               </Link>
             </article>
-            <Link href="/recursos" className={styles.resourceLink}>Ver todos los catálogos <ArrowRight size={15} aria-hidden="true" /></Link>
+            <Link href="/contacto?motivo=documentacion" className={styles.resourceLink}>Ver todos los catálogos <ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
         </div>
       </section>

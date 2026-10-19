@@ -203,18 +203,18 @@ export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) 
             <p className="ag-eyebrow"><span aria-hidden="true" />{t.docs.eyebrow}</p>
             <h2 id={`${id}-docs-title`}>{t.docs.title}</h2>
             <p className="ag-lead">{t.docs.lead}</p>
-            <Link href="/recursos" className="lp-btn lp-btn--outline">
+            <Link href="/contacto?motivo=documentacion" className="lp-btn lp-btn--outline">
               {t.docs.cta} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
             </Link>
             {t.docs.campaigns && (
-              <Link href="/recursos" className="sa-docs__campaigns">
+              <Link href="/contacto?motivo=documentacion" className="sa-docs__campaigns">
                 <span><LayoutGrid aria-hidden="true" size={16} strokeWidth={1.8} /></span>
                 {t.docs.campaigns}
                 <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
               </Link>
             )}
           </div>
-          <Link href="/recursos" className={`sa-docs__media${media.docs.cutout ? "" : " sa-docs__media--sheet"}`} data-reveal="right" aria-label={t.docs.cta}>
+          <Link href="/contacto?motivo=documentacion" className={`sa-docs__media${media.docs.cutout ? "" : " sa-docs__media--sheet"}`} data-reveal="right" aria-label={t.docs.cta}>
             <SectorImage prepared={media.preparedImages?.[media.docs.image]} src={media.docs.image} alt={t.docs.alt} width={media.docs.width} height={media.docs.height} quality={75} sizes="(max-width: 860px) 92vw, 54vw" />
           </Link>
         </div>

@@ -171,7 +171,7 @@ export function W04Tuberias() {
             <p className={styles.eyebrow}>Recursos técnicos</p>
             <h2 id="tuberias-resources-title">Catálogos y documentación</h2>
             <p>Descarga nuestros catálogos, fichas técnicas y documentación para conocer más sobre nuestras tuberías y sus aplicaciones.</p>
-            <Link href="/recursos" className={styles.darkButton}>Ver todos los recursos <ArrowRight size={16} aria-hidden="true" /></Link>
+            <Link href="/contacto?motivo=documentacion" className={styles.darkButton}>Ver todos los recursos <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
           <div className={styles.book}>
             <Image src="/media/tuberias-page/libro.webp" alt="Catálogo general de productos FUNDIGSAC" fill sizes="(min-width: 1100px) 420px, 70vw" />

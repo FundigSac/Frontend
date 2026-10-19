@@ -494,7 +494,7 @@ export function ScreenW01() {
                     </p>
                   </div>
                 </div>
-                <Link href="/recursos" className="inline-flex items-center gap-2 h-11 px-5 rounded-lg bg-primary text-brand-on font-button-text text-button-text hover:bg-primary-container shrink-0 transition-colors">
+                <Link href="/contacto?motivo=documentacion" className="inline-flex items-center gap-2 h-11 px-5 rounded-lg bg-primary text-brand-on font-button-text text-button-text hover:bg-primary-container shrink-0 transition-colors">
                   <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                     download
                   </span>
@@ -523,7 +523,7 @@ export function ScreenW01() {
                     </p>
                   </div>
                 </div>
-                <Link href="/recursos" className="inline-flex items-center gap-2 h-11 px-5 rounded-lg bg-surface-container text-on-surface font-button-text text-button-text hover:bg-surface-container-high shrink-0 transition-colors">
+                <Link href="/contacto?motivo=documentacion" className="inline-flex items-center gap-2 h-11 px-5 rounded-lg bg-surface-container text-on-surface font-button-text text-button-text hover:bg-surface-container-high shrink-0 transition-colors">
                   <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
                     download
                   </span>
