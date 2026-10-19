@@ -73,6 +73,7 @@ const EN: Record<string, string> = {
   "Inicia una solicitud para obtener un código de seguimiento.": "Start a request to get a tracking code.",
   "Resumen de partidas": "Summary of items",
   "Documentación técnica": "Technical documentation",
+  "Comprobante PDF": "PDF receipt",
   "La solicitud no se registró en el sistema. La revisión y la atención comercial empezarán cuando el servicio esté conectado.":
     "The request was not registered in the system. Review and sales follow-up will start once the service is connected.",
   "El folio confirma el registro. La revisión, atención comercial y plazos aún no están disponibles en el sistema.":
