@@ -1,0 +1,98 @@
+import type { Lang } from "@/shared/layout/landing-prefs";
+
+/** Textos de la cotización general en español e inglés (el idioma lo elige el selector del sitio). */
+type Pair<T> = Record<Lang, T>;
+
+export const QUOTE_UI: Pair<{
+  crumbsLabel: string; home: string; current: string; eyebrow: string; title: string; lead: string; imgAlt: string; imgCaption: string;
+  cardLabel: string; cards: string[]; formRegion: string;
+  companyTitle: string; companyNote: string; razonSocial: string; ruc: string; rucHelp: string;
+  projectType: string; selectOption: string; projectTypes: [string, string][];
+  destination: string; destinationPh: string; contactName: string; jobTitle: string; email: string; phone: string;
+  requestTitle: string; requestNote: string; family: string; selectFamily: string; families: [string, string][];
+  sizes: string; sizesPh: string; quantity: string; quantityPh: string;
+  consentRegion: string; consentBefore: string; privacy: string; submit: string; sending: string;
+}> = {
+  es: {
+    crumbsLabel: "Migas de pan",
+    home: "Inicio",
+    current: "Cotización",
+    eyebrow: "Solicitud comercial",
+    title: "Solicitar una cotización",
+    lead: "Completa los datos de contacto y describe lo que necesitas. El equipo comercial revisará la solicitud y la información disponible.",
+    imgAlt: "Detalle de válvula industrial, imagen referencial que no representa una cotización o producto específico.",
+    imgCaption: "Imagen referencial",
+    cardLabel: "Información solicitada",
+    cards: ["Familia de producto", "Medidas requeridas", "Cantidad o metrado", "Destino del proyecto"],
+    formRegion: "Formulario de cotización",
+    companyTitle: "Empresa y proyecto",
+    companyNote: "Los campos marcados con asterisco son obligatorios.",
+    razonSocial: "Razón social",
+    ruc: "RUC de la empresa",
+    rucHelp: "Ingresa 11 dígitos.",
+    projectType: "Tipo de proyecto",
+    selectOption: "Selecciona una opción",
+    projectTypes: [["saneamiento", "Agua y saneamiento"], ["matrices", "Redes y matrices"], ["alcantarillado", "Alcantarillado y drenaje"], ["otro", "Otro"]],
+    destination: "Departamento de destino",
+    destinationPh: "Departamento o lugar de entrega",
+    contactName: "Nombre de contacto",
+    jobTitle: "Cargo",
+    email: "Correo electrónico",
+    phone: "Celular de contacto",
+    requestTitle: "Requerimiento",
+    requestNote: "Comparte el producto y las cantidades que deseas consultar.",
+    family: "Familia de producto",
+    selectFamily: "Selecciona una familia",
+    families: [["valvulas", "Válvulas"], ["tuberias", "Tuberías"], ["marcos_tapas", "Marcos y tapas"], ["mixto", "Varias familias u otro producto"]],
+    sizes: "Diámetros o medidas requeridas",
+    sizesPh: "Indica las medidas o escribe ‘por definir’",
+    quantity: "Cantidad o metrado aproximado",
+    quantityPh: "Indica cantidad y unidad",
+    consentRegion: "Consentimiento y envío",
+    consentBefore: "Acepto el tratamiento de los datos enviados para gestionar esta solicitud, conforme a la",
+    privacy: "Política de privacidad",
+    submit: "Enviar solicitud",
+    sending: "Enviando solicitud…",
+  },
+  en: {
+    crumbsLabel: "Breadcrumb",
+    home: "Home",
+    current: "Quote",
+    eyebrow: "Commercial request",
+    title: "Request a quote",
+    lead: "Fill in your contact details and describe what you need. The sales team will review the request and the available information.",
+    imgAlt: "Detail of an industrial valve, a reference image that does not represent a specific quote or product.",
+    imgCaption: "Reference image",
+    cardLabel: "Information requested",
+    cards: ["Product family", "Required sizes", "Quantity or length", "Project destination"],
+    formRegion: "Quote form",
+    companyTitle: "Company and project",
+    companyNote: "Fields marked with an asterisk are required.",
+    razonSocial: "Company name",
+    ruc: "Company tax ID (RUC)",
+    rucHelp: "Enter 11 digits.",
+    projectType: "Project type",
+    selectOption: "Select an option",
+    projectTypes: [["saneamiento", "Water and sanitation"], ["matrices", "Mains and trunk networks"], ["alcantarillado", "Sewerage and drainage"], ["otro", "Other"]],
+    destination: "Destination department",
+    destinationPh: "Department or delivery place",
+    contactName: "Contact name",
+    jobTitle: "Job title",
+    email: "Email address",
+    phone: "Contact mobile phone",
+    requestTitle: "Requirement",
+    requestNote: "Share the product and the quantities you want to ask about.",
+    family: "Product family",
+    selectFamily: "Select a family",
+    families: [["valvulas", "Valves"], ["tuberias", "Pipes"], ["marcos_tapas", "Frames and covers"], ["mixto", "Several families or another product"]],
+    sizes: "Required diameters or sizes",
+    sizesPh: "Enter the sizes or write ‘to be defined’",
+    quantity: "Approximate quantity or length",
+    quantityPh: "Enter quantity and unit",
+    consentRegion: "Consent and submission",
+    consentBefore: "I agree to the processing of the data submitted to handle this request, in accordance with the",
+    privacy: "Privacy policy",
+    submit: "Send request",
+    sending: "Sending request…",
+  },
+};
