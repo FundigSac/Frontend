@@ -172,7 +172,7 @@ export function LandingHeader() {
               const q = query.trim();
               setSearchOpen(false);
               setQuery("");
-              router.push(q ? `/buscar?q=${encodeURIComponent(q)}` : "/buscar");
+              router.push(q ? `/productos?q=${encodeURIComponent(q)}` : "/productos");
             }}
           >
             <input
