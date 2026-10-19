@@ -26,6 +26,7 @@ import {
 import styles from "./w06-ficha.module.css";
 import { DATASHEETS, type Datasheet, type Feature } from "./w06-ficha-data";
 import { FICHA_COPY } from "./w06-ficha-copy";
+import { FICHA_EN } from "./w06-ficha-en";
 import { ValvePlan, type Cotas } from "./w06-plano";
 import { addToCart, openCart } from "@/modules/cart/cart-store";
 import { featuredBySlug } from "@/modules/cart/cart-products";
@@ -119,9 +120,33 @@ function cotasFor(sheet: Datasheet, dn: string): Cotas {
 export function W06Ficha(props: { variant?: Variant }) {
   const [lang] = useLang();
   const t = FICHA_COPY[lang];
-  const { warrantyLabel, productName, thumbs: THUMBS, sheet } = COPY[props.variant ?? "base"];
+  const variantKey = props.variant ?? "base";
+  const base = COPY[variantKey];
+  // En inglés se muestran los textos de w06-ficha-en.ts; la lógica (tablas, cotas, grupos) sigue usando los datos en español.
+  const en = lang === "en" ? FICHA_EN[variantKey] : null;
+  const { thumbs: THUMBS, sheet } = base;
+  const warrantyLabel = en ? en.warrantyLabel ?? null : base.warrantyLabel;
+  const productName = en?.productName ?? base.productName;
   const { doc } = sheet;
   const docPages = doc?.pages ?? [];
+  const view = {
+    lead: en?.lead ?? sheet.lead,
+    description: en?.description ?? sheet.description,
+    facts: en?.facts ?? sheet.facts,
+    specsNote: en?.specsNote ?? sheet.specsNote,
+    dimsNote: en?.dimsNote ?? sheet.dims.note,
+    dimsHead: en?.dimsHead ?? sheet.dims.head,
+    flangeTitle: en?.flangeTitle ?? sheet.flange.title,
+    flangeNote: en?.flangeNote ?? sheet.flange.note,
+    flangeHead: en?.flangeHead ?? sheet.flange.head,
+    stem: sheet.stem ? { head: sheet.stem.head, rows: sheet.stem.rows, title: en?.stem?.title ?? sheet.stem.title, note: en?.stem?.note ?? sheet.stem.note } : undefined,
+    features: sheet.features.map((f, i) => ({ ...f, ...(en?.features[i] ?? {}) })),
+    badges: en?.badges ?? sheet.badges,
+    docTitle: en?.docTitle ?? doc?.title ?? "",
+    docMeta: en?.docMeta ?? doc?.meta ?? "",
+    model3dAlt: en?.model3dAlt ?? sheet.model3d.alt,
+  };
+  const pageAlt = (i: number) => (en ? en.docPageAlt(i + 1, docPages.length) : docPages[i]?.alt ?? "");
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const [docOpen, setDocOpen] = useState(false);
@@ -198,7 +223,7 @@ export function W06Ficha(props: { variant?: Variant }) {
     <Image
       key={current.src}
       src={current.dir + current.src}
-      alt={current.alt}
+      alt={en?.thumbAlts[active] ?? current.alt}
       fill
       sizes={sizes}
       // Foto LCP: en el HTML inicial y con prioridad alta (en Next 16 `priority` está obsoleto y no la sube).
@@ -210,11 +235,14 @@ export function W06Ficha(props: { variant?: Variant }) {
   );
 
   // Qué contiene la ficha, tomado de los datos reales de esta válvula.
-  const docIncludes = [t.docSpecs, `${t.docDims} ${sheet.sizeRange}`, `${sheet.flange.title} PN10 / PN16`, ...(sheet.stem ? [sheet.stem.title] : []), t.docMaterials].slice(0, 4);
+  const docIncludes = [t.docSpecs, `${t.docDims} ${sheet.sizeRange}`, `${view.flangeTitle} PN10 / PN16`, ...(view.stem ? [view.stem.title] : []), t.docMaterials].slice(0, 4);
   const specGroups = groupSpecs(sheet.specs);
+  // Los grupos se calculan con las claves en español; cada fila se muestra con su versión en el idioma activo.
+  const specRowOf = new Map(sheet.specs.map((row, i) => [row, en?.specs[i] ?? row] as const));
+  const shown = (rows: Datasheet["specs"]) => rows.map((row) => specRowOf.get(row) ?? row);
   const specColumns = [
-    [{ id: "general", title: t.groups.general, rows: specGroups.general }, { id: "standards", title: t.groups.standards, rows: specGroups.standards }],
-    [{ id: "materials", title: t.groups.materials, rows: specGroups.materials }],
+    [{ id: "general", title: t.groups.general, rows: shown(specGroups.general) }, { id: "standards", title: t.groups.standards, rows: shown(specGroups.standards) }],
+    [{ id: "materials", title: t.groups.materials, rows: shown(specGroups.materials) }],
   ].map((col) => col.filter((g) => g.rows.length));
   const cotas = cotasFor(sheet, size);
   const dimRow = sheet.dims.rows.find((r) => r.dn === size);
@@ -233,7 +261,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           <div className={styles.gallery}>
             <div className={styles.stage}>
               {spin ? (
-                <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} />
+                <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={view.model3dAlt} className={styles.viewer} onFail={() => setSpin(false)} />
               ) : (
                 photo("(min-width: 1100px) 600px, 92vw", true)
               )}
@@ -249,7 +277,7 @@ export function W06Ficha(props: { variant?: Variant }) {
             <div className={styles.thumbs}>
               <div className={styles.thumbList} role="group" aria-label={t.photos}>
                 {THUMBS.map((p, i) => (
-                  <button key={p.src} type="button" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={t.viewPhoto(p.alt)} aria-pressed={i === active && !spin}>
+                  <button key={p.src} type="button" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={t.viewPhoto(en?.thumbAlts[i] ?? p.alt)} aria-pressed={i === active && !spin}>
                     <Image src={p.dir + p.src} alt="" fill sizes="(max-width: 760px) 64px, 76px" fetchPriority="low" />
                   </button>
                 ))}
@@ -266,14 +294,14 @@ export function W06Ficha(props: { variant?: Variant }) {
               <span className={styles.tag}>{sheet.sizeRange}</span>
             </div>
             <h1 id="ficha-title">{productName}</h1>
-            <ul className={styles.badges}>{sheet.badges.map((b) => <li key={b}><Check size={15} strokeWidth={2.6} aria-hidden="true" />{b}</li>)}</ul>
+            <ul className={styles.badges}>{view.badges.map((b) => <li key={b}><Check size={15} strokeWidth={2.6} aria-hidden="true" />{b}</li>)}</ul>
             {warrantyLabel && (
               <p className={styles.warranty}><ShieldCheck size={18} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
             )}
-            <p className={styles.lead}>{sheet.lead}</p>
+            <p className={styles.lead}>{view.lead}</p>
 
             <ul className={styles.facts} aria-label={t.facts}>
-              {sheet.facts.map(([k, v], i) => (
+              {view.facts.map(([k, v], i) => (
                 <li key={k} style={{ ["--i" as string]: i }}><span className={styles.factLabel}>{k}</span><strong>{v}</strong></li>
               ))}
             </ul>
@@ -316,7 +344,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               <div className={styles.descMain} data-reveal>
                 <h2>{t.description}</h2>
                 <p className={styles.descLead}>{t.descLead}</p>
-                <p className={styles.descText}>{sheet.description ?? t.descFallback}</p>
+                <p className={styles.descText}>{view.description ?? t.descFallback}</p>
               </div>
               <figure className={styles.descPhoto} data-reveal style={{ ["--d" as string]: "120ms" }}>
                 <Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 860px, 100vw" />
@@ -329,7 +357,7 @@ export function W06Ficha(props: { variant?: Variant }) {
 
             <h3 className={styles.srOnly}>{t.advantages}</h3>
             <ul className={styles.features} data-reveal>
-              {sheet.features.map((f, i) => {
+              {view.features.map((f, i) => {
                 const Icon = FEATURE_ICONS[f.icon];
                 return (
                   <li key={f.title} style={{ ["--i" as string]: i }}>
@@ -345,7 +373,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           <section id="especificaciones" className={styles.specs} aria-label={t.specs}>
             <header className={styles.sectionHead} data-reveal>
               <h2>{t.specs}</h2>
-              <p className={styles.muted}>{sheet.specsNote}</p>
+              <p className={styles.muted}>{view.specsNote}</p>
             </header>
             <div className={styles.specGrid}>
               {specColumns.map((col, c) => (
@@ -373,12 +401,12 @@ export function W06Ficha(props: { variant?: Variant }) {
                   {docPages[1] && <span className={`${styles.docLeaf} ${styles.docLeafA}`} aria-hidden="true"><Image src={docPages[1].src} alt="" fill sizes="120px" /></span>}
                   {docPages[2] && <span className={`${styles.docLeaf} ${styles.docLeafB}`} aria-hidden="true"><Image src={docPages[2].src} alt="" fill sizes="120px" /></span>}
                   <button type="button" className={styles.docCover} onClick={() => { setDocPage(0); setDocOpen(true); }} aria-label={t.previewLabel} title={t.previewLabel}>
-                    <Image src={doc.pages[0].src} alt={doc.pages[0].alt} fill sizes="120px" />
+                    <Image src={doc.pages[0].src} alt={pageAlt(0)} fill sizes="120px" />
                   </button>
                 </div>
                 <div className={styles.docInfo}>
-                  <p className={styles.docTitle}>{doc.title}</p>
-                  <p className={styles.docMeta}>{doc.meta} · {docIncludes.join(" · ")}</p>
+                  <p className={styles.docTitle}>{view.docTitle}</p>
+                  <p className={styles.docMeta}>{view.docMeta} · {docIncludes.join(" · ")}</p>
                 </div>
                 <div className={styles.docActions}>
                   <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> {t.download}</a>
@@ -389,11 +417,11 @@ export function W06Ficha(props: { variant?: Variant }) {
               <div className={styles.docRow}>
                 <div className={styles.docRequest}><FileText size={28} aria-hidden="true" /></div>
                 <div className={styles.docInfo}>
-                  <p className={styles.docTitle}>Ficha técnica · {productName}</p>
+                  <p className={styles.docTitle}>{en ? "Datasheet" : "Ficha técnica"} · {productName}</p>
                   <p className={styles.docMeta}>{t.docOnRequest}</p>
                 </div>
                 <div className={styles.docActions}>
-                  <Link href={requestDocumentHref(`Ficha técnica · ${productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>
+                  <Link href={requestDocumentHref(`Ficha técnica · ${base.productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>
                 </div>
               </div>
             )}
@@ -402,7 +430,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           <section id="dimensiones" className={styles.dimsSection} aria-label={t.tabs.dimensiones}>
             <header className={styles.sectionHead} data-reveal>
               <h2>{t.dims}</h2>
-              <p className={styles.muted}>{sheet.dims.note}</p>
+              <p className={styles.muted}>{view.dimsNote}</p>
             </header>
 
             <div className={styles.dimsTop}>
@@ -432,17 +460,17 @@ export function W06Ficha(props: { variant?: Variant }) {
                     <h3>{t.measures} · {size}</h3>
                     <dl className={styles.measure}>
                       {sheet.dims.head.slice(1).map((h, i) => (
-                        <div key={h}><dt>{h}</dt><dd>{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
+                        <div key={h}><dt>{view.dimsHead[i + 1]}</dt><dd>{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
                       ))}
                     </dl>
                   </section>
                 )}
-                <section className={styles.flangeCard} aria-label={`${sheet.flange.title} · ${size}`} key={`f-${size}`}>
-                  <h3>{sheet.flange.title} · {size}</h3>
-                  <p>{sheet.flange.note}</p>
+                <section className={styles.flangeCard} aria-label={`${view.flangeTitle} · ${size}`} key={`f-${size}`}>
+                  <h3>{view.flangeTitle} · {size}</h3>
+                  <p>{view.flangeNote}</p>
                   <div className={styles.tableWrap}>
                     <table className={styles.flange}>
-                      <thead><tr>{sheet.flange.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                      <thead><tr>{view.flangeHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                       <tbody>
                         {sheet.flange.rows(size).map(({ pn, cells }) => (
                           <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
@@ -452,15 +480,15 @@ export function W06Ficha(props: { variant?: Variant }) {
                   </div>
                 </section>
 
-                {sheet.stem && (
-                  <section className={styles.flangeCard} aria-label={`${sheet.stem.title} · ${size}`} key={`s-${size}`}>
-                    <h3>{sheet.stem.title} · {size}</h3>
-                    <p>{sheet.stem.note}</p>
+                {view.stem && (
+                  <section className={styles.flangeCard} aria-label={`${view.stem.title} · ${size}`} key={`s-${size}`}>
+                    <h3>{view.stem.title} · {size}</h3>
+                    <p>{view.stem.note}</p>
                     <div className={styles.tableWrap}>
                       <table className={styles.flange}>
-                        <thead><tr>{sheet.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                        <thead><tr>{view.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                         <tbody>
-                          {sheet.stem.rows(size).map(({ pn, cells }) => (
+                          {view.stem.rows(size).map(({ pn, cells }) => (
                             <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
                           ))}
                         </tbody>
@@ -474,7 +502,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               <h3>{t.table}</h3>
               <div className={styles.tableWrap}>
                 <table className={styles.dims}>
-                  <thead><tr>{sheet.dims.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                  <thead><tr>{view.dimsHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                   <tbody>
                     {sheet.dims.rows.map(({ dn, cells }) => (
                       <tr key={dn} className={dn === size ? styles.rowOn : undefined} onClick={() => setSize(dn)}>
@@ -536,12 +564,12 @@ export function W06Ficha(props: { variant?: Variant }) {
           <button type="button" className={styles.lbClose} aria-label={t.close} onClick={() => setLightbox(false)}><X size={22} aria-hidden="true" /></button>
           <button type="button" className={styles.lbPrev} aria-label={t.prev} onClick={(e) => { e.stopPropagation(); step(-1); }}><ChevronLeft size={26} aria-hidden="true" /></button>
           <div className={styles.lbStage} onClick={(e) => e.stopPropagation()}>
-            {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={sheet.model3d.alt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
+            {spin ? <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={view.model3dAlt} className={styles.viewer} onFail={() => setSpin(false)} /> : photo("100vw")}
           </div>
           <button type="button" className={styles.lbNext} aria-label={t.next} onClick={(e) => { e.stopPropagation(); step(1); }}><ChevronRight size={26} aria-hidden="true" /></button>
           <div className={styles.lbBar} onClick={(e) => e.stopPropagation()}>
             {THUMBS.map((p, i) => (
-              <button key={p.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={t.viewPhoto(p.alt)} aria-pressed={i === active} />
+              <button key={p.src} type="button" className={i === active ? styles.lbDotActive : styles.lbDot} onClick={() => pick(i)} aria-label={t.viewPhoto(en?.thumbAlts[i] ?? p.alt)} aria-pressed={i === active} />
             ))}
           </div>
         </div>
@@ -552,7 +580,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           <div className={styles.docPanel} onClick={(e) => e.stopPropagation()}>
             <header className={styles.docBar}>
               <div className={styles.docBarTitle}>
-                <strong>{doc.title}</strong>
+                <strong>{view.docTitle}</strong>
                 <span aria-live="polite">{t.page(docPage + 1, docCount)}</span>
               </div>
               <a href={doc.href} target="_blank" rel="noopener noreferrer" className={styles.docBarBtn}><ExternalLink size={15} aria-hidden="true" /><span>{t.openPdf}</span></a>
@@ -562,7 +590,7 @@ export function W06Ficha(props: { variant?: Variant }) {
             <div className={styles.docBody}>
               <button type="button" className={styles.docNavPrev} aria-label={t.prevPage} onClick={() => stepDoc(-1)}><ChevronLeft size={22} aria-hidden="true" /></button>
               <div className={styles.docScroll} key={docPage}>
-                <Image src={docPages[docPage].src} alt={docPages[docPage].alt} width={1500} height={2121} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
+                <Image src={docPages[docPage].src} alt={pageAlt(docPage)} width={1500} height={2121} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
               </div>
               <button type="button" className={styles.docNavNext} aria-label={t.nextPage} onClick={() => stepDoc(1)}><ChevronRight size={22} aria-hidden="true" /></button>
             </div>
