@@ -8,8 +8,10 @@ import { site } from "@/lib/site-info";
 import { cartSummary, useCart } from "@/modules/cart/cart-store";
 import { PENDING_QUOTE_REFERENCE } from "@/modules/quote/format";
 import { SITE } from "@/shared/config/site";
+import { useLang } from "@/shared/layout/landing-prefs";
 import { submitLead } from "./actions";
 import { LEAD_FORMS, type LeadFormId } from "./forms";
+import { LEAD_UI, localizeLeadMessage } from "./lead-copy";
 import { buildLeadMessage, formEntries, type LeadMessage } from "./lead-message";
 import type { LeadResult } from "./types";
 
@@ -31,6 +33,8 @@ type LeadFormProps = Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit" 
  */
 export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
   const router = useRouter();
+  const [lang] = useLang();
+  const ui = LEAD_UI[lang];
   const [state, setState] = useState<LeadState>({ status: "idle" });
   const [, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
@@ -45,7 +49,7 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
       setState({ status: "pending" });
       startTransition(async () => {
         // Si la acción del servidor falla (red, despliegue nuevo), se avisa sin perder lo escrito ni romper la página.
-        const result = await submitLead(formId, data).catch((): LeadResult => ({ ok: false, message: "No pudimos procesar la solicitud. Revisa tu conexión e inténtalo de nuevo." }));
+        const result = await submitLead(formId, data).catch((): LeadResult => ({ ok: false, message: ui.connectionError }));
         // Sin registro en línea: no se borra nada ni se navega a una confirmación vacía; se prepara el mensaje.
         if (result.ok && result.reference === PENDING_QUOTE_REFERENCE) {
           const fromCart = formId === "quote-general" && cart.length ? cartSummary(cart, "es").replace(/^.*\n/, "PRODUCTOS DEL CARRITO\n") : undefined;
@@ -62,19 +66,19 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
           setState({ status: "success", reference: result.reference });
           return;
         }
-        setState({ status: "error", message: result.message });
+        setState({ status: "error", message: localizeLeadMessage(lang, result.message) });
         const first = Object.entries(result.fieldErrors ?? {})[0];
         if (first) {
           const el = form.elements.namedItem(first[0]);
           if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
-            el.setCustomValidity(first[1]);
+            el.setCustomValidity(localizeLeadMessage(lang, first[1]));
             el.reportValidity();
             el.addEventListener("input", () => el.setCustomValidity(""), { once: true });
           }
         }
       });
     },
-    [cart, formId, router, state.status],
+    [cart, formId, router, state.status, lang, ui],
   );
 
   const value = useMemo(() => state, [state]);
@@ -84,7 +88,7 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
         {/* Honeypot: invisible para personas, atractivo para bots */}
         <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
           <label>
-            No completar este campo
+            {ui.honeypot}
             <input type="text" name="website" tabIndex={-1} autoComplete="off" />
           </label>
         </div>
@@ -148,6 +152,8 @@ export function LeadError({ className = "" }: { className?: string }) {
  * Libro de reclamaciones. El formulario conserva lo escrito; si se corrige algo, se vuelve a preparar al reenviar.
  */
 function LeadOffline({ prepared }: { prepared: LeadMessage }) {
+  const [lang] = useLang();
+  const ui = LEAD_UI[lang];
   const [copied, setCopied] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -170,29 +176,29 @@ function LeadOffline({ prepared }: { prepared: LeadMessage }) {
   return (
     <section aria-labelledby="lead-offline-title" className="rounded-xl border border-primary/30 bg-surface-elevated p-5 shadow-sm sm:p-7">
       <h2 id="lead-offline-title" ref={headingRef} tabIndex={-1} className="font-headline-card text-headline-card font-semibold text-on-surface outline-none">
-        Tu solicitud está lista para enviar
+        {ui.readyTitle}
       </h2>
       <p className="mt-2 max-w-2xl font-body-compact text-body-compact leading-relaxed text-text-secondary">
-        El envío en línea aún no está conectado, así que todavía no se registró. Envíala por correo o WhatsApp: el mensaje ya incluye todos los datos del formulario.
+        {ui.readyText}
       </p>
       <div className="mt-5 flex flex-wrap gap-3">
         <a className={`${action} bg-primary text-on-primary hover:bg-primary-container hover:text-brand-on`} href={mailtoUrl(SITE.email, prepared.subject, prepared.body)}>
-          <Mail aria-hidden="true" size={18} strokeWidth={1.8} /> Enviar por correo
+          <Mail aria-hidden="true" size={18} strokeWidth={1.8} /> {ui.byEmail}
         </a>
         <a className={`${action} border border-border bg-surface text-on-surface hover:bg-surface-container-low`} href={whatsappUrl(site.whatsappNumber, prepared.body)} target="_blank" rel="noopener noreferrer">
-          <MessageCircle aria-hidden="true" size={18} strokeWidth={1.8} /> Enviar por WhatsApp
+          <MessageCircle aria-hidden="true" size={18} strokeWidth={1.8} /> {ui.byWhatsapp}
         </a>
         <button type="button" className={`${action} border border-border bg-surface text-on-surface hover:bg-surface-container-low`} onClick={copy}>
           {copied ? <Check aria-hidden="true" size={18} strokeWidth={1.8} /> : <Copy aria-hidden="true" size={18} strokeWidth={1.8} />}
-          {copied ? "Texto copiado" : "Copiar texto"}
+          {copied ? ui.copied : ui.copy}
         </button>
       </div>
       <details className="mt-5 rounded-lg border border-border bg-surface-container-low">
-        <summary className="cursor-pointer px-4 py-3 font-button-text text-button-text font-semibold text-on-surface">Ver el mensaje</summary>
+        <summary className="cursor-pointer px-4 py-3 font-button-text text-button-text font-semibold text-on-surface">{ui.viewMessage}</summary>
         <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-words border-t border-border px-4 py-3 font-body-compact text-body-compact text-text-secondary">{prepared.body}</pre>
       </details>
       <p className="mt-4 font-ui-label text-ui-label leading-relaxed text-text-muted">
-        Correo de destino: {SITE.email}. Si cambias algún dato, vuelve a enviar el formulario para actualizar el mensaje.
+        {ui.destination} {SITE.email}. {ui.resend}
       </p>
     </section>
   );
