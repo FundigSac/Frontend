@@ -201,6 +201,7 @@ const EN: Record<string, string> = {
   "Vista referencial de una válvula industrial.": "Reference view of an industrial valve.",
   "Vistas del producto": "Product views",
   "Caso de aplicación": "Application case",
+  "Referencia visual": "Visual reference",
   "Deflexión de unión": "Joint deflection",
 };
 
