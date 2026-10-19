@@ -19,6 +19,8 @@ describe("fecha de descarga de la ficha técnica", () => {
     const sheet = DATASHEETS["garantia-extendida"];
     const a = await stampDatasheet(sheet, new Date("2026-10-19T15:00:00Z"));
     const b = await stampDatasheet(sheet, new Date("2026-10-20T15:00:00Z"));
+    // La emisión es fija (la de la plantilla): no depende del día de descarga.
+    expect(sheet.issued).toBe("14/04/2026");
     const doc = await PDFDocument.load(a);
     expect(doc.getPageCount()).toBe(2);
     expect(new TextDecoder("latin1").decode(a.slice(0, 5))).toBe("%PDF-");
