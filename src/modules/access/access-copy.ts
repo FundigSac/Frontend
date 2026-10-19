@@ -92,8 +92,6 @@ const PANELS_EN: Record<AccessKind, Panel> = {
 export const ACCESS_COPY = {
   es: {
     panels: PANELS_ES,
-    preview: "Vista previa",
-    previewHint: "Acceso con Google activo; cuentas con correo y contraseña, próximamente",
     email: "Correo electrónico",
     emailPh: "tu@empresa.com",
     password: "Contraseña",
@@ -166,7 +164,6 @@ export const ACCESS_COPY = {
       text: "Estamos preparando las cuentas de clientes. Mientras tanto, cotiza sin registrarte: arma tu carrito y envíanos tu solicitud.",
       quote: "Ir al carrito",
     },
-    previewNote: "Vista previa del diseño: el envío de correos se activará con las cuentas de clientes.",
     loading: "Procesando…",
     auth: {
       connecting: "Conectando con Google…",
@@ -189,8 +186,6 @@ export const ACCESS_COPY = {
   },
   en: {
     panels: PANELS_EN,
-    preview: "Preview",
-    previewHint: "Google sign-in is live; email and password accounts are coming soon",
     email: "Email",
     emailPh: "you@company.com",
     password: "Password",
@@ -263,7 +258,6 @@ export const ACCESS_COPY = {
       text: "We're preparing client accounts. Meanwhile, get a quote without signing up: build your cart and send us your request.",
       quote: "Go to cart",
     },
-    previewNote: "Design preview: emails will be sent once client accounts are enabled.",
     loading: "Processing…",
     auth: {
       connecting: "Connecting to Google…",

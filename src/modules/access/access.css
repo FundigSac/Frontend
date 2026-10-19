@@ -248,28 +248,6 @@ html[data-lp-theme="dark"] .ac-lead {
   width: min(100%, 540px);
 }
 
-.ac-preview {
-  position: absolute;
-  top: 20px;
-  right: 22px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: rgb(242 106 27 / 10%);
-  color: var(--ac-orange-dark);
-  cursor: help;
-  font: 700 10.5px/1 var(--ac-font);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-html[data-lp-theme="dark"] .ac-preview {
-  background: rgb(242 106 27 / 16%);
-  color: #ffb27a;
-}
-
 .ac-brand {
   display: block;
   width: 200px;
@@ -954,18 +932,11 @@ html[data-lp-theme="dark"] .ac-done h2 {
   cursor: default;
 }
 
-.ac-help,
-.ac-preview-note {
+.ac-help {
   margin: 6px 0 0;
   color: var(--ac-muted);
   font-size: 13px;
   line-height: 1.5;
-}
-
-.ac-preview-note {
-  padding-top: 12px;
-  border-top: 1px dashed var(--ac-line);
-  font-size: 12px;
 }
 
 .ac-back {
@@ -1106,11 +1077,6 @@ html[data-lp-theme="dark"] .ac-done h2 {
     padding-left: clamp(20px, 6vw, 48px);
     border-radius: 28px 28px 0 0;
     box-shadow: 0 -20px 40px -30px rgb(4 18 40 / 45%);
-  }
-
-  .ac-preview {
-    top: 16px;
-    right: 18px;
   }
 }
 

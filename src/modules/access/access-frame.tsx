@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardList, FileText, Headset, History, KeyRound, Lock, Mail, Settings2, ShieldCheck, Sparkles, Users, type LucideIcon } from "lucide-react";
+import { ClipboardList, FileText, Headset, History, KeyRound, Lock, Mail, Settings2, ShieldCheck, Users, type LucideIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -145,10 +145,6 @@ export function AccessFrame({ children }: { children: ReactNode }) {
     <main className={`ac ac--${kind}`}>
       <AccessScene kind={kind} />
       <section className="ac-side">
-        <span className="ac-preview" title={t.previewHint}>
-          <Sparkles aria-hidden="true" size={12} />
-          {t.preview}
-        </span>
         <div className={`ac-card${kind === "register" ? " ac-card--wide" : ""}`} key={`card-${kind}`}>
           <Link href="/" className="ac-brand" aria-label={COPY[lang].a11y.home}>
             <Image src="/brand/fundigsac.svg" alt="FUNDIGSAC" width={708} height={159} priority />
