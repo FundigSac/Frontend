@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useLang } from "@/shared/layout/landing-prefs";
+import { translateRef } from "../reference-en";
 import { useState } from "react";
 
 type View = { src: string; label: string; alt: string; thumbClass: string };
@@ -22,6 +24,8 @@ const VIEWS: readonly View[] = [
  * que se renderizan en servidor dentro del marco de la imagen.
  */
 export function W07Gallery({ children }: { children: React.ReactNode }) {
+  const [lang] = useLang();
+  const t = (es: string) => translateRef(lang, es);
   // null = foto principal. Como en el diseño, ninguna miniatura tiene aro hasta que se elige una.
   const [selected, setSelected] = useState<number | null>(null);
   const current = selected === null ? { src: MAIN.src, alt: MAIN.alt } : VIEWS[selected];
@@ -32,7 +36,7 @@ export function W07Gallery({ children }: { children: React.ReactNode }) {
         <Image
           key={current.src}
           src={current.src}
-          alt={current.alt}
+          alt={t(current.alt)}
           width={1408}
           height={768}
           sizes="(min-width: 1024px) 600px, 100vw"
@@ -42,12 +46,12 @@ export function W07Gallery({ children }: { children: React.ReactNode }) {
           id="main-valve-img"
         />
         <span className="sr-only" aria-live="polite">
-          {selected === null ? "Vista principal" : `Vista: ${VIEWS[selected].label}`}
+          {selected === null ? t("Vista principal") : `${lang === "en" ? "View" : "Vista"}: ${t(VIEWS[selected].label)}`}
         </span>
         {children}
       </div>
       {/* Miniaturas de inspección de subconjunto */}
-      <div className="grid grid-cols-4 gap-3" role="group" aria-label="Vistas del producto">
+      <div className="grid grid-cols-4 gap-3" role="group" aria-label={t("Vistas del producto")}>
         {VIEWS.map((view, index) => (
           <button
             key={view.src}
@@ -59,7 +63,7 @@ export function W07Gallery({ children }: { children: React.ReactNode }) {
             <div className="w-full aspect-[4/3] rounded overflow-hidden bg-surface-container-high">
               <Image src={view.src} alt="" width={1408} height={768} sizes="(min-width: 1024px) 140px, 22vw" className="w-full h-full object-cover" />
             </div>
-            <span className={`font-ui-label text-[10px] ${view.thumbClass} truncate w-full px-1 text-center`}>{view.label}</span>
+            <span className={`font-ui-label text-[10px] ${view.thumbClass} truncate w-full px-1 text-center`}>{t(view.label)}</span>
           </button>
         ))}
       </div>
