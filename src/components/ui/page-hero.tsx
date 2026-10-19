@@ -1,6 +1,9 @@
+"use client";
+
 import "@/styles/pages.css";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useLang } from "@/shared/layout/landing-prefs";
 import { CountUp } from "./count-up";
 
 const PIPES = [
@@ -13,8 +16,9 @@ type Crumb = { label: string; href?: string };
 type Stat = { value: number; suffix?: string; label: string };
 
 export function Breadcrumb({ items, light = false }: { items: Crumb[]; light?: boolean }) {
-  return <nav className={`x-crumbs${light ? " x-crumbs--light" : ""}`} aria-label="Ruta de navegación">
-    <Link href="/">Inicio</Link>
+  const [lang] = useLang();
+  return <nav className={`x-crumbs${light ? " x-crumbs--light" : ""}`} aria-label={lang === "en" ? "Breadcrumb" : "Ruta de navegación"}>
+    <Link href="/">{lang === "en" ? "Home" : "Inicio"}</Link>
     {items.map((item, index) => <span key={item.label} className="x-crumb-item"><span aria-hidden="true">/</span>{item.href && index < items.length - 1 ? <Link href={item.href}>{item.label}</Link> : <span aria-current={index === items.length - 1 ? "page" : undefined}>{item.label}</span>}</span>)}
   </nav>;
 }
