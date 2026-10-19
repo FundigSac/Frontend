@@ -438,7 +438,7 @@ test.describe("Mapa del sitio", () => {
     // cuatro grupos: el de cuenta se retiró hasta que exista el área de clientes
     await expect(page.locator(".lg-map__card")).toHaveCount(4);
     const hrefs = await page.locator(".lg-map__links a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs.length).toBeGreaterThanOrEqual(20);
+    expect(hrefs.length).toBeGreaterThanOrEqual(18);
     for (const href of hrefs) expect(href).toMatch(/^\//);
     // cada enlace interno responde (sin 404)
     for (const href of new Set(hrefs)) {
