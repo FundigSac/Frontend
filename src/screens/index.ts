@@ -7,8 +7,6 @@ export { ScreenW06 } from "./w06";
 export { ScreenW07 } from "./w07";
 export { ScreenW08 } from "./w08";
 export { ScreenW09 } from "./w09";
-export { ScreenW10 } from "./w10";
-export { ScreenW11 } from "./w11";
 export { ScreenW12 } from "./w12";
 export { ScreenW13 } from "./w13";
 export { ScreenW14 } from "./w14";

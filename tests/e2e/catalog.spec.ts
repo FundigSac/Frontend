@@ -15,7 +15,7 @@ function watchConsole(page: Page) {
   return problems;
 }
 
-const ROUTES = ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/soluciones", "/soluciones/redes-matrices", "/nosotros", "/ruta-que-no-existe"];
+const ROUTES = ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/nosotros", "/ruta-que-no-existe"];
 
 test.describe("consola limpia", () => {
   for (const route of ROUTES) {
@@ -451,7 +451,7 @@ lineTests({
 });
 
 test.describe("W04 / W05 / W10-W12 enlaces", () => {
-  for (const route of ["/productos/tuberias", "/productos/marcos-y-tapas", "/soluciones", "/soluciones/redes-matrices", "/nosotros"]) {
+  for (const route of ["/productos/tuberias", "/productos/marcos-y-tapas", "/nosotros"]) {
     test(`${route}: ningún href="#" ni botón sin acción`, async ({ page }) => {
       await page.goto(route);
       expect(await page.locator("main a[href='#']").count()).toBe(0);
@@ -465,15 +465,6 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
     await expect(page).toHaveURL(/\/productos\/tuberias\/tuberia-tyton$/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Tubería de hierro dúctil");
     await page.getByRole("link", { name: "Solicitar cotización" }).first().click();
-    await expect(page).toHaveURL(/\/cotizar$/);
-  });
-  test("W11: 'Solicitar cotización' de redes y matrices abre la cotización", async ({ page }) => {
-    await page.goto("/soluciones/redes-matrices");
-    const hrefs = await page.locator("main").getByRole("link", { name: "Solicitar cotización" }).evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs.length).toBeGreaterThan(0);
-    expect(new Set(hrefs)).toEqual(new Set(["/cotizar"]));
-    await expect(page.locator("main").getByRole("link", { name: "Explorar tuberías" })).toHaveAttribute("href", "/productos/tuberias");
-    await page.locator("main").getByRole("link", { name: "Solicitar cotización" }).first().click();
     await expect(page).toHaveURL(/\/cotizar$/);
   });
 });

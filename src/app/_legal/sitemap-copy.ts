@@ -25,7 +25,6 @@ export const SITEMAP: Pair<{
           { href: "/cotizar", label: "Grifos" },
           { href: "/productos?q=acople", label: "Acoples" },
           { href: "/productos/tuberias", label: "Tuberías" },
-          { href: "/soluciones", label: "Soluciones" },
         ],
       },
       {
@@ -77,7 +76,6 @@ export const SITEMAP: Pair<{
           { href: "/cotizar", label: "Hydrants" },
           { href: "/productos?q=acople", label: "Couplings" },
           { href: "/productos/tuberias", label: "Pipes" },
-          { href: "/soluciones", label: "Solutions" },
         ],
       },
       {

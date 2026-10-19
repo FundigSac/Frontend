@@ -1,5 +1,4 @@
 import type { ComponentType } from "react";
-import { ScreenW11 } from "@/screens/w11";
 import { ScreenW14 } from "@/screens/w14";
 import { ScreenW23 } from "@/screens/w23";
 
@@ -38,10 +37,6 @@ export const PRODUCTS: readonly ProductEntry[] = [
   { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
   { category: "marcos-y-tapas", slug: "marco-tapa-d400", name: "Referencia visual de marco y tapa", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
 ];
-
-export const SOLUTIONS = [
-  { slug: "redes-matrices", name: "Redes matrices de agua potable", description: "Soluciones en hierro dúctil para líneas de conducción y redes matrices.", Screen: ScreenW11 },
-] as const;
 
 export const RESOURCES = [
   { slug: "detalle-tecnico", name: "Estado de recurso técnico", description: "Estado y disponibilidad de documentos técnicos oficiales; publicación pendiente de aprobación.", Screen: ScreenW14 },

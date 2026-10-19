@@ -13,7 +13,6 @@ export const SITE = {
 export const MAIN_NAV = [
   { href: "/", label: "Inicio" },
   { href: "/productos", label: "Productos" },
-  { href: "/soluciones", label: "Soluciones" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/recursos", label: "Recursos" },
   { href: "/contacto", label: "Contacto" },

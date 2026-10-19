@@ -74,7 +74,7 @@ test.describe("enlaces y contenido", () => {
   test("las fichas de referencia ya no muestran capturas con encabezados de maqueta", async ({ page }) => {
     const failed: string[] = [];
     page.on("response", (r) => { if (r.request().resourceType() === "image" && r.status() >= 400) failed.push(r.url()); });
-    for (const path of ["/productos/valvulas/valvula-mariposa", "/productos/tuberias/tuberia-tyton", "/productos/marcos-y-tapas/marco-tapa-d400", "/soluciones", "/cotizar"]) {
+    for (const path of ["/productos/valvulas/valvula-mariposa", "/productos/tuberias/tuberia-tyton", "/productos/marcos-y-tapas/marco-tapa-d400", "/cotizar"]) {
       await page.goto(path);
       const srcs = await page.locator("img").evaluateAll((imgs) => imgs.map((i) => (i as HTMLImageElement).currentSrc || (i as HTMLImageElement).src));
       // Las versiones con barra de ventana o título "W0x — Ficha…" se reemplazaron por las -limpia / -recorte.
@@ -91,7 +91,7 @@ test.describe("diseño", () => {
     await withConsent(page);
     for (const width of [320, 360, 390, 412]) {
       await page.setViewportSize({ width, height: 860 });
-      for (const path of ["/recursos", "/recursos/detalle-tecnico", "/soluciones", "/industrias", "/cotizar"]) {
+      for (const path of ["/recursos", "/recursos/detalle-tecnico", "/industrias", "/cotizar"]) {
         await page.goto(path);
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         expect(overflow, `${path} @ ${width}px`).toBeLessThanOrEqual(1);
