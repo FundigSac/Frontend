@@ -583,7 +583,7 @@ html[data-lp-theme="dark"] .ac-link {
 
 .ac-social {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -1146,12 +1146,6 @@ html[data-lp-theme="dark"] .ac-done h2 {
 
   .ac-control input {
     font-size: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .ac-social {
-    grid-template-columns: 1fr;
   }
 }
 

@@ -156,22 +156,16 @@ function GoogleLink({ label, busyLabel, from, lang }: { label: string; busyLabel
 
 export function SocialButtons({
   labels,
-  onPick,
   from,
   lang,
 }: {
-  labels: { google: string; facebook: string; connecting: string };
-  onPick: (provider: "Facebook") => void;
+  labels: { google: string; connecting: string };
   from: "login" | "registro";
   lang: string;
 }) {
   return (
     <div className="ac-social">
       <GoogleLink label={labels.google} busyLabel={labels.connecting} from={from} lang={lang} />
-      <button type="button" className="ac-social__btn" onClick={() => onPick("Facebook")}>
-        <FacebookIcon />
-        <span>{labels.facebook}</span>
-      </button>
     </div>
   );
 }

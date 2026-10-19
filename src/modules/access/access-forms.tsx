@@ -79,10 +79,10 @@ function SignedIn({ t, user }: { t: AccessCopy; user: AuthUser }) {
   );
 }
 
-function SoonNotice({ t, social }: { t: AccessCopy; social?: string | null }) {
+function SoonNotice({ t }: { t: AccessCopy }) {
   return (
     <Notice title={t.soon.title}>
-      <p>{social ? t.soon.social(social) : t.soon.text}</p>
+      <p>{t.soon.text}</p>
       <Link href="/carrito" className="ac-notice__link">
         <ShoppingCart aria-hidden="true" size={15} />
         {t.soon.quote}
@@ -108,7 +108,6 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  const [social, setSocial] = useState<string | null>(null);
   const { status, run } = useFakeSubmit();
   const { user } = useAuth();
   const authError = useAuthError();
@@ -120,7 +119,6 @@ export function LoginScreen() {
       password: !password ? t.errors.password : undefined,
     };
     setErrors(next);
-    setSocial(null);
     if (!next.email && !next.password) run();
   };
 
@@ -143,10 +141,10 @@ export function LoginScreen() {
           </Link>
         </div>
         <Submit status={status} label={t.login.submit} t={t} />
-        {(status === "done" || social) && <SoonNotice t={t} social={social} />}
+        {status === "done" && <SoonNotice t={t} />}
       </form>
       <Divider>{t.or}</Divider>
-      <SocialButtons labels={{ google: t.google, facebook: t.facebook, connecting: t.auth.connecting }} onPick={setSocial} from="login" lang={lang} />
+      <SocialButtons labels={{ google: t.google, connecting: t.auth.connecting }} from="login" lang={lang} />
       <p className="ac-switch">
         {t.noAccount} <Link href="/registro">{t.signupHere}</Link>
       </p>
@@ -161,7 +159,6 @@ export function RegisterScreen() {
   const t = ACCESS_COPY[lang];
   const [form, setForm] = useState({ name: "", company: "", email: "", phone: "", password: "", confirm: "", terms: false });
   const [errors, setErrors] = useState<Partial<Record<"name" | "email" | "password" | "confirm" | "terms", string>>>({});
-  const [social, setSocial] = useState<string | null>(null);
   const { status, run } = useFakeSubmit();
   const { user } = useAuth();
   const authError = useAuthError();
@@ -178,7 +175,6 @@ export function RegisterScreen() {
       terms: !form.terms ? t.errors.terms : undefined,
     };
     setErrors(next);
-    setSocial(null);
     if (Object.values(next).every((v) => !v)) run();
   };
 
@@ -188,8 +184,7 @@ export function RegisterScreen() {
     <>
       <CardHead title={t.register.title} lead={t.register.lead} />
       <AuthError t={t} code={authError} />
-      <SocialButtons labels={{ google: t.googleSignup, facebook: t.facebookSignup, connecting: t.auth.connecting }} onPick={setSocial} from="registro" lang={lang} />
-      {social && <SoonNotice t={t} social={social} />}
+      <SocialButtons labels={{ google: t.googleSignup, connecting: t.auth.connecting }} from="registro" lang={lang} />
       <Divider>{t.orEmail}</Divider>
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <div className="ac-grid">
