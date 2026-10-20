@@ -68,7 +68,7 @@ export function ComponentsCarousel() {
 
   return (
     <>
-      <div className="lp-shell lp-components__head">
+      <div className="lp-shell lp-components__head" data-reveal>
         <div>
           <p className="lp-eyebrow">{t.eyebrow}</p>
           <h2 id="lp-components-title">{t.title}</h2>
@@ -92,6 +92,7 @@ export function ComponentsCarousel() {
       </div>
       <ul
         className="lp-components__track"
+        data-reveal="stagger"
         ref={track}
         onScroll={sync}
         onMouseEnter={() => setHovered(true)}

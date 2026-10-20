@@ -15,10 +15,10 @@ export function BackingSection() {
   const t = useHome().backing;
   return (
     <section className="lp-backing" aria-labelledby="lp-backing-title">
-      <div className="lp-backing__media">
+      <div className="lp-backing__media" data-reveal="media">
         <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} fill quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/respaldo-ingeniero.webp"]} sizes="(max-width: 860px) 100vw, 46vw" />
       </div>
-      <div className="lp-backing__copy">
+      <div className="lp-backing__copy" data-reveal="stagger">
         <p className="lp-eyebrow">{t.eyebrow}</p>
         <span className="lp-hero__rule" aria-hidden="true" />
         <h2 id="lp-backing-title">{t.title}</h2>
@@ -44,7 +44,7 @@ export function DocsSection() {
   return (
     <section className="lp-docs" aria-labelledby="lp-docs-title">
       <div className="lp-shell lp-docs__inner">
-        <div className="lp-docs__copy">
+        <div className="lp-docs__copy" data-reveal="stagger">
           <p className="lp-eyebrow">{t.eyebrow}</p>
           <h2 id="lp-docs-title">{t.title}</h2>
           <p className="lp-docs__lead">{t.lead}</p>
@@ -58,7 +58,7 @@ export function DocsSection() {
           </Link>
         </div>
 
-        <Link href="/contacto?motivo=documentacion" className="lp-docs__media" aria-label={t.mediaLabel}>
+        <Link href="/contacto?motivo=documentacion" className="lp-docs__media" data-reveal="right" aria-label={t.mediaLabel}>
           <Image src="/media/home-v3/ficha-plano-recorte.webp" alt={t.alt} width={1186} height={784} quality={75} sizes="(max-width: 860px) 100vw, 55vw" />
         </Link>
       </div>
@@ -71,7 +71,7 @@ export function LocationSection() {
   return (
     <section className="lp-location" aria-labelledby="lp-location-title">
       <div className="lp-shell lp-location__inner">
-        <div className="lp-location__copy">
+        <div className="lp-location__copy" data-reveal="stagger">
           <p className="lp-eyebrow">{t.eyebrow}</p>
           <h2 id="lp-location-title">{t.title}</h2>
           <p className="lp-location__lead">{t.lead}</p>
@@ -96,7 +96,7 @@ export function LocationSection() {
           </a>
         </div>
 
-        <div className="lp-location__map">
+        <div className="lp-location__map" data-reveal="media">
           <MapEmbed title={t.mapTitle} />
           <div className="lp-location__pin">
             <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />

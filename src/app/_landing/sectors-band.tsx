@@ -33,7 +33,7 @@ export function SectorsBand() {
         <line x1="39.3" y1="0" x2="31" y2="100" />
         <line x1="72.3" y1="0" x2="61.6" y2="100" />
       </svg>
-      <div className="lp-shell lp-sectors__head">
+      <div className="lp-shell lp-sectors__head" data-reveal>
         <div>
           <h2 id="lp-sectors-title">{t.title}</h2>
           <p>{t.lead}</p>
@@ -47,9 +47,9 @@ export function SectorsBand() {
           </button>
         </div>
       </div>
-      <ul className="lp-sectors__list" ref={list}>
+      <ul className="lp-sectors__list" ref={list} data-reveal="sectors">
         {sectors.map((s, i) => (
-          <li key={s.n} className={`lp-sector lp-sector--${i + 1}${i === active ? " is-active" : ""}`}>
+          <li key={s.n} className={`lp-sector lp-sector--${i + 1}${i === active ? " is-active" : ""}`} style={{ ["--i" as string]: i }}>
             <span className="lp-sector__img" aria-hidden="true">
               <Image src={s.img} alt="" fill quality={70} placeholder="blur" blurDataURL={BLUR[s.img]} sizes="(max-width: 860px) 80vw, 45vw" />
             </span>

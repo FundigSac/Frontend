@@ -1433,51 +1433,6 @@
   }
 }
 
-/* ===== Movimiento al hacer scroll (solo navegadores con animation-timeline) ===== */
-@supports (animation-timeline: view()) {
-  .lp-components__head,
-  .lp-sectors__head,
-  .lp-docs__copy,
-  .lp-docs__media {
-    animation: lp-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 55%;
-  }
-
-  .lp-components__track li {
-    animation: lp-reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 5% entry 70%;
-  }
-
-  .lp-sector {
-    animation: lp-sector-in linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 80%;
-  }
-}
-
-@keyframes lp-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(34px);
-  }
-}
-
-@keyframes lp-sector-in {
-  from {
-    opacity: 0.2;
-    filter: saturate(0.4);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lp-hero__photo,
-  .lp-hero__stage {
-    animation: none !important;
-  }
-}
-
 /* ===== Idioma y tema (cabecera) ===== */
 .lp-icon-btn {
   display: inline-flex;
@@ -2850,38 +2805,24 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
   }
 }
 
-/* ===== Secciones del inicio: aparecen al hacer scroll (scroll-driven, en el compositor).
-   Mejora progresiva: sin soporte, el contenido se ve normal. ===== */
-@supports (animation-timeline: view()) {
-  .lp-components__head,
-  .lp-sectors > *,
-  .lp-backing__media,
-  .lp-backing__copy > *,
-  .lp-docs__copy > *,
-  .lp-docs__media,
-  .lp-location > * {
-    animation: lp-scroll-in linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 28%;
-  }
+/* ===== Sectores: las franjas diagonales no se mueven (siguen las líneas blancas); la foto de cada una se asienta
+   y su texto sube, de izquierda a derecha. ===== */
+.lp-sectors__list[data-in="late"] {
+  animation: none;
+}
 
-  .lp-backing__media,
-  .lp-docs__media {
-    animation-name: lp-scroll-in-media;
-  }
+.lp-sectors__list[data-in="late"] .lp-sector__img {
+  animation: lp-sector-settle 1200ms var(--mo-ease-out) calc(var(--i, 0) * 140ms) backwards;
+}
 
-  @keyframes lp-scroll-in {
-    from {
-      opacity: 0;
-      transform: translateY(34px);
-    }
-  }
+.lp-sectors__list[data-in="late"] .lp-sector a > * {
+  animation: mo-up var(--mo-reveal) var(--mo-ease) calc(var(--i, 0) * 140ms + 240ms) backwards;
+}
 
-  @keyframes lp-scroll-in-media {
-    from {
-      opacity: 0;
-      transform: translateY(40px) scale(0.97);
-    }
+@keyframes lp-sector-settle {
+  from {
+    opacity: 0;
+    transform: scale(1.08);
   }
 }
 
@@ -2890,14 +2831,7 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
   .lp-hero__photo,
   .lp-hero__stage,
   .lp-hero__shadow,
-  .lp-hero__controls-row,
-  .lp-components__head,
-  .lp-sectors > *,
-  .lp-backing__media,
-  .lp-backing__copy > *,
-  .lp-docs__copy > *,
-  .lp-docs__media,
-  .lp-location > * {
+  .lp-hero__controls-row {
     animation: none !important;
   }
 }
