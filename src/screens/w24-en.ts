@@ -65,8 +65,13 @@ const EN: Record<string, string> = {
   "Solicitud pendiente de conexión": "Request pending connection",
   "Recibimos el formulario, pero el sistema de atención aún no está conectado: ninguna solicitud se guardó. Vuelve a enviarla cuando el servicio esté disponible.":
     "We received the form, but the service system is not connected yet: no request was saved. Please send it again when the service is available.",
-  "El sistema asignó este folio al guardar la solicitud. Los detalles del requerimiento y la atención comercial se confirmarán cuando el servicio esté conectado.":
-    "The system assigned this reference when saving the request. The requirement details and the sales follow-up will be confirmed once the service is connected.",
+  "El sistema asignó este folio al guardar la solicitud. Ventas revisará tu requerimiento y te enviará la propuesta por correo; también te enviamos una constancia.":
+    "The system assigned this reference when saving the request. Sales will review your requirement and email you the proposal; we also sent you a confirmation.",
+  "El folio confirma el registro. Ventas revisa el requerimiento y te responde por correo con la propuesta.":
+    "The reference confirms the registration. Sales reviews the requirement and replies by email with the proposal.",
+  "En revisión de Ventas": "Under review by Sales",
+  "Conserva el código de seguimiento y revisa tu correo: ahí llegarán la constancia y la propuesta.":
+    "Keep the tracking code and check your email: the confirmation and the proposal will arrive there.",
   "Sin folio": "No reference",
   "No se generó un folio para seguimiento.": "No reference was generated for follow-up.",
   "Guarda el folio para identificar el registro.": "Keep the reference to identify the record.",
@@ -76,8 +81,6 @@ const EN: Record<string, string> = {
   "Comprobante PDF": "PDF receipt",
   "La solicitud no se registró en el sistema. La revisión y la atención comercial empezarán cuando el servicio esté conectado.":
     "The request was not registered in the system. Review and sales follow-up will start once the service is connected.",
-  "El folio confirma el registro. La revisión, atención comercial y plazos aún no están disponibles en el sistema.":
-    "The reference confirms the registration. Review, sales follow-up and lead times are not yet available in the system.",
   "La consulta no contiene un folio registrado. Las etapas de atención se mostrarán cuando haya datos disponibles.":
     "The lookup does not contain a registered reference. Service stages will be shown when data is available.",
   "Consulta de solicitud": "Request lookup",

@@ -5,7 +5,10 @@ import { Check, Copy, Mail, MessageCircle } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { mailtoUrl, whatsappUrl } from "@/app/_legal/claim-message";
 import { site } from "@/lib/site-info";
-import { cartSummary, useCart } from "@/modules/cart/cart-store";
+import { newIdempotencyKey, submitForm } from "@/modules/backend/client";
+import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
+import { cartSummary, clearCart, useCart, type CartItem } from "@/modules/cart/cart-store";
+import { generalQuote, productQuote, withoutCatalogLinks, type QuoteBody } from "@/modules/quote/quote-request";
 import { PENDING_QUOTE_REFERENCE } from "@/modules/quote/format";
 import { SITE } from "@/shared/config/site";
 import { useLang } from "@/shared/layout/landing-prefs";
@@ -39,6 +42,8 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
   const [, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const cart = useCart();
+  // Misma clave en los reintentos del mismo envío: la API devuelve el mismo folio en lugar de duplicarlo.
+  const idempotencyKey = useRef(newIdempotencyKey());
 
   const onSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -50,6 +55,20 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
       startTransition(async () => {
         // Si la acción del servidor falla (red, despliegue nuevo), se avisa sin perder lo escrito ni romper la página.
         const result = await submitLead(formId, data).catch((): LeadResult => ({ ok: false, message: ui.connectionError }));
+        // Con Backend conectado, la cotización se registra de verdad y la confirmación muestra el folio real.
+        if (result.ok && result.reference === PENDING_QUOTE_REFERENCE && (formId === "quote-general" || formId === "quote-product")) {
+          const saved = await registerQuote(formId, data, cart, idempotencyKey.current);
+          if (saved.kind === "saved") {
+            if (formId === "quote-general" && cart.length) clearCart();
+            idempotencyKey.current = newIdempotencyKey();
+            router.push(`/cotizar/confirmacion?ref=${encodeURIComponent(saved.folio)}`);
+            return;
+          }
+          if (saved.kind === "invalid" || saved.kind === "limited") {
+            setState({ status: "error", message: saved.kind === "limited" ? ui.limited : ui.invalid });
+            return;
+          }
+        }
         // Sin registro en línea: no se borra nada ni se navega a una confirmación vacía; se prepara el mensaje.
         if (result.ok && result.reference === PENDING_QUOTE_REFERENCE) {
           const fromCart = formId === "quote-general" && cart.length ? cartSummary(cart, "es").replace(/^.*\n/, "PRODUCTOS DEL CARRITO\n") : undefined;
@@ -202,4 +221,20 @@ function LeadOffline({ prepared }: { prepared: LeadMessage }) {
       </p>
     </section>
   );
+}
+
+type QuoteOutcome = { kind: "saved"; folio: string } | { kind: "offline" } | { kind: "invalid" } | { kind: "limited" };
+
+/**
+ * Registra la cotización en el Backend. Si la API no reconoce un producto o medida del catálogo del sitio, se reenvía
+ * como texto libre (con otra clave de idempotencia, porque el cuerpo cambia).
+ */
+async function registerQuote(formId: "quote-general" | "quote-product", data: FormData, cart: CartItem[], key: string): Promise<QuoteOutcome> {
+  const body: QuoteBody = formId === "quote-general" ? generalQuote(data, cart, PRIVACY_NOTICE_VERSION) : productQuote(data, PRIVACY_NOTICE_VERSION);
+  let outcome = await submitForm<{ folio: string }>("quote", body, key);
+  if (outcome.kind === "invalid" && outcome.errors.some((e) => e.code === "UNKNOWN_PRODUCT" || e.code === "UNKNOWN_VARIANT")) {
+    outcome = await submitForm<{ folio: string }>("quote", withoutCatalogLinks(body), `${key}-libre`);
+  }
+  if (outcome.kind === "saved") return { kind: "saved", folio: outcome.data.folio };
+  return { kind: outcome.kind };
 }

@@ -5,6 +5,8 @@ export const LEAD_UI = {
   es: {
     honeypot: "No completar este campo",
     connectionError: "No pudimos procesar la solicitud. Revisa tu conexión e inténtalo de nuevo.",
+    invalid: "El sistema no aceptó algunos datos. Revisa el RUC (11 dígitos), el correo y el celular, y vuelve a enviar.",
+    limited: "Enviaste varias solicitudes seguidas. Espera unos minutos y vuelve a intentarlo.",
     readyTitle: "Tu solicitud está lista para enviar",
     readyText: "El envío en línea aún no está conectado, así que todavía no se registró. Envíala por correo o WhatsApp: el mensaje ya incluye todos los datos del formulario.",
     byEmail: "Enviar por correo",
@@ -18,6 +20,8 @@ export const LEAD_UI = {
   en: {
     honeypot: "Do not fill in this field",
     connectionError: "We couldn’t process the request. Check your connection and try again.",
+    invalid: "The system didn’t accept some details. Check the RUC (11 digits), the email and the mobile number, and send it again.",
+    limited: "You sent several requests in a row. Wait a few minutes and try again.",
     readyTitle: "Your request is ready to send",
     readyText: "Online submission is not connected yet, so it has not been registered. Send it by email or WhatsApp: the message already includes all the form data.",
     byEmail: "Send by email",
