@@ -254,6 +254,41 @@
   color: var(--lp-orange);
 }
 
+/* Consulta registrada en el Backend: folio para seguimiento. */
+.ct-folio {
+  display: grid;
+  gap: 4px;
+  margin: 4px 0 0 !important;
+  padding: 14px 18px;
+  border: 1px solid var(--lg-line, #d6dde8);
+  border-radius: 10px;
+  color: var(--lp-text);
+  font-size: 13.5px;
+}
+
+.ct-folio strong {
+  color: var(--lp-ink);
+  font-size: 22px;
+  letter-spacing: 0.02em;
+}
+
+.ct-error {
+  margin: 22px 0 0 !important;
+  padding: 12px 16px;
+  border: 1px solid rgb(180 35 24 / 35%);
+  border-radius: 10px;
+  background: rgb(180 35 24 / 7%);
+  color: #b42318;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: justify;
+  hyphens: none;
+}
+
+html[data-lp-theme="dark"] .ct-error {
+  color: #fca5a5;
+}
+
 /* Oficinas */
 .ct-offices {
   display: flex;

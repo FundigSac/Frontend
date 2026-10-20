@@ -5,10 +5,15 @@ import Link from "next/link";
 import { useId, useState } from "react";
 import { mailtoUrl, whatsappUrl } from "../_legal/claim-message";
 import { useCopy } from "../_legal/use-copy";
+import { submitForm } from "@/modules/backend/client";
+import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
 import { buildContactMessage } from "./contact-message";
 import { CONTACT, type ReasonId } from "./copy";
 
 export type ContactPrefill = { reason?: ReasonId; document?: string };
+
+/** Motivo del sitio → motivo de la API (InquiryRequest.reason). */
+const INQUIRY_REASONS: Record<ReasonId, string> = { documentacion: "DOCUMENTATION", reunion: "MEETING" };
 
 function Field({ id, label, required, full, children }: { id: string; label: string; required?: boolean; full?: boolean; children: React.ReactNode }) {
   return (
@@ -29,11 +34,43 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
   const [length, setLength] = useState(defaultMessage.length);
   const [prepared, setPrepared] = useState<{ subject: string; body: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const text = (name: string) => String(data.get(name) ?? "");
+    if (sending) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const text = (name: string) => String(data.get(name) ?? "").trim();
+    setError(null);
+    // Con Backend: la consulta se registra con folio. Sin él (o si no responde), se prepara el mensaje como antes.
+    setSending(true);
+    const outcome = await submitForm<{ folio: string }>("inquiry", {
+      reason: prefill.reason ? INQUIRY_REASONS[prefill.reason] : "GENERAL",
+      fullName: text("fullName"),
+      companyName: text("companyName"),
+      position: text("position") || undefined,
+      email: text("email"),
+      phone: text("phone"),
+      message: text("message"),
+      requestedDocument: prefill.document?.slice(0, 200),
+      privacyNoticeVersion: PRIVACY_NOTICE_VERSION,
+      acceptPrivacyNotice: true,
+    });
+    setSending(false);
+    if (outcome.kind === "saved") {
+      form.reset();
+      setLength(0);
+      setSaved(outcome.data.folio);
+      window.requestAnimationFrame(() => document.getElementById("contacto-listo")?.scrollIntoView({ block: "center", behavior: "smooth" }));
+      return;
+    }
+    if (outcome.kind === "invalid" || outcome.kind === "limited") {
+      setError(outcome.kind === "limited" ? t.saved.limited : t.saved.invalid);
+      return;
+    }
     // El texto que lee el equipo va en español, sin importar el idioma de la pantalla.
     const reasonEs = prefill.reason ? CONTACT.es.form.reasons[prefill.reason] : "";
     setPrepared(buildContactMessage({ name: text("fullName"), company: text("companyName"), position: text("position"), email: text("email"), phone: text("phone"), message: text("message"), reason: reasonEs }));
@@ -53,7 +90,7 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
 
   return (
     <>
-      <form className="ct-form" id="contacto-form" aria-label={f.aria} onSubmit={onSubmit} hidden={prepared !== null}>
+      <form className="ct-form" id="contacto-form" aria-label={f.aria} onSubmit={onSubmit} hidden={prepared !== null || saved !== null} aria-busy={sending}>
         <p className="lg-eyebrow">{f.eyebrow}</p>
         <h2 className="ct-title">{f.title}</h2>
         <p className="ct-intro">{f.intro}</p>
@@ -81,8 +118,13 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
           </Field>
         </div>
 
+        {error && (
+          <p className="ct-error" role="alert">
+            {error}
+          </p>
+        )}
         <div className="ct-actions">
-          <button type="submit" className="lp-btn lp-btn--solid lp-btn--lg">
+          <button type="submit" className="lp-btn lp-btn--solid lp-btn--lg" disabled={sending}>
             {f.submit} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
           </button>
           <p className="ct-privacy">
@@ -95,6 +137,21 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
           </p>
         </div>
       </form>
+
+      {saved && (
+        <section className="ct-form ct-ready lg-offline" id="contacto-listo" aria-labelledby="contacto-listo-title">
+          <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
+          <h2 id="contacto-listo-title">{t.saved.title}</h2>
+          <p className="lg-text">{t.saved.text}</p>
+          <p className="ct-folio">
+            <span>{t.saved.folio}</span>
+            <strong>{saved}</strong>
+          </p>
+          <button type="button" className="lg-link-btn" onClick={() => setSaved(null)}>
+            {t.saved.again}
+          </button>
+        </section>
+      )}
 
       {prepared && (
         <section className="ct-form ct-ready lg-offline" id="contacto-listo" aria-labelledby="contacto-listo-title">

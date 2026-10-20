@@ -35,6 +35,7 @@ export const CONTACT: Pair<{
     documentMessage: string;
   };
   ready: { title: string; text: string; mail: string; whatsapp: string; copy: string; copied: string; preview: string; note: string; edit: string };
+  saved: { title: string; text: string; folio: string; again: string; invalid: string; limited: string };
   offices: {
     eyebrow: string;
     title: string;
@@ -88,6 +89,14 @@ export const CONTACT: Pair<{
       preview: "Ver el texto que se enviará",
       note: "Tu consulta queda registrada cuando recibimos el mensaje en {email} o por WhatsApp. Si no se abre tu aplicación de correo, usa “Copiar texto” y pégalo en un correo nuevo.",
       edit: "Editar mis datos",
+    },
+    saved: {
+      title: "Recibimos tu consulta",
+      text: "Quedó registrada y te enviamos una constancia a tu correo. El equipo de FUNDIGSAC te responderá a la brevedad.",
+      folio: "Folio de tu consulta",
+      again: "Enviar otra consulta",
+      invalid: "El sistema no aceptó algunos datos. Revisa el correo, el celular y que el mensaje tenga al menos 10 caracteres.",
+      limited: "Enviaste varias consultas seguidas. Espera unos minutos y vuelve a intentarlo.",
     },
     offices: {
       eyebrow: "Nuestras oficinas",
@@ -147,6 +156,14 @@ export const CONTACT: Pair<{
       preview: "See the text that will be sent",
       note: "Your inquiry is registered when we receive the message at {email} or on WhatsApp. If your email app does not open, use “Copy text” and paste it into a new email.",
       edit: "Edit my details",
+    },
+    saved: {
+      title: "We received your inquiry",
+      text: "It is registered and we sent a confirmation to your email. The FUNDIGSAC team will reply shortly.",
+      folio: "Inquiry reference",
+      again: "Send another inquiry",
+      invalid: "The system didn’t accept some details. Check the email, the mobile number and that the message has at least 10 characters.",
+      limited: "You sent several inquiries in a row. Wait a few minutes and try again.",
     },
     offices: {
       eyebrow: "Our offices",
