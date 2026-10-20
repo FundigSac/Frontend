@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 
 /** Sistema de movimiento (src/shared/motion): nada queda oculto, se respeta "reducir movimiento" y las piezas animadas
  *  del inicio (hero, menú móvil) siguen funcionando. */
@@ -6,17 +6,34 @@ const ROUTES = ["/", "/industrias", "/industrias/saneamiento", "/industrias/agri
 
 const consent = encodeURIComponent(JSON.stringify({ necessary: true, thirdParty: false, version: 2, policy: "2026-10", source: "banner", savedAt: new Date().toISOString() }));
 
-test.beforeEach(async ({ context, baseURL }) => {
-  await context.addCookies([{ name: "fundigsac-consent", value: consent, url: baseURL! }]);
+/** WebKit aplica `upgrade-insecure-requests` también a http://127.0.0.1: pediría todo por HTTPS y no cargaría el JS.
+ *  Solo para servidores locales sin TLS se quita esa directiva de la respuesta (el resto de la CSP se mantiene). */
+async function prepare(context: BrowserContext, baseURL: string, browserName: string) {
+  await context.addCookies([{ name: "fundigsac-consent", value: consent, url: baseURL }]);
+  if (browserName !== "webkit" || !baseURL.startsWith("http://")) return;
+  await context.route("**/*", async (route) => {
+    // Un prefetch todavía en vuelo cuando termina la prueba no debe romperla.
+    const response = await route.fetch().catch(() => null);
+    if (!response) return route.abort().catch(() => {});
+    const headers = response.headers();
+    if (headers["content-security-policy"]) headers["content-security-policy"] = headers["content-security-policy"].replace(/upgrade-insecure-requests;?\s*/, "");
+    await route.fulfill({ response, headers }).catch(() => {});
+  });
+}
+
+test.beforeEach(async ({ context, baseURL, browserName }) => {
+  await prepare(context, baseURL!, browserName);
 });
 
-/** Bloques revelables que siguen invisibles (opacidad < 0,1) en este momento. */
+/** Bloques revelables que siguen invisibles (opacidad < 0,1) en este momento. Las entradas en curso se dan por
+ *  terminadas: Firefox no avanza las animaciones de lo que está fuera de la vista y su estilo leído quedaría a medias. */
 const hiddenReveals = (page: Page) =>
-  page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>("[data-reveal]")]
+  page.evaluate(() => {
+    document.getAnimations().forEach((a) => a.effect?.getTiming().iterations !== Infinity && a.finish());
+    return [...document.querySelectorAll<HTMLElement>("[data-reveal]")]
       .filter((el) => Number(getComputedStyle(el).opacity) < 0.1)
-      .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].slice(0, 2).join(".")}`),
-  );
+      .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].slice(0, 2).join(".")}`);
+  });
 
 test.describe("movimiento", () => {
   for (const route of ROUTES) {
@@ -42,9 +59,9 @@ test.describe("movimiento", () => {
     await expect.poll(() => hiddenReveals(page), { timeout: 6000 }).toEqual([]);
   });
 
-  test("con movimiento reducido todo se ve desde el primer momento", async ({ browser, baseURL }) => {
+  test("con movimiento reducido todo se ve desde el primer momento", async ({ browser, baseURL, browserName }) => {
     const context = await browser.newContext({ reducedMotion: "reduce" });
-    await context.addCookies([{ name: "fundigsac-consent", value: consent, url: baseURL! }]);
+    await prepare(context, baseURL!, browserName);
     const page = await context.newPage();
     await page.goto(`${baseURL}/`, { waitUntil: "load" });
     expect(await page.evaluate(() => document.documentElement.hasAttribute("data-motion"))).toBe(false);
@@ -60,6 +77,8 @@ test.describe("movimiento", () => {
     await expect(page.locator(".lp-hero__stage")).toHaveAttribute("data-swapped", "");
     await expect(page.locator(".lp-hero__valve.is-leaving")).toHaveCount(1);
     await expect(active).not.toHaveAttribute("src", before!);
+    // Safari no enfoca un botón al pulsarlo: el foco llega por teclado, como con Tab.
+    await page.locator(".lp-hero__ctrl").nth(1).focus();
     await page.keyboard.press("ArrowLeft");
     await expect(active).toHaveAttribute("src", before!);
   });
