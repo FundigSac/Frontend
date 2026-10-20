@@ -40,9 +40,14 @@ function normalize(value: string) {
 export function W05Marcos() {
   const [lang] = useLang();
   const t = UI[lang];
-  const [group, setGroup] = useState<Group>("todas");
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortMode>("destacados");
+  const [group, setGroupState] = useState<Group>("todas");
+  const [query, setQueryState] = useState("");
+  const [sort, setSortState] = useState<SortMode>("destacados");
+  // Desde que la persona filtra, ordena o busca, las tarjetas que aparecen entran con una animación corta (motion.css).
+  const [filtered, setFiltered] = useState(false);
+  const setGroup = (next: Group) => { setFiltered(true); setGroupState(next); };
+  const setQuery = (next: string) => { setFiltered(true); setQueryState(next); };
+  const setSort = (next: SortMode) => { setFiltered(true); setSortState(next); };
 
   const visible = useMemo(() => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
@@ -71,7 +76,7 @@ export function W05Marcos() {
           <nav aria-label={t.crumbsLabel} className={styles.breadcrumbs}>
             <Link href="/">{t.home}</Link><span aria-hidden="true">›</span><Link href="/productos">{t.products}</Link><span aria-hidden="true">›</span><span aria-current="page">{t.title}</span>
           </nav>
-          <div className={styles.heroCopy}>
+          <div className={styles.heroCopy} data-enter>
             <p className={styles.eyebrow}>{t.eyebrow}</p>
             <h1 id="marcos-title">{t.title}</h1>
             <p className={styles.heroDescription}>{t.lead}</p>
@@ -82,7 +87,7 @@ export function W05Marcos() {
 
       <section className={styles.catalogSection} aria-label={t.region}>
         <div className={styles.contentWidth}>
-          <div className={styles.tabs} role="tablist" aria-label={t.tabsLabel}>
+          <div className={styles.tabs} data-reveal="stagger" role="tablist" aria-label={t.tabsLabel}>
             <button type="button" role="tab" aria-selected={group === "todas"} className={group === "todas" ? styles.tabActive : styles.tab} onClick={() => setGroup("todas")}>
               <span className={styles.tabThumb}><Image src="/media/marcos-page/tapa-circular.webp" alt="" width={56} height={56} /></span>
               <span className={styles.tabText}><strong>{t.all}</strong><small>{VALVES.length} {VALVES.length === 1 ? t.one : t.many}</small></span>
@@ -131,7 +136,7 @@ export function W05Marcos() {
           </div>
 
           {visible.length ? (
-            <div className={styles.grid}>
+            <div className={styles.grid} data-results data-filtered={filtered ? "" : undefined}>
               {visible.map((valve) => (
                 <article key={valve.id} className={styles.card}>
                   <Link href={sheetHref(valve, ITEM_TEXT[lang][valve.id].name)} className={styles.cardImage} aria-label={(valve.href === "/contacto" ? t.requestSheetOf : t.viewSheetOf) + ITEM_TEXT[lang][valve.id].name}>
@@ -161,7 +166,7 @@ export function W05Marcos() {
         </div>
         <div className={styles.contentWidth + " " + styles.adviceInner}>
           <span className={styles.adviceIcon} aria-hidden="true"><MessageCircleMore size={46} strokeWidth={1.6} /></span>
-          <div className={styles.adviceCopy}>
+          <div className={styles.adviceCopy} data-reveal>
             <h2 id="advice-title">{t.adviceTitle}</h2>
             <p>{t.adviceText}</p>
           </div>
@@ -172,16 +177,16 @@ export function W05Marcos() {
       <section className={styles.resourcesSection} aria-labelledby="marcos-resources-title">
         <div className={styles.resourcesBackdrop} aria-hidden="true" />
         <div className={styles.contentWidth + " " + styles.resourcesInner}>
-          <div className={styles.resourcesCopy}>
+          <div className={styles.resourcesCopy} data-reveal="stagger">
             <p className={styles.eyebrow}>{t.resEyebrow}</p>
             <h2 id="marcos-resources-title">{t.resTitle}</h2>
             <p>{t.resText}</p>
             <Link href="/contacto?motivo=documentacion" className={styles.darkButton}>{t.resCta} <ArrowRight size={16} aria-hidden="true" /></Link>
           </div>
-          <div className={styles.book}>
+          <div className={styles.book} data-reveal="right">
             <Image src="/media/marcos-page/libro.webp" alt={t.coverAlt} fill sizes="(min-width: 1100px) 420px, 70vw" />
           </div>
-          <article className={styles.downloadCard}>
+          <article className={styles.downloadCard} data-reveal style={{ ["--d" as string]: "140ms" }}>
             <h3>{t.cardTitle[0]}<br />{t.cardTitle[1]}</h3>
             <p>{t.cardText}</p>
             <Link href={catalogDocument.href} className={styles.downloadButton}>

@@ -127,6 +127,8 @@ export function W02Catalog({
   const t = UI[lang];
   const [query, setQuery] = useState(initialQuery);
   const [family, setFamily] = useState<FamilyFilter>(initialFamily);
+  // Desde que la persona filtra o busca, las tarjetas que aparecen entran con una animación corta (motion.css).
+  const [filtered, setFiltered] = useState(false);
   // Cambia al navegar con un enlace de la propia página (p. ej. /productos?familia=accesorios-hdpe): el componente sigue
   // montado, así que el estado inicial no se vuelve a leer. Las escrituras de updateAddress también pasan por aquí, pero
   // la dirección ya coincide con el estado y no cambia nada.
@@ -184,6 +186,7 @@ export function W02Catalog({
   }
 
   function pickFamily(next: FamilyFilter) {
+    setFiltered(true);
     setFamily(next);
     window.setTimeout(() => {
       document.getElementById("productos-destacados")?.scrollIntoView({
@@ -203,14 +206,14 @@ export function W02Catalog({
           <nav aria-label={t.crumbsLabel} className={styles.breadcrumbs}>
             <Link href="/">{t.home}</Link><span aria-hidden="true">›</span><span aria-current="page">{t.products}</span>
           </nav>
-          <div className={styles.heroCopy}>
+          <div className={styles.heroCopy} data-enter>
           <h1 id="catalog-title">{t.title}</h1>
             <p className={styles.heroDescription}>{t.lead}</p>
             <form role="search" className={styles.searchForm} onSubmit={submitSearch}>
               <label className={styles.searchField}>
                 <span className="sr-only">{t.searchLabel}</span>
                 <span aria-hidden="true" className={styles.searchIcon}><Search size={19} strokeWidth={1.8} /></span>
-                <input type="search" name="q" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
+                <input type="search" name="q" value={query} onChange={(event) => { setFiltered(true); setQuery(event.target.value); }} placeholder={t.searchPlaceholder} autoComplete="off" />
               </label>
               <button type="submit" className={styles.searchButton}>{t.search}</button>
             </form>
@@ -230,17 +233,17 @@ export function W02Catalog({
         <div className={styles.contentWidth}>
           {/* Título solo para lectores de pantalla: las tarjetas usan h3 y sin él la jerarquía saltaba de h1 a h3. */}
           <h2 id="families-title" className="sr-only">{t.familiesTitle}</h2>
-          <div className={styles.categoryGrid}>{FAMILIES.map((entry) => <CategoryCard key={entry.id} family={entry} />)}</div>
+          <div className={styles.categoryGrid} data-reveal="stagger">{FAMILIES.map((entry) => <CategoryCard key={entry.id} family={entry} />)}</div>
         </div>
       </section>
 
       <section className={styles.benefitsSection} aria-labelledby="benefits-title">
         <div className={styles.contentWidth + " " + styles.benefitsInner}>
-          <div className={styles.benefitIntro}>
+          <div className={styles.benefitIntro} data-reveal>
             <h2 id="benefits-title">{t.benefitsTitle[0]}<br />{t.benefitsTitle[1]}</h2>
             <p>{t.benefitsLead}</p>
           </div>
-          <div className={styles.benefitList}>
+          <div className={styles.benefitList} data-reveal="stagger">
             <article className={styles.benefitItem}><ShieldCheck aria-hidden="true" /><div><h3>{t.benefits[0].title}</h3><p>{t.benefits[0].text}</p></div></article>
             <article className={styles.benefitItem}><FileCheck2 aria-hidden="true" /><div><h3>{t.benefits[1].title}</h3><p>{t.benefits[1].text}</p></div></article>
             <article className={styles.benefitItem}><Headphones aria-hidden="true" /><div><h3>{t.benefits[2].title}</h3><p>{t.benefits[2].text}</p></div></article>
@@ -250,12 +253,12 @@ export function W02Catalog({
 
       <section id="productos-destacados" className={styles.featuredSection} aria-labelledby="featured-title">
         <div className={styles.contentWidth}>
-          <div className={styles.sectionHeading}>
+          <div className={styles.sectionHeading} data-reveal>
             <div><h2 id="featured-title">{t.featuredTitle}</h2></div>
             <Link href="/productos" className={styles.textLink}>{t.viewAll} <ArrowRight size={16} /></Link>
           </div>
           {visibleProducts.length ? (
-            <div className={styles.productGrid}>
+            <div className={styles.productGrid} data-results data-filtered={filtered ? "" : undefined}>
               {visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}
             </div>
           ) : (
@@ -271,17 +274,17 @@ export function W02Catalog({
       <section className={styles.resourcesSection} aria-labelledby="resources-title">
         <div className={styles.resourcesBackdrop} aria-hidden="true" />
         <div className={styles.contentWidth + " " + styles.resourcesInner}>
-          <div className={styles.resourcesCopy}>
+          <div className={styles.resourcesCopy} data-reveal="stagger">
             <p className={styles.eyebrow}>{t.resEyebrow}</p>
             <h2 id="resources-title">{t.resTitle}</h2>
             <p>{t.resText}</p>
             <Link href="/contacto?motivo=documentacion" className={styles.darkButton}>{t.resCta} <ArrowRight size={15} /></Link>
           </div>
-          <div className={styles.catalogMockup}>
+          <div className={styles.catalogMockup} data-reveal="right">
             <Image src="/media/productos-page/catalogo-general-book-with-logo.png" alt={t.coverAlt} fill sizes="(min-width: 1200px) 370px, (min-width: 640px) 380px, 80vw" className={styles.catalogCover} />
             <Image src="/media/productos-page/catalogo-general-cover-cutout.png" alt="" aria-hidden="true" fill sizes="(min-width: 1200px) 370px, (min-width: 640px) 380px, 80vw" className={styles.catalogCoverDark} />
           </div>
-          <div className={styles.resourcesAside}>
+          <div className={styles.resourcesAside} data-reveal style={{ ["--d" as string]: "140ms" }}>
             <article className={styles.downloadCard}>
               <h3>{t.cardTitle}</h3>
               <p>{t.cardText}</p>
@@ -296,7 +299,7 @@ export function W02Catalog({
       </section>
 
       <section className={styles.supportSection} aria-labelledby="support-title">
-        <div className={styles.supportInner}>
+        <div className={styles.supportInner} data-reveal>
           <span className={styles.supportIcon} aria-hidden="true"><MessageCircle size={23} strokeWidth={1.8} /></span>
           <div className={styles.supportCopy}><h2 id="support-title">{t.supportTitle}</h2><p>{t.supportText}</p></div>
           <div className={styles.supportActions}><Link href="/cotizar" className={styles.darkButton}>{t.advice} <ArrowRight size={15} /></Link><Link href="/contacto" className={styles.secondaryButton}>{t.contact} <ArrowRight size={15} /></Link></div>
