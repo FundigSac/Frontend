@@ -95,6 +95,8 @@ export type DeletionCopy = {
     privacy: { pre: string; link: string; post: string };
     submit: string;
     ready: { title: string; text: string; mail: string; whatsapp: string; copy: string; copied: string; preview: string; note: string; edit: string };
+    submitOnline: string;
+    saved: { title: string; text: string; again: string; invalid: string; limited: string };
   };
   side: {
     aria: string;
@@ -241,6 +243,14 @@ export const DELETION: Pair<DeletionCopy> = {
         preview: "Ver el texto de la solicitud",
         note: "Si tu programa de correo no se abre, copia el texto y envíalo a {email}.",
         edit: "Editar la solicitud",
+      },
+      submitOnline: "Enviar mi solicitud",
+      saved: {
+        title: "Recibimos tu solicitud",
+        text: "Quedó registrada con este código de seguimiento. La atenderemos en un plazo máximo de 10 días hábiles y te escribiremos a {email}; ya te enviamos una constancia.",
+        again: "Enviar otra solicitud",
+        invalid: "El sistema no aceptó algunos datos. Revisa tu nombre y tu correo e inténtalo de nuevo.",
+        limited: "Enviaste varias solicitudes seguidas. Espera unos minutos y vuelve a intentarlo.",
       },
     },
     side: {
@@ -400,6 +410,14 @@ export const DELETION: Pair<DeletionCopy> = {
         preview: "View the request text",
         note: "If your email app does not open, copy the text and send it to {email}.",
         edit: "Edit the request",
+      },
+      submitOnline: "Send my request",
+      saved: {
+        title: "We received your request",
+        text: "It is registered with this tracking code. We will handle it within 10 business days at most and write to you at {email}; we already sent you a confirmation.",
+        again: "Send another request",
+        invalid: "The system didn’t accept some details. Check your name and email and try again.",
+        limited: "You sent several requests in a row. Wait a few minutes and try again.",
       },
     },
     side: {

@@ -26,6 +26,7 @@ import { clearStoredConversation, storedConversationLength } from "@/shared/assi
 import { mailtoUrl, whatsappUrl } from "./claim-message";
 import type { DeletionCopy } from "./deletion-copy";
 import { buildDeletionMessage, deletionReference, type DeletionMethod, type DeletionScope } from "./deletion-message";
+import { submitForm } from "@/modules/backend/client";
 
 const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -255,13 +256,16 @@ type Prepared = { reference: string; subject: string; body: string };
 
 export function DeletionForm({ t, email, whatsappNumber }: { t: DeletionCopy["form"]; email: string; whatsappNumber: string }) {
   const uid = useId();
-  const { user } = useAuth();
+  const { user, accounts } = useAuth();
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [details, setDetails] = useState("");
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [copied, setCopied] = useState(false);
   const filled = useRef(false);
+  const [saved, setSaved] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const sending = useRef(false);
 
   // Con sesión iniciada se completan nombre y correo (una sola vez, sin pisar lo que la persona ya escribió).
   useEffect(() => {
@@ -274,10 +278,12 @@ export function DeletionForm({ t, email, whatsappNumber }: { t: DeletionCopy["fo
     return () => window.cancelAnimationFrame(id);
   }, [user]);
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (sending.current) return;
     const data = new FormData(event.currentTarget);
     const reference = deletionReference();
+    const scope = String(data.get("alcance")) as DeletionScope;
     const message = buildDeletionMessage(
       {
         name,
@@ -289,6 +295,27 @@ export function DeletionForm({ t, email, whatsappNumber }: { t: DeletionCopy["fo
       },
       reference,
     );
+    setError(null);
+    // Con Backend, la solicitud de supresión (o de oposición a publicidad) queda registrada con folio y plazo legal;
+    // el texto preparado es el mismo que verá el equipo de privacidad. Sin Backend se envía por correo o WhatsApp.
+    sending.current = true;
+    const outcome = await submitForm<{ folio: string }>("privacy-request", {
+      type: scope === "marketing" ? "OPPOSITION" : "ACCOUNT_DELETION",
+      fullName: name.trim().slice(0, 160),
+      email: mail.trim(),
+      details: message.body.slice(0, 4000),
+      acceptPrivacyNotice: Boolean(data.get("confirmo")),
+    });
+    sending.current = false;
+    if (outcome.kind === "saved") {
+      setSaved(outcome.data.folio);
+      window.requestAnimationFrame(() => document.getElementById("solicitud-registrada")?.scrollIntoView({ block: "center", behavior: reduceMotion() ? "auto" : "smooth" }));
+      return;
+    }
+    if (outcome.kind === "invalid" || outcome.kind === "limited") {
+      setError(outcome.kind === "limited" ? t.saved.limited : t.saved.invalid);
+      return;
+    }
     setPrepared({ reference, ...message });
     setCopied(false);
     window.requestAnimationFrame(() => {
@@ -312,7 +339,7 @@ export function DeletionForm({ t, email, whatsappNumber }: { t: DeletionCopy["fo
 
   return (
     <>
-      <form className="lg-form-card dl-form" aria-label={t.aria} onSubmit={onSubmit} hidden={prepared !== null}>
+      <form className="lg-form-card dl-form" aria-label={t.aria} onSubmit={onSubmit} hidden={prepared !== null || saved !== null}>
         <p className="lg-eyebrow">{t.eyebrow}</p>
         <h2 id="dl-form-title">{t.title}</h2>
         <p>{t.intro}</p>
@@ -388,12 +415,32 @@ export function DeletionForm({ t, email, whatsappNumber }: { t: DeletionCopy["fo
           {t.privacy.pre}<Link className="lg-link-inline" href="/privacidad">{t.privacy.link}</Link>{t.privacy.post}
         </p>
 
+        {error && (
+          <p className="lg-alert" role="alert">
+            {error}
+          </p>
+        )}
         <div className="lg-form-actions">
           <button type="submit" className="lp-btn lp-btn--solid lp-btn--lg">
-            {t.submit} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
+            {accounts ? t.submitOnline : t.submit} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
           </button>
         </div>
       </form>
+
+      {saved && (
+        <section className="lg-form-card dl-ready" id="solicitud-registrada" tabIndex={-1} role="status" aria-labelledby="dl-saved-title">
+          <svg className="dl-ready__check" viewBox="0 0 52 52" aria-hidden="true">
+            <circle cx="26" cy="26" r="24" />
+            <path d="M15 27.5 22.5 35 37.5 18" />
+          </svg>
+          <h2 id="dl-saved-title">{t.saved.title}</h2>
+          <p className="lg-text">{t.saved.text.replace("{email}", mail.trim())}</p>
+          <code className="dl-ready__code">{saved}</code>
+          <button type="button" className="lg-link-btn" onClick={() => setSaved(null)}>
+            {t.saved.again}
+          </button>
+        </section>
+      )}
 
       {prepared && (
         <section className="lg-form-card dl-ready" id="solicitud-lista" tabIndex={-1} aria-labelledby="dl-ready-title">
