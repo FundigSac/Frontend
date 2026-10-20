@@ -102,9 +102,9 @@
 .gallery {
   display: grid;
   min-width: 0;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: 84px minmax(0, 1fr);
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
 }
 .gallery > .stage { grid-column: 2; grid-row: 1; }
 .gallery > .thumbs { grid-column: 1; grid-row: 1; }
@@ -184,47 +184,46 @@
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
-  padding: 2px;
 }
 .thumbList { display: contents; }
 
 .thumb,
 .thumbActive {
   position: relative;
-  width: 68px;
-  height: 68px;
-  flex: 0 0 auto;
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 0;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--studio);
   cursor: pointer;
   transition: transform 0.3s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .thumb img,
-.thumbActive img { object-fit: contain; padding: 7px; }
+.thumbActive img { object-fit: contain; padding: 9px; }
 .thumb:hover { transform: translateY(-2px); border-color: var(--ink-muted); }
 .thumbActive { border-color: var(--sel); box-shadow: 0 0 0 1.5px var(--sel); }
 
 .thumb3d,
 .thumb3dOn {
   display: inline-flex;
-  width: 68px;
-  height: 68px;
-  flex: 0 0 auto;
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--card);
   color: var(--ink);
   cursor: pointer;
   font: inherit;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.3s var(--ease);
@@ -1125,6 +1124,10 @@
   .gallery > .stage,
   .gallery > .thumbs { grid-column: 1; grid-row: auto; }
   .thumbs { flex-direction: row; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: thin; }
+  .thumb,
+  .thumbActive,
+  .thumb3d,
+  .thumb3dOn { width: 72px; height: 72px; flex: 0 0 auto; }
   .stage { aspect-ratio: 1 / 0.8; }
   .info h1 { max-width: none; }
   .descGrid { grid-template-columns: minmax(0, 1fr); }
