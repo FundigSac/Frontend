@@ -1,4 +1,5 @@
 import "server-only";
+import { NextResponse } from "next/server";
 
 /**
  * Cliente del Backend FUNDIGSAC (API Spring Boot en Docker) para el servidor de Next.js (patrón BFF). El navegador nunca
@@ -90,14 +91,15 @@ export async function callBackend<T>(path: string, options: CallOptions = {}): P
 }
 
 /** Respuesta JSON del BFF hacia el navegador: nunca reenvía detalles internos, solo el código y los errores de campo. */
-export function relay(result: BackendResult<unknown>, okBody?: unknown): Response {
+export function relay(result: BackendResult<unknown>, okBody?: unknown): NextResponse {
   const headers = { "Cache-Control": "no-store" };
-  if (result.ok) return Response.json(okBody ?? result.data ?? { ok: true }, { status: result.status, headers });
+  // 204 no admite cuerpo: el navegador recibe 200 con { ok: true } para tratar todas las respuestas igual.
+  if (result.ok) return NextResponse.json(okBody ?? result.data ?? { ok: true }, { status: result.status === 204 ? 200 : result.status, headers });
   const status = result.reason === "http" ? result.status : 503;
   const body = {
     error: result.reason === "http" ? (result.problem.code ?? "ERROR") : result.reason.toUpperCase(),
     message: result.problem.detail,
     errors: (result.problem.errors ?? []).map((e) => ({ field: e.field, code: e.code, message: e.message })),
   };
-  return Response.json(body, { status, headers: result.retryAfter ? { ...headers, "Retry-After": result.retryAfter } : headers });
+  return NextResponse.json(body, { status, headers: result.retryAfter ? { ...headers, "Retry-After": result.retryAfter } : headers });
 }

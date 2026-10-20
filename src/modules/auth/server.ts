@@ -3,8 +3,9 @@ import type { NextRequest } from "next/server";
 import { isSameOriginRequest } from "@/shared/security/request-guard";
 
 /**
- * Sesión propia con Google (OAuth 2.0 + OIDC, flujo de código con PKCE). Sin base de datos ni dependencias:
- * la sesión es una cookie httpOnly firmada con HMAC-SHA256 (AUTH_SECRET) con los datos básicos del perfil.
+ * Sesión del sitio: con Google (OAuth 2.0 + OIDC, flujo de código con PKCE) o, con el Backend conectado, con correo y
+ * contraseña. Es una cookie httpOnly firmada con HMAC-SHA256 (AUTH_SECRET) con los datos básicos del perfil; los tokens
+ * de la API van aparte, en la cookie de src/modules/backend/session.ts.
  * Las dos cookies (sesión y estado del flujo) son técnicas y necesarias; no requieren consentimiento (ver /cookies).
  */
 
@@ -13,7 +14,8 @@ export const FLOW_COOKIE = "fundigsac-oauth";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 30;
 export const FLOW_MAX_AGE = 60 * 10;
 
-export type SessionUser = { name: string; email: string; picture?: string };
+/** `api`: la sesión también está abierta en el Backend (hay tokens de la API en su cookie). */
+export type SessionUser = { name: string; email: string; picture?: string; api?: boolean };
 export type FlowState = { state: string; verifier: string; nonce: string; next: string; from: "login" | "registro" };
 
 const encoder = new TextEncoder();
@@ -42,12 +44,18 @@ export async function sha256(text: string): Promise<string> {
 
 export type GoogleConfig = { clientId: string; clientSecret: string; secret: string };
 
+/** Secreto que firma las cookies de sesión (mínimo 32 caracteres), o null si falta. */
+export function authSecret(): string | null {
+  const secret = process.env.AUTH_SECRET?.trim();
+  return secret && secret.length >= 32 ? secret : null;
+}
+
 /** null si falta alguna variable: el botón de Google lleva entonces a /login con un aviso en lugar de fallar. */
 export function googleConfig(): GoogleConfig | null {
   const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
-  const secret = process.env.AUTH_SECRET?.trim();
-  return clientId && clientSecret && secret && secret.length >= 32 ? { clientId, clientSecret, secret } : null;
+  const secret = authSecret();
+  return clientId && clientSecret && secret ? { clientId, clientSecret, secret } : null;
 }
 
 async function hmacKey(secret: string, usage: "sign" | "verify") {
@@ -75,12 +83,13 @@ export async function verify<T extends object>(secret: string, token: string | u
   }
 }
 
-/** Usuario de la sesión actual, o null si no hay cookie válida (o el inicio de sesión no está configurado). */
+/** Usuario de la sesión actual, o null si no hay cookie válida (o falta AUTH_SECRET). */
 export async function readSession(request: NextRequest): Promise<SessionUser | null> {
-  const config = googleConfig();
-  if (!config) return null;
-  const data = await verify<SessionUser>(config.secret, request.cookies.get(SESSION_COOKIE)?.value);
-  return data && typeof data.email === "string" && typeof data.name === "string" ? { name: data.name, email: data.email, ...(data.picture ? { picture: data.picture } : {}) } : null;
+  const secret = authSecret();
+  if (!secret) return null;
+  const data = await verify<SessionUser>(secret, request.cookies.get(SESSION_COOKIE)?.value);
+  if (!data || typeof data.email !== "string" || typeof data.name !== "string") return null;
+  return { name: data.name, email: data.email, ...(data.picture ? { picture: data.picture } : {}), ...(data.api === true ? { api: true } : {}) };
 }
 
 const isLoopback = (host: string) => host === "127.0.0.1" || host === "[::1]" || host === "::1";

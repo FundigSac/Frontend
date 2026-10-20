@@ -62,7 +62,7 @@ export function PasswordField(props: Omit<FieldProps, "type" | "trailing"> & { t
 /** Criterios de contraseña segura y puntaje de 0 a 4. */
 export function passwordChecks(value: string) {
   return {
-    length: value.length >= 8,
+    length: value.length >= 12,
     upper: /[a-z]/.test(value) && /[A-Z]/.test(value),
     number: /\d/.test(value),
     symbol: /[^A-Za-z0-9]/.test(value),

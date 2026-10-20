@@ -3,13 +3,14 @@
 import { useSyncExternalStore } from "react";
 
 export type AuthUser = { name: string; email: string; picture?: string };
-type AuthState = { status: "loading" | "ready"; user: AuthUser | null };
+/** `accounts`: el registro e ingreso con correo están activos (hay Backend conectado). */
+type AuthState = { status: "loading" | "ready"; user: AuthUser | null; accounts: boolean };
 
 /**
  * Estado de la sesión en el navegador. La cookie es httpOnly, así que se consulta /api/auth/session una sola vez
  * (y se comparte entre cabecera y pantallas de acceso); las páginas siguen siendo estáticas.
  */
-const SERVER_STATE: AuthState = { status: "loading", user: null };
+const SERVER_STATE: AuthState = { status: "loading", user: null, accounts: false };
 let state: AuthState = SERVER_STATE;
 let started = false;
 const listeners = new Set<() => void>();
@@ -22,10 +23,10 @@ function set(next: AuthState) {
 async function load() {
   try {
     const res = await fetch("/api/auth/session", { cache: "no-store", credentials: "same-origin" });
-    const data = (await res.json()) as { user?: AuthUser | null };
-    set({ status: "ready", user: data.user ?? null });
+    const data = (await res.json()) as { user?: AuthUser | null; accounts?: boolean };
+    set({ status: "ready", user: data.user ?? null, accounts: data.accounts === true });
   } catch {
-    set({ status: "ready", user: null });
+    set({ status: "ready", user: null, accounts: false });
   }
 }
 
@@ -40,11 +41,16 @@ function subscribe(listener: () => void) {
   };
 }
 
+/** Tras ingresar con correo, la cabecera y las pantallas muestran la sesión sin recargar la página. */
+export function setSignedIn(user: AuthUser) {
+  set({ ...state, status: "ready", user });
+}
+
 export async function signOut(): Promise<boolean> {
   try {
     const res = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
     if (!res.ok) return false;
-    set({ status: "ready", user: null });
+    set({ ...state, status: "ready", user: null });
     return true;
   } catch {
     return false;
