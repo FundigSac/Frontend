@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { submitForm } from "@/modules/backend/client";
 import {
   CONSENT_COOKIE,
   buildConsentCookie,
@@ -45,6 +46,13 @@ export function saveConsent(choices: ConsentChoices, source: ConsentSource = "ba
   cachedRaw = null;
   listeners.forEach((l) => l());
   window.dispatchEvent(new CustomEvent<ConsentRecord>(EVENT, { detail: record }));
+  // Con Backend, cada decisión queda además registrada como evidencia (fecha, versión de la política, origen y
+  // elecciones), sin identificador del navegador. Si no hay Backend, la cookie sigue siendo la constancia.
+  void submitForm("consent", {
+    choices: { necessary: true, thirdParty: record.thirdParty },
+    policyVersion: record.policy,
+    source: record.source.toUpperCase(),
+  });
   return record;
 }
 
