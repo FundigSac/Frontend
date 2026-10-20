@@ -158,7 +158,7 @@ test.describe("cookies: idioma, tema y pantallas", () => {
   test("la política en inglés muestra la tabla y el marco legal", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("fundigsac-lang", "en"));
     await page.goto("/cookies");
-    await expect(page.getByRole("table", { name: "What we store on your device" }).getByRole("row")).toHaveCount(8);
+    await expect(page.getByRole("table", { name: "What we store on your device" }).getByRole("row")).toHaveCount(10);
     await expect(page.getByRole("heading", { name: "Your consent and your rights" })).toBeAttached();
   });
 
