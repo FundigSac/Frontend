@@ -14,6 +14,9 @@ import {
   type FlowState,
   type SessionUser,
 } from "@/modules/auth/server";
+import { PRIVACY_NOTICE_VERSION, fetchMe, openSession } from "@/modules/backend/account";
+import { backendEnabled, callBackend } from "@/modules/backend/server";
+import type { ApiTokens } from "@/modules/backend/session";
 
 /** Callback de Google: valida state (CSRF), canjea el código con PKCE, valida el id_token y abre la sesión. */
 export const runtime = "nodejs";
@@ -92,8 +95,19 @@ export async function GET(request: NextRequest) {
     ...(claims.picture && GOOGLE_PICTURE.test(claims.picture) ? { picture: claims.picture.slice(0, 300) } : {}),
   };
   const response = NextResponse.redirect(new URL(safeNext(flow.next), origin), 303);
-  response.cookies.set(SESSION_COOKIE, await sign(config.secret, user, SESSION_MAX_AGE), cookieOptions(request, SESSION_MAX_AGE));
   response.cookies.delete({ name: FLOW_COOKIE, path: "/api/auth" });
   response.headers.set("Cache-Control", "no-store");
+
+  // Con Backend: la API valida el mismo id_token con las claves de Google y crea o vincula la cuenta de cliente. Si la
+  // API no responde o no tiene Google habilitado, se mantiene la sesión solo con Google (como antes de conectarla).
+  if (idToken && backendEnabled()) {
+    const api = await callBackend<ApiTokens>("/api/v1/auth/google", {
+      request,
+      body: { idToken, privacyNoticeVersion: PRIVACY_NOTICE_VERSION, source: flow.from === "registro" ? "registro" : "login" },
+    });
+    const me = api.ok ? await fetchMe(request, api.data.accessToken) : null;
+    if (api.ok && me?.ok) return openSession(response, request, api.data, me.data, true, user.picture);
+  }
+  response.cookies.set(SESSION_COOKIE, await sign(config.secret, user, SESSION_MAX_AGE), cookieOptions(request, SESSION_MAX_AGE));
   return response;
 }

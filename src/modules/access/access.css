@@ -1184,3 +1184,12 @@ html[data-lp-theme="dark"] .ac-done h2 {
     transition: none;
   }
 }
+
+/* Aviso legal bajo «Continuar con Google»: el primer ingreso crea la cuenta y registra la aceptación (Ley 29733). */
+.ac-legal {
+  margin: 10px 0 0;
+  color: var(--ac-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}

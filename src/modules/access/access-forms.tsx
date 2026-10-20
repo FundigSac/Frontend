@@ -148,6 +148,29 @@ function ResendVerification({ t, email }: { t: AccessCopy; email: string }) {
   );
 }
 
+/** Con cuentas activas, el primer ingreso con Google crea la cuenta: se informa qué se acepta al continuar. */
+function GoogleConsent({ t }: { t: AccessCopy }) {
+  const { accounts } = useAuth();
+  if (!accounts) return null;
+  return (
+    <p className="ac-legal">
+      {t.googleTerms("§a", "§b").map((part, i) =>
+        part === "§a" ? (
+          <Link key={i} href="/terminos" className="ac-link">
+            {t.termsLink}
+          </Link>
+        ) : part === "§b" ? (
+          <Link key={i} href="/privacidad" className="ac-link">
+            {t.privacyLink}
+          </Link>
+        ) : (
+          part
+        ),
+      )}
+    </p>
+  );
+}
+
 // ───────── Iniciar sesión ─────────
 export function LoginScreen() {
   const [lang] = useLang();
@@ -207,6 +230,7 @@ export function LoginScreen() {
       </form>
       <Divider>{t.or}</Divider>
       <SocialButtons labels={{ google: t.google, connecting: t.auth.connecting }} from="login" lang={lang} />
+      <GoogleConsent t={t} />
       <p className="ac-switch">
         {t.noAccount} <Link href={next ? `/registro?next=${encodeURIComponent(next)}` : "/registro"}>{t.signupHere}</Link>
       </p>
@@ -285,6 +309,7 @@ export function RegisterScreen() {
       <CardHead title={t.register.title} lead={t.register.lead} />
       <AuthError t={t} code={authError} />
       <SocialButtons labels={{ google: t.googleSignup, connecting: t.auth.connecting }} from="registro" lang={lang} />
+      <GoogleConsent t={t} />
       <Divider>{t.orEmail}</Divider>
       <form className="ac-form" onSubmit={onSubmit} noValidate>
         <div className="ac-grid">
