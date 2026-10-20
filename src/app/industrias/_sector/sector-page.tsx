@@ -3,7 +3,6 @@
 import { SectorImage, type PreparedImage } from "./sector-image";
 import Link from "next/link";
 import { ArrowRight, FileText, LayoutGrid, type LucideIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
 import { BLUR } from "@/shared/media/blur";
 
 /** Textos de una página de sector (saneamiento, minería…), en un idioma. */
@@ -27,7 +26,6 @@ export type SectorMedia = {
   hero: string;
   blur?: Record<string, string>;
   preparedImages?: Record<string, PreparedImage>;
-  reveal?: boolean;
   featured: string;
   featuredSizes?: string;
   features: readonly LucideIcon[];
@@ -38,47 +36,12 @@ export type SectorMedia = {
   cta: string;
 };
 
-/** Revela cada elemento `[data-reveal]` al entrar en pantalla (respeta movimiento reducido). */
-function useReveal(enabled = true) {
-  const root = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = root.current;
-    if (!el || !enabled) return;
-    const nodes = el.querySelectorAll<HTMLElement>("[data-reveal]");
-    // Lo que ya está en el primer pantallazo se muestra de inmediato (sin parpadeo); solo lo de abajo se anima al llegar.
-    const fold = window.innerHeight * 0.92;
-    nodes.forEach((n) => {
-      if (n.getBoundingClientRect().top <= fold) n.classList.add("is-in");
-    });
-    el.classList.add("ag-js");
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
-      nodes.forEach((n) => n.classList.add("is-in"));
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("is-in");
-          io.unobserve(e.target);
-        }
-      }),
-      { threshold: 0.15, rootMargin: "0px 0px -6% 0px" },
-    );
-    nodes.forEach((n) => {
-      if (!n.classList.contains("is-in")) io.observe(n);
-    });
-    return () => io.disconnect();
-  }, [enabled]);
-  return root;
-}
-
 export function SectorPage({ t, media }: { t: SectorCopy; media: SectorMedia }) {
-  const root = useReveal(media.reveal !== false);
   const id = media.id;
   const blur = media.blur ?? BLUR;
 
   return (
-    <main className={`lp ag sa sa--${id}`} ref={root}>
+    <main className={`lp ag sa sa--${id}`}>
       {/* Hero */}
       <section className="ag-hero sa-hero" aria-labelledby={`${id}-title`}>
         <SectorImage prepared={media.preparedImages?.[media.hero]} className="ag-hero__photo sa-hero__photo" src={media.hero} alt={t.hero.alt} fill loading="eager" fetchPriority="high" quality={75} placeholder="blur" blurDataURL={blur[media.hero]} sizes="100vw" />

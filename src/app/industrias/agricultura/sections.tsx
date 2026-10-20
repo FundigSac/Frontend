@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Droplet, FileText, Settings, ShieldCheck } from "lucide-react";
-import { useEffect, useRef } from "react";
 import { useAgri } from "./copy";
 import { BLUR } from "@/shared/media/blur";
 import { HeroMotion, type HeroVideo } from "./hero-motion";
@@ -21,39 +20,11 @@ const LINE_ITEMS = [
   { href: "/productos/valvulas", image: "/media/agricultura/valvula-retencion.webp" },
 ] as const;
 
-/** Revela cada elemento `[data-reveal]` al entrar en pantalla (respeta movimiento reducido). */
-function useReveal() {
-  const root = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const el = root.current;
-    if (!el) return;
-    const nodes = el.querySelectorAll<HTMLElement>("[data-reveal]");
-    el.classList.add("ag-js");
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
-      nodes.forEach((n) => n.classList.add("is-in"));
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("is-in");
-          io.unobserve(e.target);
-        }
-      }),
-      { threshold: 0.15, rootMargin: "0px 0px -6% 0px" },
-    );
-    nodes.forEach((n) => io.observe(n));
-    return () => io.disconnect();
-  }, []);
-  return root;
-}
-
 export function AgricultureSections() {
   const t = useAgri();
-  const root = useReveal();
 
   return (
-    <main className="lp ag" ref={root}>
+    <main className="lp ag">
       {/* Hero */}
       <section className="ag-hero" aria-labelledby="ag-title">
         <Image className="ag-hero__photo" src="/media/agricultura/hero-poster-v2.webp" alt={t.hero.alt} fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/agricultura/hero-poster-v2.webp"]} sizes="100vw" />
