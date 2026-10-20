@@ -12,6 +12,8 @@ export function LegalMotion() {
     const root = document.querySelector<HTMLElement>("main.lg");
     if (!root || !("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // El margen superior enorme cuenta como visto lo que quedó arriba: un salto (tecla Fin, ancla, scroll rápido) que
+    // pasa por encima de un bloque sin cruzarlo no lo deja invisible para siempre.
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -20,7 +22,7 @@ export function LegalMotion() {
           io.unobserve(entry.target);
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.06 },
+      { rootMargin: "100000px 0px -8% 0px", threshold: 0 },
     );
 
     const fold = window.innerHeight * 0.92;
