@@ -274,7 +274,7 @@ function Fields() {
 }
 
 /**
- * Modo sin registro en línea (no hay base de datos configurada): el formulario se ve y valida igual, y al enviar
+ * Modo sin registro en línea (sin Backend configurado): el formulario se ve y valida igual, y al enviar
  * prepara el texto del reclamo para mandarlo por correo o WhatsApp. No se inventa ningún folio.
  */
 function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {

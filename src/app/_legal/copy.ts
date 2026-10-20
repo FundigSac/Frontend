@@ -197,7 +197,9 @@ export const COOKIES: Pair<{
       head: ["Nombre", "Quién", "Para qué", "Duración", "Tipo"],
       rows: [
         ["fundigsac-consent", "FUNDIGSAC (propia)", "Recordar tu elección sobre cookies, con fecha y versión de esta política.", "180 días", "Necesaria · cookie"],
-        ["fundigsac-session", "FUNDIGSAC (propia)", "Mantener tu sesión iniciada con Google (nombre, correo y foto de tu perfil, firmados). Solo se crea si eliges iniciar sesión.", "30 días o hasta cerrar sesión", "Necesaria · cookie"],
+        ["fundigsac-session", "FUNDIGSAC (propia)", "Mantener tu sesión iniciada con tu correo o con Google (nombre, correo y foto de tu perfil, firmados). Solo se crea si eliges iniciar sesión.", "Hasta 30 días (14 con correo y contraseña) o hasta cerrar sesión; sin «Recordarme», hasta cerrar el navegador", "Necesaria · cookie"],
+        ["fundigsac-api", "FUNDIGSAC (propia)", "Guardar, firmados, los permisos temporales que te identifican ante nuestro sistema de cuentas y cotizaciones. Solo la leen las rutas internas del sitio (/api), nunca el navegador ni terceros.", "Igual que la sesión", "Necesaria · cookie"],
+        ["fundigsac-receipt", "FUNDIGSAC (propia)", "Mostrar la confirmación de la cotización que acabas de enviar (folio y constancia, firmados).", "30 minutos", "Necesaria · cookie"],
         ["fundigsac-oauth", "FUNDIGSAC (propia)", "Proteger el inicio de sesión con Google contra suplantaciones mientras lo completas.", "10 minutos", "Necesaria · cookie"],
         ["fundigsac-lang · fundigsac-theme", "FUNDIGSAC (propia)", "Recordar el idioma y el tema (claro u oscuro) que tú eliges.", "Hasta que los borres", "Necesaria · almacenamiento local"],
         ["fundigsac-quote", "FUNDIGSAC (propia)", "Conservar en tu equipo los productos de tu cotización.", "Hasta que envíes o borres la cotización", "Necesaria · almacenamiento local"],
@@ -271,7 +273,9 @@ export const COOKIES: Pair<{
       head: ["Name", "Who", "Purpose", "Duration", "Type"],
       rows: [
         ["fundigsac-consent", "FUNDIGSAC (first party)", "Remember your cookie choice, with the date and the version of this policy.", "180 days", "Necessary · cookie"],
-        ["fundigsac-session", "FUNDIGSAC (first party)", "Keep you signed in with Google (name, email and profile photo, signed). Only created if you choose to sign in.", "30 days or until you sign out", "Necessary · cookie"],
+        ["fundigsac-session", "FUNDIGSAC (first party)", "Keep you signed in with your email or with Google (name, email and profile photo, signed). Only created if you choose to sign in.", "Up to 30 days (14 with email and password) or until you sign out; without “Remember me”, until you close the browser", "Necessary · cookie"],
+        ["fundigsac-api", "FUNDIGSAC (first party)", "Store, signed, the temporary permissions that identify you to our accounts and quotes system. Only the site’s internal routes (/api) read it, never the browser or third parties.", "Same as the session", "Necessary · cookie"],
+        ["fundigsac-receipt", "FUNDIGSAC (first party)", "Show the confirmation of the quote you just sent (reference and receipt, signed).", "30 minutes", "Necessary · cookie"],
         ["fundigsac-oauth", "FUNDIGSAC (first party)", "Protect the Google sign-in against impersonation while you complete it.", "10 minutes", "Necessary · cookie"],
         ["fundigsac-lang · fundigsac-theme", "FUNDIGSAC (first party)", "Remember the language and theme (light or dark) you choose.", "Until you clear them", "Necessary · local storage"],
         ["fundigsac-quote", "FUNDIGSAC (first party)", "Keep the products in your quote on your device.", "Until you send or clear the quote", "Necessary · local storage"],
