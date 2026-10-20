@@ -304,7 +304,7 @@ const EXTENDIDA: Datasheet = {
       points: ["Despiece de 17 piezas con su material", "Dimensiones DN40 – DN600 con el ØD del volante", "Vista real y vistas 3D acotadas"],
       meta: "PDF · 6,2 MB · 1 página",
       href: "/docs/flyer-valvula-compuerta-fundigsac-volante.pdf",
-      preview: "/media/valvula-ficha/flyer-volante-r1.webp",
+      preview: "/media/valvula-ficha/flyer-volante-r2.webp",
       alt: "Flyer de la válvula compuerta bridada FUNDIGSAC con volante: despiece, vista real, vistas 3D, dimensiones y materiales",
     },
     {
@@ -314,7 +314,7 @@ const EXTENDIDA: Datasheet = {
       points: ["Despiece de 16 piezas con su material", "Dimensiones DN40 – DN600 con el cuadrado □K", "Vista real y vistas 3D acotadas"],
       meta: "PDF · 4,9 MB · 1 página",
       href: "/docs/flyer-valvula-compuerta-fundigsac-dado.pdf",
-      preview: "/media/valvula-ficha/flyer-dado-r1.webp",
+      preview: "/media/valvula-ficha/flyer-dado-r2.webp",
       alt: "Flyer de la válvula compuerta bridada FUNDIGSAC con dado: despiece, vista real, vistas 3D, dimensiones y materiales",
     },
   ],
