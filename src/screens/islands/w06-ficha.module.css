@@ -892,9 +892,7 @@
   /* El plano se dibuja cuando entra en pantalla. */
   .plan[data-in="late"] :global(.w06-plan__part) > :is(rect, path) { stroke-dasharray: 1; animation: draw 1.6s var(--ease) both; animation-delay: 150ms; }
 
-  /* Lo que está más abajo se oculta solo cuando JavaScript lo vigila, y entra al aparecer en pantalla. */
-  .page[data-armed] [data-reveal]:not([data-in]) { opacity: 0; transform: translate3d(0, 18px, 0); }
-  .page [data-reveal][data-in="late"] { animation: rise 0.85s var(--ease) both; animation-delay: var(--d, 0ms); }
+  /* Lo de más abajo entra al aparecer en pantalla con el sistema común (src/shared/motion); aquí, las coreografías propias. */
   .features[data-in="late"] li { animation: rise 0.7s var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms + 80ms); }
   .related[data-in="late"] .relCard { animation: rise 0.7s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms + 120ms); }
   .docStrip[data-in="late"] .docPages li { animation: rise 0.6s var(--ease) both; }

@@ -33,7 +33,6 @@ import { featuredBySlug } from "@/modules/cart/cart-products";
 import { requestDocumentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { useDialogFocus } from "@/shared/ui/use-dialog-focus";
-import { useReveal } from "@/shared/ui/use-reveal";
 
 const BASE = "/media/valvula-ficha/";
 const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
@@ -157,7 +156,6 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [pn, setPn] = useState<(typeof PRESSURES)[number]>("PN16");
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<number | undefined>(undefined);
-  const pageRef = useRef<HTMLElement>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
   const docRef = useRef<HTMLDivElement>(null);
   useDialogFocus(lightbox, lightboxRef);
@@ -167,7 +165,6 @@ export function W06Ficha(props: { variant?: Variant }) {
   const brand = sheet.specs.find(([k]) => k === "Marca")?.[1];
   const series = sheet.specs.find(([k]) => k === "Serie")?.[1];
 
-  useReveal(pageRef);
   useEffect(() => () => window.clearTimeout(addedTimer.current), []);
 
   /** Agrega la válvula con el DN y PN elegidos al carrito de cotización y abre el panel lateral. */
@@ -248,7 +245,7 @@ export function W06Ficha(props: { variant?: Variant }) {
   const dimRow = sheet.dims.rows.find((r) => r.dn === size);
 
   return (
-    <main className={styles.page} ref={pageRef}>
+    <main className={styles.page}>
       <div className={styles.wrap}>
         <nav aria-label={t.crumbs.label} className={styles.crumbs}>
           <Link href="/">{t.crumbs.home}</Link><ChevronRight size={14} aria-hidden="true" />

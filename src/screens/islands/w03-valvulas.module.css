@@ -1001,10 +1001,6 @@
     }
   }
 
-  /* Banda de beneficios: entra al aparecer en pantalla. */
-  .page[data-armed] [data-reveal]:not([data-in]) { opacity: 0; transform: translate3d(0, 18px, 0); }
-  .benefits[data-in="late"] li { animation: rise .7s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms); }
-
   .cardImage img { transition: transform .7s var(--ease); }
   .card:hover .cardImage img { transform: scale(1.06) translateY(-3px); }
 }

@@ -3,10 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, BadgeCheck, ChevronDown, Download, Filter, Headset, Layers, Mail, MessageCircleMore, PackageCheck, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
-import { useReveal } from "@/shared/ui/use-reveal";
 import { DATASHEETS } from "./w06-ficha-data";
 import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
 import { blurBackdrop } from "@/shared/media/blur-backdrop";
@@ -59,8 +58,6 @@ export function W03Valvulas() {
   const [group, setGroup] = useState<Group>("todas");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortMode>("destacados");
-  const pageRef = useRef<HTMLElement>(null);
-  useReveal(pageRef);
 
   const visible = useMemo(() => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
@@ -79,7 +76,7 @@ export function W03Valvulas() {
   const unit = (n: number) => (n === 1 ? t.one : t.many);
 
   return (
-    <main className={styles.page} ref={pageRef}>
+    <main className={styles.page}>
       <section className={styles.hero} aria-labelledby="valvulas-title">
         <Image className={styles.heroPhoto} src="/media/valvulas-page/hero-valvula.webp" alt="" fill priority fetchPriority="high" sizes="100vw" quality={85} style={blurBackdrop(BLUR_VALVULAS["/media/valvulas-page/hero-valvula.webp"], "center 10%")} />
         <span className={styles.topVeil} aria-hidden="true" />
@@ -205,7 +202,7 @@ export function W03Valvulas() {
         </div>
       </section>
 
-      <ul className={styles.benefits} data-reveal>
+      <ul className={styles.benefits} data-reveal="stagger">
         {t.benefits.map((label, i) => {
           const Icon = BENEFIT_ICONS[i];
           return (

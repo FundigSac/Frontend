@@ -46,11 +46,7 @@ html[data-lp-theme="dark"] .x-page {
 @keyframes x-open { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 @keyframes x-shine { from { background-position: -200% 0; } to { background-position: 200% 0; } }
 
-.x-reveal { transition: opacity .6s var(--ease), transform .6s var(--ease); transition-delay: var(--d, 0ms); }
-.x-reveal.x-hide:not(.is-in) { opacity: 0; transform: translateY(20px); }
-
 @media (prefers-reduced-motion: reduce) {
-  .x-reveal, .x-reveal.x-hide:not(.is-in) { transition: none; opacity: 1; transform: none; }
   .x-pipe, .x-pipe-nodes circle, .x-hero-copy > *, .x-hero-stats > * { animation: none !important; }
 }
 
