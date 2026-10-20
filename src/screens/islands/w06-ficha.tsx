@@ -91,6 +91,37 @@ const FEATURE_ICONS: Record<Feature["icon"], typeof ShieldCheck> = { shield: Shi
 const APP_ICONS = [Droplets, Sprout, Waves, Building2] as const;
 const CTA_ICONS = [Ruler, Scale, FileText] as const;
 
+/**
+ * Ajusta el ancho de un título justificado al de su línea más larga: el navegador no encoge la caja a las líneas
+ * que parte, así que sin esto el justificado estira cada línea hasta el borde y abre huecos entre palabras.
+ */
+function useFitWidth(text: string) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    const box = el?.parentElement;
+    if (!el || !box) return;
+    const fit = () => {
+      // Se mide alineado a la izquierda (el justificado estira las líneas) y luego se vuelve al estilo de la hoja.
+      el.style.width = "";
+      el.style.textAlign = "left";
+      el.style.textAlignLast = "left";
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const widest = Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
+      el.style.textAlign = "";
+      el.style.textAlignLast = "";
+      if (widest > 0) el.style.width = `${Math.ceil(widest) + 1}px`;
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(box);
+    document.fonts?.ready.then(fit).catch(() => {});
+    return () => ro.disconnect();
+  }, [text]);
+  return ref;
+}
+
 /** Parte un texto en párrafos de una o dos oraciones, para que la descripción no sea un solo bloque. */
 function paragraphs(text: string): string[] {
   const sentences = text.split(/(?<=\.)\s+(?=[A-ZÁÉÍÓÚÑ])/);
@@ -187,6 +218,8 @@ export function W06Ficha(props: { variant?: Variant }) {
   const orderRef = useRef<HTMLDivElement>(null);
   useDialogFocus(lightbox, lightboxRef);
   useDialogFocus(!!preview, docRef);
+  const titleRef = useFitWidth(productName);
+  const descTitleRef = useFitWidth(t.descLead);
   const total = THUMBS.length;
   const current = THUMBS[active];
   const brand = sheet.specs.find(([k]) => k === "Marca")?.[1];
@@ -352,7 +385,7 @@ export function W06Ficha(props: { variant?: Variant }) {
               <span>{sheet.sizeRange}</span>
               <span>PN10 / PN16</span>
             </p>
-            <h1 id="ficha-title">{productName}</h1>
+            <h1 id="ficha-title" ref={titleRef}>{productName}</h1>
             {warrantyLabel && (
               <p className={styles.warranty}><ShieldCheck size={17} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
             )}
@@ -430,7 +463,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           <section id="descripcion" className={styles.desc} aria-label={t.description}>
             <div className={styles.descGrid}>
               <div className={styles.descMain} data-reveal>
-                <h2>{t.descLead}</h2>
+                <h2 ref={descTitleRef}>{t.descLead}</h2>
                 {paragraphs(view.description ?? t.descFallback).map((p) => <p key={p.slice(0, 24)} className={styles.descText}>{p}</p>)}
               </div>
               {/* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro, sin cápsulas de vidrio. */}

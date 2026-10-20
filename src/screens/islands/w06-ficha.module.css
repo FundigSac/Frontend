@@ -262,7 +262,8 @@
 .metaBrand { color: var(--accent-ink); font-weight: 800; }
 
 .info h1 {
-  max-width: 14ch;
+  width: fit-content;
+  max-width: 100%;
   margin: -6px 0 0;
   color: var(--ink);
   font-family: var(--display);
@@ -270,6 +271,8 @@
   font-weight: 800;
   letter-spacing: -0.032em;
   line-height: 1.02;
+  text-align: justify;
+  text-align-last: justify;
   text-wrap: balance;
 }
 
@@ -462,7 +465,7 @@
 
 /* Encabezado de sección: título a la izquierda y nota a la derecha, sobre la misma línea base. */
 .headRow { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 56px; margin-bottom: clamp(28px, 3vw, 40px); }
-.headNote { max-width: 48ch; margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 1.65; text-align: right; text-wrap: pretty; }
+.headNote { max-width: 48ch; margin: 0; color: var(--ink-muted); font-size: 14px; line-height: 1.65; text-align: justify; text-align-last: right; hyphens: none; text-wrap: pretty; }
 .descMain h2,
 .headRow h2,
 .relatedHead h2 {
@@ -480,7 +483,7 @@
 .desc { padding-top: clamp(72px, 8vw, 120px); }
 .descGrid { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
 .descMain { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 18px; }
-.descMain h2 { max-width: 20ch; margin-bottom: clamp(10px, 1.2vw, 16px); font-size: clamp(26px, 2.4vw, 36px); line-height: 1.12; }
+.descMain h2 { max-width: 100%; margin-top: -0.14em; margin-bottom: clamp(10px, 1.2vw, 16px); font-size: clamp(26px, 2.4vw, 36px); line-height: 1.12; text-align: justify; text-align-last: justify; }
 .descText { max-width: 56ch; margin: 0; color: var(--ink-soft); font-size: 16.5px; line-height: 1.85; }
 
 /* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro sobre la sombra de la foto. */
@@ -1147,7 +1150,7 @@
   .flyerGrid { grid-template-columns: minmax(0, 1fr); }
   .flyerCard { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); justify-items: stretch; }
   .flyerPreview { width: 100%; }
-  .headNote { text-align: left; }
+  .headNote { text-align: justify; text-align-last: left; }
   .docRow { grid-template-columns: auto minmax(0, 1fr); }
   .docActions { grid-column: 1 / -1; justify-content: flex-start; }
   .cta { display: flex; flex-direction: column; }
@@ -1262,6 +1265,8 @@
   .flangeCard p,
   .relBody > span,
   .ctaText { text-align: left; }
+  .info h1,
+  .descMain h2 { text-align: left; text-align-last: auto; }
 }
 
 @media (max-width: 420px) {
