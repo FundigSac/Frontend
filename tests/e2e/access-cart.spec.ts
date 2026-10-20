@@ -6,6 +6,12 @@ async function prepare(page: Page, baseURL: string | undefined) {
   await page.addInitScript(() => sessionStorage.setItem("fundigsac-assistant-teaser", "1"));
 }
 
+/** Las cuentas con correo solo están activas con Backend; sin él estas pantallas son una vista previa. */
+async function accountsEnabled(page: Page) {
+  const res = await page.request.get("/api/auth/session");
+  return ((await res.json()) as { accounts?: boolean }).accounts === true;
+}
+
 function trackErrors(page: Page) {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -14,6 +20,7 @@ function trackErrors(page: Page) {
 }
 
 test("acceso: inicio de sesión valida, muestra el aviso y enlaza registro y recuperación", async ({ page, baseURL }) => {
+  test.skip(await accountsEnabled(page), "Con Backend el ingreso es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   const errors = trackErrors(page);
   await page.goto("/login");
@@ -38,6 +45,7 @@ test("acceso: inicio de sesión valida, muestra el aviso y enlaza registro y rec
 });
 
 test("acceso: registro exige términos y mide la seguridad de la contraseña", async ({ page, baseURL }) => {
+  test.skip(await accountsEnabled(page), "Con Backend el registro es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   await page.goto("/registro");
   await expect(page.getByRole("link", { name: "Registrarme con Google" })).toHaveAttribute("href", /from=registro/);
@@ -55,6 +63,7 @@ test("acceso: registro exige términos y mide la seguridad de la contraseña", a
 });
 
 test("acceso: recuperar y actualizar contraseña validan y avisan que las cuentas llegan pronto (sin éxito simulado)", async ({ page, baseURL }) => {
+  test.skip(await accountsEnabled(page), "Con Backend la recuperación es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   await page.goto("/recuperar");
   await page.getByLabel("Correo electrónico").fill("maria@constructora.pe");
@@ -64,11 +73,11 @@ test("acceso: recuperar y actualizar contraseña validan y avisan que las cuenta
   await expect(page.getByRole("heading", { name: "Revisa tu correo" })).toHaveCount(0);
 
   await page.goto("/restablecer");
-  await page.getByLabel("Nueva contraseña").fill("Fundig#2026");
+  await page.getByLabel("Nueva contraseña").fill("Fundig#2026x");
   await page.getByLabel("Confirmar contraseña").fill("Otra#2026");
   await page.getByRole("button", { name: "Actualizar contraseña" }).click();
   await expect(page.getByText("Las contraseñas no coinciden.")).toBeVisible();
-  await page.getByLabel("Confirmar contraseña").fill("Fundig#2026");
+  await page.getByLabel("Confirmar contraseña").fill("Fundig#2026x");
   await page.getByRole("button", { name: "Actualizar contraseña" }).click();
   await expect(page.getByText("La zona de clientes llega muy pronto")).toBeVisible();
   await expect(page.getByRole("heading", { name: "¡Contraseña actualizada!" })).toHaveCount(0);

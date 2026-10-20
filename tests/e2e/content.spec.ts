@@ -357,8 +357,8 @@ test.describe("W20 Cookies", () => {
     await go(page, "/cookies");
     const table = page.getByRole("table", { name: "Qué guardamos en tu dispositivo" });
     await expect(table.getByRole("columnheader")).toHaveText(["Nombre", "Quién", "Para qué", "Duración", "Tipo"]);
-    await expect(table.getByRole("row")).toHaveCount(8);
-    for (const name of ["fundigsac-consent", "fundigsac-session", "fundigsac-oauth", "fundigsac-quote", "Cookies de Google Maps"]) await expect(table.getByText(name, { exact: false }).first()).toBeAttached();
+    await expect(table.getByRole("row")).toHaveCount(10);
+    for (const name of ["fundigsac-consent", "fundigsac-session", "fundigsac-api", "fundigsac-receipt", "fundigsac-oauth", "fundigsac-quote", "Cookies de Google Maps"]) await expect(table.getByText(name, { exact: false }).first()).toBeAttached();
     await expect(page.getByRole("heading", { name: "Tu consentimiento y tus derechos" })).toBeAttached();
     await expect(page.getByText("Ley N.º 29733").first()).toBeAttached();
     await expect(page.getByText("D. S. N.º 016-2024-JUS").first()).toBeAttached();

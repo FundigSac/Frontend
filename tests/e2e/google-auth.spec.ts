@@ -120,7 +120,7 @@ test.describe("Google: callback con errores controlados", () => {
 test.describe("Google: sesión", () => {
   test("sin sesión: /api/auth/session devuelve null y la cabecera ofrece iniciar sesión", async ({ page, request, baseURL }) => {
     const res = await request.get("/api/auth/session");
-    expect(await res.json()).toEqual({ user: null });
+    expect(await res.json()).toMatchObject({ user: null });
     expect(res.headers()["cache-control"]).toBe("no-store");
     await prepare(page, baseURL);
     await page.goto("/");
@@ -163,12 +163,12 @@ test.describe("Google: sesión", () => {
       const url = baseURL ?? "http://127.0.0.1:3100";
       const user = { name: "Ana", email: "ana@empresa.pe" };
       await context.addCookies([{ name: "fundigsac-session", value: sessionCookie(user, -60), url }]);
-      expect(await (await context.request.get("/api/auth/session")).json()).toEqual({ user: null });
+      expect(await (await context.request.get("/api/auth/session")).json()).toMatchObject({ user: null });
       const good = sessionCookie(user);
       const [payload, mac] = good.split(".");
       const forged = `${b64url(JSON.stringify({ name: "Root", email: "root@empresa.pe", exp: 9999999999 }))}.${mac}`;
       await context.addCookies([{ name: "fundigsac-session", value: forged, url }]);
-      expect(await (await context.request.get("/api/auth/session")).json()).toEqual({ user: null });
+      expect(await (await context.request.get("/api/auth/session")).json()).toMatchObject({ user: null });
       await context.addCookies([{ name: "fundigsac-session", value: `${payload}.${mac}`, url }]);
       expect(await (await context.request.get("/api/auth/session")).json()).toMatchObject({ user: { email: "ana@empresa.pe" } });
       expect(request).toBeTruthy();

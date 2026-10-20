@@ -1,7 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const chromePath = process.platform === "darwin" ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : undefined;
-// PW_BASE_URL apunta a un servidor ya levantado (dev o start); sin ella se construye y arranca uno en :3100.
+// PW_BASE_URL apunta a un servidor ya levantado (dev o start); sin ella se construye y arranca uno en :3100 sin Backend
+// (BACKEND_URL=off; vacía no sirve: en Windows equivale a no definirla y Next usaría la de .env.local), así las pruebas
+// del modo sin conexión no dependen del entorno. Las del Backend real (backend-*.spec.ts) usan PW_BASE_URL con un
+// servidor que sí tiene BACKEND_URL.
 const baseURL = process.env.PW_BASE_URL ?? "http://127.0.0.1:3100";
 
 export default defineConfig({
@@ -16,5 +19,5 @@ export default defineConfig({
     { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
-  ...(process.env.PW_BASE_URL ? {} : { webServer: { command: "node_modules/.bin/next build && node_modules/.bin/next start --hostname 127.0.0.1 --port 3100", url: baseURL, reuseExistingServer: !process.env.CI, timeout: 900_000 } }),
+  ...(process.env.PW_BASE_URL ? {} : { webServer: { command: "node_modules/.bin/next build && node_modules/.bin/next start --hostname 127.0.0.1 --port 3100", env: { BACKEND_URL: "off" }, url: baseURL, reuseExistingServer: !process.env.CI, timeout: 900_000 } }),
 });
