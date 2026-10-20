@@ -91,6 +91,14 @@ const FEATURE_ICONS: Record<Feature["icon"], typeof ShieldCheck> = { shield: Shi
 const APP_ICONS = [Droplets, Sprout, Waves, Building2] as const;
 const CTA_ICONS = [Ruler, Scale, FileText] as const;
 
+/** Parte un texto en párrafos de una o dos oraciones, para que la descripción no sea un solo bloque. */
+function paragraphs(text: string): string[] {
+  const sentences = text.split(/(?<=\.)\s+(?=[A-ZÁÉÍÓÚÑ])/);
+  if (sentences.length < 2) return [text];
+  const half = Math.ceil(sentences.length / 2);
+  return [sentences.slice(0, half).join(" "), sentences.slice(half).join(" ")];
+}
+
 /** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía extendida; sin valor es la ficha base (H-ITALY). */
 export type Variant = "fundigsac" | "extendida";
 
@@ -350,25 +358,6 @@ export function W06Ficha(props: { variant?: Variant }) {
             )}
             <p className={styles.lead}>{view.lead}</p>
 
-            {/* Placa de datos: como la placa de una válvula, cuatro valores bajo un filete fuerte, sin íconos ni tarjetas. */}
-            <ul className={styles.facts} aria-label={t.facts}>
-              {view.facts.map(([k, v]) => (
-                <li key={k}>
-                  <span className={styles.factLabel}>{k}</span>
-                  <strong>{v}</strong>
-                </li>
-              ))}
-            </ul>
-
-            <ul className={styles.highlights} aria-label={t.highlights}>
-              {view.highlights.map(([title, detail]) => (
-                <li key={title}>
-                  <strong>{title}</strong>
-                  <span>{detail}</span>
-                </li>
-              ))}
-            </ul>
-
             {/* Pedido rápido: el DN es el mismo del plano y las tablas de dimensiones. */}
             <div className={styles.order} role="group" aria-label={t.order} ref={orderRef} data-flash={flash || undefined}>
               <div className={view.actuations ? styles.orderFields3 : styles.orderFields}>
@@ -412,6 +401,28 @@ export function W06Ficha(props: { variant?: Variant }) {
             </div>
           </div>
         </section>
+
+        {/* Franja de datos a todo el ancho bajo la foto y el pedido: la columna de la foto ya no deja un hueco debajo. */}
+        <div className={styles.keyBand} data-reveal>
+          {/* Placa de datos: como la placa de una válvula, cuatro valores grandes bajo un filete fuerte. */}
+          <ul className={styles.facts} aria-label={t.facts}>
+            {view.facts.map(([k, v]) => (
+              <li key={k}>
+                <span className={styles.factLabel}>{k}</span>
+                <strong>{v}</strong>
+              </li>
+            ))}
+          </ul>
+
+          <ul className={styles.highlights} aria-label={t.highlights}>
+            {view.highlights.map(([title, detail]) => (
+              <li key={title}>
+                <strong>{title}</strong>
+                <span>{detail}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <div className={styles.body}>
@@ -420,7 +431,7 @@ export function W06Ficha(props: { variant?: Variant }) {
             <div className={styles.descGrid}>
               <div className={styles.descMain} data-reveal>
                 <h2>{t.descLead}</h2>
-                <p className={styles.descText}>{view.description ?? t.descFallback}</p>
+                {paragraphs(view.description ?? t.descFallback).map((p) => <p key={p.slice(0, 24)} className={styles.descText}>{p}</p>)}
               </div>
               {/* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro, sin cápsulas de vidrio. */}
               <figure className={styles.descPhoto} data-reveal="media" style={{ ["--d" as string]: "120ms" }}>
@@ -460,14 +471,15 @@ export function W06Ficha(props: { variant?: Variant }) {
               <h2>{t.specs}</h2>
               <p className={styles.headNote}>{view.specsNote} {t.specsPrevail}</p>
             </header>
-            {/* Hoja técnica en dos columnas que se equilibran solas: los grupos no se parten y el navegador reparte la altura. */}
-            <div className={styles.specSheet} data-reveal>
+            {/* Hoja técnica por grupos: el título del grupo a la izquierda y sus datos en una cuadrícula pareja a la derecha. */}
+            <div className={styles.specSheet} data-reveal="stagger">
               {specCards.map((group) => (
                 <section key={group.id} className={styles.specGroup} aria-label={group.title}>
                   <h3>{group.title}</h3>
-                  <table className={styles.table}>
-                    <tbody>
-                      {group.rows.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
+                  {/* Roles explícitos: la tabla se maqueta como cuadrícula y sigue leyéndose como tabla. */}
+                  <table className={styles.table} role="table" aria-label={group.title}>
+                    <tbody role="rowgroup">
+                      {group.rows.map(([k, v]) => <tr key={k} role="row"><th scope="row" role="rowheader">{k}</th><td role="cell">{v}</td></tr>)}
                     </tbody>
                   </table>
                 </section>

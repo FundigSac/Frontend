@@ -90,7 +90,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
   gap: clamp(36px, 5vw, 80px);
-  align-items: start;
+  align-items: center;
 }
 
 /* Galería: riel vertical de miniaturas a la izquierda y escenario a la derecha (en móvil, fila bajo la foto). */
@@ -103,10 +103,6 @@
 }
 .gallery > .stage { grid-column: 2; grid-row: 1; }
 .gallery > .thumbs { grid-column: 1; grid-row: 1; }
-/* En escritorio la galería acompaña la columna de datos mientras se lee. */
-@media (min-width: 1025px) {
-  .gallery { position: sticky; top: calc(var(--bar) + 16px); }
-}
 
 /* Escenario: la válvula recortada sobre un fondo de estudio con su sombra en el piso. */
 .stage {
@@ -287,23 +283,25 @@
 
 .lead { max-width: 60ch; margin: 0; color: var(--ink-soft); font-size: 16px; line-height: 1.75; }
 
+.keyBand { display: grid; gap: 0; margin-top: clamp(44px, 4.6vw, 72px); }
+
 /* Placa de datos: cuatro valores bajo un filete fuerte, divididos por filetes finos. */
 .facts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 4px 0 0;
+  margin: 0;
   padding: 0;
   border-top: 2px solid var(--rule);
   border-bottom: 1px solid var(--line);
   list-style: none;
 }
-.facts li { display: grid; min-width: 0; align-content: start; gap: 8px; padding: 16px 14px 18px 0; }
-.facts li + li { padding-left: 16px; border-left: 1px solid var(--line); }
+.facts li { display: grid; min-width: 0; align-content: start; gap: 10px; padding: 20px 20px 22px 0; }
+.facts li + li { padding-left: 24px; border-left: 1px solid var(--line); }
 .factLabel { color: var(--ink-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .facts strong {
   color: var(--ink);
   font-family: var(--display);
-  font-size: clamp(19px, 1.65vw, 25px);
+  font-size: clamp(22px, 2.3vw, 34px);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   letter-spacing: -0.025em;
@@ -311,18 +309,19 @@
   white-space: nowrap;
 }
 
-/* Destacados: lista de definición a dos columnas con filetes, sin íconos. */
+/* Destacados: en las mismas cuatro columnas que la placa, texto breve y legible. */
 .highlights {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 32px;
-  margin: -6px 0 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
   padding: 0;
+  border-bottom: 1px solid var(--line);
   list-style: none;
 }
-.highlights li { display: grid; min-width: 0; gap: 3px; padding: 12px 0 13px; border-bottom: 1px solid var(--line); }
-.highlights strong { color: var(--ink); font-size: 14px; font-weight: 800; letter-spacing: -0.005em; line-height: 1.3; }
-.highlights span { color: var(--ink-muted); font-size: 13px; line-height: 1.45; }
+.highlights li { display: grid; min-width: 0; align-content: start; gap: 4px; padding: 18px 20px 20px 0; }
+.highlights li + li { padding-left: 24px; border-left: 1px solid var(--line); }
+.highlights strong { color: var(--ink); font-size: 14.5px; font-weight: 800; letter-spacing: -0.005em; line-height: 1.3; }
+.highlights span { color: var(--ink-muted); font-size: 13.5px; line-height: 1.5; }
 
 /* Pedido rápido: DN (compartido con el plano), PN, accionamiento y botones. */
 .order {
@@ -379,10 +378,10 @@
 .segment .segmentOn { background: var(--sel); color: var(--sel-ink); box-shadow: 0 6px 14px -8px rgb(15 27 45 / 60%); }
 .segment button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-/* Cotizar, ficha y carrito en una fila; si el ancho no alcanza, el texto parte en dos líneas en vez de bajar el carrito. */
-.ctas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 54px; gap: 10px; }
+/* Cotizar se estira, la ficha toma su ancho y el carrito queda al lado: los tres en una fila y sin cortes. */
+.ctas { display: grid; grid-template-columns: minmax(0, 1fr) auto 54px; gap: 10px; }
 .ctas .primary,
-.ctas .secondary { min-width: 0; padding: 0 16px; font-size: 14.5px; line-height: 1.2; text-align: center; white-space: normal; }
+.ctas .secondary { min-width: 0; padding: 0 18px; font-size: 14.5px; }
 .primary,
 .secondary {
   display: inline-flex;
@@ -476,9 +475,9 @@
 /* ---------- Descripción ---------- */
 .desc { padding-top: clamp(72px, 8vw, 120px); }
 .descGrid { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
-.descMain { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: clamp(22px, 2.2vw, 30px); }
-.descMain h2 { max-width: 22ch; font-size: clamp(26px, 2.5vw, 38px); line-height: 1.1; }
-.descText { max-width: 58ch; margin: 0; color: var(--ink-soft); font-size: 16.5px; line-height: 1.9; }
+.descMain { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 18px; }
+.descMain h2 { max-width: 20ch; margin-bottom: clamp(10px, 1.2vw, 16px); font-size: clamp(26px, 2.4vw, 36px); line-height: 1.12; }
+.descText { max-width: 56ch; margin: 0; color: var(--ink-soft); font-size: 16.5px; line-height: 1.85; }
 
 /* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro sobre la sombra de la foto. */
 .descPhoto {
@@ -513,12 +512,22 @@
 .featText strong { color: var(--ink); font-size: 16px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.3; }
 .featText span { color: var(--ink-soft); font-size: 14px; line-height: 1.7; }
 
-/* ---------- Especificaciones: hoja técnica en dos columnas equilibradas ---------- */
+/* ---------- Especificaciones: un grupo por fila, con sus datos en una cuadrícula pareja ---------- */
 .specs { padding-top: clamp(80px, 8vw, 128px); }
-.specSheet { column-count: 2; column-gap: clamp(40px, 6vw, 96px); }
-.specGroup { margin: 0 0 clamp(32px, 3.4vw, 44px); break-inside: avoid; }
-.specGroup:last-child { margin-bottom: 0; }
-.specGroup h3 { margin: 0; padding-bottom: 14px; border-bottom: 2px solid var(--rule); color: var(--ink); font-family: var(--display); font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.specSheet { display: grid; border-top: 2px solid var(--rule); }
+.specGroup { display: grid; grid-template-columns: minmax(180px, 0.3fr) minmax(0, 1fr); gap: 16px clamp(28px, 4vw, 64px); padding: clamp(24px, 2.6vw, 36px) 0; border-bottom: 1px solid var(--line); }
+.specGroup h3 { margin: 0; padding-top: 14px; color: var(--ink); font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+/* La tabla se maqueta como cuadrícula de dos columnas: cada dato es su etiqueta arriba y su valor debajo. */
+.specGroup .table { display: block; }
+.specGroup .table tbody { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(24px, 3vw, 48px); }
+.specGroup .table tr { display: grid; align-content: start; gap: 4px; padding: 14px 0 16px; border-bottom: 1px solid var(--line); }
+.specGroup .table th,
+.specGroup .table td { display: block; width: auto; padding: 0; border: 0; }
+.specGroup .table th { color: var(--ink-muted); font-size: 13px; font-weight: 500; }
+.specGroup .table td { color: var(--ink); font-size: 15px; font-weight: 600; line-height: 1.45; }
+/* La última fila de cada columna no lleva filete: el del grupo ya cierra. */
+.specGroup .table tr:nth-last-child(1),
+.specGroup .table tr:nth-last-child(2):nth-child(odd) { border-bottom: 0; }
 
 .table,
 .dims,
@@ -867,7 +876,7 @@
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
   margin-inline: auto;
 }
-.ctaCopy { display: grid; align-content: center; justify-items: start; gap: 20px; padding: clamp(48px, 5vw, 72px) 0; }
+.ctaCopy { display: grid; width: 100%; max-width: 500px; align-content: center; justify-items: stretch; gap: 20px; padding: clamp(48px, 5vw, 72px) 0; }
 .ctaCopy h2 {
   max-width: 15ch;
   margin: 0;
@@ -879,12 +888,12 @@
   line-height: 1.04;
   text-wrap: balance;
 }
-.ctaText { max-width: 50ch; margin: 0; color: var(--ink-soft); font-size: 16.5px; line-height: 1.75; }
-.ctaPoints { display: grid; width: min(100%, 440px); margin: 4px 0 0; padding: 0; list-style: none; }
+.ctaText { margin: 0; color: var(--ink-soft); font-size: 16.5px; line-height: 1.75; }
+.ctaPoints { display: grid; margin: 4px 0 0; padding: 0; list-style: none; }
 .ctaPoints li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--ink); font-size: 15px; font-weight: 600; }
 .ctaPoints li:first-child { border-top: 1px solid var(--line); }
 .ctaPoints svg { flex: 0 0 auto; color: var(--accent-ink); }
-.ctaActions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.ctaActions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; justify-self: start; }
 .ctaPrimary {
   display: inline-flex;
   min-height: 56px;
@@ -919,6 +928,7 @@
 }
 
 /* ---------- Movimiento ---------- */
+
 @keyframes rise { from { opacity: 0; transform: translate3d(0, 18px, 0); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes photoIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
@@ -974,6 +984,7 @@
   .related[data-in="late"] .relCard { animation: rise 0.7s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms + 120ms); }
 }
 
+
 /* ---------- Visor ampliado ---------- */
 .lightbox { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; background: rgb(10 12 14 / 88%); backdrop-filter: blur(4px); animation: fade 0.2s ease-out; }
 .lbStage { position: relative; width: min(900px, calc(100vw - 150px)); height: min(78vh, 900px); overflow: hidden; border-radius: 18px; background: var(--studio); }
@@ -1026,9 +1037,12 @@
 
 @media (max-width: 1180px) {
   .relatedGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .facts li:nth-child(3) { padding-left: 0; border-left: 0; }
-  .facts li:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  .facts,
+  .highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts li:nth-child(3),
+  .highlights li:nth-child(3) { padding-left: 0; border-left: 0; }
+  .facts li:nth-child(n + 3),
+  .highlights li:nth-child(n + 3) { border-top: 1px solid var(--line); }
   .orderFields3 { grid-template-columns: minmax(0, 1fr) auto; }
   .orderFields3 > :last-child { grid-column: 1 / -1; }
   .orderFields3 > :last-child .segment { display: flex; }
@@ -1061,7 +1075,8 @@
 
 @media (max-width: 860px) {
   .page { --bar: 72px; }
-  .specSheet { column-count: 1; }
+  .specGroup { grid-template-columns: minmax(0, 1fr); }
+  .specGroup h3 { padding-top: 0; }
 }
 
 /* ---------- Móvil ---------- */
@@ -1089,7 +1104,6 @@
   .orderFields3 { grid-template-columns: minmax(0, 1fr); }
   .orderFields3 .segment { display: flex; }
   .orderFields3 .segment button { flex: 1; }
-  .ctas { display: grid; grid-template-columns: minmax(0, 1fr) 54px; }
   .ctas .primary { grid-column: 1 / -1; }
   .ctas .secondary { min-width: 0; padding: 0 14px; }
   .descPhoto { aspect-ratio: 4 / 4.6; }
@@ -1135,9 +1149,9 @@
   .flange td,
   .flange tbody th { padding: 9px 3px; font-size: 12.5px; white-space: nowrap; }
   .flange .pn { padding: 3px 7px; font-size: 11px; }
-  .table th,
-  .table td { padding: 12px 0; }
-  .table th { padding-right: 14px; }
+  .specGroup .table tbody { grid-template-columns: minmax(0, 1fr); }
+  .specGroup .table tr:nth-last-child(2):nth-child(odd) { border-bottom: 1px solid var(--line); }
+  .ctas { grid-template-columns: minmax(0, 1fr) 54px; }
 }
 
 @media (max-width: 560px) {
@@ -1155,7 +1169,6 @@
   }
   .relatedGrid::-webkit-scrollbar { display: none; }
   .relCard { scroll-snap-align: start; }
-  .highlights { grid-template-columns: minmax(0, 1fr); }
   .measure dd { font-size: 17px; }
   .sizeGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   /* En pantallas muy angostas el texto justificado se abre demasiado: vuelve a la izquierda. */
