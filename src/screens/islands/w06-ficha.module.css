@@ -733,7 +733,8 @@
 .dimsCards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 24px; align-items: stretch; }
 .measureCard,
 .flangeCard { display: flex; min-width: 0; flex-direction: column; padding: 20px 20px 22px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); }
-.measure { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.measure { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: auto 0; }
+.flangeCard .tableWrap { margin-block: auto; }
 .measure > div { display: grid; gap: 4px; padding: 11px 12px; border-radius: 10px; background: var(--soft); }
 .measure dt { color: var(--ink-muted); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; }
 .measure dd { margin: 0; color: var(--ink); font-family: var(--display); font-size: 19px; font-variant-numeric: tabular-nums; font-weight: 800; letter-spacing: -0.02em; white-space: nowrap; }
