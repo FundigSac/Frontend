@@ -29,7 +29,7 @@ export function ScreenW16() {
             </ol>
           </nav>
           <div className="grid items-center gap-8 lg:grid-cols-[.9fr_1.1fr] lg:gap-12">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl" data-enter>
             <p className="font-ui-label text-ui-label font-bold uppercase tracking-[.16em] text-primary">
               {t.eyebrow}
             </p>
@@ -45,7 +45,7 @@ export function ScreenW16() {
             <figcaption className="absolute bottom-3 left-3 rounded-md border border-border bg-surface-elevated/95 px-3 py-2 font-ui-label text-ui-label text-text-secondary">{t.imgCaption}</figcaption>
           </figure>
           </div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-reveal="stagger">
             {t.cards.map((item) => <div key={item} className="rounded-lg border border-border bg-surface-elevated px-4 py-3"><span className="block font-ui-label text-ui-label text-text-muted">{t.cardLabel}</span><span className="mt-1 block font-body-compact text-body-compact font-semibold text-on-surface">{item}</span></div>)}
           </div>
         </div>
@@ -55,7 +55,7 @@ export function ScreenW16() {
         <div className="mx-auto max-w-[1040px] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
           <LeadForm formId="quote-general" className="space-y-5" id="cotizacionForm">
             <section aria-labelledby="company-project-title" className="rounded-xl border border-border bg-surface-elevated p-5 sm:p-7">
-              <div className="mb-6">
+              <div className="mb-6" data-reveal>
                 <h2 id="company-project-title" className="font-headline-card text-headline-card font-semibold text-on-surface">
                   {t.companyTitle}
                 </h2>
@@ -112,7 +112,7 @@ export function ScreenW16() {
             </section>
 
             <section aria-labelledby="request-title" className="rounded-xl border border-border bg-surface-elevated p-5 sm:p-7">
-              <div className="mb-6">
+              <div className="mb-6" data-reveal>
                 <h2 id="request-title" className="font-headline-card text-headline-card font-semibold text-on-surface">
                   {t.requestTitle}
                 </h2>

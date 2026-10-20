@@ -32,7 +32,7 @@ export function ScreenW17({ slug = "valvula-compuerta" }: { slug?: QuoteProductS
           </nav>
 
           <div className="grid items-start gap-7 lg:grid-cols-[.78fr_1.22fr] lg:gap-12">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-24" data-enter>
               <p className="font-ui-label text-ui-label font-bold uppercase tracking-[.16em] text-primary">{t.eyebrow}</p>
               <h1 id="quote-title" className="mt-2 font-headline-hero text-headline-hero font-semibold leading-[1.05] tracking-tight text-on-surface">
                 {productName}
