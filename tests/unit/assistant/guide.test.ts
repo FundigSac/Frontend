@@ -27,7 +27,7 @@ describe("guía rápida de FundigIA", () => {
     expect(a.text).toContain('FUNDIGSAC 1 año · DN150 (6")');
     expect(a.text).toContain("| Dato | PN16 |");
     expect(a.text).toContain("| D1 | 240 |");
-    expect(a.text).toContain("| n × Φd | 8 × 23 |");
+    expect(a.text).toContain("| n × Ød | 8 × 23 |");
     expect(a.text).toContain("| Pernos | M20 |");
     expect(a.text).not.toContain("PN10");
   });
