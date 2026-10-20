@@ -43,8 +43,9 @@ export const CONFIG = {
     plate: { hx: 59, hz: 87, r: 22, boss: 13 },
     bossTop: 110,
     nose: { hxTop: 40, hxBottom: 28.5 },
-    bonnet: 'fundig6', domeTop: 158, neckTop: 230,
-    operator: 'cap', cap: { y0: 272, yF: 283, yT: 355 },
+    // Cuello 20 mm más bajo que en la primera versión: con el dado arriba la válvula mide H = 335 (FT-HD, DN100).
+    bonnet: 'fundig6', domeTop: 158, neckTop: 210,
+    operator: 'cap', cap: { y0: 252, yF: 263, yT: 335 },
     textFront: { logo: 28, logoWide: 1.3, logoY: 42, lines: [{ text: 'FundigSac', height: 10.6 }, { text: '0721124', height: 10.6 }, { text: 'DN500-7', height: 10.6 }], gap: 3.4, y: -8, relief: 1.0 },
     textBack: { lines: [{ text: 'DN100', height: 10 }, { text: 'PN16/10', height: 10 }, { text: 'GGG50', height: 10 }], gap: 3.2, y: 14, relief: 1.0 },
     bonnetText: ['DN100', 'QT450'],
