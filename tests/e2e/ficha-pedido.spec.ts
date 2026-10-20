@@ -76,3 +76,21 @@ test("ficha con garantía extendida: dos flyers (volante y dado) con descarga, v
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
 });
+
+test("ficha con garantía extendida: las medidas siguen el catálogo del fabricante (sin las erratas de la ficha traducida)", async ({ page }) => {
+  await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida");
+  await dismissCookies(page);
+  // Tabla completa: L BS5163 de DN600 es 508 (no 608).
+  await expect(page.getByRole("row", { name: "DN600 390 800 508 1180 600" })).toBeAttached();
+  const pick = (dn: string) => page.getByRole("button", { name: dn, exact: true }).click();
+  // Extremo del vástago: T de DN40 es 29 y K de DN60/65 es 17,3.
+  await pick("DN40");
+  await expect(page.getByRole("row", { name: "20 14.3 × 14.3 M8 × 20 29" })).toBeVisible();
+  await pick("DN60/65");
+  await expect(page.getByRole("row", { name: "24 17.3 × 17.3 M10 × 20 33" })).toBeVisible();
+  // Bridas PN16: DN80 lleva 8 pernos y DN200 agujeros de 23 mm.
+  await pick("DN80");
+  await expect(page.getByRole("row", { name: "PN16 200 160 132 16 3 8 × 19" })).toBeVisible();
+  await pick("DN200");
+  await expect(page.getByRole("row", { name: "PN16 340 295 266 17 3 12 × 23" })).toBeVisible();
+});

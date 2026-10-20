@@ -38,11 +38,12 @@ export type Datasheet = {
 
 const dash = (v: Cell) => (v === null || v === undefined ? "-" : v);
 
-// ---------- Base H-ITALY · FT-HI-100 Rev. 13 (idénticos a FT-HD N° 002-2024 salvo DN60/65 y BS5163) ----------
+// ---------- Base H-ITALY · FT-HI-100 Rev. 13 (idénticos a FT-HD N° 002-2024 salvo DN60/65, BS5163 y dos celdas de bridas PN16) ----------
 const DN14 = ["DN40", "DN50", "DN65", "DN80", "DN100", "DN125", "DN150", "DN200", "DN250", "DN300", "DN350", "DN400", "DN500", "DN600"];
 const L_F4 = [140, 150, 170, 180, 190, 200, 210, 230, 250, 270, 290, 310, 350, 390];
 const L_F5 = [240, 250, 270, 280, 300, 325, 350, 400, 450, 500, null, 600, 700, 800];
-const L_BS5163 = [null, 178, 190, 203, 229, 254, 267, 292, 330, 356, 381, 406, 457, 608];
+// BS5163 DN600 = 508 según el catálogo del fabricante (JINMAO); la ficha FT-HD traducida dice 608 por errata.
+const L_BS5163 = [null, 178, 190, 203, 229, 254, 267, 292, 330, 356, 381, 406, 457, 508];
 const H = [220, 230, 265, 290, 335, 380, 415, 510, 600, 690, 790, 855, 1020, 1180];
 const HANDWHEEL = [180, 180, 200, 200, 250, 250, 300, 300, 500, 500, 600, 600, 600, 600];
 const FLANGE = {
@@ -65,22 +66,28 @@ const FLANGE = {
     b: [19, 19, 19, 19, 19, 19, 23, 25, 28, 28, 28, 31, 34, 37],
   },
 } as const;
+// Bridas de FT-HD N° 002-2024 según el catálogo del fabricante (JINMAO): la ficha traducida dice en PN16 DN80
+// "4" pernos (EN1092-2 pide 8) y Øb DN200 "25" (es 23). La base H-ITALY conserva su tabla.
+const FLANGE_FTHD = {
+  PN10: FLANGE.PN10,
+  PN16: { ...FLANGE.PN16, n: [4, 4, 4, 8, 8, 8, 8, 12, 12, 12, 16, 16, 20, 20], b: [19, 19, 19, 19, 19, 19, 23, 23, 28, 28, 28, 31, 34, 37] },
+} as const;
 // Extremo del vástago (FT-HD N° 002-2024): Ød base, K×K cuadrado, M×h rosca y profundidad, T altura.
-// K de DN60/65 figura como "123" en la ficha (dato imposible para un cuadrado de vástago): se muestra "-".
+// Corregido con el catálogo del fabricante (JINMAO): la ficha traducida dice K "123" en DN60/65 (es 17,3) y T "9" en DN40 (es 29).
 const STEM_D = [20, 20, 24, 24, 28, 28, 28, 30, 36, 36, 38, 38, 40, 42];
-const STEM_K = [14.3, 14.3, null, 17.3, 19.3, 19.3, 19.3, 24.3, 27.3, 27.3, 27.3, 27.3, 32.3, 32.3];
+const STEM_K = [14.3, 14.3, 17.3, 17.3, 19.3, 19.3, 19.3, 24.3, 27.3, 27.3, 27.3, 27.3, 32.3, 32.3];
 const STEM_M = [8, 8, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 12, 12];
 const STEM_h = [20, 20, 20, 20, 20, 20, 20, 20, 25, 25, 25, 25, 25, 25];
-const STEM_T = [9, 29, 33, 33, 38, 38, 38, 42, 47, 47, 47, 47, 47, 47];
+const STEM_T = [29, 29, 33, 33, 38, 38, 38, 42, 47, 47, 47, 47, 47, 47];
 
-const flangeEn1092 = (list: string[], withS: boolean): PnTable => ({
+const flangeEn1092 = (list: string[], withS: boolean, table: typeof FLANGE | typeof FLANGE_FTHD = FLANGE): PnTable => ({
   title: "Bridas",
   note: "Conexión según EN1092-2, doble perforación PN10 / PN16. Medidas en mm. Selecciona otro diámetro arriba para actualizar.",
   head: withS ? ["PN", "ØA", "ØB", "ØC", "E", "S", "n × Øb"] : ["PN", "ØA", "ØB", "ØC", "E", "n × Øb"],
   rows: (dn) => {
     const i = list.indexOf(dn);
     return (["PN10", "PN16"] as const).map((pn) => {
-      const F = FLANGE[pn];
+      const F = table[pn];
       const cells: Cell[] = withS ? [F.A[i], F.B[i], F.C[i], F.E[i], F.S[i], `${F.n[i]} × ${F.b[i]}`] : [F.A[i], F.B[i], F.C[i], F.E[i], `${F.n[i]} × ${F.b[i]}`];
       return { pn, cells };
     });
@@ -262,7 +269,7 @@ const EXTENDIDA: Datasheet = {
     head: ["DN", "L (F4)", "L (F5)", "L (BS5163)", "H", "ØD"],
     rows: DN_FTHD.map((dn, i) => ({ dn, cells: [L_F4[i], dash(L_F5[i]), dash(L_BS5163[i]), H[i], HANDWHEEL[i]] })),
   },
-  flange: flangeEn1092(DN_FTHD, true),
+  flange: flangeEn1092(DN_FTHD, true, FLANGE_FTHD),
   stem: {
     title: "Extremo del vástago",
     note: "Ød diámetro, K × K cuadrado de maniobra, M × h rosca y profundidad, T altura del cuadrado (conicidad 3°).",
