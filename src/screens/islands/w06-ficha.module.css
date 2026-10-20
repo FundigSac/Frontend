@@ -925,7 +925,18 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(90deg, rgb(var(--veil) / 100%) 0%, rgb(var(--veil) / 82%) 14%, rgb(var(--veil) / 30%) 36%, rgb(var(--veil) / 0%) 58%);
+  background: linear-gradient(90deg, rgb(var(--veil) / 100%) 0%, rgb(var(--veil) / 96%) 8%, rgb(var(--veil) / 86%) 16%, rgb(var(--veil) / 68%) 25%, rgb(var(--veil) / 46%) 34%, rgb(var(--veil) / 26%) 43%, rgb(var(--veil) / 11%) 52%, rgb(var(--veil) / 3%) 61%, rgb(var(--veil) / 0%) 70%);
+  content: "";
+  pointer-events: none;
+}
+/* Brillo cálido muy suave bajo el texto y un velo inferior que asienta la foto. */
+.cta::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    radial-gradient(60% 90% at 12% 50%, rgb(194 84 26 / 10%), transparent 70%),
+    linear-gradient(0deg, rgb(var(--veil) / 55%) 0%, rgb(var(--veil) / 0%) 32%);
   content: "";
   pointer-events: none;
 }
@@ -1303,7 +1314,12 @@
 :global(html[data-lp-theme="dark"]) .planHint,
 :global(html[data-lp-theme="dark"]) .sizes legend { color: #b7b3ad; }
 :global(html[data-lp-theme="dark"]) .flyerPreview { border-color: rgb(255 255 255 / 18%); }
-:global(html[data-lp-theme="dark"]) .cta { --veil: 24 23 22; }
+:global(html[data-lp-theme="dark"]) .cta { --veil: 20 19 18; }
+:global(html[data-lp-theme="dark"]) .cta::before {
+  background:
+    radial-gradient(60% 90% at 12% 50%, rgb(255 138 77 / 12%), transparent 70%),
+    linear-gradient(0deg, rgb(var(--veil) / 60%) 0%, rgb(var(--veil) / 0%) 32%);
+}
 :global(html[data-lp-theme="dark"]) .ctaVisual img { filter: brightness(0.84) saturate(0.9); }
 :global(html[data-lp-theme="dark"]) .docPanel { background: #1b1a19; }
 :global(html[data-lp-theme="dark"]) .docPage { background: #242322; }
