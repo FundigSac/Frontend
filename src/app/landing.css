@@ -508,7 +508,7 @@
   font-size: 18px;
 }
 
-/* Escenario de la válvula: ambas imágenes superpuestas, solo cambia la opacidad. */
+/* Escenario de la válvula: ambas imágenes superpuestas; el cambio es un barrido vertical (ver "Cambio de variante"). */
 .lp-hero__stage {
   position: relative;
   align-self: end;
@@ -529,13 +529,12 @@
   object-position: bottom center;
   opacity: 0;
   filter: drop-shadow(0 30px 34px rgb(11 34 68 / 22%));
-  transition: opacity 600ms ease;
   pointer-events: none;
 }
 
 .lp-hero__valve.is-active {
+  z-index: 1;
   opacity: 1;
-  animation: lp-valve-in 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .lp-hero__stage > .lp-hero__valve {
@@ -656,16 +655,10 @@
   }
 }
 
-@keyframes lp-valve-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
-  }
-}
-
+/* Vaivén mínimo: la válvula "respira" sin distraer del cambio de variante. */
 @keyframes lp-float {
   50% {
-    transform: translateY(-9px);
+    transform: translateY(-6px);
   }
 }
 
@@ -2823,6 +2816,71 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
   from {
     opacity: 0;
     transform: scale(1.08);
+  }
+}
+
+/* ===== Cambio de variante: el accionamiento se monta sobre el mismo cuerpo =====
+   Las dos imágenes comparten lienzo y el cuerpo coincide al píxel. En vez de fundirlas (dos cuerpos a medias),
+   una línea de borde suave baja por el vástago: por encima ya se ve la variante nueva, por debajo sigue la anterior.
+   Como el cuerpo es idéntico, solo cambia el timón o el dado. Solo opacidad de máscara: nada se desplaza.
+   La saliente queda opaca dentro de la banda suave de la entrante (si ambas se difuminaran, el fondo se colaría). */
+@property --lp-wipe {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 120%;
+}
+
+.lp-hero__stage[data-swapped] .lp-hero__valve.is-active {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(var(--lp-wipe) - 16%), transparent var(--lp-wipe));
+  mask-image: linear-gradient(180deg, #000 calc(var(--lp-wipe) - 16%), transparent var(--lp-wipe));
+  animation: lp-valve-wipe-in 1050ms var(--mo-ease-in-out) both;
+}
+
+.lp-hero__stage[data-swapped] .lp-hero__valve.is-leaving {
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(180deg, transparent calc(var(--lp-wipe) - 16%), #000 calc(var(--lp-wipe) - 12%));
+  mask-image: linear-gradient(180deg, transparent calc(var(--lp-wipe) - 16%), #000 calc(var(--lp-wipe) - 12%));
+  animation: lp-valve-wipe-out 1050ms var(--mo-ease-in-out) both;
+}
+
+/* Dos nombres con los mismos fotogramas: al pasar una imagen de "entra" a "sale" la animación vuelve a empezar. */
+@keyframes lp-valve-wipe-in {
+  from {
+    --lp-wipe: 0%;
+  }
+
+  to {
+    --lp-wipe: 116%;
+  }
+}
+
+@keyframes lp-valve-wipe-out {
+  from {
+    --lp-wipe: 0%;
+  }
+
+  to {
+    --lp-wipe: 116%;
+  }
+}
+
+/* Fuera de pantalla o en otra pestaña el hero no gasta: se pausan el fondo, la flotación y el avance automático. */
+.lp-hero[data-idle] .lp-hero__photo,
+.lp-hero[data-idle] .lp-hero__stage,
+.lp-hero[data-idle] .lp-hero__shadow {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero__stage[data-swapped] .lp-hero__valve.is-active,
+  .lp-hero__stage[data-swapped] .lp-hero__valve.is-leaving {
+    -webkit-mask-image: none;
+    mask-image: none;
+    animation: none;
+  }
+
+  .lp-hero__stage[data-swapped] .lp-hero__valve.is-leaving {
+    opacity: 0;
   }
 }
 

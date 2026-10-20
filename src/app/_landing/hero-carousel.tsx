@@ -28,13 +28,18 @@ export function HeroCarousel() {
   const [lang] = useLang();
   const h = COPY[lang].hero;
   const [index, setIndex] = useState(0);
+  // Variante que sale: se oculta con el mismo barrido con el que entra la nueva (null hasta el primer cambio).
+  const [leaving, setLeaving] = useState<number | null>(null);
   // null = comportamiento por defecto (autoplay salvo movimiento reducido); boolean = elección del usuario.
   const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
   const reducedMotion = useSyncExternalStore(subscribeMotion, () => window.matchMedia(REDUCED_MOTION).matches, () => false);
   // Pausa mientras el puntero está sobre la válvula o los controles, o el foco está en los controles (WCAG 2.2.2).
   const [held, setHeld] = useState(false);
+  // Fuera de pantalla o con la pestaña oculta no se rota ni se anima el fondo (ahorra batería en móvil).
+  const [idle, setIdle] = useState(false);
   const autoplay = userPlaying ?? !reducedMotion;
-  const playing = autoplay && !held;
+  const playing = autoplay && !held && !idle;
+  const section = useRef<HTMLElement>(null);
   const swipeStart = useRef<number | null>(null);
   const hold = { onMouseEnter: () => setHeld(true), onMouseLeave: () => setHeld(false) };
 
@@ -53,16 +58,39 @@ export function HeroCarousel() {
   }, []);
 
   useEffect(() => {
+    const el = section.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    let onScreen = true;
+    const sync = () => setIdle(!onScreen || document.hidden);
+    const io = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      sync();
+    });
+    io.observe(el);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
+
+  const show = (next: number) => {
+    setLeaving(index);
+    setIndex(next);
+  };
+
+  useEffect(() => {
     if (!playing || !restLoaded) return;
-    const timer = window.setTimeout(() => setIndex((i) => (i + 1) % VARIANTS.length), INTERVAL);
+    const timer = window.setTimeout(() => show((index + 1) % VARIANTS.length), INTERVAL);
     return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, restLoaded, index]);
 
   // Interacción manual: cambia de inmediato y detiene la reproducción automática.
   const go = (dir: 1 | -1) => {
     setAllMounted(true);
     setUserPlaying(false);
-    setIndex((i) => (i + dir + VARIANTS.length) % VARIANTS.length);
+    show((index + dir + VARIANTS.length) % VARIANTS.length);
   };
 
   const onPointerDown = (e: React.PointerEvent) => {
@@ -79,7 +107,9 @@ export function HeroCarousel() {
 
   return (
     <section
+      ref={section}
       className="lp-hero"
+      data-idle={idle ? "" : undefined}
       aria-labelledby="lp-hero-title"
       aria-roledescription={h.carousel}
     >
@@ -110,13 +140,14 @@ export function HeroCarousel() {
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
           onPointerCancel={() => (swipeStart.current = null)}
+          data-swapped={leaving === null ? undefined : ""}
           {...hold}
         >
           <span className="lp-hero__shadow" aria-hidden="true" />
           {VARIANTS.map((v, i) => (i === 0 || allMounted) && (
             <Image
               key={v.id}
-              className={`lp-hero__valve${i === index ? " is-active" : ""}`}
+              className={`lp-hero__valve${i === index ? " is-active" : i === leaving ? " is-leaving" : ""}`}
               src={v.src}
               alt={h.variants[i].alt}
               aria-hidden={i !== index}
