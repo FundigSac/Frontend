@@ -422,7 +422,7 @@ test.describe("Términos y condiciones", () => {
       await go(page, route);
       await expect(page.getByRole("heading", { level: 1 })).toContainText(h1);
       await expect(page.locator("html")).toHaveAttribute("data-lp-theme", "dark");
-      await expect(page.locator("main.lg")).toHaveCSS("background-color", "rgb(8, 18, 31)");
+      await expect(page.locator("main.lg")).toHaveCSS("background-color", "rgb(20, 20, 19)");
     }
     await page.goto("/ruta-que-no-existe");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Oops, this page can’t be found.");

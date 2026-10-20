@@ -137,11 +137,11 @@
 }
 
 html[data-lp-theme="dark"] .ck {
-  --ck-ink: #eef3fa;
-  --ck-text: #b4c1d2;
+  --ck-ink: #f5f4f3;
+  --ck-text: #c7c4bf;
   --ck-orange-dark: #ff8a4d;
   border-color: rgb(255 255 255 / 14%);
-  background: linear-gradient(160deg, rgb(20 34 58 / 78%), rgb(9 18 33 / 66%));
+  background: linear-gradient(160deg, rgb(40 39 38 / 78%), rgb(22 21 20 / 66%));
   box-shadow: 0 30px 60px -24px rgb(0 0 0 / 80%), inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
@@ -241,8 +241,8 @@ html[data-lp-theme="dark"] .ck__btn--outline:hover {
 }
 
 html[data-lp-theme="dark"] .ck__btn--reject {
-  background: #eef3fa;
-  color: #0b1626;
+  background: #f5f4f3;
+  color: #191918;
 }
 
 html[data-lp-theme="dark"] .ck__btn--reject:hover {
@@ -477,15 +477,15 @@ html.ck-lock {
 }
 
 html[data-lp-theme="dark"] .ck-dialog {
-  --ck-ink: #eef3fa;
-  --ck-text: #b4c1d2;
+  --ck-ink: #f5f4f3;
+  --ck-text: #c7c4bf;
   --ck-orange-dark: #ff8a4d;
   --ck-line: rgb(255 255 255 / 14%);
 }
 
 html[data-lp-theme="dark"] .ck-dialog__panel {
   border-color: rgb(255 255 255 / 14%);
-  background: linear-gradient(160deg, rgb(18 31 53 / 96%), rgb(9 18 33 / 94%));
+  background: linear-gradient(160deg, rgb(37 36 34 / 96%), rgb(22 21 20 / 94%));
   box-shadow: 0 40px 80px -30px rgb(0 0 0 / 85%);
 }
 

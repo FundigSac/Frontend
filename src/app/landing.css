@@ -1622,8 +1622,14 @@ html[data-lp-theme="dark"] .lp-theme__moon {
 }
 
 /* ===== Modo oscuro (cabecera y portada) ===== */
+/* En oscuro el pie deja el azul marino de marca y pasa al grafito del resto de la pantalla, separado por un filete. */
+html[data-lp-theme="dark"] .lp-footer {
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  background: #0f0f0e;
+}
+
 html[data-lp-theme="dark"] .lp-header {
-  --lp-ink: #eef3fa;
+  --lp-ink: #f5f4f3;
   --lp-line: rgb(255 255 255 / 14%);
   --lp-soft: rgb(255 255 255 / 9%);
   --lp-orange-dark: #ff8a4d;
@@ -1631,32 +1637,32 @@ html[data-lp-theme="dark"] .lp-header {
 
 html[data-lp-theme="dark"] .lp-header.is-solid {
   border-bottom-color: rgb(255 255 255 / 10%);
-  background: linear-gradient(180deg, rgb(9 18 33 / 76%), rgb(9 18 33 / 64%));
+  background: linear-gradient(180deg, rgb(22 21 20 / 76%), rgb(22 21 20 / 64%));
   box-shadow: 0 8px 24px -18px rgb(0 0 0 / 70%);
 }
 
 html[data-lp-theme="dark"] .lp-nav__menu,
 html[data-lp-theme="dark"] .lp-lang__menu,
 html[data-lp-theme="dark"] .lp-search.is-open {
-  background: #0f1c30;
+  background: #21201e;
   box-shadow: 0 24px 48px -20px rgb(0 0 0 / 70%);
 }
 
 html[data-lp-theme="dark"] .lp-search input {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-search input::placeholder {
-  color: #8696ab;
+  color: #9f9a92;
 }
 
 html[data-lp-theme="dark"] .lp-mobile.is-open {
-  background: #0b1626;
-  color: #eef3fa;
+  background: #191918;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-mobile a {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-header__brand img {
@@ -1664,7 +1670,7 @@ html[data-lp-theme="dark"] .lp-header__brand img {
 }
 
 html[data-lp-theme="dark"] .lp-hero {
-  background: #08121f;
+  background: #141413;
 }
 
 html[data-lp-theme="dark"] .lp-hero__photo {
@@ -1673,12 +1679,12 @@ html[data-lp-theme="dark"] .lp-hero__photo {
 
 html[data-lp-theme="dark"] .lp-hero__veil {
   background:
-    linear-gradient(90deg, rgb(7 15 28 / 94%) 0%, rgb(7 15 28 / 82%) 30%, rgb(7 15 28 / 38%) 52%, rgb(7 15 28 / 0%) 68%),
-    linear-gradient(180deg, rgb(7 15 28 / 40%) 0%, rgb(7 15 28 / 0%) 16%, rgb(7 15 28 / 0%) 76%, rgb(8 18 31 / 96%) 100%);
+    linear-gradient(90deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 82%) 30%, rgb(18 18 17 / 38%) 52%, rgb(18 18 17 / 0%) 68%),
+    linear-gradient(180deg, rgb(18 18 17 / 40%) 0%, rgb(18 18 17 / 0%) 16%, rgb(18 18 17 / 0%) 76%, rgb(20 20 19 / 96%) 100%);
 }
 
 html[data-lp-theme="dark"] .lp-hero .lp-eyebrow {
-  color: #a9b8cc;
+  color: #bfbbb6;
 }
 
 html[data-lp-theme="dark"] .lp-hero h1,
@@ -1687,7 +1693,7 @@ html[data-lp-theme="dark"] .lp-hero .lp-link {
 }
 
 html[data-lp-theme="dark"] .lp-hero__lead {
-  color: #bac7d8;
+  color: #cccac6;
 }
 
 html[data-lp-theme="dark"] .lp-hero__valve {
@@ -1696,7 +1702,7 @@ html[data-lp-theme="dark"] .lp-hero__valve {
 
 @media (max-width: 860px) {
   html[data-lp-theme="dark"] .lp-hero__veil {
-    background: linear-gradient(180deg, rgb(7 15 28 / 95%) 0%, rgb(7 15 28 / 86%) 42%, rgb(7 15 28 / 30%) 62%, rgb(7 15 28 / 0%) 74%, rgb(8 18 31 / 92%) 100%);
+    background: linear-gradient(180deg, rgb(18 18 17 / 95%) 0%, rgb(18 18 17 / 86%) 42%, rgb(18 18 17 / 30%) 62%, rgb(18 18 17 / 0%) 74%, rgb(20 20 19 / 92%) 100%);
   }
 }
 
@@ -1816,32 +1822,32 @@ html[data-lp-theme="dark"] .lp-hero__valve {
 
 /* ===== Modo oscuro: resto de la portada ===== */
 html[data-lp-theme="dark"] .lp {
-  --lp-navy: #f2f6fc;
-  --lp-ink: #eef3fa;
-  --lp-text: #aebccd;
+  --lp-navy: #f7f7f7;
+  --lp-ink: #f5f4f3;
+  --lp-text: #c1beba;
   --lp-line: rgb(255 255 255 / 12%);
   --lp-soft: rgb(255 255 255 / 8%);
   --lp-orange-dark: #ff8a4d;
-  background: #08121f;
+  background: #141413;
 }
 
 html[data-lp-theme="dark"] .lp-components {
-  background: linear-gradient(180deg, #0b1626, #08121f);
+  background: linear-gradient(180deg, #191918, #141413);
 }
 
 html[data-lp-theme="dark"] .lp-card {
-  background: #101d31;
+  background: #22211f;
   box-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 10px 24px -18px rgb(0 0 0 / 70%);
 }
 
 html[data-lp-theme="dark"] .lp-card__media {
-  background: #0b1626;
+  background: #191918;
 }
 
 html[data-lp-theme="dark"] .lp-components .lp-arrow {
   border-color: rgb(255 255 255 / 18%);
-  background: #101d31;
-  color: #eef3fa;
+  background: #22211f;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-components .lp-arrow:hover:not(:disabled) {
@@ -1853,15 +1859,15 @@ html[data-lp-theme="dark"] .lp-components .lp-arrow:hover:not(:disabled) {
 html[data-lp-theme="dark"] .lp-components .lp-arrow--quiet {
   border-color: transparent;
   background: transparent;
-  color: #aebccd;
+  color: #c1beba;
 }
 
 html[data-lp-theme="dark"] .lp-arrows--light .lp-arrow:hover {
-  color: #0b2244;
+  color: #292826;
 }
 
 html[data-lp-theme="dark"] .lp-backing {
-  background: #08121f;
+  background: #141413;
 }
 
 html[data-lp-theme="dark"] .lp-backing__media img {
@@ -1869,7 +1875,7 @@ html[data-lp-theme="dark"] .lp-backing__media img {
 }
 
 html[data-lp-theme="dark"] .lp-docs {
-  background: #0a1424;
+  background: #181716;
 }
 
 html[data-lp-theme="dark"] .lp-btn--outline {
@@ -1884,8 +1890,8 @@ html[data-lp-theme="dark"] .lp-btn--outline:hover {
 
 html[data-lp-theme="dark"] .lp-docs__campaigns-icon {
   border-color: rgb(255 255 255 / 18%);
-  background: #101d31;
-  color: #eef3fa;
+  background: #22211f;
+  color: #f5f4f3;
 }
 
 /* En oscuro la misma imagen sin fondo; la sombra pasa a ser más profunda para despegar los folletos del azul marino. */
@@ -1900,7 +1906,7 @@ html[data-lp-theme="dark"] .lp-docs__media img {
 }
 
 html[data-lp-theme="dark"] .lp-footer {
-  background: #060d18;
+  background: #100f0e;
 }
 
 /* Cambio de tema sin saltos bruscos. */
@@ -1914,7 +1920,7 @@ html[data-lp-theme="dark"] .lp-footer {
 
 /* Controles del hero en modo oscuro: cristal oscuro con flechas claras. */
 html[data-lp-theme="dark"] .lp-hero__controls {
-  background: rgb(8 18 33 / 62%);
+  background: rgb(21 21 20 / 62%);
   box-shadow: 0 0 0 1px rgb(255 255 255 / 10%);
 }
 
@@ -2063,7 +2069,7 @@ html[data-lp-theme="dark"] .lp-hero__ctrl--ghost:hover {
 }
 
 html[data-lp-theme="dark"] .lp-location {
-  background: #08121f;
+  background: #141413;
 }
 
 /* Mapa en oscuro: se invierte la luminosidad sin alterar los tonos. */
@@ -2076,8 +2082,8 @@ html[data-lp-theme="dark"] .lp-location__map {
 }
 
 html[data-lp-theme="dark"] .lp-location__pin {
-  background: #101d31;
-  color: #c3cfde;
+  background: #22211f;
+  color: #d3d1ce;
   box-shadow: 0 14px 30px -14px rgb(0 0 0 / 80%);
 }
 
@@ -2166,9 +2172,9 @@ html[data-lp-theme="dark"] .lp-location__pin {
 
 html[data-lp-theme="dark"] .lp-float__top {
   border-color: rgb(255 255 255 / 18%);
-  background: #101d31;
+  background: #22211f;
   box-shadow: 0 10px 24px -12px rgb(0 0 0 / 80%);
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-float__top:hover {
@@ -2278,7 +2284,7 @@ html[data-lp-theme="dark"] .lp-float__top:hover {
 html[data-lp-theme="dark"] .lp-nav__menu,
 html[data-lp-theme="dark"] .lp-lang__menu {
   border-color: rgb(255 255 255 / 14%);
-  background: linear-gradient(160deg, rgb(20 34 58 / 72%), rgb(9 18 33 / 58%));
+  background: linear-gradient(160deg, rgb(40 39 38 / 72%), rgb(22 21 20 / 58%));
   box-shadow: 0 26px 50px -22px rgb(0 0 0 / 75%), inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
@@ -2303,7 +2309,7 @@ html[data-lp-theme="dark"] .lp-lang__menu button:hover {
 
 html[data-lp-theme="dark"] .lp-nav__menu,
 html[data-lp-theme="dark"] .lp-lang__menu {
-  background: linear-gradient(160deg, rgb(20 34 58 / 50%), rgb(9 18 33 / 34%));
+  background: linear-gradient(160deg, rgb(40 39 38 / 50%), rgb(22 21 20 / 34%));
 }
 
 /* ===== Cuenta y carrito de cotización ===== */
@@ -2411,7 +2417,7 @@ html[data-lp-theme="dark"] .lp-lang__menu {
 
 html[data-lp-theme="dark"] .lp-account__menu {
   border-color: rgb(255 255 255 / 14%);
-  background: linear-gradient(160deg, rgb(20 34 58 / 55%), rgb(9 18 33 / 38%));
+  background: linear-gradient(160deg, rgb(40 39 38 / 55%), rgb(22 21 20 / 38%));
   box-shadow: 0 26px 50px -22px rgb(0 0 0 / 75%), inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
@@ -2424,7 +2430,7 @@ html[data-lp-theme="dark"] .lp-account__menu .lp-account__primary:hover {
 }
 
 html[data-lp-theme="dark"] .lp-cart__badge {
-  box-shadow: 0 0 0 2px #0b1626;
+  box-shadow: 0 0 0 2px #191918;
 }
 
 /* Acceso a la cuenta dentro del menú móvil. */
@@ -2457,7 +2463,7 @@ html[data-lp-theme="dark"] .lp-cart__badge {
 
 html[data-lp-theme="dark"] .lp-mobile__account a {
   border-color: rgb(255 255 255 / 16%);
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
@@ -2985,7 +2991,7 @@ html[data-lp-theme="dark"] .lp-nav__link.is-active {
 
 /* Etiquetas de sección en modo oscuro: el gris fijo (#4b5563) quedaba en 2.5:1 sobre fondo azul noche. */
 html[data-lp-theme="dark"] .lp-eyebrow {
-  color: #b4c2d4;
+  color: #c8c5c0;
 }
 
 /* Con el menú móvil abierto, ni los botones flotantes ni el aviso de cookies deben tapar el selector de idioma ni el CTA. */
@@ -3046,9 +3052,9 @@ body:has(.lp-mobile.is-open) .ck {
 html[data-lp-theme="dark"] .lp-nav__menu,
 html[data-lp-theme="dark"] .lp-lang__menu,
 html[data-lp-theme="dark"] .lp-account__menu {
-  background: linear-gradient(160deg, rgb(20 34 58 / 92%), rgb(9 18 33 / 86%));
+  background: linear-gradient(160deg, rgb(40 39 38 / 92%), rgb(22 21 20 / 86%));
 }
 
 html[data-lp-theme="dark"] .lp-account__menu p {
-  color: #b4c2d4;
+  color: #c8c5c0;
 }

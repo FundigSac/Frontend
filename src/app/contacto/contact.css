@@ -488,7 +488,7 @@ html[data-lp-theme="dark"] .ct-error {
 /* ===== Tema oscuro ===== */
 html[data-lp-theme="dark"] .ct-card {
   border-color: rgb(255 255 255 / 12%);
-  background: #0f1d32;
+  background: #22211f;
   box-shadow: 0 18px 40px -30px rgb(0 0 0 / 80%);
 }
 
@@ -500,14 +500,14 @@ html[data-lp-theme="dark"] .ct-card__text strong,
 html[data-lp-theme="dark"] .ct-card__text b,
 html[data-lp-theme="dark"] .ct-info h3,
 html[data-lp-theme="dark"] .ct-address {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .ct-card__text small,
 html[data-lp-theme="dark"] .ct-intro,
 html[data-lp-theme="dark"] .ct-info p,
 html[data-lp-theme="dark"] .ct-privacy {
-  color: #b4c2d4;
+  color: #c8c5c0;
 }
 
 html[data-lp-theme="dark"] .ct-card__icon--navy {
@@ -516,11 +516,11 @@ html[data-lp-theme="dark"] .ct-card__icon--navy {
 
 html[data-lp-theme="dark"] .ct-form-wrap {
   border-color: rgb(255 255 255 / 12%);
-  background: linear-gradient(180deg, #0f1d32, #0c192c);
+  background: linear-gradient(180deg, #22211f, #1d1c1b);
 }
 
 html[data-lp-theme="dark"] .ct-reason {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .ct-privacy {
@@ -528,7 +528,7 @@ html[data-lp-theme="dark"] .ct-privacy {
 }
 
 html[data-lp-theme="dark"] .ct-privacy svg {
-  color: #cfe0fa;
+  color: #e6e5e3;
 }
 
 html[data-lp-theme="dark"] .ct-map,
@@ -547,8 +547,8 @@ html[data-lp-theme="dark"] .ct-map iframe {
 }
 
 html[data-lp-theme="dark"] .ct-map__pin {
-  background: #101d31;
-  color: #c3cfde;
+  background: #22211f;
+  color: #d3d1ce;
   box-shadow: 0 14px 30px -14px rgb(0 0 0 / 80%);
 }
 

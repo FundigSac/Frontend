@@ -50,7 +50,7 @@
 }
 
 html[data-lp-theme="dark"] .lp-account__menu button[role="menuitem"] {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-account__menu button[role="menuitem"]:hover {
@@ -102,7 +102,7 @@ html[data-lp-theme="dark"] .lp-account__who strong {
 
 html[data-lp-theme="dark"] .lp-mobile__account--user p,
 html[data-lp-theme="dark"] .lp-mobile__account--user button {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .lp-mobile__account--user button {

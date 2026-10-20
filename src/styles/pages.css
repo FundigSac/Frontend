@@ -19,11 +19,11 @@
 }
 
 html[data-lp-theme="dark"] .x-page {
-  --navy: #eef3fa;
-  --text: #c9d4e2;
-  --muted: #9db0c7;
-  --border: #2a3d55;
-  --bg: #0c1a2d;
+  --navy: #f5f4f3;
+  --text: #d8d6d3;
+  --muted: #b7b3ad;
+  --border: #42403d;
+  --bg: #1e1d1b;
   --primary: #7fd4e6;
   --primary-hover: #a6e3f0;
 }
@@ -52,6 +52,8 @@ html[data-lp-theme="dark"] .x-page {
 
 /* ───────── Encabezado ───────── */
 .x-hero { position: relative; overflow: hidden; color: #fff; background: radial-gradient(900px 420px at 85% -10%, #1b6a8a55, transparent 60%), linear-gradient(135deg, #0b2233 0%, #123b52 62%, #0f4c66 100%); }
+/* En oscuro la portada pasa del azul petróleo al grafito del resto del sitio; las tuberías del fondo se mantienen. */
+html[data-lp-theme="dark"] .x-hero { background: radial-gradient(900px 420px at 85% -10%, rgb(242 106 27 / 10%), transparent 60%), linear-gradient(135deg, #121211 0%, #1b1a19 62%, #242322 100%); }
 .x-hero::after { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: linear-gradient(90deg, transparent, #ffffff40, transparent); }
 .x-hero-art { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .5; pointer-events: none; }
 .x-pipe { stroke: #5eacd0; stroke-width: 12; opacity: .14; }
@@ -348,13 +350,13 @@ a.x-contact-card:hover { transform: translateY(-3px); border-color: #9bc9d8; box
 .x-contact-card p svg { display: inline-block; margin-left: 4px; vertical-align: -2px; }
 
 html[data-lp-theme="dark"] .x-chip {
-  background: #14243a;
-  color: #eef3fa;
+  background: #282726;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] a.x-chip:hover {
-  background: #1b3250;
-  border-color: #3d6b86;
+  background: #373634;
+  border-color: #65625e;
 }
 
 /* Tarjetas y pasos de las páginas internas en modo oscuro (fondos blancos fijos). */
@@ -362,19 +364,19 @@ html[data-lp-theme="dark"] .x-card,
 html[data-lp-theme="dark"] .x-pcard,
 html[data-lp-theme="dark"] .x-steps > li,
 html[data-lp-theme="dark"] .x-steps > .x-reveal {
-  background: #14243a;
-  border-color: #2a3d55;
+  background: #282726;
+  border-color: #42403d;
 }
 
 /* Las fotos llevan "multiply" para fundir su fondo blanco: sobre azul noche quedaban apagadas. En oscuro la foto va
    sobre una placa clara, como en las fichas de producto. */
 html[data-lp-theme="dark"] .x-pcard-media {
-  background: radial-gradient(circle at 50% 40%, #f6f8fa 0%, #dde5ec 75%);
+  background: radial-gradient(circle at 50% 40%, #f8f8f8 0%, #e6e5e3 75%);
 }
 
 html[data-lp-theme="dark"] .x-pcard-name,
 html[data-lp-theme="dark"] .x-pcard-title {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .x-note {

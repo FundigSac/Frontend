@@ -19,13 +19,13 @@
 }
 
 html[data-lp-theme="dark"] .ai {
-  --ai-ink: #eef3fa;
-  --ai-text: #c9d4e2;
-  --ai-muted: #97a6ba;
+  --ai-ink: #f5f4f3;
+  --ai-text: #d8d6d3;
+  --ai-muted: #aeaaa3;
   --ai-line: rgb(255 255 255 / 11%);
-  --ai-soft: #12223a;
-  --ai-bg: #0b1628;
-  --ai-bubble: #13243c;
+  --ai-soft: #272625;
+  --ai-bg: #1a1a19;
+  --ai-bubble: #292826;
   --ai-user: #1d4f8f;
   --ai-link: #ffa066;
 }
@@ -440,7 +440,7 @@ body:has(.ck) .ai-teaser {
 }
 
 html[data-lp-theme="dark"] .ai-launch__dot {
-  border-color: #0b1628;
+  border-color: #1a1a19;
 }
 
 /* ===== Móvil: el chat ocupa toda la pantalla ===== */

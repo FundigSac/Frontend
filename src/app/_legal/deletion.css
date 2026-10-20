@@ -1337,12 +1337,12 @@ html[data-lp-theme="dark"] .dl {
   --dl-ok: #6fd39a;
   --dl-ok-soft: rgb(46 160 90 / 16%);
   --dl-orange-soft: rgb(242 106 27 / 13%);
-  --dl-panel-bg: #0b1626;
+  --dl-panel-bg: #191918;
 }
 
 html[data-lp-theme="dark"] .dl-status {
   border-color: rgb(255 255 255 / 12%);
-  background: rgb(13 26 46 / 84%);
+  background: rgb(31 30 28 / 84%);
   box-shadow: 0 34px 70px -30px rgb(0 0 0 / 75%);
 }
 
@@ -1356,7 +1356,7 @@ html[data-lp-theme="dark"] .dl-status__done {
 }
 
 html[data-lp-theme="dark"] .dl-status__dot {
-  border-color: #3d5069;
+  border-color: #565450;
 }
 
 html[data-lp-theme="dark"] li[data-state="done"] > .dl-status__dot {
@@ -1383,7 +1383,7 @@ html[data-lp-theme="dark"] .dl-device {
   background:
     radial-gradient(60% 90% at 88% 10%, rgb(47 123 224 / 22%) 0%, rgb(47 123 224 / 0%) 60%),
     radial-gradient(50% 80% at 0% 100%, rgb(242 106 27 / 12%) 0%, rgb(242 106 27 / 0%) 60%),
-    linear-gradient(135deg, #0a1730, #0c2244 55%, #091a35);
+    linear-gradient(135deg, #1e1d1c, #292827 55%, #201f1e);
 }
 
 html[data-lp-theme="dark"] .dl-path span,
@@ -1396,5 +1396,5 @@ html[data-lp-theme="dark"] .dl-tag--law {
 }
 
 html[data-lp-theme="dark"] .dl-ready__code {
-  color: #f2f6fc;
+  color: #f7f7f7;
 }

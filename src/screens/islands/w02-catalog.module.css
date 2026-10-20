@@ -1322,38 +1322,38 @@
 /* ===== Tema oscuro de /productos (generado por scripts/gen-products-dark.mjs) ===== */
 /* dark:begin */
 :global(html[data-lp-theme="dark"]) .page {
-  --ink: #eef3fa;
-  --ink-soft: #c3cfde;
-  --ink-muted: #9db0c7;
+  --ink: #f5f4f3;
+  --ink-soft: #d3d1ce;
+  --ink-muted: #b7b3ad;
   --line: rgb(255 255 255 / 14%);
-  --paper: #08121f;
-  --white: #0f1d32;
-  --blue: #14253f;
+  --paper: #141413;
+  --white: #22211f;
+  --blue: #2b2a28;
   --ink-btn: #2b4670;
 }
 :global(html[data-lp-theme="dark"]) .hero {
-  background-color: #1a2e4a;
+  background-color: #343230;
 }
 :global(html[data-lp-theme="dark"]) .hero::before {
-  background: linear-gradient(90deg, rgb(8 18 31 / 99%) 0%, rgb(8 18 31 / 96%) 27%, rgb(8 18 31 / 78%) 38%, rgb(8 18 31 / 30%) 47%, rgb(8 18 31 / 3%) 56%, rgb(28 48 80 / 3%) 100%);
+  background: linear-gradient(90deg, rgb(20 20 19 / 99%) 0%, rgb(20 20 19 / 96%) 27%, rgb(20 20 19 / 78%) 38%, rgb(20 20 19 / 30%) 47%, rgb(20 20 19 / 3%) 56%, rgb(56 54 52 / 3%) 100%);
 }
 :global(html[data-lp-theme="dark"]) .breadcrumbs span[aria-hidden] {
-  color: #9db0c7;
+  color: #b7b3ad;
 }
 :global(html[data-lp-theme="dark"]) .eyebrow {
-  color: #9db0c7;
+  color: #b7b3ad;
 }
 :global(html[data-lp-theme="dark"]) .heroDescription {
-  color: #c3cfde;
+  color: #d3d1ce;
 }
 :global(html[data-lp-theme="dark"]) .searchForm {
-  background: rgb(15 29 50 / 98%);
+  background: rgb(34 33 31 / 98%);
 }
 :global(html[data-lp-theme="dark"]) .searchIcon {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 :global(html[data-lp-theme="dark"]) .searchField input::placeholder {
-  color: #9db0c7;
+  color: #b7b3ad;
 }
 :global(html[data-lp-theme="dark"]) .searchButton,
 :global(html[data-lp-theme="dark"]) .darkButton {
@@ -1363,122 +1363,122 @@
 :global(html[data-lp-theme="dark"]) .filterPill,
 :global(html[data-lp-theme="dark"]) .filterActive {
   border: 1px solid rgb(255 255 255 / 14%);
-  background: rgb(15 29 50 / 94%);
-  color: #eef3fa;
+  background: rgb(34 33 31 / 94%);
+  color: #f5f4f3;
 }
 :global(html[data-lp-theme="dark"]) .filterPill:hover {
   border-color: var(--ink-btn);
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .filterActive {
   border-color: var(--ink-btn);
   background: var(--ink-btn);
 }
 :global(html[data-lp-theme="dark"]) .qualityStamp {
-  color: #eef3fa;
+  color: #f5f4f3;
 }
 :global(html[data-lp-theme="dark"]) .categoriesSection,
 :global(html[data-lp-theme="dark"]) .featuredSection {
-  background: #08121f;
+  background: #141413;
 }
 :global(html[data-lp-theme="dark"]) .categoryCard {
   border: 1px solid rgb(255 255 255 / 14%);
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .categoryImage {
-  background: #e8eef6;
+  background: #f0efee;
 }
 :global(html[data-lp-theme="dark"]) .categoryArrow {
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .benefitsSection {
-  background: #14253f;
+  background: #2b2a28;
 }
 :global(html[data-lp-theme="dark"]) .benefitItem {
   border-left: 1px solid rgb(255 255 255 / 14%);
 }
 :global(html[data-lp-theme="dark"]) .productCard {
   border: 1px solid rgb(255 255 255 / 14%);
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .productImage {
-  background: #e8eef6;
+  background: #f0efee;
 }
 :global(html[data-lp-theme="dark"]) .productName:hover {
   color: #ff9a62;
 }
 :global(html[data-lp-theme="dark"]) .productDescriptor {
-  color: #9db0c7;
+  color: #b7b3ad;
 }
 :global(html[data-lp-theme="dark"]) .secondaryButton,
 :global(html[data-lp-theme="dark"]) .darkButton {
   border: 1px solid rgb(255 255 255 / 14%);
-  background: #08121f;
+  background: #141413;
 }
 :global(html[data-lp-theme="dark"]) .secondaryButton:hover {
   border-color: rgb(255 255 255 / 14%);
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .productActions .darkButton {
   border-color: var(--ink-btn);
   background: var(--ink-btn);
 }
 :global(html[data-lp-theme="dark"]) .emptyState {
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .resourcesSection {
-  background: #08121f;
+  background: #141413;
 }
 :global(html[data-lp-theme="dark"]) .resourcesBackdrop {
-  background-image: linear-gradient(90deg, #08121f 0%, rgb(8 18 31 / 88%) 29%, rgb(8 18 31 / 54%) 69%, rgb(8 18 31 / 90%) 100%), url("/media/home-ref-blueprint-w1200.webp");
+  background-image: linear-gradient(90deg, #141413 0%, rgb(20 20 19 / 88%) 29%, rgb(20 20 19 / 54%) 69%, rgb(20 20 19 / 90%) 100%), url("/media/home-ref-blueprint-w1200.webp");
 }
 :global(html[data-lp-theme="dark"]) .resourcesCopy .darkButton {
   border-color: var(--ink-btn);
   background: var(--ink-btn);
 }
 :global(html[data-lp-theme="dark"]) .downloadCard {
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .downloadButton {
   border: 1px solid rgb(255 255 255 / 14%);
-  background: #08121f;
+  background: #141413;
 }
 :global(html[data-lp-theme="dark"]) .downloadButton:hover {
   border-color: var(--ink-btn);
-  background: #0f1d32;
+  background: #22211f;
 }
 :global(html[data-lp-theme="dark"]) .supportSection {
-  background: #08121f;
+  background: #141413;
 }
 :global(html[data-lp-theme="dark"]) .supportInner {
-  background-color: #14253f;
-  background-image: linear-gradient(90deg, rgb(20 37 63 / 97%) 0%, rgb(20 37 63 / 92%) 58%, rgb(20 37 63 / 78%) 100%), url("/media/productos-page/productos7-1600-w1200.webp");
+  background-color: #2b2a28;
+  background-image: linear-gradient(90deg, rgb(43 42 40 / 97%) 0%, rgb(43 42 40 / 92%) 58%, rgb(43 42 40 / 78%) 100%), url("/media/productos-page/productos7-1600-w1200.webp");
 }
 @media (max-width: 860px) {
   :global(html[data-lp-theme="dark"]) .hero::before {
-    background: linear-gradient(180deg, rgb(8 18 31 / 97%) 0%, rgb(8 18 31 / 90%) 55%, rgb(8 18 31 / 30%) 82%, rgb(8 18 31 / 0%) 100%);
+    background: linear-gradient(180deg, rgb(20 20 19 / 97%) 0%, rgb(20 20 19 / 90%) 55%, rgb(20 20 19 / 30%) 82%, rgb(20 20 19 / 0%) 100%);
   }
 }
 @media (max-width: 640px) {
   :global(html[data-lp-theme="dark"]) .hero::before {
-    background: linear-gradient(90deg, rgb(8 18 31 / 98%) 0%, rgb(8 18 31 / 90%) 55%, rgb(8 18 31 / 38%) 100%), linear-gradient(0deg, rgb(28 48 80 / 4%), rgb(28 48 80 / 4%));
+    background: linear-gradient(90deg, rgb(20 20 19 / 98%) 0%, rgb(20 20 19 / 90%) 55%, rgb(20 20 19 / 38%) 100%), linear-gradient(0deg, rgb(56 54 52 / 4%), rgb(56 54 52 / 4%));
   }
   :global(html[data-lp-theme="dark"]) .benefitItem,
 :global(html[data-lp-theme="dark"]) .benefitItem:first-child {
     border-top: 1px solid rgb(255 255 255 / 14%);
   }
   :global(html[data-lp-theme="dark"]) .hero::before {
-    background: linear-gradient(180deg, #08121f 0%, #08121f calc(100% - 360px), rgb(8 18 31 / 60%) calc(100% - 290px), rgb(8 18 31 / 0%) calc(100% - 200px));
+    background: linear-gradient(180deg, #141413 0%, #141413 calc(100% - 360px), rgb(20 20 19 / 60%) calc(100% - 290px), rgb(20 20 19 / 0%) calc(100% - 200px));
   }
 }
 :global(html[data-lp-theme="dark"]) .topVeil {
-  background: linear-gradient(180deg, rgb(8 18 31 / 94%) 0%, rgb(8 18 31 / 80%) 50%, rgb(8 18 31 / 0%) 100%);
+  background: linear-gradient(180deg, rgb(20 20 19 / 94%) 0%, rgb(20 20 19 / 80%) 50%, rgb(20 20 19 / 0%) 100%);
 }
 /* dark:end */
 
 /* dark:manual — Recursos técnicos en oscuro */
 :global(html[data-lp-theme="dark"]) .downloadButton {
-  border-color: #3c5a8c;
+  border-color: #686560;
   background: #2b4670;
   color: #fff;
 }

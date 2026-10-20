@@ -29,13 +29,13 @@
 }
 
 html[data-lp-theme="dark"] .ac {
-  --ac-ink: #eef3fa;
-  --ac-text: #c3cfde;
-  --ac-muted: #93a3b8;
+  --ac-ink: #f5f4f3;
+  --ac-text: #d3d1ce;
+  --ac-muted: #aba7a0;
   --ac-line: rgb(255 255 255 / 12%);
-  --ac-panel: #0b1628;
-  --ac-input: #0f1d33;
-  --ac-soft: #13243c;
+  --ac-panel: #1a1a19;
+  --ac-input: #222120;
+  --ac-soft: #292826;
   --ac-haze: 11 22 40;
 }
 
@@ -141,7 +141,7 @@ html[data-lp-theme="dark"] .ac {
 }
 
 html[data-lp-theme="dark"] .ac-visual h1 {
-  color: #f4f8fd;
+  color: #f9f9f8;
 }
 
 .ac-visual h1 span {
@@ -162,7 +162,7 @@ html[data-lp-theme="dark"] .ac-visual h1 {
 }
 
 html[data-lp-theme="dark"] .ac-lead {
-  color: #d3deec;
+  color: #e1e0de;
 }
 
 .ac-features {
@@ -286,7 +286,7 @@ html[data-lp-theme="dark"] .ac-lead {
 }
 
 html[data-lp-theme="dark"] .ac-head h2 {
-  color: #f4f8fd;
+  color: #f9f9f8;
 }
 
 .ac-head p {
@@ -670,7 +670,7 @@ html[data-lp-theme="dark"] .ac-switch a {
 
 html[data-lp-theme="dark"] .ac-secure {
   border-color: rgb(143 182 234 / 14%);
-  background: linear-gradient(135deg, #12243e, #0f1f37);
+  background: linear-gradient(135deg, #292827, #242322);
 }
 
 .ac-secure > span {
@@ -873,7 +873,7 @@ html[data-lp-theme="dark"] .ac-rules li.is-ok {
 }
 
 html[data-lp-theme="dark"] .ac-done h2 {
-  color: #f4f8fd;
+  color: #f9f9f8;
 }
 
 .ac-done > p {

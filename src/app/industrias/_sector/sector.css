@@ -422,8 +422,8 @@
 /* ===== Modo oscuro ===== */
 html[data-lp-theme="dark"] .sa-hero__veil {
   background:
-    linear-gradient(90deg, rgb(7 15 28 / 94%) 0%, rgb(7 15 28 / 80%) 30%, rgb(7 15 28 / 34%) 50%, rgb(7 15 28 / 0%) 66%),
-    linear-gradient(180deg, rgb(7 15 28 / 40%) 0%, rgb(7 15 28 / 0%) 18%, rgb(7 15 28 / 0%) 78%, rgb(8 18 31 / 80%) 100%);
+    linear-gradient(90deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 80%) 30%, rgb(18 18 17 / 34%) 50%, rgb(18 18 17 / 0%) 66%),
+    linear-gradient(180deg, rgb(18 18 17 / 40%) 0%, rgb(18 18 17 / 0%) 18%, rgb(18 18 17 / 0%) 78%, rgb(20 20 19 / 80%) 100%);
 }
 
 html[data-lp-theme="dark"] .sa-featured .ag-lead strong,
@@ -432,11 +432,11 @@ html[data-lp-theme="dark"] .sa-features strong {
 }
 
 html[data-lp-theme="dark"] .sa-apps {
-  background: linear-gradient(180deg, #0b1626, #08121f 70%);
+  background: linear-gradient(180deg, #191918, #141413 70%);
 }
 
 html[data-lp-theme="dark"] .sa .ag-line {
-  background: linear-gradient(180deg, #08121f, #0b1626);
+  background: linear-gradient(180deg, #141413, #191918);
 }
 
 html[data-lp-theme="dark"] .sa-docs__media {
@@ -445,7 +445,7 @@ html[data-lp-theme="dark"] .sa-docs__media {
 
 @media (max-width: 860px) {
   html[data-lp-theme="dark"] .sa-hero__veil {
-    background: linear-gradient(180deg, rgb(7 15 28 / 94%) 0%, rgb(7 15 28 / 82%) 50%, rgb(7 15 28 / 45%) 100%);
+    background: linear-gradient(180deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 82%) 50%, rgb(18 18 17 / 45%) 100%);
   }
 }
 
@@ -563,7 +563,7 @@ html[data-lp-theme="dark"] .sa-docs__media {
 }
 
 html[data-lp-theme="dark"] .sa-docs__campaigns {
-  color: #e7eef8;
+  color: #f0f0ef;
 }
 
 html[data-lp-theme="dark"] .sa-docs__campaigns > span {
@@ -572,7 +572,7 @@ html[data-lp-theme="dark"] .sa-docs__campaigns > span {
 }
 
 html[data-lp-theme="dark"] .sa--mi .ag-line .lp-card__media img {
-  background: #f4f6f9;
+  background: #f7f7f6;
 }
 
 @media (prefers-reduced-motion: reduce) {

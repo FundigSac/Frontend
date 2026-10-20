@@ -74,26 +74,26 @@
    así que el cambio llega a todas las pantallas sin tocar cada clase. La marca (--c-primary) se mantiene. */
 html[data-lp-theme="dark"] {
   color-scheme: dark;
-  --c-background: #0b1520;
-  --c-surface: #0f1b29;
-  --c-surface-elevated: #14243a;
-  --c-surface-bright: #17293f;
-  --c-surface-dim: #0a1420;
-  --c-surface-container-lowest: #0c1826;
-  --c-surface-container-low: #102032;
-  --c-surface-container: #162940;
-  --c-surface-container-high: #1b3250;
+  --c-background: #161615;
+  --c-surface: #1d1c1b;
+  --c-surface-elevated: #282726;
+  --c-surface-bright: #2d2b29;
+  --c-surface-dim: #161514;
+  --c-surface-container-lowest: #1a1918;
+  --c-surface-container-low: #222120;
+  --c-surface-container: #2d2b29;
+  --c-surface-container-high: #373634;
   --c-surface-container-highest: #223c5c;
   --c-surface-variant: #223c5c;
-  --c-on-surface: #eef3fa;
-  --c-on-background: #eef3fa;
-  --c-on-surface-variant: #b9c6d6;
-  --c-text-secondary: #b9c6d6;
-  --c-text-muted: #93a4b9;
-  --c-secondary: #a9bccc;
-  --c-outline: #7f91a6;
-  --c-outline-variant: #34485f;
-  --c-border: #2a3d55;
+  --c-on-surface: #f5f4f3;
+  --c-on-background: #f5f4f3;
+  --c-on-surface-variant: #cbc8c4;
+  --c-text-secondary: #cbc8c4;
+  --c-text-muted: #aba7a1;
+  --c-secondary: #bfbbb6;
+  --c-outline: #99948c;
+  --c-outline-variant: #4c4a47;
+  --c-border: #42403d;
 }
 
 html[data-lp-theme="dark"] .text-primary {
@@ -296,7 +296,7 @@ html[data-lp-theme="dark"] .text-danger {
 }
 
 html[data-lp-theme="dark"] .text-outline-variant {
-  color: #4f6480;
+  color: #6b6864;
 }
 
 /* Pantallas táctiles: iOS amplía la página al enfocar un campo con letra menor de 16 px. Va fuera de las capas de

@@ -19,13 +19,13 @@
 
 html[data-lp-theme="dark"] .cd,
 html[data-lp-theme="dark"] .cp {
-  --ct-ink: #eef3fa;
-  --ct-text: #c3cfde;
-  --ct-muted: #93a3b8;
+  --ct-ink: #f5f4f3;
+  --ct-text: #d3d1ce;
+  --ct-muted: #aba7a0;
   --ct-line: rgb(255 255 255 / 11%);
-  --ct-soft: #12223a;
-  --ct-bg: #0e1a2e;
-  --ct-page: #0a1424;
+  --ct-soft: #272625;
+  --ct-bg: #1f1e1d;
+  --ct-page: #181716;
 }
 
 .cd *,
@@ -46,7 +46,7 @@ html[data-lp-theme="dark"] .cp {
 }
 
 html[data-lp-theme="dark"] .ct-thumb {
-  background: radial-gradient(120% 120% at 30% 20%, #f4f7fb, #dfe7f1);
+  background: radial-gradient(120% 120% at 30% 20%, #f8f8f7, #e9e8e7);
 }
 
 .ct-thumb img {

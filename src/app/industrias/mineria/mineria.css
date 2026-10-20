@@ -45,7 +45,7 @@
 
 html:not([data-lp-theme="dark"]) .sa--mi .lp-btn--outline {
   color: var(--lp-navy);
-  border-color: #c8d2df;
+  border-color: #d6d4d1;
 }
 
 html .sa--mi .lp-btn--outline:hover {
@@ -462,11 +462,11 @@ html .sa--mi .lp-btn--outline:hover {
 }
 
 html[data-lp-theme="dark"] .sa--mi .sa-hero__veil {
-  background: linear-gradient(90deg, #070f1c 0%, rgb(7 15 28 / 94%) 29%, rgb(7 15 28 / 70%) 42%, rgb(7 15 28 / 12%) 61%, transparent 72%);
+  background: linear-gradient(90deg, #121211 0%, rgb(18 18 17 / 94%) 29%, rgb(18 18 17 / 70%) 42%, rgb(18 18 17 / 12%) 61%, transparent 72%);
 }
 
 html[data-lp-theme="dark"] .sa--mi .ag-featured__media::after {
-  background: linear-gradient(90deg, transparent 85%, #08121f);
+  background: linear-gradient(90deg, transparent 85%, #141413);
 }
 
 html[data-lp-theme="dark"] .sa--mi .sa-docs__media--sheet img {
@@ -482,7 +482,7 @@ html[data-lp-theme="dark"] .sa--mi .ag-docs__copy .lp-btn:hover {
 }
 
 html[data-lp-theme="dark"] .sa--mi .ag-btn-glass {
-  background: #0b1626;
+  background: #191918;
 }
 
 @media (max-width: 900px) {
@@ -686,11 +686,11 @@ html[data-lp-theme="dark"] .sa--mi .ag-btn-glass {
   }
 
   html[data-lp-theme="dark"] .sa--mi .sa-hero {
-    background: #070f1c;
+    background: #121211;
   }
 
   html[data-lp-theme="dark"] .sa--mi .sa-hero__veil {
-    background: linear-gradient(180deg, rgb(7 15 28 / 94%) 0%, rgb(7 15 28 / 82%) 52%, rgb(7 15 28 / 40%) 100%);
+    background: linear-gradient(180deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 82%) 52%, rgb(18 18 17 / 40%) 100%);
   }
 }
 

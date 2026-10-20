@@ -123,13 +123,13 @@
 
 /* Tema oscuro: la tarjeta destacada seguía blanca, un bloque claro aislado en la página oscura. */
 html[data-lp-theme="dark"] .x-featured {
-  border-color: #2a3d55;
-  background: #14243a;
-  color: #eef3fa;
+  border-color: #42403d;
+  background: #282726;
+  color: #f5f4f3;
 }
 
 html[data-lp-theme="dark"] .x-featured__body > span:not(.x-featured__cta) {
-  color: #b4c2d4;
+  color: #c8c5c0;
 }
 
 html[data-lp-theme="dark"] .x-featured__cta {
