@@ -363,7 +363,7 @@ export const CLAIMS: Pair<{
   clear: string;
   submit: { reclamo: string; queja: string };
   sending: string;
-  success: { title: string; text: string; again: string };
+  success: { title: string; text: string; again: string; sheet: string; due: string; invalid: string; limited: string };
   offline: { title: string; text: string; mail: string; whatsapp: string; copy: string; copied: string; preview: string; note: string; edit: string };
   side: {
     blue: { title: string; text: string };
@@ -441,7 +441,12 @@ export const CLAIMS: Pair<{
     clear: "Limpiar formulario",
     submit: { reclamo: "Enviar reclamo", queja: "Enviar queja" },
     sending: "Enviando…",
-    success: { title: "Recibimos tu {kind}", text: "Guarda tu código de registro. Te contactaremos por el medio que elegiste para darte una respuesta.", again: "Registrar otra solicitud" },
+    success: { title: "Recibimos tu {kind}", text: "Guarda tu código de registro. Te contactaremos por el medio que elegiste para darte una respuesta.", again: "Registrar otra solicitud",
+      sheet: "Hoja de reclamación N.°",
+      due: "Te responderemos a más tardar el {date} (15 días hábiles), por el medio que elegiste. Te enviamos la constancia a tu correo.",
+      invalid: "El sistema no aceptó algunos datos. Revisa el documento, el correo y que el detalle de los hechos tenga al menos 20 caracteres.",
+      limited: "Enviaste varias hojas seguidas. Espera unos minutos y vuelve a intentarlo.",
+    },
     offline: {
       title: "Tu solicitud está lista para enviar",
       text: "Revisamos tus datos y armamos el texto de tu reclamo o queja. Elige cómo enviarlo al equipo de FUNDIGSAC; te responderemos por el medio que indicaste.",
@@ -545,7 +550,12 @@ export const CLAIMS: Pair<{
     clear: "Clear form",
     submit: { reclamo: "Submit claim", queja: "Submit complaint" },
     sending: "Sending…",
-    success: { title: "We received your {kind}", text: "Keep your registration code. We will contact you through the channel you chose to give you a response.", again: "Submit another request" },
+    success: { title: "We received your {kind}", text: "Keep your registration code. We will contact you through the channel you chose to give you a response.", again: "Submit another request",
+      sheet: "Complaint sheet No.",
+      due: "We will reply no later than {date} (15 business days), through the channel you chose. We emailed you the confirmation.",
+      invalid: "The system didn’t accept some details. Check the document, the email and that the description of the facts has at least 20 characters.",
+      limited: "You sent several sheets in a row. Wait a few minutes and try again.",
+    },
     offline: {
       title: "Your request is ready to send",
       text: "We checked your details and prepared the text of your claim or complaint. Choose how to send it to the FUNDIGSAC team; we will reply through the channel you selected.",

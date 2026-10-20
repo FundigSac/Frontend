@@ -1,10 +1,14 @@
 "use client";
 
 import { ArrowRight, CheckCircle2, Copy, Mail, MessageCircle, MessageSquareWarning, Megaphone, RotateCcw } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { newIdempotencyKey, submitForm } from "@/modules/backend/client";
+import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
 import { LeadSubmit, useLeadState } from "@/modules/leads/lead-form";
+import { useLang } from "@/shared/layout/landing-prefs";
 import { SITE } from "@/shared/config/site";
 import { buildClaimMessage, mailtoUrl, whatsappUrl } from "./claim-message";
+import { complaintBody, formatDueDate } from "./claim-request";
 import { CLAIMS } from "./copy";
 import { useCopy } from "./use-copy";
 
@@ -22,11 +26,11 @@ function Field({ id, label, required, full, children }: { id: string; label: str
   );
 }
 
-function CountedArea({ id, name, label, placeholder }: { id: string; name: string; label: string; placeholder: string }) {
+function CountedArea({ id, name, label, placeholder, minLength }: { id: string; name: string; label: string; placeholder: string; minLength?: number }) {
   const [length, setLength] = useState(0);
   return (
     <Field id={id} label={label} required full>
-      <textarea id={id} name={name} required maxLength={1000} rows={4} placeholder={placeholder} onChange={(e) => setLength(e.target.value.length)} onReset={() => setLength(0)} />
+      <textarea id={id} name={name} required minLength={minLength} maxLength={1000} rows={4} placeholder={placeholder} onChange={(e) => setLength(e.target.value.length)} onReset={() => setLength(0)} />
       <span className="lg-count" aria-hidden="true">{length} / 1000</span>
     </Field>
   );
@@ -220,12 +224,12 @@ function Fields() {
 
       <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">4</span> {isClaim ? t.detailLegend.reclamo : t.detailLegend.queja}</legend>
-        <CountedArea id={`${uid}-h`} name="detalleDeLosHechos" label={f.facts[0]} placeholder={isClaim ? f.facts[1] : f.facts[2]} />
+        <CountedArea id={`${uid}-h`} name="detalleDeLosHechos" label={f.facts[0]} placeholder={isClaim ? f.facts[1] : f.facts[2]} minLength={20} />
       </fieldset>
 
       <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">5</span> {t.legends[4]}</legend>
-        <CountedArea id={`${uid}-s`} name="pedidoConcretoOPretension" label={f.request[0]} placeholder={f.request[1]} />
+        <CountedArea id={`${uid}-s`} name="pedidoConcretoOPretension" label={f.request[0]} placeholder={f.request[1]} minLength={5} />
       </fieldset>
 
       <fieldset className="lg-fieldset">
@@ -276,12 +280,33 @@ function Fields() {
 function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
   const t = useCopy(CLAIMS);
   const o = t.offline;
+  const [lang] = useLang();
   const [prepared, setPrepared] = useState<{ subject: string; body: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState<{ folio: string; kind: string; responseDueOn: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const sending = useRef(false);
+  const idempotencyKey = useRef(newIdempotencyKey());
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (sending.current) return;
     const data = new FormData(event.currentTarget);
+    setError(null);
+    // Con Backend, la hoja se registra con número correlativo y plazo legal; sin él se prepara el envío como antes.
+    sending.current = true;
+    const outcome = await submitForm<{ folio: string; kind: string; responseDueOn: string }>("complaint", complaintBody(data, PRIVACY_NOTICE_VERSION), idempotencyKey.current);
+    sending.current = false;
+    if (outcome.kind === "saved") {
+      setSaved(outcome.data);
+      window.requestAnimationFrame(() => document.getElementById("reclamo-registrado")?.scrollIntoView({ block: "center", behavior: "smooth" }));
+      return;
+    }
+    if (outcome.kind === "invalid" || outcome.kind === "limited") {
+      idempotencyKey.current = newIdempotencyKey();
+      setError(outcome.kind === "limited" ? t.success.limited : t.success.invalid);
+      return;
+    }
     const text = (name: string) => String(data.get(name) ?? "");
     setPrepared(
       buildClaimMessage({
@@ -323,13 +348,31 @@ function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
 
   return (
     <>
-      <form className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} hidden={prepared !== null}>
+      <form className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} hidden={prepared !== null || saved !== null}>
         <h2>{t.formTitle}</h2>
         <p>{t.formIntro}</p>
         <div style={{ marginTop: 22 }}>
           <Fields />
         </div>
+        {error && (
+          <p className="lg-alert" role="alert">
+            {error}
+          </p>
+        )}
       </form>
+
+      {saved && (
+        <section className="lg-form-card lg-success" id="reclamo-registrado" role="status" aria-labelledby="reclamo-registrado-title">
+          <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
+          <h2 id="reclamo-registrado-title">{t.success.title.replace("{kind}", (saved.kind === "CLAIM" ? t.kinds.reclamo.title : t.kinds.queja.title).toLowerCase())}</h2>
+          <p className="lg-text">{t.success.sheet}</p>
+          <code>{saved.folio}</code>
+          <p className="lg-text">{t.success.due.replace("{date}", formatDueDate(saved.responseDueOn, lang))}</p>
+          <button type="button" className="lp-btn lp-btn--outline" onClick={() => window.location.reload()}>
+            {t.success.again}
+          </button>
+        </section>
+      )}
 
       {prepared && (
         <section className="lg-form-card lg-offline" id="reclamo-listo" aria-labelledby="reclamo-listo-title">
@@ -361,7 +404,7 @@ function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
   );
 }
 
-/** Formulario del libro de reclamaciones: no hay base de datos, así que prepara el envío por correo/WhatsApp. */
+/** Formulario del libro de reclamaciones: registra la hoja en el Backend o, sin él, prepara el envío por correo/WhatsApp. */
 export function ClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
   return <OfflineClaimForm email={email} whatsappNumber={whatsappNumber} />;
 }
