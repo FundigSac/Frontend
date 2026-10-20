@@ -290,7 +290,7 @@
 
 .lead { max-width: 60ch; margin: 0; color: var(--ink-soft); font-size: 16px; line-height: 1.75; }
 
-.keyBand { display: grid; gap: 0; margin-top: clamp(44px, 4.6vw, 72px); }
+.keyBand { display: grid; gap: 0; margin-top: clamp(36px, 3.6vw, 56px); }
 
 /* Placa de datos: cuatro valores bajo un filete fuerte, divididos por filetes finos. */
 .facts {
@@ -455,7 +455,7 @@
 }
 
 /* ---------- Secciones ---------- */
-.body { position: relative; margin-top: clamp(48px, 5vw, 72px); }
+.body { position: relative; margin-top: clamp(16px, 2vw, 32px); }
 
 .desc,
 .specs,
@@ -480,8 +480,9 @@
 }
 
 /* ---------- Descripción ---------- */
-.desc { padding-top: clamp(72px, 8vw, 120px); }
-.descGrid { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
+.desc { padding-top: clamp(40px, 4vw, 64px); }
+/* Texto y foto a la misma altura: la foto toma el alto del texto, así ninguna columna deja hueco. */
+.descGrid { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: clamp(40px, 5vw, 80px); align-items: stretch; }
 .descMain { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 18px; }
 .descMain h2 { max-width: 100%; margin-top: -0.14em; margin-bottom: clamp(10px, 1.2vw, 16px); font-size: clamp(26px, 2.4vw, 36px); line-height: 1.12; text-align: justify; text-align-last: justify; }
 .descText { max-width: 56ch; margin: 0; color: var(--ink-soft); font-size: 16.5px; line-height: 1.85; }
@@ -489,7 +490,7 @@
 /* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro sobre la sombra de la foto. */
 .descPhoto {
   position: relative;
-  aspect-ratio: 4 / 3.15;
+  min-height: 380px;
   margin: 0;
   overflow: hidden;
   border-radius: 20px;
@@ -508,7 +509,7 @@
   width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 36px clamp(28px, 3vw, 48px);
-  margin: clamp(56px, 6vw, 88px) 0 0;
+  margin: clamp(40px, 4vw, 64px) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -519,7 +520,7 @@
 .featText span { color: var(--ink-soft); font-size: 14px; line-height: 1.7; }
 
 /* ---------- Especificaciones: un grupo por fila, con sus datos en una cuadrícula pareja ---------- */
-.specs { padding-top: clamp(80px, 8vw, 128px); }
+.specs { padding-top: clamp(64px, 6vw, 96px); }
 .specSheet { display: grid; border-top: 2px solid var(--rule); }
 .specGroup { display: grid; grid-template-columns: minmax(180px, 0.3fr) minmax(0, 1fr); gap: 16px clamp(28px, 4vw, 64px); padding: clamp(24px, 2.6vw, 36px) 0; border-bottom: 1px solid var(--line); }
 .specGroup h3 { margin: 0; padding-top: 14px; color: var(--ink); font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
@@ -551,7 +552,7 @@
 .table tbody tr { transition: background 0.2s ease; }
 
 /* ---------- Flyers: una tarjeta por accionamiento ---------- */
-.flyers { padding-top: clamp(80px, 8vw, 128px); }
+.flyers { padding-top: clamp(64px, 6vw, 96px); }
 .flyerGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .flyerCard {
   display: grid;
@@ -632,7 +633,7 @@
 .flyerUse[aria-pressed="true"] { color: var(--ok); text-decoration: none; cursor: default; }
 
 /* ---------- Dimensiones: plano y tabla completa a la misma altura; debajo, lo del diámetro elegido ---------- */
-.dimsSection { padding-top: clamp(80px, 8vw, 128px); }
+.dimsSection { padding-top: clamp(64px, 6vw, 96px); }
 .dimsTop { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
 
 .plan {
@@ -822,7 +823,7 @@
 .docGhost:hover { transform: translateY(-2px); border-color: var(--ink); }
 
 /* ---------- Relacionados ---------- */
-.related { margin-top: clamp(88px, 9vw, 136px); }
+.related { margin-top: clamp(64px, 6vw, 104px); }
 .relatedHead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
 .allLink { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); font-size: 14.5px; font-weight: 700; text-decoration: none; transition: color 0.2s ease, gap 0.25s var(--ease); }
 .allLink:hover { gap: 12px; color: var(--accent-ink); }
@@ -868,7 +869,7 @@
   --veil: 244 241 234;
   position: relative;
   isolation: isolate;
-  margin: clamp(88px, 9vw, 136px) 0 0;
+  margin: clamp(64px, 6vw, 104px) 0 0;
   overflow: hidden;
   border-top: 1px solid var(--line);
   background: rgb(var(--veil));
@@ -1146,6 +1147,7 @@
   .stage { aspect-ratio: 1 / 0.8; }
   .info h1 { max-width: none; }
   .descGrid { grid-template-columns: minmax(0, 1fr); }
+  .descPhoto { min-height: 0; aspect-ratio: 16 / 10; }
   .dimsTop { grid-template-columns: minmax(0, 1fr); }
   .flyerGrid { grid-template-columns: minmax(0, 1fr); }
   .flyerCard { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); justify-items: stretch; }
