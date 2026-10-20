@@ -27,6 +27,7 @@
   --ok: #1a8a4a;
   --shadow: 0 24px 48px -32px rgb(15 27 45 / 45%);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
   --display: var(--font-display), var(--font-inter), system-ui, sans-serif;
   --bar: 84px;
   min-height: 100vh;
@@ -34,6 +35,10 @@
   overflow-x: clip;
   color: var(--ink);
   background: linear-gradient(180deg, #f2eee6 0%, var(--paper) 420px, var(--paper) 100%);
+}
+
+@supports (transition-timing-function: linear(0, 1)) {
+  .page { --spring: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.103 27.9%, 1.085, 1.058 32.1%, 0.994 40%, 0.983 43.2%, 0.981 46.4%, 0.996 58%, 1.001 69.6%, 1); }
 }
 
 .page ::selection {
@@ -487,8 +492,7 @@
   overflow: hidden;
   border-radius: 20px;
 }
-.descPhoto img { object-fit: cover; transition: transform 1.4s var(--ease); }
-.descPhoto:hover img { transform: scale(1.03); }
+.descPhoto img { object-fit: cover; }
 .descPhoto::after { position: absolute; inset: 0; background: linear-gradient(0deg, rgb(10 12 14 / 86%) 0%, rgb(10 12 14 / 40%) 38%, rgb(10 12 14 / 0%) 64%); content: ""; pointer-events: none; }
 .descPhoto figcaption { position: absolute; z-index: 1; inset: auto 0 0; display: grid; gap: 18px; padding: 0 clamp(20px, 2.4vw, 32px) clamp(20px, 2.4vw, 28px); }
 .appsHeadline { max-width: 22ch; color: #fff; font-family: var(--display); font-size: clamp(20px, 1.8vw, 26px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.18; text-wrap: balance; }
@@ -916,8 +920,7 @@
 .ctaPrimary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 
 .ctaVisual { position: absolute; z-index: 0; inset: 0 0 0 44%; overflow: hidden; }
-.ctaVisual img { object-fit: cover; object-position: 62% 18%; transition: transform 1.6s var(--ease); }
-.cta:hover .ctaVisual img { transform: scale(1.03); }
+.ctaVisual img { object-fit: cover; object-position: 62% 18%; }
 .ctaVisual::before {
   position: absolute;
   inset: 0;
@@ -928,6 +931,38 @@
 }
 
 /* ---------- Movimiento ---------- */
+.primary,
+.secondary,
+.cartBtn,
+.thumb,
+.thumbActive,
+.thumb3d,
+.thumb3dOn,
+.size,
+.sizeActive,
+.relCard,
+.flyerCard,
+.docButton,
+.docGhost,
+.ctaPrimary { transition-timing-function: var(--spring); transition-duration: 0.55s; }
+.segment button { transition: background 0.35s var(--spring), color 0.2s ease, transform 0.45s var(--spring); }
+.primary:active,
+.secondary:active,
+.cartBtn:active,
+.docButton:active,
+.docGhost:active,
+.ctaPrimary:active,
+.segment button:active,
+.size:active { transform: scale(0.96); transition-duration: 0.12s; }
+.segment .segmentOn { animation: seat 0.5s var(--spring); }
+
+/* Los visores entran desde su estado inicial con @starting-style: el panel sube y se asienta. */
+.docPanel,
+.lbStage { transition: opacity 0.35s ease, transform 0.6s var(--spring); }
+@starting-style {
+  .docPanel,
+  .lbStage { opacity: 0; transform: translateY(18px) scale(0.97); }
+}
 
 @keyframes rise { from { opacity: 0; transform: translate3d(0, 18px, 0); } to { opacity: 1; transform: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -984,6 +1019,40 @@
   .related[data-in="late"] .relCard { animation: rise 0.7s var(--ease) both; animation-delay: calc(var(--i, 0) * 80ms + 120ms); }
 }
 
+/* Animaciones ligadas al scroll: solo donde el navegador las soporta y si no se pidió reducir el movimiento. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Barra de lectura: un filete naranja arriba que avanza con el recorrido de la ficha. */
+    .page::before {
+      position: fixed;
+      z-index: 60;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--accent);
+      content: "";
+      transform-origin: 0 50%;
+      animation: readBar linear both;
+      animation-timeline: scroll(root);
+      pointer-events: none;
+    }
+    /* La foto de aplicaciones y la de asesoría se desplazan un poco más lento que la página. */
+    .descPhoto img,
+    .ctaVisual img { animation: drift linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    /* Las filas de la tabla completa se asientan al entrar en pantalla, una tras otra según el scroll. */
+    .dimsTable tbody tr { animation: rowIn linear both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  }
+}
+@keyframes seat { from { transform: scale(0.92); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .segment .segmentOn { animation: none; }
+  .docPanel,
+  .lbStage { transition: none; }
+}
+@keyframes readBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes drift { from { transform: scale(1.12) translate3d(0, -4%, 0); } to { transform: scale(1.12) translate3d(0, 4%, 0); } }
+@keyframes rowIn { from { opacity: 0.2; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: none; } }
 
 /* ---------- Visor ampliado ---------- */
 .lightbox { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; background: rgb(10 12 14 / 88%); backdrop-filter: blur(4px); animation: fade 0.2s ease-out; }
