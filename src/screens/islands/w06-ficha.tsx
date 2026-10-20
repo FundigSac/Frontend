@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
-  BadgeCheck,
   Bolt,
   Building2,
   Check,
@@ -19,12 +18,8 @@ import {
   ExternalLink,
   Eye,
   FileText,
-  Gauge,
-  Hourglass,
   Layers,
   Maximize2,
-  Package,
-  PaintBucket,
   Rotate3d,
   Ruler,
   Scale,
@@ -32,10 +27,8 @@ import {
   ShieldCheck,
   ShoppingCart,
   Sprout,
-  Thermometer,
   Waves,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import styles from "./w06-ficha.module.css";
 import { DATASHEETS, type Datasheet, type Feature } from "./w06-ficha-data";
@@ -97,25 +90,6 @@ const CART_SLUG = { base: "valvula-compuerta", fundigsac: "valvula-compuerta-fun
 const FEATURE_ICONS: Record<Feature["icon"], typeof ShieldCheck> = { shield: ShieldCheck, settings: Settings2, layers: Layers, nut: Bolt };
 const APP_ICONS = [Droplets, Sprout, Waves, Building2] as const;
 const CTA_ICONS = [Ruler, Scale, FileText] as const;
-
-/** Ícono de un dato principal según su etiqueta en español (presión, temperatura, medio, norma o diseño, epoxi). */
-function factIcon(label: string): LucideIcon {
-  if (/presi/i.test(label)) return Gauge;
-  if (/temp/i.test(label)) return Thermometer;
-  if (/medio|fluido/i.test(label)) return Droplets;
-  if (/epoxi/i.test(label)) return PaintBucket;
-  return BadgeCheck;
-}
-
-/** Ícono de un destacado según su título en español. */
-function highlightIcon(title: string): LucideIcon {
-  if (/hierro/i.test(title)) return Package;
-  if (/cierre|asiento/i.test(title)) return ShieldCheck;
-  if (/vida/i.test(title)) return Hourglass;
-  if (/PN/.test(title)) return Gauge;
-  if (/epoxi/i.test(title)) return PaintBucket;
-  return BadgeCheck;
-}
 
 /** Variantes de la ficha: la válvula FUNDIGSAC sin garantía indicada, o con garantía extendida; sin valor es la ficha base (H-ITALY). */
 export type Variant = "fundigsac" | "extendida";
@@ -364,40 +338,35 @@ export function W06Ficha(props: { variant?: Variant }) {
           </div>
 
           <div className={styles.info}>
-            <div className={styles.tags}>
-              {brand && <span className={styles.tagBrand}><span className={styles.srOnly}>{t.brand}: </span>{brand}{series ? ` · ${series}` : ""}</span>}
-              <span className={styles.tag}>{sheet.sizeRange}</span>
-              <span className={styles.tag}>PN10 / PN16</span>
-            </div>
+            {/* Marca, rango y presión en una línea de catálogo: la marca pesa, el resto acompaña. */}
+            <p className={styles.meta}>
+              {brand && <span className={styles.metaBrand}><span className={styles.srOnly}>{t.brand}: </span>{brand}{series ? ` ${series}` : ""}</span>}
+              <span>{sheet.sizeRange}</span>
+              <span>PN10 / PN16</span>
+            </p>
             <h1 id="ficha-title">{productName}</h1>
             {warrantyLabel && (
-              <p className={styles.warranty}><ShieldCheck size={18} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
+              <p className={styles.warranty}><ShieldCheck size={17} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
             )}
             <p className={styles.lead}>{view.lead}</p>
 
+            {/* Placa de datos: como la placa de una válvula, cuatro valores bajo un filete fuerte, sin íconos ni tarjetas. */}
             <ul className={styles.facts} aria-label={t.facts}>
-              {view.facts.map(([k, v], i) => {
-                const Icon = factIcon(sheet.facts[i]?.[0] ?? k);
-                return (
-                  <li key={k} style={{ ["--i" as string]: i }}>
-                    <span className={styles.factIcon} aria-hidden="true"><Icon size={19} strokeWidth={1.8} /></span>
-                    <span className={styles.factLabel}>{k}</span>
-                    <strong>{v}</strong>
-                  </li>
-                );
-              })}
+              {view.facts.map(([k, v]) => (
+                <li key={k}>
+                  <span className={styles.factLabel}>{k}</span>
+                  <strong>{v}</strong>
+                </li>
+              ))}
             </ul>
 
             <ul className={styles.highlights} aria-label={t.highlights}>
-              {view.highlights.map(([title, detail], i) => {
-                const Icon = highlightIcon(sheet.highlights[i]?.[0] ?? title);
-                return (
-                  <li key={title}>
-                    <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
-                    <span><strong>{title}</strong>{detail}</span>
-                  </li>
-                );
-              })}
+              {view.highlights.map(([title, detail]) => (
+                <li key={title}>
+                  <strong>{title}</strong>
+                  <span>{detail}</span>
+                </li>
+              ))}
             </ul>
 
             {/* Pedido rápido: el DN es el mismo del plano y las tablas de dimensiones. */}
@@ -450,22 +419,22 @@ export function W06Ficha(props: { variant?: Variant }) {
           <section id="descripcion" className={styles.desc} aria-label={t.description}>
             <div className={styles.descGrid}>
               <div className={styles.descMain} data-reveal>
-                <span className={styles.kicker}>{t.description}</span>
                 <h2>{t.descLead}</h2>
                 <p className={styles.descText}>{view.description ?? t.descFallback}</p>
               </div>
+              {/* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro, sin cápsulas de vidrio. */}
               <figure className={styles.descPhoto} data-reveal="media" style={{ ["--d" as string]: "120ms" }}>
                 <Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 620px, 100vw" />
                 <figcaption>
-                  <span className={styles.appsTitle}>{t.applications}</span>
+                  <span className={styles.srOnly}>{t.applications}: </span>
                   <strong className={styles.appsHeadline}>{t.appsHeadline}</strong>
+                  <ul className={styles.apps} aria-label={t.applications}>
+                    {t.apps.map((label, i) => {
+                      const Icon = APP_ICONS[i % APP_ICONS.length];
+                      return <li key={label} style={{ ["--i" as string]: i }}><Icon size={16} strokeWidth={1.8} aria-hidden="true" />{label}</li>;
+                    })}
+                  </ul>
                 </figcaption>
-                <ul className={styles.apps} aria-label={t.applications}>
-                  {t.apps.map((label, i) => {
-                    const Icon = APP_ICONS[i % APP_ICONS.length];
-                    return <li key={label} style={{ ["--i" as string]: i }}><span aria-hidden="true"><Icon size={16} strokeWidth={1.9} /></span>{label}</li>;
-                  })}
-                </ul>
               </figure>
             </div>
             {/* Ventajas en una fila bajo la descripción y la foto: cada texto tiene ancho para justificarse sin huecos. */}
@@ -475,7 +444,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 const Icon = FEATURE_ICONS[f.icon];
                 return (
                   <li key={f.title}>
-                    <span className={styles.featIcon} aria-hidden="true"><Icon size={20} strokeWidth={1.8} /></span>
+                    <Icon className={styles.featIcon} size={22} strokeWidth={1.6} aria-hidden="true" />
                     <span className={styles.featText}>
                       <strong>{f.title}</strong>
                       <span>{f.text}</span>
@@ -488,22 +457,20 @@ export function W06Ficha(props: { variant?: Variant }) {
 
           <section id="especificaciones" className={styles.specs} aria-label={t.specs}>
             <header className={styles.headRow} data-reveal>
-              <div>
-                <span className={styles.kicker}>{t.tabs.especificaciones}</span>
-                <h2>{t.specs}</h2>
-              </div>
+              <h2>{t.specs}</h2>
               <p className={styles.headNote}>{view.specsNote} {t.specsPrevail}</p>
             </header>
-            <div className={styles.specGrid}>
-              {specCards.map((group, c) => (
-                <div key={group.id} className={styles.specCard} data-reveal style={{ ["--d" as string]: `${c * 110}ms` }}>
+            {/* Hoja técnica en dos columnas que se equilibran solas: los grupos no se parten y el navegador reparte la altura. */}
+            <div className={styles.specSheet} data-reveal>
+              {specCards.map((group) => (
+                <section key={group.id} className={styles.specGroup} aria-label={group.title}>
                   <h3>{group.title}</h3>
                   <table className={styles.table}>
                     <tbody>
                       {group.rows.map(([k, v]) => <tr key={k}><th scope="row">{k}</th><td>{v}</td></tr>)}
                     </tbody>
                   </table>
-                </div>
+                </section>
               ))}
             </div>
           </section>
@@ -547,10 +514,7 @@ export function W06Ficha(props: { variant?: Variant }) {
           {flyerDocs && (
             <section id="documentacion" className={styles.flyers} aria-labelledby="flyers-title">
               <header className={styles.headRow} data-reveal>
-                <div>
-                  <span className={styles.kicker}>{t.flyers.kicker}</span>
-                  <h2 id="flyers-title">{t.flyers.title}</h2>
-                </div>
+                <h2 id="flyers-title">{t.flyers.title}</h2>
                 <p className={styles.headNote}>{t.flyers.lead}</p>
               </header>
               <div className={styles.flyerGrid} data-reveal="stagger">
@@ -591,7 +555,7 @@ export function W06Ficha(props: { variant?: Variant }) {
 
           <section id="dimensiones" className={styles.dimsSection} aria-label={t.tabs.dimensiones}>
             <header className={styles.headRow} data-reveal>
-              <div><h2>{t.dims}</h2></div>
+              <h2>{t.dims}</h2>
               <p className={styles.headNote}>{view.dimsNote}</p>
             </header>
 
@@ -602,7 +566,8 @@ export function W06Ficha(props: { variant?: Variant }) {
                   <span className={styles.planRange}>{sheet.sizeRange}</span>
                 </div>
                 <div className={styles.planDraw}>
-                  <ValvePlan cotas={cotas} label={t.plan} />
+                  {/* Al cambiar de diámetro el plano se monta de nuevo y vuelve a dibujarse. */}
+                  <ValvePlan key={cotas.dn} cotas={cotas} label={t.plan} />
                 </div>
                 <fieldset className={styles.sizes}>
                   <legend>{t.dn}</legend>
@@ -615,51 +580,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 </fieldset>
               </div>
 
-              <div className={styles.dimsAside} data-reveal style={{ ["--d" as string]: "110ms" }}>
-                {dimRow && (
-                  <section className={styles.measureCard} aria-label={`${t.measures} · ${size}`} key={`m-${size}`}>
-                    <h3>{t.measures} · {size}</h3>
-                    <dl className={styles.measure}>
-                      {sheet.dims.head.slice(1).map((h, i) => (
-                        <div key={h}><dt>{view.dimsHead[i + 1]}</dt><dd>{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
-                      ))}
-                    </dl>
-                  </section>
-                )}
-                <section className={styles.flangeCard} aria-label={`${view.flangeTitle} · ${size}`} key={`f-${size}`}>
-                  <h3>{view.flangeTitle} · {size}</h3>
-                  <p>{view.flangeNote}</p>
-                  <div className={styles.tableWrap}>
-                    <table className={styles.flange}>
-                      <thead><tr>{view.flangeHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
-                      <tbody>
-                        {sheet.flange.rows(size).map(({ pn, cells }) => (
-                          <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-
-                {view.stem && (
-                  <section className={styles.flangeCard} aria-label={`${view.stem.title} · ${size}`} key={`s-${size}`}>
-                    <h3>{view.stem.title} · {size}</h3>
-                    <p>{view.stem.note}</p>
-                    <div className={styles.tableWrap}>
-                      <table className={styles.flange}>
-                        <thead><tr>{view.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
-                        <tbody>
-                          {view.stem.rows(size).map(({ pn, cells }) => (
-                            <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-                )}
-              </div>
-
-              <div className={styles.dimsTable} data-reveal style={{ ["--d" as string]: "200ms" }}>
+              <div className={styles.dimsTable} data-reveal style={{ ["--d" as string]: "120ms" }}>
                 <h3>{t.table}</h3>
                 <div className={styles.tableWrap}>
                   <table className={styles.dims}>
@@ -674,6 +595,51 @@ export function W06Ficha(props: { variant?: Variant }) {
                   </table>
                 </div>
               </div>
+            </div>
+
+            {/* Lo del diámetro elegido, en tarjetas parejas bajo el plano y la tabla. */}
+            <div className={styles.dimsCards} data-reveal="stagger">
+              {dimRow && (
+                <section className={styles.measureCard} aria-label={`${t.measures} · ${size}`} key={`m-${size}`}>
+                  <h3>{t.measures} · {size}</h3>
+                  <dl className={styles.measure}>
+                    {sheet.dims.head.slice(1).map((h, i) => (
+                      <div key={h}><dt>{view.dimsHead[i + 1]}</dt><dd>{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
+                    ))}
+                  </dl>
+                </section>
+              )}
+              <section className={styles.flangeCard} aria-label={`${view.flangeTitle} · ${size}`} key={`f-${size}`}>
+                <h3>{view.flangeTitle} · {size}</h3>
+                <p>{view.flangeNote}</p>
+                <div className={styles.tableWrap}>
+                  <table className={styles.flange}>
+                    <thead><tr>{view.flangeHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                    <tbody>
+                      {sheet.flange.rows(size).map(({ pn, cells }) => (
+                        <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {view.stem && (
+                <section className={styles.flangeCard} aria-label={`${view.stem.title} · ${size}`} key={`s-${size}`}>
+                  <h3>{view.stem.title} · {size}</h3>
+                  <p>{view.stem.note}</p>
+                  <div className={styles.tableWrap}>
+                    <table className={styles.flange}>
+                      <thead><tr>{view.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                      <tbody>
+                        {view.stem.rows(size).map(({ pn, cells }) => (
+                          <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </div>
           </section>
         </div>
