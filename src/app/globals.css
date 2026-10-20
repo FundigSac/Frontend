@@ -1,6 +1,7 @@
 /* Tailwind 4 solo escanea src/: legacy/, docs/ y qa/ tienen HTML antiguo que inflaba el CSS con clases que no se usan. */
 @import "tailwindcss" source("..");
 @import "./space-compat.css";
+@import "../shared/motion/motion.css";
 
 /*
  * FUNDIGSAC — sistema de diseño "Industrial Precision" (Stitch).

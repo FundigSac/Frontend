@@ -9,6 +9,7 @@ import { CookieBanner } from "@/shared/layout/cookie-banner";
 import { LandingFooter, LandingHeader, SkipLink } from "@/shared/layout/landing-chrome";
 import { ScrollToTop } from "@/shared/layout/scroll-to-top";
 import { LazyWarmup } from "@/shared/media/lazy-warmup";
+import { MotionRoot } from "@/shared/motion/motion-root";
 import { JsonLd } from "@/shared/seo/json-ld";
 import { SourceGuard } from "@/shared/security/source-guard";
 import { ToastProvider } from "@/shared/ui/toast";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#sitio`, name: SITE.name, url: SITE.url, inLanguage: "es-PE", publisher: { "@id": `${SITE.url}/#organizacion` } },
             ]}
           />
+          <MotionRoot />
           <SkipLink />
           <ScrollToTop />
           <LandingHeader />

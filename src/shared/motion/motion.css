@@ -1,0 +1,205 @@
+/* ===== Sistema de movimiento FUNDIGSAC =====
+   Un solo lenguaje para todo el sitio: misma curva, mismas duraciones y mismo recorrido.
+   - Tokens (--m-*): los usan también las pantallas con coreografías propias.
+   - Revelado al hacer scroll: cualquier elemento con `data-reveal` (lo arma MotionRoot con un único
+     IntersectionObserver). Sin JavaScript, o con "reducir movimiento", todo queda visible.
+     Variantes: "" | "up" (sube), "left" / "right" (entra de lado; en móvil sube), "media" (foto que se
+     descubre de abajo arriba), "fade" (solo opacidad) y "stagger" (los hijos entran en cascada).
+     `data-in="now"` = ya estaba en pantalla (no se anima, no parpadea); `data-in="late"` = entra al llegar.
+   - Las animaciones usan `backwards`: al terminar no queda ningún transform pegado al elemento. */
+
+:root {
+  --mo-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --mo-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --mo-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --mo-fast: 160ms;
+  --mo-base: 240ms;
+  --mo-overlay: 320ms;
+  --mo-reveal: 720ms;
+  --mo-media: 950ms;
+  --mo-rise: 26px;
+  --mo-side: 36px;
+  --mo-step: 70ms;
+}
+
+/* Las páginas legales (main.lg) usan su propio LegalMotion con el mismo atributo: quedan fuera de estas reglas. */
+html[data-motion] [data-reveal]:not([data-in], [data-reveal="stagger"], main.lg *),
+html[data-motion] [data-reveal="stagger"]:not([data-in], main.lg *) > * {
+  opacity: 0;
+}
+
+[data-reveal][data-in="late"] {
+  animation: mo-up var(--mo-reveal) var(--mo-ease) var(--d, 0ms) backwards;
+}
+
+[data-reveal="left"][data-in="late"] {
+  animation-name: mo-left;
+}
+
+[data-reveal="right"][data-in="late"] {
+  animation-name: mo-right;
+}
+
+[data-reveal="fade"][data-in="late"] {
+  animation-name: mo-fade;
+}
+
+/* La foto se descubre como una lámina que sube, con un leve acercamiento que se asienta. */
+[data-reveal="media"][data-in="late"] {
+  animation: mo-media var(--mo-media) var(--mo-ease-out) var(--d, 0ms) backwards;
+}
+
+[data-reveal="stagger"][data-in="late"] {
+  animation: none;
+}
+
+/* Cascada con tope: a partir del 7.º hijo todos esperan lo mismo (la lista nunca se hace esperar). */
+[data-reveal="stagger"][data-in="late"] > * {
+  animation: mo-up var(--mo-reveal) var(--mo-ease) calc(min(var(--i, 0), 6) * var(--mo-step) + var(--d, 0ms)) backwards;
+}
+
+@media (max-width: 860px) {
+  [data-reveal="left"][data-in="late"],
+  [data-reveal="right"][data-in="late"] {
+    animation-name: mo-up;
+  }
+}
+
+@keyframes mo-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--mo-rise), 0);
+  }
+}
+
+@keyframes mo-left {
+  from {
+    opacity: 0;
+    transform: translate3d(calc(var(--mo-side) * -1), 0, 0);
+  }
+}
+
+@keyframes mo-right {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--mo-side), 0, 0);
+  }
+}
+
+@keyframes mo-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes mo-media {
+  from {
+    opacity: 0;
+    clip-path: inset(14% 0 0 0);
+    transform: translate3d(0, 18px, 0) scale(1.03);
+  }
+
+  40% {
+    opacity: 1;
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Entrada de elementos que aparecen por una acción (filtros, resultados, avisos): corta y sin recorrido largo. */
+@keyframes mo-pop {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.985);
+  }
+}
+
+/* ===== Entrada del primer pantallazo (`data-enter`) =====
+   Sin JavaScript: los hijos suben en secuencia al pintar la página, también al llegar desde otra ruta, y así
+   el cambio de página se siente continuo sin fundir nada a blanco. El h1 arranca casi visible (0,01) para que el
+   navegador lo cuente como LCP al instante. */
+[data-enter] > * {
+  animation: mo-enter 760ms var(--mo-ease-out) backwards;
+}
+
+[data-enter] > :nth-child(2) { animation-delay: 70ms; }
+[data-enter] > :nth-child(3) { animation-delay: 140ms; }
+[data-enter] > :nth-child(4) { animation-delay: 210ms; }
+[data-enter] > :nth-child(5) { animation-delay: 280ms; }
+[data-enter] > :nth-child(n + 6) { animation-delay: 350ms; }
+
+[data-enter] > h1 {
+  animation-name: mo-enter-lcp;
+}
+
+@keyframes mo-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
+@keyframes mo-enter-lcp {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 18px, 0);
+  }
+}
+
+/* ===== Resultados que cambian por un filtro (`data-results` + `data-filtered`) =====
+   Solo después de que la persona filtra: las tarjetas nuevas entran cortas y en cascada mínima, así se nota que la
+   lista respondió. Las que siguen en pantalla no se vuelven a animar. */
+[data-results][data-filtered] > * {
+  animation: mo-pop 380ms var(--mo-ease-out) backwards;
+}
+
+[data-results][data-filtered] > :nth-child(2) { animation-delay: 35ms; }
+[data-results][data-filtered] > :nth-child(3) { animation-delay: 70ms; }
+[data-results][data-filtered] > :nth-child(4) { animation-delay: 105ms; }
+[data-results][data-filtered] > :nth-child(5) { animation-delay: 140ms; }
+[data-results][data-filtered] > :nth-child(n + 6) { animation-delay: 175ms; }
+
+/* Avisos que aparecen tras una acción (error de envío, confirmaciones): entran cortos, sin sacudir la pantalla. */
+#contenido [role="alert"],
+#contenido [role="status"]:not(:empty) {
+  animation: mo-pop 360ms var(--mo-ease-out) backwards;
+}
+
+/* ===== Barra de navegación entre páginas =====
+   Aparece solo si la página nueva tarda más de un instante; nunca tapa ni bloquea nada. */
+.mo-progress {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #f26a1b, #ff9a52);
+  box-shadow: 0 0 10px rgb(242 106 27 / 45%);
+  opacity: 0;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.mo-progress[data-state="loading"] {
+  opacity: 1;
+  transform: scaleX(0.82);
+  transition: transform 7s cubic-bezier(0.08, 0.7, 0.2, 1), opacity var(--mo-fast) ease;
+}
+
+.mo-progress[data-state="done"] {
+  opacity: 0;
+  transform: scaleX(1);
+  transition: transform var(--mo-base) var(--mo-ease-out), opacity 360ms ease 180ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mo-progress[data-state="loading"] {
+    transform: scaleX(1);
+    opacity: 0.7;
+    transition: opacity var(--mo-fast) ease;
+  }
+}
