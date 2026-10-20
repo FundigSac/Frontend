@@ -627,6 +627,9 @@ export function W06Ficha(props: { variant?: Variant }) {
                 return <li key={point}><Icon size={17} strokeWidth={1.9} aria-hidden="true" />{point}</li>;
               })}
             </ul>
+            <div className={styles.ctaActions}>
+              <Link href="/contacto" className={styles.ctaPrimary}>{t.ctaButton} <ArrowRight size={17} aria-hidden="true" /></Link>
+            </div>
           </div>
         </div>
         <div className={styles.ctaVisual}>

@@ -81,8 +81,8 @@ for (const [slug, name, range, thumbsAlt] of [
       // CTAs: una sola cotización y la ficha técnica (descarga o solicitud).
       await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
       await expect(page.locator("main").getByRole("link", { name: /ficha técnica/i }).first()).toBeVisible();
-      // la banda de asesoría solo informa: no lleva botones ni tarjeta de contacto
-      await expect(page.locator("main").getByRole("link", { name: "Solicitar asesoría" })).toHaveCount(0);
+      // la banda de asesoría lleva un único botón a Contacto
+      await expect(page.locator("main").getByRole("link", { name: "Solicitar asesoría técnica" })).toHaveAttribute("href", "/contacto");
 
       // Rango del selector de diámetros.
       await expect(page.getByText(range, { exact: true }).first()).toBeVisible();
