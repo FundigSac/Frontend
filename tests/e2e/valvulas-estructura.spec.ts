@@ -90,6 +90,8 @@ for (const [slug, name, range, thumbsAlt] of [
     });
 
     test("la documentación va en una fila compacta con descarga y vista en pantalla", async ({ page, isMobile }) => {
+      // La de garantía extendida documenta con sus dos flyers (ver ficha-pedido.spec.ts).
+      test.skip(slug === "valvula-compuerta-fundigsac-garantia-extendida", "documentación por flyers");
       await page.goto(`/productos/valvulas/${slug}`);
       await dismissCookies(page);
       const doc = page.locator("#documentacion");

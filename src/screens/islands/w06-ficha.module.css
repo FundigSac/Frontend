@@ -1,6 +1,6 @@
 /* Ficha de válvula de compuerta.
    Galería con riel de miniaturas, datos clave con ícono, pedido rápido, descripción con foto de aplicaciones,
-   especificaciones en tres tarjetas, plano técnico con cotas por diámetro y asesoría.
+   especificaciones en tres tarjetas, flyers por accionamiento, plano técnico con cotas por diámetro y asesoría.
    Colores y superficies salen de variables en .page; el tema oscuro solo las redefine (ver el final).
    Las animaciones usan transform, opacidad y trazos SVG. */
 .page {
@@ -333,7 +333,7 @@
 .highlights span { display: grid; gap: 2px; color: var(--ink-muted); font-size: 13px; line-height: 1.4; }
 .highlights strong { color: var(--ink); font-size: 14px; font-weight: 800; line-height: 1.3; }
 
-/* Pedido rápido: DN (compartido con el plano), PN y botones. */
+/* Pedido rápido: DN (compartido con el plano), PN, accionamiento y botones. */
 .order {
   display: grid;
   gap: 14px;
@@ -344,7 +344,9 @@
   background: var(--card);
   box-shadow: 0 18px 36px -30px rgb(15 27 45 / 45%);
 }
+.order[data-flash] { animation: flash 1.2s var(--ease); }
 .orderFields { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.orderFields3 { display: grid; grid-template-columns: minmax(110px, 1fr) auto auto; gap: 12px; align-items: end; }
 .field { position: relative; display: grid; min-width: 0; gap: 6px; }
 .field > span { color: var(--ink-muted); font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
 .field select {
@@ -446,6 +448,8 @@
 .sizeActive:focus-visible,
 .relCard:focus-visible,
 .allLink:focus-visible,
+.flyerPreview:focus-visible,
+.flyerUse:focus-visible,
 .docButton:focus-visible,
 .docGhost:focus-visible {
   outline: 2px solid var(--blue);
@@ -457,6 +461,7 @@
 
 .desc,
 .specs,
+.flyers,
 .dimsSection,
 .docStrip { scroll-margin-top: calc(var(--bar) + 28px); }
 
@@ -594,6 +599,87 @@
 .table tr:last-child th,
 .table tr:last-child td { border-bottom: 0; }
 
+/* ---------- Flyers: una tarjeta por accionamiento ---------- */
+.flyers { padding-top: clamp(64px, 7vw, 104px); }
+.flyerGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.flyerCard {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 0.84fr) minmax(0, 1fr);
+  gap: clamp(18px, 2.2vw, 28px);
+  align-items: center;
+  padding: clamp(16px, 1.8vw, 22px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--card);
+  transition: border-color 0.3s ease, box-shadow 0.4s ease, transform 0.4s var(--ease);
+}
+.flyerCard:hover { transform: translateY(-3px); box-shadow: 0 30px 50px -36px rgb(15 27 45 / 60%); }
+.flyerCard[data-active] { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy), 0 30px 50px -36px rgb(15 42 82 / 70%); }
+.flyerPreview {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 18px 30px -18px rgb(11 34 68 / 55%);
+  cursor: zoom-in;
+  transition: transform 0.5s var(--ease), box-shadow 0.4s ease;
+}
+.flyerPreview img { display: block; width: 100%; height: auto; }
+.flyerCard:hover .flyerPreview { transform: translateY(-4px) rotate(-1deg); box-shadow: 0 28px 40px -20px rgb(11 34 68 / 60%); }
+.flyerZoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(15 27 45 / 80%);
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.25s ease, transform 0.3s var(--ease);
+}
+.flyerCard:hover .flyerZoom,
+.flyerPreview:focus-visible .flyerZoom { opacity: 1; transform: none; }
+.flyerBody { display: grid; min-width: 0; align-content: center; justify-items: start; gap: 10px; }
+.flyerOption { padding: 5px 9px; border-radius: 6px; background: var(--accent-soft); color: var(--accent-ink); font-size: 11.5px; font-weight: 800; letter-spacing: 0.08em; line-height: 1; text-transform: uppercase; }
+.flyerBody h3 { margin: 0; color: var(--ink); font-family: var(--display); font-size: clamp(20px, 1.8vw, 25px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.flyerSub { margin: -4px 0 0; color: var(--ink-soft); font-size: 13.5px; line-height: 1.5; }
+.flyerPoints { display: grid; gap: 7px; margin: 4px 0 0; padding: 0; list-style: none; }
+.flyerPoints li { display: flex; align-items: flex-start; gap: 8px; color: var(--ink); font-size: 13.5px; font-weight: 600; line-height: 1.4; }
+.flyerPoints svg { flex: 0 0 auto; margin-top: 2px; color: var(--ok); }
+.flyerMeta { display: inline-flex; align-items: center; gap: 7px; margin: 0; color: var(--ink-muted); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.flyerMeta svg { color: var(--accent-ink); }
+.flyerActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.flyerActions .docButton,
+.flyerActions .docGhost { min-height: 42px; padding: 0 16px; font-size: 13.5px; }
+.flyerUse {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--navy);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgb(29 95 209 / 35%);
+  text-underline-offset: 4px;
+  transition: color 0.2s ease;
+}
+.flyerUse:hover { color: var(--accent-ink); }
+.flyerUse[aria-pressed="true"] { color: var(--ok); text-decoration: none; cursor: default; }
+
 /* ---------- Dimensiones: plano | medidas, bridas y vástago | tabla completa ---------- */
 .dimsSection { padding-top: clamp(64px, 7vw, 104px); }
 .dimsTop { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr) minmax(0, 0.94fr); gap: 20px; align-items: start; }
@@ -703,7 +789,7 @@
 .dimsTable .dims td { padding: 7px 4px; }
 .dimsTable .dims thead th { padding: 10px 4px; font-size: 11px; letter-spacing: 0.03em; }
 
-/* ---------- Documentación: tarjeta con la ficha apilada ---------- */
+/* ---------- Documentación (variantes sin flyers): tarjeta con la ficha apilada ---------- */
 .docStrip { margin-top: clamp(56px, 6vw, 88px); }
 .docRow {
   display: grid;
@@ -906,6 +992,7 @@
 @keyframes coverIn { from { opacity: 0; transform: translateY(30px) scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.15); } 100% { transform: none; } }
+@keyframes flash { 0% { box-shadow: 0 0 0 0 rgb(194 84 26 / 45%); } 100% { box-shadow: 0 0 0 18px rgb(194 84 26 / 0%); } }
 @keyframes chipIn { from { opacity: 0; transform: translate3d(18px, 0, 0); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -931,7 +1018,7 @@
   /* Los usos entran desde la derecha cuando la foto aparece. */
   .descPhoto[data-in="late"] .apps li { animation: chipIn 0.6s var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms + 420ms); }
 
-  /* La ficha se abre en abanico al entrar. */
+  /* La ficha se abre en abanico al entrar (variantes sin flyers). */
   .docStrip[data-in="late"] .docLeafA { animation: leafA 1.1s var(--ease) 0.25s both; }
   .docStrip[data-in="late"] .docLeafB { animation: leafB 1.1s var(--ease) 0.4s both; }
   .docStrip[data-in="late"] .docCover { animation: coverIn 0.9s var(--ease) 0.1s both; }
@@ -966,7 +1053,7 @@
 .lbDotActive { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: rgb(255 255 255 / 40%); cursor: pointer; }
 .lbDotActive { width: 26px; border-radius: 6px; background: #fff; }
 
-/* ---------- Visor del PDF ---------- */
+/* ---------- Visor del PDF (ficha o flyer) ---------- */
 .docModal { position: fixed; z-index: 80; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(10 16 20 / 72%); backdrop-filter: blur(4px); animation: fade 0.18s ease-out; }
 .docPanel { display: flex; width: min(940px, 100%); height: min(92vh, 1100px); flex-direction: column; overflow: hidden; border-radius: 16px; background: var(--soft); box-shadow: 0 30px 80px -20px rgb(0 0 0 / 50%); }
 .docBar { display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 20px; border-bottom: 1px solid var(--line); background: var(--card); }
@@ -999,11 +1086,18 @@
   .dimsTable .dims { font-size: 13.5px; }
   .dimsTable .dims th,
   .dimsTable .dims td { padding: 9px 8px; }
+  .flyerCard { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .flyerPreview { width: min(100%, 280px); }
+  .flyerBody { justify-self: stretch; }
 }
 
 @media (max-width: 1180px) {
   .relatedGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .orderFields3 { grid-template-columns: minmax(0, 1fr) auto; }
+  .orderFields3 > :last-child { grid-column: 1 / -1; }
+  .orderFields3 > :last-child .segment { display: flex; }
+  .orderFields3 > :last-child .segment button { flex: 1; }
   .specGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -1018,6 +1112,9 @@
   .descGrid { grid-template-columns: minmax(0, 1fr); }
   .descPhoto { min-height: 0; aspect-ratio: 16 / 10; }
   .dimsTop { grid-template-columns: minmax(0, 1fr); }
+  .flyerGrid { grid-template-columns: minmax(0, 1fr); }
+  .flyerCard { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); justify-items: stretch; }
+  .flyerPreview { width: 100%; }
   .headNote { text-align: left; }
   .docRow { grid-template-columns: auto minmax(0, 1fr); }
   .docActions { grid-column: 1 / -1; justify-content: flex-start; }
@@ -1055,6 +1152,9 @@
   .thumb3dOn { font-size: 11.5px; }
   .facts { gap: 8px; }
   .facts li { padding: 12px 12px 13px; }
+  .orderFields3 { grid-template-columns: minmax(0, 1fr); }
+  .orderFields3 .segment { display: flex; }
+  .orderFields3 .segment button { flex: 1; }
   .ctas { display: grid; grid-template-columns: minmax(0, 1fr) 54px; }
   .ctas .primary { grid-column: 1 / -1; }
   .ctas .secondary { min-width: 0; padding: 0 14px; }
@@ -1065,6 +1165,11 @@
   .descPhoto figcaption { position: relative; max-width: none; padding: 0 18px 14px; }
   .apps { position: relative; top: auto; right: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0 18px 18px; transform: none; }
   .apps li { min-width: 0; padding: 7px 10px 7px 7px; font-size: 12.5px; }
+  .flyerCard { grid-template-columns: minmax(0, 1fr); }
+  .flyerPreview { width: min(100%, 300px); justify-self: center; }
+  .flyerActions { width: 100%; }
+  .flyerActions .docButton,
+  .flyerActions .docGhost { flex: 1; justify-content: center; }
   .plan { padding: 18px 16px 20px; border-radius: 22px; }
   .measureCard,
   .flangeCard { padding: 16px 14px 18px; }
@@ -1176,6 +1281,8 @@
     linear-gradient(rgb(160 196 255 / 6%) 1px, transparent 1px) 0 0 / 28px 28px,
     linear-gradient(90deg, rgb(160 196 255 / 6%) 1px, transparent 1px) 0 0 / 28px 28px,
     linear-gradient(160deg, #10284c 0%, #0b1d38 100%); box-shadow: 0 0 0 1px rgb(255 255 255 / 8%); }
+:global(html[data-lp-theme="dark"]) .flyerCard[data-active] { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+:global(html[data-lp-theme="dark"]) .flyerPreview { border-color: rgb(255 255 255 / 20%); }
 :global(html[data-lp-theme="dark"]) .cta { --veil: 17 38 70; box-shadow: 0 0 0 1px rgb(255 255 255 / 9%), 0 40px 70px -46px rgb(0 0 0 / 90%); }
 :global(html[data-lp-theme="dark"]) .ctaVisual img { filter: brightness(0.86) saturate(0.95); }
 :global(html[data-lp-theme="dark"]) .docPanel { background: #14253f; }
@@ -1186,7 +1293,8 @@
 :global(html[data-lp-theme="dark"]) .secondary,
 :global(html[data-lp-theme="dark"]) .cartBtn,
 :global(html[data-lp-theme="dark"]) .thumb3d,
-:global(html[data-lp-theme="dark"]) .relArrow { color: var(--ink); }
+:global(html[data-lp-theme="dark"]) .relArrow,
+:global(html[data-lp-theme="dark"]) .flyerUse:not([aria-pressed="true"]) { color: var(--ink); }
 :global(html[data-lp-theme="dark"]) .secondary:hover,
 :global(html[data-lp-theme="dark"]) .cartBtn:hover,
 :global(html[data-lp-theme="dark"]) .thumb3d:hover { border-color: var(--blue); }

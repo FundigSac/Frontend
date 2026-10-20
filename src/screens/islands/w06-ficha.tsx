@@ -151,7 +151,7 @@ function cotasFor(sheet: Datasheet, dn: string): Cotas {
   return { dn, L: get("L (F4)") ?? get("L"), H: get("H"), OD: get("ØD"), A: outer, aLabel: sheet.flange.head[1] ?? "D" };
 }
 
-/** Documento que se previsualiza en pantalla (la ficha técnica, página por página). */
+/** Documento que se previsualiza en pantalla: la ficha técnica o uno de los flyers. */
 type Preview = { title: string; href: string; pages: { src: string; alt: string; width: number; height: number }[] };
 
 export function W06Ficha(props: { variant?: Variant }) {
@@ -179,6 +179,8 @@ export function W06Ficha(props: { variant?: Variant }) {
     stem: sheet.stem ? { head: sheet.stem.head, rows: sheet.stem.rows, title: en?.stem?.title ?? sheet.stem.title, note: en?.stem?.note ?? sheet.stem.note } : undefined,
     features: sheet.features.map((f, i) => ({ ...f, ...(en?.features[i] ?? {}) })),
     highlights: en?.highlights ?? sheet.highlights,
+    actuations: en?.actuations ?? sheet.actuations,
+    flyers: (sheet.flyers ?? []).map((f, i) => ({ ...f, ...(en?.flyers?.[i] ?? {}) })),
     docTitle: en?.docTitle ?? doc?.title ?? "",
     docMeta: en?.docMeta ?? doc?.meta ?? "",
     model3dAlt: en?.model3dAlt ?? sheet.model3d.alt,
@@ -192,10 +194,15 @@ export function W06Ficha(props: { variant?: Variant }) {
   const [broken, setBroken] = useState<Record<string, boolean>>({});
   const [size, setSize] = useState(sheet.sizes.includes("DN100") ? "DN100" : sheet.sizes[0]);
   const [pn, setPn] = useState<(typeof PRESSURES)[number]>("PN16");
+  // Índice del accionamiento elegido (los textos cambian con el idioma; el índice no).
+  const [actuation, setActuation] = useState(0);
   const [added, setAdded] = useState(false);
+  const [flash, setFlash] = useState(false);
   const addedTimer = useRef<number | undefined>(undefined);
+  const flashTimer = useRef<number | undefined>(undefined);
   const lightboxRef = useRef<HTMLDivElement>(null);
   const docRef = useRef<HTMLDivElement>(null);
+  const orderRef = useRef<HTMLDivElement>(null);
   useDialogFocus(lightbox, lightboxRef);
   useDialogFocus(!!preview, docRef);
   const total = THUMBS.length;
@@ -203,16 +210,18 @@ export function W06Ficha(props: { variant?: Variant }) {
   const brand = sheet.specs.find(([k]) => k === "Marca")?.[1];
   const series = sheet.specs.find(([k]) => k === "Serie")?.[1];
 
-  useEffect(() => () => window.clearTimeout(addedTimer.current), []);
+  useEffect(() => () => { window.clearTimeout(addedTimer.current); window.clearTimeout(flashTimer.current); }, []);
 
-  /** Agrega la válvula con el DN y PN elegidos al carrito de cotización y abre el panel lateral. */
+  /** Agrega la válvula con el DN, PN y accionamiento elegidos al carrito de cotización y abre el panel lateral. */
   const addCurrent = () => {
     const slug = CART_SLUG[props.variant ?? "base"];
     const featured = featuredBySlug(slug);
+    // El accionamiento se guarda en español: es lo que lee el equipo comercial en la solicitud.
+    const act = sheet.actuations?.[actuation];
     addToCart({
       slug,
       name: featured?.name[lang] ?? productName,
-      variant: `${size} · ${pn}`,
+      variant: [size, pn, act].filter(Boolean).join(" · "),
       image: featured?.image ?? THUMBS[0].dir + THUMBS[0].src,
       href: featured?.href ?? `/productos/valvulas/${slug}`,
     });
@@ -220,6 +229,16 @@ export function W06Ficha(props: { variant?: Variant }) {
     setAdded(true);
     window.clearTimeout(addedTimer.current);
     addedTimer.current = window.setTimeout(() => setAdded(false), 2200);
+  };
+
+  /** Desde un flyer: elige ese accionamiento en el pedido y lleva al pedido, que destella para confirmar el cambio. */
+  const chooseActuation = (i: number) => {
+    setActuation(i);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    orderRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    setFlash(true);
+    window.clearTimeout(flashTimer.current);
+    flashTimer.current = window.setTimeout(() => setFlash(false), 1400);
   };
 
   // Sin useCallback: el compilador de React ya memoriza estas funciones.
@@ -232,6 +251,10 @@ export function W06Ficha(props: { variant?: Variant }) {
     if (!doc) return;
     setDocPage(0);
     setPreview({ title: view.docTitle, href: doc.href, pages: docPages.map((p, i) => ({ src: p.src, alt: pageAlt(i), width: 1500, height: 2121 })) });
+  };
+  const openFlyer = (f: (typeof view.flyers)[number]) => {
+    setDocPage(0);
+    setPreview({ title: `${t.flyers.kicker} · ${f.title}`, href: f.href, pages: [{ src: f.preview, alt: f.alt, width: 1250, height: 1616 }] });
   };
 
   useEffect(() => {
@@ -290,6 +313,13 @@ export function W06Ficha(props: { variant?: Variant }) {
   ].filter((g) => g.rows.length);
   const cotas = cotasFor(sheet, size);
   const dimRow = sheet.dims.rows.find((r) => r.dn === size);
+  // Un flyer por accionamiento: volante ↔ "Volante", dado ↔ "Dado" (índices de sheet.actuations).
+  const actIndexOf = (id: string) => Math.max(0, (sheet.actuations ?? []).findIndex((a) => a.toLowerCase() === id));
+  // Con flyers (fichas de 1 página por accionamiento), ellos son la documentación de la ficha: no se muestra la de 2 páginas
+  // y "Descargar ficha técnica" baja el flyer del accionamiento elegido en el pedido.
+  const flyerDocs = view.flyers.length > 0;
+  const chosenFlyer = view.flyers.find((f) => actIndexOf(f.id) === actuation) ?? view.flyers[0];
+  const topDoc = chosenFlyer ? chosenFlyer.href : doc?.href;
 
   return (
     <main className={styles.page}>
@@ -371,8 +401,8 @@ export function W06Ficha(props: { variant?: Variant }) {
             </ul>
 
             {/* Pedido rápido: el DN es el mismo del plano y las tablas de dimensiones. */}
-            <div className={styles.order} role="group" aria-label={t.order}>
-              <div className={styles.orderFields}>
+            <div className={styles.order} role="group" aria-label={t.order} ref={orderRef} data-flash={flash || undefined}>
+              <div className={view.actuations ? styles.orderFields3 : styles.orderFields}>
                 <label className={styles.field}>
                   <span>{t.dnLabel}</span>
                   <select value={size} onChange={(e) => setSize(e.target.value)}>
@@ -388,11 +418,21 @@ export function W06Ficha(props: { variant?: Variant }) {
                     ))}
                   </div>
                 </div>
+                {view.actuations && (
+                  <div className={styles.field} role="group" aria-label={t.actLabel}>
+                    <span aria-hidden="true">{t.actLabel}</span>
+                    <div className={styles.segment}>
+                      {view.actuations.map((a, i) => (
+                        <button key={a} type="button" aria-pressed={actuation === i} className={actuation === i ? styles.segmentOn : undefined} onClick={() => setActuation(i)}>{a}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className={styles.ctas}>
                 <Link href="/cotizar" className={styles.primary}>{t.quote} <ArrowRight size={17} aria-hidden="true" /></Link>
-                {doc ? (
-                  <a href={doc.href} download className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.download}</a>
+                {topDoc ? (
+                  <a href={topDoc} download className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.download}</a>
                 ) : (
                   <Link href={requestDocumentHref(`Ficha técnica · ${base.productName}`)} className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>
                 )}
@@ -468,6 +508,7 @@ export function W06Ficha(props: { variant?: Variant }) {
             </div>
           </section>
 
+          {!flyerDocs && (
           <section id="documentacion" className={styles.docStrip} aria-label={t.docs} data-reveal>
             <h2 className={styles.srOnly}>{t.docs}</h2>
             {doc ? (
@@ -501,6 +542,52 @@ export function W06Ficha(props: { variant?: Variant }) {
               </div>
             )}
           </section>
+          )}
+
+          {flyerDocs && (
+            <section id="documentacion" className={styles.flyers} aria-labelledby="flyers-title">
+              <header className={styles.headRow} data-reveal>
+                <div>
+                  <span className={styles.kicker}>{t.flyers.kicker}</span>
+                  <h2 id="flyers-title">{t.flyers.title}</h2>
+                </div>
+                <p className={styles.headNote}>{t.flyers.lead}</p>
+              </header>
+              <div className={styles.flyerGrid} data-reveal="stagger">
+                {view.flyers.map((f, i) => {
+                  const act = actIndexOf(f.id);
+                  const inUse = !!view.actuations && actuation === act;
+                  return (
+                    <article key={f.id} className={styles.flyerCard} data-active={inUse || undefined} aria-labelledby={`flyer-${f.id}`}>
+                      <button type="button" className={styles.flyerPreview} onClick={() => openFlyer(f)} aria-label={t.flyers.viewLabel(f.title)}>
+                        <Image src={f.preview} alt={f.alt} width={1250} height={1616} sizes="(min-width: 1100px) 250px, (min-width: 640px) 34vw, 82vw" />
+                        <span className={styles.flyerZoom} aria-hidden="true"><Maximize2 size={16} /></span>
+                      </button>
+                      <div className={styles.flyerBody}>
+                        <span className={styles.flyerOption}>{t.flyers.option(i + 1)}</span>
+                        <h3 id={`flyer-${f.id}`}>{f.title}</h3>
+                        <p className={styles.flyerSub}>{f.subtitle}</p>
+                        <ul className={styles.flyerPoints}>
+                          {f.points.map((p) => <li key={p}><Check size={15} strokeWidth={2.6} aria-hidden="true" />{p}</li>)}
+                        </ul>
+                        <p className={styles.flyerMeta}><FileText size={15} aria-hidden="true" />{f.meta}</p>
+                        <div className={styles.flyerActions}>
+                          <a href={f.href} download className={styles.docButton} aria-label={t.flyers.downloadLabel(f.title)}><Download size={16} aria-hidden="true" /> {t.flyers.download}</a>
+                          <button type="button" className={styles.docGhost} onClick={() => openFlyer(f)} aria-label={t.flyers.viewLabel(f.title)}><Eye size={16} aria-hidden="true" /> {t.flyers.view}</button>
+                        </div>
+                        {view.actuations && (
+                          <button type="button" className={styles.flyerUse} aria-pressed={inUse} onClick={() => chooseActuation(act)}>
+                            {inUse ? <Check size={15} strokeWidth={2.6} aria-hidden="true" /> : <ShoppingCart size={15} aria-hidden="true" />}
+                            {inUse ? t.flyers.inUse : t.flyers.use}
+                          </button>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
           <section id="dimensiones" className={styles.dimsSection} aria-label={t.tabs.dimensiones}>
             <header className={styles.headRow} data-reveal>
@@ -654,7 +741,7 @@ export function W06Ficha(props: { variant?: Variant }) {
       )}
 
       {preview && (
-        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label={t.docDialog} onClick={() => setPreview(null)} ref={docRef}>
+        <div className={styles.docModal} role="dialog" aria-modal="true" aria-label={preview.href === doc?.href ? t.docDialog : t.flyers.dialog} onClick={() => setPreview(null)} ref={docRef}>
           <div className={styles.docPanel} onClick={(e) => e.stopPropagation()}>
             <header className={styles.docBar}>
               <div className={styles.docBarTitle}>

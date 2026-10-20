@@ -251,10 +251,11 @@ test.describe("W02 catálogo", () => {
   });
 
   test("fichas de compuerta: cada una muestra los datos y el PDF de su ficha técnica", async ({ page }) => {
+    // La de garantía extendida se documenta con dos flyers de una página; arriba se descarga el del accionamiento elegido.
     const cases = [
       ["valvula-compuerta", "Ficha técnica FT-HI-100 · Rev. 13", "/docs/ficha-tecnica-valvula-compuerta-bridada.pdf", /^Rango dimensional DN40 a DN600/],
       ["valvula-compuerta-fundigsac", "Ficha técnica FUNDIGSAC · Válvula compuerta bridada", "/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf", /^Diseño DIN 3352 F4/],
-      ["valvula-compuerta-fundigsac-garantia-extendida", "Ficha técnica FT-HD N° 002-2024", "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf", /^Ficha técnica FT-HD N° 002-2024/],
+      ["valvula-compuerta-fundigsac-garantia-extendida", "Con volante (timón)", "/docs/flyer-valvula-compuerta-fundigsac-volante.pdf", /^Ficha técnica FT-HD N° 002-2024/],
     ] as const;
     for (const [slug, title, pdf, row] of cases) {
       await page.goto(`/productos/valvulas/${slug}`);

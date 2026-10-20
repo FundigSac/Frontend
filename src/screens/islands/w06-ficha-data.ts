@@ -11,6 +11,8 @@ export type DimTable = { note: string; head: string[]; rows: { dn: string; cells
 export type PnTable = { title: string; note: string; head: string[]; rows: (dn: string) => { pn: string; cells: Cell[] }[] };
 export type Doc = { title: string; meta: string; href: string; pages: { src: string; alt: string }[] };
 export type Feature = { icon: "shield" | "settings" | "layers" | "nut"; title: string; text: string };
+/** Flyer de una versión de la válvula (PDF de 1 página) con su vista previa. */
+export type Flyer = { id: "volante" | "dado"; title: string; subtitle: string; points: string[]; meta: string; href: string; preview: string; alt: string };
 
 export type Datasheet = {
   lead: string;
@@ -28,6 +30,9 @@ export type Datasheet = {
   doc: Doc | null;
   /** Cuatro destacados de la ficha (título y detalle) que se muestran bajo los datos principales. */
   highlights: [string, string][];
+  /** Accionamientos que se pueden pedir (la ficha FT-HD: dado o volante); sin valor no se muestra el selector. */
+  actuations?: string[];
+  flyers?: Flyer[];
   model3d: { src: string; alt: string };
 };
 
@@ -227,7 +232,7 @@ const EXTENDIDA: Datasheet = {
     ["Garantía", "Extendida, respaldada por FUNDIGSAC"],
     ["Ficha técnica", "FT-HD N° 002-2024 · Procedencia China"],
     ["Tipo", "Compuerta de cierre elástico, extremos bridados"],
-    ["Accionamiento", "Cuadrante de maniobra; volante GGG50 con epoxi RAL 5005"],
+    ["Accionamiento", "Dado (llave tipo T) o volante (timón)"],
     ["Cuerpo y tapa", "GJS500-7 (GGG-50), hierro dúctil"],
     ["Cuña", "GJS500-7 encapsulada en EPDM"],
     ["Vástago", "2Cr13 (SS420)"],
@@ -282,6 +287,30 @@ const EXTENDIDA: Datasheet = {
     pages: [1, 2].map((n) => ({ src: `/media/valvula-ficha/ficha-garantia-extendida-r4-p${n}.webp`, alt: `Ficha técnica FT-HD N° 002-2024, página ${n} de 2` })),
   },
   highlights: [["Hierro dúctil", "GJS500-7 (GGG-50)"], ["Cierre elástico", "Cuña encapsulada en EPDM"], ["Larga vida útil", "Baja pérdida de carga"], ["Epoxi RAL 5005", "Apto para agua potable"]],
+  actuations: ["Volante", "Dado"],
+  // Flyers de la misma válvula en sus dos accionamientos (despiece, materiales y dimensiones DN40 – DN600).
+  flyers: [
+    {
+      id: "volante",
+      title: "Con volante (timón)",
+      subtitle: "Accionamiento manual · ØD 180 a 600 mm",
+      points: ["Despiece de 17 piezas con su material", "Dimensiones DN40 – DN600 con el ØD del volante", "Vista real y vistas 3D acotadas"],
+      meta: "PDF · 6,2 MB · 1 página",
+      href: "/docs/flyer-valvula-compuerta-fundigsac-volante.pdf",
+      preview: "/media/valvula-ficha/flyer-volante-r1.webp",
+      alt: "Flyer de la válvula compuerta bridada FUNDIGSAC con volante: despiece, vista real, vistas 3D, dimensiones y materiales",
+    },
+    {
+      id: "dado",
+      title: "Con dado",
+      subtitle: "Apertura y cierre con llave tipo T · □K 14,3 a 32,3 mm",
+      points: ["Despiece de 16 piezas con su material", "Dimensiones DN40 – DN600 con el cuadrado □K", "Vista real y vistas 3D acotadas"],
+      meta: "PDF · 4,9 MB · 1 página",
+      href: "/docs/flyer-valvula-compuerta-fundigsac-dado.pdf",
+      preview: "/media/valvula-ficha/flyer-dado-r1.webp",
+      alt: "Flyer de la válvula compuerta bridada FUNDIGSAC con dado: despiece, vista real, vistas 3D, dimensiones y materiales",
+    },
+  ],
   model3d: { src: "/models/valvula-fundigsac-cuadrante.glb", alt: "Modelo 3D de la válvula de compuerta bridada FUNDIGSAC con cuadrante de maniobra" },
 };
 
