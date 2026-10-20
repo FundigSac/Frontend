@@ -23,7 +23,7 @@ export type FichaEn = {
   docTitle: string;
   docMeta: string;
   docPageAlt: (n: number, total: number) => string;
-  badges: string[];
+  highlights: [string, string][];
   model3dAlt: string;
 };
 
@@ -75,7 +75,7 @@ export const FICHA_EN: Record<"base" | "fundigsac" | "extendida", FichaEn> = {
     docTitle: "Datasheet FT-HI-100 · Rev. 13",
     docMeta: "PDF · 5.4 MB · 3 pages",
     docPageAlt: (n, total) => `Datasheet FT-HI-100 Rev. 13, page ${n} of ${total}`,
-    badges: ["Resilient seat", "PN10 / PN16", "Epoxy 250 µm"],
+    highlights: [["Ductile iron", "GJS-500-7 (GGG-50)"], ["Resilient seat", "Wedge with EPDM coating"], ["PN10 / PN16", "Double-drilled flange"], ["Epoxy RAL 5005", "Min. 250 microns"]],
     model3dAlt: "3D model of the H-ITALY flanged gate valve with handwheel",
   },
 
@@ -131,7 +131,7 @@ export const FICHA_EN: Record<"base" | "fundigsac" | "extendida", FichaEn> = {
     docTitle: "FUNDIGSAC datasheet · Flanged gate valve",
     docMeta: "PDF · 4.2 MB · 3 pages",
     docPageAlt: (n, total) => `FUNDIGSAC flanged gate valve datasheet, page ${n} of ${total}`,
-    badges: ["Resilient seat", "PN10 / PN16", "Epoxy ≥ 250 µm"],
+    highlights: [["Ductile iron", "GGG50 (ASTM A536)"], ["Resilient seat", "Gate encapsulated in EPDM"], ["PN10 / PN16", "Flanges per PN"], ["Epoxy", "≥ 250 microns"]],
     model3dAlt: "3D model of the FUNDIGSAC flanged gate valve with handwheel",
   },
 
@@ -190,7 +190,7 @@ export const FICHA_EN: Record<"base" | "fundigsac" | "extendida", FichaEn> = {
     docTitle: "Datasheet FT-HD No. 002-2024",
     docMeta: "PDF · 1.6 MB · 2 pages",
     docPageAlt: (n, total) => `Datasheet FT-HD No. 002-2024, page ${n} of ${total}`,
-    badges: ["Resilient seat", "PN10 / PN16", "Epoxy 250 µm"],
+    highlights: [["Ductile iron", "GJS500-7 (GGG-50)"], ["Resilient seat", "Wedge encapsulated in EPDM"], ["Long service life", "Low head loss"], ["Epoxy RAL 5005", "Suitable for drinking water"]],
     model3dAlt: "3D model of the FUNDIGSAC flanged gate valve with operating cap",
   },
 };

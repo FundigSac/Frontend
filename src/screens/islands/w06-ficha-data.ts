@@ -26,7 +26,8 @@ export type Datasheet = {
   stem?: PnTable;
   features: Feature[];
   doc: Doc | null;
-  badges: string[];
+  /** Cuatro destacados de la ficha (título y detalle) que se muestran bajo los datos principales. */
+  highlights: [string, string][];
   model3d: { src: string; alt: string };
 };
 
@@ -129,7 +130,7 @@ const BASE: Datasheet = {
     href: "/docs/ficha-tecnica-valvula-compuerta-bridada.pdf",
     pages: [1, 2, 3].map((n) => ({ src: `/media/valvula-ficha/ficha-p${n}.webp`, alt: `Ficha técnica FT-HI-100 Rev. 13, página ${n} de 3` })),
   },
-  badges: ["Cierre elástico", "PN10 / PN16", "Epoxi 250 µm"],
+  highlights: [["Hierro dúctil", "GJS-500-7 (GGG-50)"], ["Cierre elástico", "Cuña con recubrimiento EPDM"], ["PN10 / PN16", "Brida doble perforación"], ["Epoxi RAL 5005", "Mín. 250 micras"]],
   model3d: { src: "/models/valvula-hitaly.glb", alt: "Modelo 3D de la válvula de compuerta bridada H-ITALY con volante" },
 };
 
@@ -209,7 +210,7 @@ const FUNDIGSAC: Datasheet = {
     href: "/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf",
     pages: [1, 2, 3].map((n) => ({ src: `/media/valvula-ficha/ft-fundigsac-p${n}.webp`, alt: `Ficha técnica FUNDIGSAC de la válvula compuerta bridada, página ${n} de 3` })),
   },
-  badges: ["Asiento resiliente", "PN10 / PN16", "Epoxi ≥ 250 µm"],
+  highlights: [["Hierro dúctil", "GGG50 (ASTM A536)"], ["Asiento resiliente", "Compuerta encapsulada en EPDM"], ["PN10 / PN16", "Bridas según PN"], ["Epoxi", "≥ 250 micras"]],
   model3d: { src: "/models/valvula-fundigsac.glb", alt: "Modelo 3D de la válvula de compuerta bridada FUNDIGSAC con volante" },
 };
 
@@ -280,7 +281,7 @@ const EXTENDIDA: Datasheet = {
     // Las imágenes se cachean 30 días: si se vuelve a generar la vista previa, cambiar el nombre para que todos reciban la nueva.
     pages: [1, 2].map((n) => ({ src: `/media/valvula-ficha/ficha-garantia-extendida-r4-p${n}.webp`, alt: `Ficha técnica FT-HD N° 002-2024, página ${n} de 2` })),
   },
-  badges: ["Cierre elástico", "PN10 / PN16", "Epoxi 250 µm"],
+  highlights: [["Hierro dúctil", "GJS500-7 (GGG-50)"], ["Cierre elástico", "Cuña encapsulada en EPDM"], ["Larga vida útil", "Baja pérdida de carga"], ["Epoxi RAL 5005", "Apto para agua potable"]],
   model3d: { src: "/models/valvula-fundigsac-cuadrante.glb", alt: "Modelo 3D de la válvula de compuerta bridada FUNDIGSAC con cuadrante de maniobra" },
 };
 
