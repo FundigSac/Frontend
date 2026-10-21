@@ -786,3 +786,20 @@ html[data-motion] .lp-sectors:has(.lp-sectors__list:not([data-in])) .lp-sectors_
     transform: translate3d(0, -10px, 0) scale(0.94);
   }
 }
+
+/* ----- Superficies del navegador ----- */
+/* La selección de texto y la barra de desplazamiento toman los colores de la marca en lugar de los del sistema. */
+.lp ::selection,
+.lp-header ::selection,
+.lp-footer ::selection {
+  background: rgb(242 106 27 / 30%);
+  color: inherit;
+}
+
+html:has(main.lp) {
+  scrollbar-color: rgb(120 128 140 / 55%) transparent;
+}
+
+html[data-lp-theme="dark"]:has(main.lp) {
+  scrollbar-color: rgb(255 255 255 / 22%) #121211;
+}
