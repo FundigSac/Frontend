@@ -1,4 +1,6 @@
-/* ===== Portada: capa de movimiento (solo se carga en "/") =====
+/* ===== Portada: capa de movimiento =====
+   Se sirve en la misma hoja que landing.css (una petición menos antes del primer pintado), pero sus reglas solo tocan
+   clases de la portada; la línea bajo el nombre de .lp-card aplica también a las tarjetas de /industrias.
    Coreografía por sección en lugar del mismo fundido en todo: los títulos entran palabra por palabra, las fotos se
    descubren como una cortina, las franjas de sectores se ensanchan al apuntarlas y el hero se aleja al bajar.
    Solo transform, opacity, clip-path y máscaras. Con "reducir movimiento" la regla general de landing.css apaga
@@ -802,4 +804,33 @@ html:has(main.lp) {
 
 html[data-lp-theme="dark"]:has(main.lp) {
   scrollbar-color: rgb(255 255 255 / 22%) #121211;
+}
+
+/* ----- Lenis (desplazamiento suave de la portada) ----- */
+/* Las reglas de lenis/dist/lenis.css, aquí y no importadas: importarlas sumaba otra hoja que bloqueaba el pintado. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-behavior: allow-discrete;
+  transition-duration: 1ms;
+  transition-property: overflow;
 }

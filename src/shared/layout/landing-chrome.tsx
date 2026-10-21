@@ -13,6 +13,9 @@ import { isHeroOverlayHeader, isProductPath } from "./landing-paths";
 import { useHome } from "./home-copy";
 import { COPY, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
+// Capa de movimiento de la portada: va en la misma hoja que landing.css para no sumar una petición que bloquee el
+// primer pintado (+150 ms medidos en móvil); sus reglas solo tocan clases de la portada.
+import "../../app/_landing/home-motion.css";
 import "../../app/products-dark.css";
 import "../../modules/auth/auth.css";
 

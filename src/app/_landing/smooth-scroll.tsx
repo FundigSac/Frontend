@@ -1,7 +1,6 @@
 "use client";
 
 import Lenis from "lenis";
-import "lenis/dist/lenis.css";
 import { useEffect } from "react";
 import { setSmoothScroller } from "./scroll-control";
 

@@ -6,7 +6,6 @@ import { FloatingActions } from "./_landing/floating-actions";
 import { SectorsBand } from "./_landing/sectors-band";
 import { SmoothScroll } from "./_landing/smooth-scroll";
 import "./landing.css";
-import "./_landing/home-motion.css";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
