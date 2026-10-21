@@ -218,7 +218,7 @@ test.describe("W02 catálogo", () => {
     const thumbs = page.getByRole("group", { name: "Fotos de la válvula" }).getByRole("button");
     await expect(thumbs).toHaveCount(5);
     const srcOf = () => page.getByRole("group", { name: "Fotos de la válvula" }).locator("img").evaluateAll((els) => els.map((e) => decodeURIComponent((e as HTMLImageElement).currentSrc || (e as HTMLImageElement).src)));
-    expect((await srcOf()).every((u) => u.includes("/media/valvula-fundigsac-cuadrante/q-0"))).toBe(true);
+    expect((await srcOf()).every((u) => /\/media\/valvula-fundigsac-cuadrante\/[gq]-0/.test(u))).toBe(true);
     await expect(page.locator("main").getByRole("link", { name: "Solicitar cotización" })).toHaveAttribute("href", "/cotizar");
     await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-5-anos");
     await expect(page).toHaveURL(new RegExp(`/productos/valvulas/${slug}$`));
