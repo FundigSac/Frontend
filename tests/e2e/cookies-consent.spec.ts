@@ -111,18 +111,18 @@ test.describe("consentimiento de cookies: aviso", () => {
 });
 
 test.describe("contenido de terceros: mapa condicionado", () => {
-  test("«Cargar este mapa» muestra solo este mapa sin guardar decisión", async ({ page }) => {
+  test("«Ver el mapa solo esta vez» muestra solo este mapa sin guardar decisión", async ({ page }) => {
     await page.goto("/contacto");
     await page.getByRole("button", { name: "Rechazar todas" }).click();
-    await page.getByRole("button", { name: "Cargar este mapa" }).click();
+    await page.getByRole("button", { name: "Ver el mapa solo esta vez" }).click();
     await expect(mapFrames(page)).toHaveCount(1);
     expect(await consentCookie(page)).toMatchObject({ thirdParty: false });
   });
 
-  test("«Aceptar contenido de terceros» en el recuadro guarda la decisión (origen embed)", async ({ page }) => {
+  test("«Permitir siempre los mapas» en el recuadro guarda la decisión (origen embed)", async ({ page }) => {
     await page.goto("/contacto");
     await page.getByRole("button", { name: "Rechazar todas" }).click();
-    await page.getByRole("button", { name: "Aceptar contenido de terceros" }).click();
+    await page.getByRole("button", { name: "Permitir siempre los mapas" }).click();
     await expect(mapFrames(page)).toHaveCount(1);
     expect(await consentCookie(page)).toMatchObject({ thirdParty: true, source: "embed" });
   });
@@ -193,7 +193,7 @@ test.describe("cookies: idioma, tema y pantallas", () => {
     const group = page.getByRole("group", { name: "Mapa de Google Maps" });
     await group.scrollIntoViewIfNeeded();
     const g = await group.boundingBox();
-    const b = await group.getByRole("button", { name: "Cargar este mapa" }).boundingBox();
+    const b = await group.getByRole("button", { name: "Ver el mapa solo esta vez" }).boundingBox();
     expect(b!.y).toBeGreaterThanOrEqual(g!.y - 1);
     expect(b!.y + b!.height).toBeLessThanOrEqual(g!.y + g!.height + 1);
     const link = await group.getByRole("button", { name: "Preferencias de cookies" }).boundingBox();
