@@ -1081,6 +1081,7 @@
   display: block;
   width: 190px;
   height: auto;
+  aspect-ratio: 708 / 159; /* explícita: con height:auto Chrome avisaba de una imagen diferida sin tamaño */
   filter: brightness(1.35) saturate(1.1);
 }
 
@@ -2096,6 +2097,7 @@ html[data-lp-theme="dark"] .lp-hero__ctrl--ghost:hover {
 .lp-location__pin img {
   width: 108px;
   height: auto;
+  aspect-ratio: 708 / 159;
 }
 
 @media (max-width: 860px) {

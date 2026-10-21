@@ -126,8 +126,7 @@ export function LocationSection() {
         <div className="lp-location__map" data-reveal="media">
           <MapEmbed title={t.mapTitle} />
           <div className="lp-location__pin">
-            {/* SVG de pocos KB: diferirlo no ahorra nada y Chrome lo marcaba como imagen diferida sin tamaño. */}
-            <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" loading="eager" />
+            <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
             <span>{t.pin[0]}<br />{t.pin[1]}</span>
           </div>
         </div>
