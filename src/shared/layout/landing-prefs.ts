@@ -68,9 +68,9 @@ export const COPY = {
     menuClose: "Cerrar menú",
     a11y: { home: "FUNDIGSAC, inicio", mainNav: "Navegación principal", mobileNav: "Navegación móvil", skip: "Saltar al contenido" },
     hero: {
-      eyebrow: ["Infraestructura", "que conecta ciudades"],
-      title: "Ingeniería confiable para redes que no se detienen.",
-      lead: "Componentes en hierro dúctil para agua, riego e industria.",
+      eyebrow: ["Válvulas, tapas y tuberías", "de hierro dúctil"],
+      title: "Hierro dúctil para redes de agua que no pueden fallar.",
+      lead: "Válvulas, tapas, acoples y tuberías para saneamiento, riego y minería.",
       explore: "Explorar productos",
       solutions: "Ver soluciones",
       variants: [
@@ -104,9 +104,9 @@ export const COPY = {
     menuClose: "Close menu",
     a11y: { home: "FUNDIGSAC, home", mainNav: "Main navigation", mobileNav: "Mobile navigation", skip: "Skip to content" },
     hero: {
-      eyebrow: ["Infrastructure", "that connects cities"],
-      title: "Reliable engineering for networks that never stop.",
-      lead: "Ductile iron components for water, irrigation and industry.",
+      eyebrow: ["Valves, covers and pipes", "in ductile iron"],
+      title: "Ductile iron for water networks that can't fail.",
+      lead: "Valves, covers, couplings and pipes for sanitation, irrigation and mining.",
       explore: "Explore products",
       solutions: "View solutions",
       variants: [

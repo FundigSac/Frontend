@@ -56,9 +56,9 @@ test.describe("W01 inicio", () => {
     }
   });
 
-  test("'Explorar productos' y 'Explorar recursos técnicos' navegan", async ({ page }) => {
+  test("'Explorar productos' y 'Pedir documentación' navegan", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Explorar recursos técnicos" }).click();
+    await page.getByRole("link", { name: "Pedir documentación" }).click();
     await expect(page).toHaveURL(/\/contacto\?motivo=documentacion$/);
     await page.goto("/");
     await page.getByRole("link", { name: "Explorar productos" }).click();
