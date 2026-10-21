@@ -138,7 +138,14 @@ test.describe("accesibilidad: contraste AA", () => {
   for (const path of ["/", "/productos", "/productos/valvulas", "/productos/tuberias", "/reclamaciones", "/productos/valvulas/valvula-mariposa"]) {
     test(`sin fallos de contraste en ${path}`, async ({ page }) => {
       await page.goto(path); // con el aviso de cookies visible: su botón principal también debe cumplir
-      await page.waitForTimeout(1200); // animaciones de entrada (opacidad) terminadas
+      // Animaciones de entrada (opacidad) terminadas: un tiempo fijo a veces medía un texto todavía a medio aparecer.
+      // Se esperan las de duración finita (las infinitas y las ligadas al scroll no terminan), con un tope de 4 s porque
+      // las que están en pausa fuera de pantalla tampoco terminan.
+      await page.waitForTimeout(1200);
+      await page.evaluate(() => {
+        const pending = document.getAnimations().filter((a) => a.timeline instanceof DocumentTimeline && a.playState === "running" && a.effect?.getComputedTiming().endTime !== Infinity);
+        return Promise.race([Promise.all(pending.map((a) => a.finished.catch(() => undefined))), new Promise((r) => setTimeout(r, 4000))]);
+      });
       const results = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
       expect(results.violations.flatMap((v) => v.nodes.map((n) => `${n.target.join(" ")} — ${n.failureSummary?.split("\n")[1]?.trim()}`))).toEqual([]);
     });
