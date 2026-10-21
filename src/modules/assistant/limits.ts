@@ -18,14 +18,26 @@ const messageSchema = z.object({
   content: z.string(),
 });
 
+/** Adjuntos de una consulta: imagen reducida en el navegador, PDF (base64, se lee en el servidor) o texto plano. */
+export const ATTACH = { imageChars: 1_600_000, pdfChars: 3_400_000, textChars: 12_000, nameChars: 120, bodyBytes: 4_200_000 } as const;
+
+const attachmentSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("image"), name: z.string().max(ATTACH.nameChars), data: z.string().max(ATTACH.imageChars).regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/) }),
+  z.object({ kind: z.literal("pdf"), name: z.string().max(ATTACH.nameChars), data: z.string().max(ATTACH.pdfChars).regex(/^[A-Za-z0-9+/=]+$/) }),
+  z.object({ kind: z.literal("text"), name: z.string().max(ATTACH.nameChars), text: z.string().max(ATTACH.textChars) }),
+]);
+
+export type Attachment = z.infer<typeof attachmentSchema>;
+
 const bodySchema = z.object({
   messages: z.array(messageSchema).min(1).max(LIMITS.maxMessages),
   lang: z.enum(["es", "en"]).optional(),
   page: z.string().max(300).optional(),
+  attachment: attachmentSchema.optional(),
 });
 
 export type ChatTurn = z.infer<typeof messageSchema>;
-export type ChatRequest = { messages: ChatTurn[]; lang: "es" | "en"; page: string };
+export type ChatRequest = { messages: ChatTurn[]; lang: "es" | "en"; page: string; attachment?: Attachment };
 export type ParseResult = { ok: true; value: ChatRequest } | { ok: false; error: string };
 
 /** Valida el cuerpo de la petición y recorta el historial a los últimos mensajes, empezando por uno del usuario. */
@@ -42,7 +54,7 @@ export function parseChatRequest(input: unknown): ParseResult {
   while (recent.length && recent[0].role !== "user") recent = recent.slice(1);
   if (recent.reduce((n, m) => n + m.content.length, 0) > LIMITS.totalChars) return { ok: false, error: "conversation_too_long" };
   const page = sanitizePage(parsed.data.page);
-  return { ok: true, value: { messages: recent, lang: parsed.data.lang ?? "es", page } };
+  return { ok: true, value: { messages: recent, lang: parsed.data.lang ?? "es", page, attachment: parsed.data.attachment } };
 }
 
 /** Solo rutas internas sencillas: evita que el contexto de página lleve texto arbitrario al modelo. */

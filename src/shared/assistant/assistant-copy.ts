@@ -16,7 +16,7 @@ export function whatsappHref(lang: Lang, question?: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 }
 
-export type Notice = "not_configured" | "rate_limited" | "busy" | "network" | "error" | "refusal" | "too_long";
+export type Notice = "not_configured" | "rate_limited" | "busy" | "network" | "error" | "refusal" | "too_long" | "attachment";
 
 export const ASSISTANT_COPY = {
   es: {
@@ -42,6 +42,13 @@ export const ASSISTANT_COPY = {
       { icon: "quote", title: "Cotizar", text: "Arma tu pedido con el equipo", prompt: "Quiero cotizar productos para mi proyecto. ¿Cómo lo hago y qué información debo enviar?" },
     ],
     placeholder: "Escribe tu consulta…",
+    attach: "Adjuntar imagen, PDF o texto",
+    attachRemove: "Quitar adjunto",
+    attachDefault: "Analiza este archivo y dime qué producto o dato de FUNDIGSAC se relaciona.",
+    attachPlaceholder: "Pregunta sobre el archivo…",
+    attachErrors: { unsupported: "Formato no admitido. Usa imagen (JPG, PNG, WebP), PDF o texto (TXT, CSV, MD, JSON).", too_big: "Archivo demasiado pesado (PDF hasta 2,5 MB).", read: "No pude leer ese archivo. Prueba con otro." },
+    fileCard: "Descargar PDF",
+    fileKind: "PDF · ficha técnica",
     inputLabel: "Tu consulta para FundigIA",
     send: "Enviar",
     stop: "Detener respuesta",
@@ -64,6 +71,7 @@ export const ASSISTANT_COPY = {
       error: "No pude completar la respuesta. Inténtalo de nuevo.",
       refusal: "No puedo ayudarte con esa consulta. ¿Te ayudo con productos, fichas técnicas o tu proyecto?",
       too_long: "La conversación ya es muy larga. Empieza una nueva para seguir.",
+      attachment: "El archivo es demasiado pesado. Prueba con uno más liviano (imagen o PDF de hasta 2,5 MB).",
     } satisfies Record<Notice, string>,
     charsLeft: (n: number) => `${n} caracteres disponibles`,
     helpful: "Me sirvió",
@@ -105,6 +113,13 @@ export const ASSISTANT_COPY = {
       { icon: "quote", title: "Get a quote", text: "Build your order with our team", prompt: "I want a quote for my project. How do I request it and what information should I send?" },
     ],
     placeholder: "Type your question…",
+    attach: "Attach an image, PDF or text file",
+    attachRemove: "Remove attachment",
+    attachDefault: "Analyze this file and tell me which FUNDIGSAC product or data it relates to.",
+    attachPlaceholder: "Ask about the file…",
+    attachErrors: { unsupported: "Unsupported format. Use an image (JPG, PNG, WebP), PDF or text (TXT, CSV, MD, JSON).", too_big: "File too large (PDF up to 2.5 MB).", read: "I couldn't read that file. Try another one." },
+    fileCard: "Download PDF",
+    fileKind: "PDF · datasheet",
     inputLabel: "Your question for FundigIA",
     send: "Send",
     stop: "Stop answer",
@@ -127,6 +142,7 @@ export const ASSISTANT_COPY = {
       error: "I couldn't finish the answer. Please try again.",
       refusal: "I can't help with that request. Can I help you with products, datasheets or your project?",
       too_long: "This conversation is too long. Start a new one to continue.",
+      attachment: "The file is too large. Try a lighter one (image or PDF up to 2.5 MB).",
     } satisfies Record<Notice, string>,
     charsLeft: (n: number) => `${n} characters left`,
     helpful: "Helpful",

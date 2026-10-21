@@ -1,16 +1,22 @@
 "use client";
 
 import {
+  ArrowRight,
   ArrowUp,
   Check,
+  CheckCheck,
   ClipboardList,
   Copy,
+  FileDown,
   FileText,
   Gauge,
   Maximize2,
   MessageCircle,
   Minimize2,
+  Headset,
+  Info,
   Phone,
+  Plus,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -22,8 +28,10 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { site } from "@/lib/site-info";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ASSISTANT_COPY, suggestionsFor, whatsappHref } from "./assistant-copy";
+import { ACCEPT, docLinks, whatsappMention, prepareAttachment, type AttachError, type AttachmentInfo, type PendingAttachment } from "./assistant-attach";
 import { AssistantMarkdown } from "./assistant-markdown";
 import { AssistantMascot, type MascotMood } from "./assistant-mascot";
 import { MAX_INPUT, parseReply, useAssistantChat, type ChatMessage, type Settled } from "./use-assistant-chat";
@@ -34,6 +42,29 @@ type Copy = (typeof ASSISTANT_COPY)[keyof typeof ASSISTANT_COPY];
 const ICONS = { gauge: Gauge, file: FileText, shield: ShieldCheck, quote: ClipboardList, chat: MessageCircle, phone: Phone } as const;
 
 const isPhone = () => window.matchMedia("(max-width: 640px)").matches;
+
+function AttachmentChip({ info, onRemove, removeLabel }: { info: AttachmentInfo; onRemove?: () => void; removeLabel?: string }) {
+  return (
+    <span className={`ai-attach${onRemove ? " is-pending" : ""}`}>
+      {info.thumb ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="ai-attach__thumb" src={info.thumb} alt="" width={36} height={36} />
+      ) : (
+        <span className="ai-attach__icon" aria-hidden="true">
+          <FileText size={18} />
+        </span>
+      )}
+      <span className="ai-attach__name">{info.name}</span>
+      {onRemove && (
+        <button type="button" className="ai-attach__remove" onClick={onRemove} aria-label={removeLabel} title={removeLabel}>
+          <X size={14} aria-hidden="true" />
+        </button>
+      )}
+    </span>
+  );
+}
+
+const timeFmt = (lang: "es" | "en", at?: number) => (at ? new Intl.DateTimeFormat(lang === "en" ? "en-US" : "es-PE", { hour: "numeric", minute: "2-digit" }).format(at) : "");
 
 function Thinking({ labels }: { labels: readonly string[] }) {
   const [step, setStep] = useState(0);
@@ -104,6 +135,7 @@ function BotMessage({
   const canRetry = notice && notice !== "not_configured" && notice !== "refusal" && notice !== "too_long";
   const { body, suggestions } = parseReply(message.content);
   const done = message.status === "done" && body.length > 0;
+  const docs = done ? docLinks(body) : [];
   return (
     <div className="ai-msg ai-msg--bot">
       <span className="ai-msg__avatar" aria-hidden="true">
@@ -115,6 +147,36 @@ function BotMessage({
             {body ? <AssistantMarkdown text={body} onNavigate={onNavigate} /> : <Thinking labels={t.thinking} />}
             {message.stopped && <p className="ai-bubble__note">{t.stopped}</p>}
           </div>
+        )}
+        {docs.length > 0 && (
+          <div className="ai-files">
+            {docs.map((doc) => (
+              <a key={doc.href} className="ai-file" href={doc.href} target="_blank" rel="noopener noreferrer">
+                {doc.preview ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="ai-file__preview" src={doc.preview} alt="" width={64} height={84} loading="lazy" />
+                ) : (
+                  <span className="ai-file__icon" aria-hidden="true">
+                    <FileText size={20} />
+                  </span>
+                )}
+                <span className="ai-file__text">
+                  <strong>{doc.title}</strong>
+                  <small>{t.fileKind}</small>
+                </span>
+                <span className="ai-file__cta">
+                  <FileDown size={15} aria-hidden="true" />
+                  {t.fileCard}
+                </span>
+              </a>
+            ))}
+          </div>
+        )}
+        {done && whatsappMention(body) && (
+          <a className="ai-wa" href={whatsappHref(lang, question)} target="_blank" rel="noopener noreferrer">
+            <MessageCircle size={20} aria-hidden="true" />
+            <span>{site.phone}</span>
+          </a>
         )}
         {notice && (
           <div className="ai-notice" role="alert">
@@ -141,6 +203,7 @@ function BotMessage({
             </div>
           </div>
         )}
+        {done && message.at && <time className="ai-time" dateTime={new Date(message.at).toISOString()}>{timeFmt(lang, message.at)}</time>}
         {done && (
           <div className="ai-tools">
             <CopyButton text={body} t={t} />
@@ -235,6 +298,10 @@ export default function AssistantPanel({
 
   const { messages, busy, send, stop, retry, rate, reset } = useAssistantChat(lang, pathname, handleSettled);
   const [input, setInput] = useState("");
+  const [attachment, setAttachment] = useState<PendingAttachment | null>(null);
+  const [attachError, setAttachError] = useState<AttachError | null>(null);
+  const [preparing, setPreparing] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [expanded, setExpanded] = useState(false);
   const titleId = useId();
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -251,15 +318,28 @@ export default function AssistantPanel({
     el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
   }, []);
 
+  const attach = useCallback(async (file: File | undefined) => {
+    if (!file) return;
+    setAttachError(null);
+    setPreparing(true);
+    const result = await prepareAttachment(file);
+    setPreparing(false);
+    if (result.ok) setAttachment(result.attachment);
+    else setAttachError(result.error);
+  }, []);
+
   const submit = useCallback(
     (text: string) => {
-      if (!text.trim() || busy) return;
+      const question = text.trim() || (attachment ? t.attachDefault : "");
+      if (!question || busy || preparing) return;
       stick.current = true;
-      void send(text);
+      void send(question, undefined, attachment ?? undefined);
       setInput("");
+      setAttachment(null);
+      setAttachError(null);
       window.requestAnimationFrame(resize);
     },
-    [busy, send, resize],
+    [busy, preparing, attachment, send, resize, t.attachDefault],
   );
 
   // Pregunta enviada desde otro botón del sitio (openAssistant).
@@ -418,7 +498,16 @@ export default function AssistantPanel({
               m.role === "user" ? (
                 <div key={m.id} className="ai-msg ai-msg--user">
                   <span className="ai-sr">{t.you}: </span>
-                  <div className="ai-bubble">{m.content}</div>
+                  <div className="ai-bubble">
+                    {m.attachment && <AttachmentChip info={m.attachment} />}
+                    {m.content}
+                  </div>
+                  {m.at && (
+                    <span className="ai-time ai-time--user">
+                      <time dateTime={new Date(m.at).toISOString()}>{timeFmt(lang, m.at)}</time>
+                      <CheckCheck size={15} aria-hidden="true" />
+                    </span>
+                  )}
                 </div>
               ) : (
                 <BotMessage
@@ -478,13 +567,34 @@ export default function AssistantPanel({
             })}
           </nav>
         )}
+        {(attachment || attachError || preparing) && (
+          <div className="ai-attach-bar" aria-live="polite">
+            {attachment && <AttachmentChip info={{ kind: attachment.kind, name: attachment.name, thumb: attachment.kind === "image" ? attachment.thumb : undefined }} onRemove={() => setAttachment(null)} removeLabel={t.attachRemove} />}
+            {preparing && <span className="ai-attach__status">…</span>}
+            {attachError && <p className="ai-attach__error" role="alert">{t.attachErrors[attachError]}</p>}
+          </div>
+        )}
         <div className="ai-field">
+          <input
+            ref={fileRef}
+            type="file"
+            accept={ACCEPT}
+            hidden
+            tabIndex={-1}
+            onChange={(e) => {
+              void attach(e.target.files?.[0]);
+              e.target.value = "";
+            }}
+          />
+          <button type="button" className="ai-attach-btn" onClick={() => fileRef.current?.click()} disabled={busy || preparing} aria-label={t.attach} title={t.attach}>
+            <Plus size={22} aria-hidden="true" />
+          </button>
           <textarea
             ref={inputRef}
             rows={1}
             value={input}
             maxLength={MAX_INPUT}
-            placeholder={t.placeholder}
+            placeholder={attachment ? t.attachPlaceholder : t.placeholder}
             aria-label={t.inputLabel}
             enterKeyHint="send"
             onChange={(e) => {
@@ -492,22 +602,34 @@ export default function AssistantPanel({
               resize();
             }}
             onKeyDown={onKeyDown}
+            onPaste={(e) => {
+              const file = [...e.clipboardData.files].find((f) => f.type.startsWith("image/"));
+              if (file) {
+                e.preventDefault();
+                void attach(file);
+              }
+            }}
           />
           {busy ? (
             <button type="button" className="ai-send ai-send--stop" onClick={stop} aria-label={t.stop} title={t.stop}>
               <Square size={14} fill="currentColor" aria-hidden="true" />
             </button>
           ) : (
-            <button type="submit" className="ai-send" disabled={!input.trim()} aria-label={t.send} title={t.send}>
+            <button type="submit" className="ai-send" disabled={(!input.trim() && !attachment) || preparing} aria-label={t.send} title={t.send}>
               <ArrowUp size={19} strokeWidth={2.4} aria-hidden="true" />
             </button>
           )}
         </div>
         {remaining < 200 && <p className="ai-count" aria-live="polite">{t.charsLeft(remaining)}</p>}
         <p className="ai-foot">
-          {t.footer}{" "}
+          <span className="ai-foot__note">
+            <Info size={15} aria-hidden="true" />
+            {t.footer}
+          </span>
           <a href={whatsappHref(lang, lastQuestion)} target="_blank" rel="noopener noreferrer">
+            <Headset size={16} aria-hidden="true" />
             {t.footerHuman}
+            <ArrowRight size={15} aria-hidden="true" />
           </a>
         </p>
       </form>

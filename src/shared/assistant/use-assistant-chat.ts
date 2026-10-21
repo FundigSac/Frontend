@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Lang } from "@/shared/layout/landing-prefs";
 import type { Notice } from "./assistant-copy";
+import { infoOf, type AttachmentInfo, type PendingAttachment } from "./assistant-attach";
 
 export type ChatMessage = {
   id: string;
@@ -14,6 +15,10 @@ export type ChatMessage = {
   /** "ai" si respondió el modelo; "guide" si respondió la guía rápida con los datos del sitio. */
   mode?: "ai" | "guide";
   feedback?: "up" | "down";
+  /** Archivo o imagen adjunta a esta pregunta (solo nombre y miniatura; el contenido no se guarda). */
+  attachment?: AttachmentInfo;
+  /** Hora de envío o de llegada de la respuesta (ms). */
+  at?: number;
 };
 
 export type Settled = "done" | "error";
@@ -34,7 +39,16 @@ const uid = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? cry
  */
 export function parseReply(content: string): { body: string; suggestions: string[] } {
   const start = content.lastIndexOf("[[");
-  if (start < 0) return { body: content, suggestions: [] };
+  if (start < 0) {
+    // A veces el modelo olvida los corchetes: una última línea con 2 o 3 preguntas separadas por "|" también cuenta.
+    const cut = content.lastIndexOf("\n") + 1;
+    const line = content.slice(cut).trim();
+    const parts = line.split("|").map((x) => x.trim());
+    if (cut > 0 && parts.length >= 2 && parts.length <= 3 && parts.every((x) => x.length > 1 && x.length <= 90 && /[?？]$/.test(x))) {
+      return { body: content.slice(0, cut).trimEnd(), suggestions: parts };
+    }
+    return { body: content, suggestions: [] };
+  }
   const end = content.indexOf("]]", start);
   const body = content.slice(0, start).trimEnd();
   if (end < 0) return { body, suggestions: [] };
@@ -115,6 +129,8 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
   const messagesRef = useRef(messages);
   const busyRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
+  /** Contenido de los adjuntos de esta pestaña (solo memoria), para poder reintentar una pregunta con archivo. */
+  const filesRef = useRef(new Map<string, PendingAttachment>());
   const settledRef = useRef(onSettled);
 
   useEffect(() => {
@@ -129,15 +145,16 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
   useEffect(() => () => abortRef.current?.abort(), []);
 
   const send = useCallback(
-    async (text: string, base: ChatMessage[] = messagesRef.current) => {
+    async (text: string, base: ChatMessage[] = messagesRef.current, attachment?: PendingAttachment, reuseId?: string) => {
       const content = text.trim().slice(0, MAX_INPUT);
       if (!content || busyRef.current) return;
       busyRef.current = true;
       setBusy(true);
 
-      const user: ChatMessage = { id: uid(), role: "user", content, status: "done" };
+      const user: ChatMessage = { id: reuseId ?? uid(), role: "user", content, status: "done", at: Date.now(), ...(attachment ? { attachment: infoOf(attachment) } : {}) };
+      if (attachment) filesRef.current.set(user.id, attachment);
       const botId = uid();
-      const next = [...base, user, { id: botId, role: "assistant" as const, content: "", status: "streaming" as const }];
+      const next = [...base, user, { id: botId, role: "assistant" as const, content: "", status: "streaming" as const, at: Date.now() }];
       messagesRef.current = next;
       setMessages(next);
 
@@ -150,14 +167,14 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: historyFor([...base, user]), lang, page }),
+          body: JSON.stringify({ messages: historyFor([...base, user]), lang, page, ...(attachment ? { attachment } : {}) }),
           signal: controller.signal,
         });
 
         if (!res.ok || !res.body) {
           const data = (await res.json().catch(() => ({}))) as { error?: string };
           const notice: Notice =
-            res.status === 503 ? "not_configured" : res.status === 429 ? "rate_limited" : data.error === "conversation_too_long" ? "too_long" : "error";
+            res.status === 503 ? "not_configured" : res.status === 429 ? "rate_limited" : data.error === "conversation_too_long" ? "too_long" : res.status === 413 || data.error === "payload_too_large" ? "attachment" : "error";
           patch((m) => ({ ...m, status: "error", notice }));
           result = "error";
           return;
@@ -236,7 +253,7 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
       const index = list.findIndex((m) => m.id === botId);
       const question = index > 0 ? list[index - 1] : undefined;
       if (!question || question.role !== "user") return;
-      void send(question.content, list.slice(0, index - 1));
+      void send(question.content, list.slice(0, index - 1), filesRef.current.get(question.id), question.id);
     },
     [send],
   );
@@ -249,6 +266,7 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
   const reset = useCallback(() => {
     abortRef.current?.abort();
     messagesRef.current = [];
+    filesRef.current.clear();
     setMessages([]);
   }, []);
 
