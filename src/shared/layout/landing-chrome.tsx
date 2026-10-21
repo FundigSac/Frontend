@@ -34,6 +34,23 @@ function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
   ];
 }
 
+/**
+ * Enlace que se precarga solo cuando hay intención (puntero encima, foco o dedo). Next precarga cada enlace que entra en
+ * pantalla: el pie tiene más de veinte y bajaba por adelantado los estilos y datos de páginas que casi nadie abre.
+ */
+function IntentLink({ onMouseEnter, onFocus, onTouchStart, ...props }: React.ComponentProps<typeof Link>) {
+  const [intent, setIntent] = useState(false);
+  return (
+    <Link
+      {...props}
+      prefetch={intent ? null : false}
+      onMouseEnter={(e) => { setIntent(true); onMouseEnter?.(e); }}
+      onFocus={(e) => { setIntent(true); onFocus?.(e); }}
+      onTouchStart={(e) => { setIntent(true); onTouchStart?.(e); }}
+    />
+  );
+}
+
 function Avatar({ user }: { user: AuthUser }) {
   const [broken, setBroken] = useState(false);
   return user.picture && !broken ? (
@@ -143,7 +160,8 @@ export function LandingHeader() {
                 <ul className="lp-nav__menu" id={`lp-menu-${item.label}`}>
                   {item.children.map((child) => (
                     <li key={child.label}>
-                      <Link href={child.href} onClick={() => setOpen(null)}>{child.label}</Link>
+                      {/* El submenú cerrado sigue en el DOM (invisible): sin esto se precargaban todas sus páginas al entrar. */}
+                      <Link href={child.href} prefetch={open === item.label ? null : false} onClick={() => setOpen(null)}>{child.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -366,15 +384,15 @@ export function LandingFooter() {
         </div>
         <nav aria-labelledby="lp-f-productos">
           <h2 id="lp-f-productos">{f.products}</h2>
-          <ul>{PRODUCTS.map((l) => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
+          <ul>{PRODUCTS.map((l) => <li key={l.label}><IntentLink href={l.href}>{l.label}</IntentLink></li>)}</ul>
         </nav>
         <nav aria-labelledby="lp-f-sectores">
           <h2 id="lp-f-sectores">{f.sectors}</h2>
-          <ul>{SECTORS.map((l) => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
+          <ul>{SECTORS.map((l) => <li key={l.label}><IntentLink href={l.href}>{l.label}</IntentLink></li>)}</ul>
         </nav>
         <nav aria-labelledby="lp-f-recursos">
           <h2 id="lp-f-recursos">{f.resources}</h2>
-          <ul>{RESOURCES.map((l) => <li key={l.label}><Link href={l.href}>{l.label}</Link></li>)}</ul>
+          <ul>{RESOURCES.map((l) => <li key={l.label}><IntentLink href={l.href}>{l.label}</IntentLink></li>)}</ul>
         </nav>
         <div>
           <h2>{f.contact}</h2>
@@ -383,8 +401,8 @@ export function LandingFooter() {
               <li>{f.place}</li>
               <li><a href={SITE.phoneHref}>{SITE.phone}</a></li>
               <li><a href={`mailto:${SITE.email}`}>{SITE.email.split("@")[0]}@<wbr />{SITE.email.split("@")[1]}</a></li>
-              <li><Link href="/contacto">{f.form}</Link></li>
-              <li><Link href="/carrito">{tn.cart}</Link></li>
+              <li><IntentLink href="/contacto">{f.form}</IntentLink></li>
+              <li><IntentLink href="/carrito">{tn.cart}</IntentLink></li>
             </ul>
           </address>
         </div>
@@ -392,12 +410,12 @@ export function LandingFooter() {
       <div className="lp-shell lp-footer__bottom">
         <span>© {new Date().getFullYear()} {SITE.name}. {f.rights}</span>
         <div className="lp-footer__legal">
-          <Link href="/terminos">{f.terms}</Link>
-          <Link href="/privacidad">{f.privacy}</Link>
+          <IntentLink href="/terminos">{f.terms}</IntentLink>
+          <IntentLink href="/privacidad">{f.privacy}</IntentLink>
           <Link href="/cookies" prefetch={false}>{f.cookies}</Link>
-          <Link href="/eliminar-cuenta">{f.deletion}</Link>
+          <IntentLink href="/eliminar-cuenta">{f.deletion}</IntentLink>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
-          <Link href="/reclamaciones">{f.complaints}</Link>
+          <IntentLink href="/reclamaciones">{f.complaints}</IntentLink>
         </div>
       </div>
     </footer>
