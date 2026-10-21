@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 import { guideAnswer, withSuggestions } from "@/modules/assistant/guide";
 import { createRateLimiter, parseChatRequest } from "@/modules/assistant/limits";
+import { groqSystemPrompt } from "@/modules/assistant/groq-context";
 import { SYSTEM_PROMPT, visitContext } from "@/modules/assistant/prompt";
 import { isSameOriginRequest, readJsonBody } from "@/shared/security/request-guard";
 
@@ -8,8 +10,8 @@ import { isSameOriginRequest, readJsonBody } from "@/shared/security/request-gua
  * FundigIA: respuesta en streaming (Server-Sent Events).
  * Eventos: {"type":"meta","mode":"ai"|"guide"}, {"type":"text","text":…}, {"type":"done"}, {"type":"refusal"},
  * {"type":"error","code":…}.
- * Con ANTHROPIC_API_KEY responde Claude; sin la clave, o si el servicio falla antes de empezar a responder,
- * contesta la guía rápida (src/modules/assistant/guide.ts) con los datos del sitio, para que el chat siempre funcione.
+ * Proveedor de IA: GROQ_API_KEY (GroqCloud, modelo GROQ_MODEL) y, si no hay, ANTHROPIC_API_KEY (Claude). Sin ninguna
+ * clave, o si el servicio falla antes de empezar a responder, contesta la guía rápida (src/modules/assistant/guide.ts) con los datos del sitio, para que el chat siempre funcione.
  */
 
 export const runtime = "nodejs";
@@ -17,6 +19,12 @@ export const maxDuration = 60;
 
 const MODEL = process.env.CHAT_MODEL || "claude-opus-5-5";
 const EFFORT = (["low", "medium", "high"] as const).find((e) => e === process.env.CHAT_EFFORT) ?? "low";
+/** GroqCloud: plan gratuito con tope de tokens por minuto, así que el historial y la respuesta se acotan. */
+const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+const GROQ_HISTORY = 8;
+const GROQ_MAX_OUTPUT = 700;
+/** Si Groq responde 413/429 (tope de tokens por minuto), durante ese tiempo se contesta con la guía sin volver a llamarlo. */
+let groqCooldownUntil = 0;
 const rateLimit = createRateLimiter();
 
 const json = (status: number, body: Record<string, unknown>, headers: Record<string, string> = {}) =>
@@ -25,6 +33,14 @@ const json = (status: number, body: Record<string, unknown>, headers: Record<str
 function clientKey(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   return forwarded || request.headers.get("x-real-ip") || "local";
+}
+
+function groqErrorCode(error: unknown): string {
+  if (error instanceof Groq.AuthenticationError || error instanceof Groq.PermissionDeniedError) return "not_configured";
+  if (error instanceof Groq.RateLimitError) return "busy";
+  if (error instanceof Groq.APIConnectionError) return "network";
+  if (error instanceof Groq.APIError && (error.status ?? 0) >= 500) return "busy";
+  return "error";
 }
 
 function errorCode(error: unknown): string {
@@ -80,6 +96,57 @@ export async function POST(request: Request) {
       };
 
       try {
+        if (process.env.GROQ_API_KEY && Date.now() < groqCooldownUntil) {
+          await answerFromGuide();
+          return;
+        }
+        if (process.env.GROQ_API_KEY) {
+          let started = false;
+          try {
+            const client = new Groq({ maxRetries: 1, timeout: 45_000 });
+            const reply = await client.chat.completions.create(
+              {
+                model: GROQ_MODEL,
+                stream: true,
+                temperature: 0.3,
+                max_completion_tokens: GROQ_MAX_OUTPUT,
+                reasoning_effort: "low",
+                // Prefijo estable (rol + base de conocimiento) primero; el contexto de la visita va al final.
+                messages: [
+                  { role: "system", content: groqSystemPrompt(messages.filter((m) => m.role === "user").slice(-2).map((m) => m.content).join("\n")) },
+                  ...messages.slice(-GROQ_HISTORY),
+                  { role: "system", content: visitContext(lang, page) },
+                ],
+              },
+              { signal: abort.signal },
+            );
+            let finish: string | null = null;
+            let usage: unknown;
+            for await (const chunk of reply) {
+              const choice = chunk.choices[0];
+              const text = choice?.delta?.content;
+              if (text) {
+                if (!started) {
+                  started = true;
+                  send({ type: "meta", mode: "ai" });
+                }
+                send({ type: "text", text });
+              }
+              if (choice?.finish_reason) finish = choice.finish_reason;
+              if (chunk.x_groq?.usage) usage = chunk.x_groq.usage;
+            }
+            if (!started) throw new Error("empty_reply");
+            send({ type: "done", stop: finish ?? "stop" });
+            console.info("[chat] uso groq", { model: GROQ_MODEL, usage });
+          } catch (error) {
+            if (abort.signal.aborted) return;
+            console.error("[chat] error groq", error instanceof Groq.APIError ? `${error.status} ${error.name} ${error.message}`.slice(0, 400) : error);
+            if (error instanceof Groq.APIError && (error.status === 413 || error.status === 429)) groqCooldownUntil = Date.now() + 20_000;
+            if (!started) await answerFromGuide();
+            else send({ type: "error", code: groqErrorCode(error) });
+          }
+          return;
+        }
         if (!process.env.ANTHROPIC_API_KEY) {
           await answerFromGuide();
           return;

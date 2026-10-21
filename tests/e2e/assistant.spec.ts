@@ -91,6 +91,6 @@ test("FundigIA responde de verdad (IA o guía rápida con los datos del sitio)",
   const input = panel.getByRole("textbox", { name: "Tu consulta para FundigIA" });
   await input.fill("Medidas de brida DN150 PN16");
   await input.press("Enter");
-  await expect(panel.locator(".ai-msg--bot .ai-md").last()).toContainText("DN150", { timeout: 45_000 });
+  await expect(panel.locator(".ai-msg--bot .ai-md").last()).toContainText(/DN\s?150/, { timeout: 45_000 });
   await expect(panel.getByRole("button", { name: "Copiar respuesta" })).toBeVisible({ timeout: 45_000 });
 });
