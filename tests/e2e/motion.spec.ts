@@ -69,13 +69,13 @@ test.describe("movimiento", () => {
     await context.close();
   });
 
-  test("el hero cambia de variante con barrido y sigue respondiendo al teclado", async ({ page }) => {
+  // El barrido vertical se revirtió (5eb2ba3) al fundido con subida: la válvula activa cambia sin clases intermedias.
+  test("el hero cambia de variante y sigue respondiendo al teclado", async ({ page }) => {
     await page.goto("/", { waitUntil: "load" });
     const active = page.locator(".lp-hero__valve.is-active");
     const before = await active.getAttribute("src");
     await page.locator(".lp-hero__ctrl").nth(1).click();
-    await expect(page.locator(".lp-hero__stage")).toHaveAttribute("data-swapped", "");
-    await expect(page.locator(".lp-hero__valve.is-leaving")).toHaveCount(1);
+    await expect(page.locator(".lp-hero__valve.is-active")).toHaveCount(1);
     await expect(active).not.toHaveAttribute("src", before!);
     // Safari no enfoca un botón al pulsarlo: el foco llega por teclado, como con Tab.
     await page.locator(".lp-hero__ctrl").nth(1).focus();
