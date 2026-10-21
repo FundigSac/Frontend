@@ -15,7 +15,7 @@ const VARIANTS = [
   { id: "con-timon", src: "/media/home-v2/compuerta-con-timon-v4.webp" },
 ] as const;
 
-const INTERVAL = 4200;
+const INTERVAL = 2600;
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
 function subscribeMotion(onChange: () => void) {

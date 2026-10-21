@@ -643,7 +643,7 @@
 }
 
 .lp-hero__bars b.is-running {
-  animation: lp-progress 4200ms linear both;
+  animation: lp-progress 2600ms linear both;
 }
 
 @keyframes lp-kenburns {
