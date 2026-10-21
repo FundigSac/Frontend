@@ -267,3 +267,384 @@ html .lp-header.is-tucked:not(:focus-within) {
 html[data-lp-theme="dark"] .lp-components__progress {
   background: rgb(255 255 255 / 10%);
 }
+
+/* ----- Sectores ----- */
+/* Geometría de las tres franjas en números (porcentaje del ancho): arriba (t) y abajo (b) de cada línea blanca.
+   Registradas para que el navegador pueda interpolarlas: al cambiar `data-open` las líneas se deslizan. */
+@property --s1t {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 39.3;
+}
+
+@property --s1b {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 31;
+}
+
+@property --s2t {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 72.3;
+}
+
+@property --s2b {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 61.6;
+}
+
+.lp-sectors__seam {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: rgb(255 255 255 / 85%);
+  pointer-events: none;
+}
+
+.lp-sectors__seam--1 {
+  clip-path: polygon(calc(var(--s1t) * 1% - 0.8px) 0, calc(var(--s1t) * 1% + 0.8px) 0, calc(var(--s1b) * 1% + 0.8px) 100%, calc(var(--s1b) * 1% - 0.8px) 100%);
+}
+
+.lp-sectors__seam--2 {
+  clip-path: polygon(calc(var(--s2t) * 1% - 0.8px) 0, calc(var(--s2t) * 1% + 0.8px) 0, calc(var(--s2b) * 1% + 0.8px) 100%, calc(var(--s2b) * 1% - 0.8px) 100%);
+}
+
+.lp-sector__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.lp-sector__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.lp-sectors__dots {
+  display: none;
+}
+
+@media (min-width: 861px) {
+  .lp-sectors {
+    --s1t: 39.3;
+    --s1b: 31;
+    --s2t: 72.3;
+    --s2b: 61.6;
+    transition: --s1t 1100ms var(--mo-ease-out), --s1b 1100ms var(--mo-ease-out), --s2t 1100ms var(--mo-ease-out), --s2b 1100ms var(--mo-ease-out);
+  }
+
+  /* La franja abierta pasa a ocupar cerca del 42 % y las otras dos se reparten el resto; las líneas no cambian de
+     inclinación, solo se corren. La primera nunca baja del 37 % arriba: así no pasa por detrás del título. */
+  .lp-sectors[data-open="0"] {
+    --s1t: 48;
+    --s1b: 39.7;
+    --s2t: 76;
+    --s2b: 65.3;
+  }
+
+  .lp-sectors[data-open="1"] {
+    --s1t: 37;
+    --s1b: 28.7;
+    --s2t: 78;
+    --s2b: 67.3;
+  }
+
+  .lp-sectors[data-open="2"] {
+    --s1t: 37;
+    --s1b: 28.7;
+    --s2t: 63;
+    --s2b: 52.3;
+  }
+
+  .lp-sectors .lp-sector--1 {
+    clip-path: polygon(0 0, calc(var(--s1t) * 1%) 0, calc(var(--s1b) * 1%) 100%, 0 100%);
+  }
+
+  .lp-sectors .lp-sector--2 {
+    clip-path: polygon(calc(var(--s1t) * 1%) 0, calc(var(--s2t) * 1%) 0, calc(var(--s2b) * 1%) 100%, calc(var(--s1b) * 1%) 100%);
+  }
+
+  .lp-sectors .lp-sector--3 {
+    clip-path: polygon(calc(var(--s2t) * 1%) 0, 100% 0, 100% 100%, calc(var(--s2b) * 1%) 100%);
+  }
+
+  /* Cada foto cubre el mayor ancho que puede llegar a tener su franja. */
+  .lp-sectors .lp-sector--1 .lp-sector__img {
+    left: 0;
+    width: 52%;
+  }
+
+  .lp-sectors .lp-sector--2 .lp-sector__img {
+    left: 21%;
+    width: 60%;
+  }
+
+  .lp-sectors .lp-sector--3 .lp-sector__img {
+    left: 48%;
+    width: 52%;
+  }
+
+  /* El texto acompaña a su línea. */
+  .lp-sectors .lp-sector--2 a {
+    padding-left: calc(var(--s1b) * 1% + 7%);
+  }
+
+  .lp-sectors .lp-sector--3 a {
+    padding-left: calc(var(--s2b) * 1% + 8%);
+  }
+
+  .lp-sector__img img {
+    scale: 1.06;
+    transition: scale 1400ms var(--mo-ease-out), filter 700ms ease;
+  }
+
+  .lp-sector.is-open .lp-sector__img img {
+    scale: 1;
+  }
+
+  .lp-sector.is-folded .lp-sector__img img {
+    filter: saturate(0.7) brightness(0.82);
+  }
+
+  .lp-sector__title {
+    transform-origin: 0 100%;
+    transition: scale 700ms var(--mo-ease-out);
+  }
+
+  .lp-sector.is-folded .lp-sector__title {
+    scale: 0.82;
+  }
+
+  .lp-sector__text,
+  .lp-sector__cta {
+    transition: opacity 420ms ease, translate 600ms var(--mo-ease-out);
+  }
+
+  .lp-sector.is-folded .lp-sector__text,
+  .lp-sector.is-folded .lp-sector__cta {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  /* "Ver soluciones" aparece junto a la flecha en la franja abierta. */
+  .lp-sector__cta > span {
+    opacity: 0;
+    translate: -10px 0;
+    transition: opacity 300ms ease, translate 500ms var(--mo-ease-out);
+  }
+
+  .lp-sector.is-open .lp-sector__cta > span,
+  .lp-sector a:focus-visible .lp-sector__cta > span {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Entrada: las líneas blancas se dibujan de arriba abajo y cada foto sube como una cortina; luego el número, el nombre
+   letra por letra, el texto y la flecha, franja tras franja. */
+html[data-motion] .lp-sectors:has(.lp-sectors__list:not([data-in])) .lp-sectors__seam {
+  opacity: 0;
+}
+
+.lp-sectors:has(.lp-sectors__list[data-in="late"]) .lp-sectors__seam {
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% 100% no-repeat;
+  mask: linear-gradient(#000 0 0) top / 100% 100% no-repeat;
+  animation: lp-seam-draw 1100ms var(--mo-ease-in-out) backwards;
+}
+
+.lp-sectors:has(.lp-sectors__list[data-in="late"]) .lp-sectors__seam--2 {
+  animation-delay: 180ms;
+}
+
+.lp-sectors__list[data-in="late"] {
+  animation: none;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__img {
+  -webkit-mask: linear-gradient(#000 0 0) bottom / 100% 100% no-repeat;
+  mask: linear-gradient(#000 0 0) bottom / 100% 100% no-repeat;
+  animation: lp-curtain 1300ms var(--mo-ease-in-out) calc(var(--i, 0) * 150ms + 120ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__img img {
+  animation: lp-settle-lg 1800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 120ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__num {
+  animation: mo-left 800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 520ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__title .lp-w {
+  animation: lp-char-in 760ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 600ms + var(--w) * 26ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__text {
+  animation: mo-up 800ms var(--mo-ease) calc(var(--i, 0) * 150ms + 860ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__cta {
+  animation: mo-left 700ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 1000ms) backwards;
+}
+
+@keyframes lp-seam-draw {
+  from {
+    -webkit-mask-size: 100% 0%;
+    mask-size: 100% 0%;
+  }
+}
+
+@keyframes lp-curtain {
+  from {
+    -webkit-mask-size: 100% 0%;
+    mask-size: 100% 0%;
+  }
+}
+
+@keyframes lp-settle-lg {
+  from {
+    scale: 1.24;
+  }
+}
+
+/* Profundidad al pasar: en escritorio las fotos se deslizan apenas dentro de su franja. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 861px) {
+    .lp-sectors {
+      view-timeline: --lp-sectors block;
+    }
+
+    .lp-sectors .lp-sector__img img {
+      animation: lp-sector-drift linear both;
+      animation-timeline: --lp-sectors;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .lp-sectors__list[data-in="late"] .lp-sector__img img {
+      animation: lp-settle-lg 1800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 120ms) backwards, lp-sector-drift linear both;
+      animation-timeline: auto, --lp-sectors;
+      animation-range: normal, cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes lp-sector-drift {
+  from {
+    translate: 0 -3%;
+  }
+
+  to {
+    translate: 0 3%;
+  }
+}
+
+/* Móvil: carrusel de tarjetas centradas; la del centro se agranda y las vecinas se apagan, y la foto de cada una se
+   corre al pasar (ligado al desplazamiento del carrusel). Los puntos marcan la tarjeta actual. */
+@media (max-width: 860px) {
+  .lp-sectors__seam {
+    display: none;
+  }
+
+  .lp-sectors__list {
+    padding-inline: max(clamp(20px, 5vw, 80px), calc((100% - min(80vw, 340px)) / 2));
+    scroll-padding-inline: 0;
+  }
+
+  .lp-sector {
+    overflow: clip;
+    scroll-snap-align: center;
+  }
+
+  .lp-sector__img img {
+    scale: 1.12;
+  }
+
+  .lp-sectors__dots {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    padding-top: 14px;
+  }
+
+  .lp-sectors__dots button {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .lp-sectors__dots button span {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 42%);
+    transition: width 420ms var(--mo-ease-out), background 240ms ease;
+  }
+
+  .lp-sectors__dots button[aria-current="true"] span {
+    width: 24px;
+    background: var(--lp-orange);
+  }
+
+  .lp-sectors__dots button:focus-visible {
+    border-radius: 999px;
+    outline: 2px solid var(--lp-orange);
+    outline-offset: -4px;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (max-width: 860px) {
+    .lp-sector {
+      animation: lp-card-focus linear both;
+      animation-timeline: view(inline);
+      animation-range: cover 0% cover 100%;
+    }
+
+    .lp-sector__img img {
+      animation: lp-card-drift linear both;
+      animation-timeline: view(inline);
+      animation-range: cover 0% cover 100%;
+    }
+
+    .lp-sectors__list[data-in="late"] .lp-sector__img img {
+      animation: lp-settle-lg 1800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 120ms) backwards, lp-card-drift linear both;
+      animation-timeline: auto, view(inline);
+      animation-range: normal, cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes lp-card-focus {
+  0%,
+  100% {
+    opacity: 0.55;
+    scale: 0.9;
+  }
+
+  50% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes lp-card-drift {
+  from {
+    translate: 6% 0;
+  }
+
+  to {
+    translate: -6% 0;
+  }
+}

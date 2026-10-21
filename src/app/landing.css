@@ -808,21 +808,6 @@
   content: "";
 }
 
-.lp-sectors__lines {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.lp-sectors__lines line {
-  stroke: rgb(255 255 255 / 85%);
-  stroke-width: 1.6;
-  vector-effect: non-scaling-stroke;
-}
-
 .lp-sectors__head {
   position: relative;
   z-index: 2;
@@ -939,9 +924,9 @@
   transition: background 300ms ease;
 }
 
-.lp-sectors__list:has(.lp-sector a:hover) .lp-sector:not(:hover) a::before,
-.lp-sectors__list:not(:has(a:hover)) .lp-sector:not(.is-active) a::before {
-  background: rgb(6 14 26 / 22%);
+/* La franja abierta queda limpia; las plegadas se atenúan. */
+.lp-sector.is-folded a::before {
+  background: rgb(6 14 26 / 34%);
 }
 
 .lp-sector--1 a { padding-left: calc(var(--lp-gutter) + 4px); }
@@ -970,12 +955,12 @@
 }
 
 .lp-sector__arrow {
-  margin-top: 18px;
+  flex: 0 0 auto;
   transition: transform 220ms ease;
 }
 
 .lp-sector a:hover .lp-sector__arrow,
-.lp-sector.is-active .lp-sector__arrow {
+.lp-sector.is-open .lp-sector__arrow {
   transform: translateX(8px);
 }
 
@@ -1383,11 +1368,6 @@
     min-height: 0;
     max-height: none;
     padding-bottom: 28px;
-  }
-
-  .lp-sectors__bg,
-  .lp-sectors__lines {
-    display: none;
   }
 
   .lp-sectors::before {
@@ -2975,27 +2955,6 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
   50% {
     opacity: 0.6;
     transform: translateX(-50%) scaleX(0.9);
-  }
-}
-
-/* ===== Sectores: las franjas diagonales no se mueven (siguen las líneas blancas); la foto de cada una se asienta
-   y su texto sube, de izquierda a derecha. ===== */
-.lp-sectors__list[data-in="late"] {
-  animation: none;
-}
-
-.lp-sectors__list[data-in="late"] .lp-sector__img {
-  animation: lp-sector-settle 1200ms var(--mo-ease-out) calc(var(--i, 0) * 140ms) backwards;
-}
-
-.lp-sectors__list[data-in="late"] .lp-sector a > * {
-  animation: mo-up var(--mo-reveal) var(--mo-ease) calc(var(--i, 0) * 140ms + 240ms) backwards;
-}
-
-@keyframes lp-sector-settle {
-  from {
-    opacity: 0;
-    transform: scale(1.08);
   }
 }
 

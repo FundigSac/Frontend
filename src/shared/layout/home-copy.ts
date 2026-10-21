@@ -26,6 +26,9 @@ export const HOME = {
       group: "Recorrer sectores",
       prev: "Sector anterior",
       next: "Sector siguiente",
+      cta: "Ver soluciones",
+      dots: "Elegir sector",
+      goTo: (name: string) => `Ver ${name}`,
       items: [
         { title: "Saneamiento", text: ["Agua potable y", "alcantarillado."] },
         { title: "Agricultura", text: ["Soluciones para", "sistemas de riego."] },
@@ -106,6 +109,9 @@ export const HOME = {
       group: "Browse industries",
       prev: "Previous industry",
       next: "Next industry",
+      cta: "View solutions",
+      dots: "Choose an industry",
+      goTo: (name: string) => `Show ${name}`,
       items: [
         { title: "Sanitation", text: ["Drinking water and", "sewerage."] },
         { title: "Agriculture", text: ["Solutions for", "irrigation systems."] },
