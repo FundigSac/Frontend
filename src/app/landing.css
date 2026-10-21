@@ -3021,10 +3021,37 @@ body:has(.lp-mobile.is-open) .ck {
   }
 }
 
+/* Pie en pantallas táctiles: cada enlace es un objetivo de 40 px de alto (antes 18–21 px, fácil de errar con el
+   dedo); el espacio entre renglones lo pone el propio alto del enlace. */
+@media (max-width: 860px) {
+  .lp-footer li + li {
+    margin-top: 0;
+  }
+
+  .lp-footer li > a,
+  .lp-footer__legal a,
+  .lp-footer__legal .lp-footer__linkbtn {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    padding-block: 0;
+  }
+
+  .lp-footer h2 {
+    margin-bottom: 4px;
+  }
+
+  .lp-footer address li:not(:has(a)) {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+  }
+}
+
 /* Pie legal en móvil y tableta: al partir líneas los separadores "|" quedaban huérfanos al inicio del renglón. */
 @media (max-width: 860px) {
   .lp-footer__legal {
-    gap: 4px 20px;
+    gap: 0 20px;
   }
 
   .lp-footer__legal a + a::before,
