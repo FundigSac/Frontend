@@ -115,5 +115,8 @@ export function groqSystemPrompt(recentUserText: string): string {
     const wanted = [...recentUserText.matchAll(/\b(?:dn|di[aá]metro)?\s?(\d{2,3})\b/gi)].map((m) => m[1]).filter((n) => Number(n) >= 40 && Number(n) <= 600).slice(0, 3);
     parts.push("# Medidas por diámetro", dimsFor(DATASHEETS.fundigsac, "FUNDIGSAC (válvula de 1 año; la de garantía extendida comparte las medidas del fabricante)", wanted));
   }
+  if (/ficha|flyer|pdf|datasheet|cat[aá]logo|brochure|folleto/i.test(recentUserText)) {
+    parts.push("# Pedido de documento\nLa persona pide un documento: responde con el enlace PDF exacto de la lista Documentos, en el formato [Ficha técnica nombre](/docs/archivo.pdf), sin enlazar la página del producto. Si no hay PDF de ese producto, dilo y ofrece /contacto?motivo=documentacion.");
+  }
   return parts.join("\n\n");
 }
