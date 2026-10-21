@@ -853,6 +853,24 @@
   text-shadow: 0 1px 12px rgb(0 0 0 / 60%);
 }
 
+/* En escritorio el título cae sobre el agua y la baranda (zona clara de la foto): una penumbra neutra detrás del
+   texto le da contraste sin oscurecer la franja entera. */
+@media (min-width: 861px) {
+  .lp-sectors__head > div:first-child {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .lp-sectors__head > div:first-child::before {
+    position: absolute;
+    z-index: -1;
+    inset: -56px -140px -64px calc(-1 * var(--lp-gutter));
+    background: radial-gradient(ellipse 72% 78% at 34% 46%, rgb(6 9 14 / 62%), rgb(6 9 14 / 34%) 46%, rgb(6 9 14 / 0%) 74%);
+    content: "";
+    pointer-events: none;
+  }
+}
+
 .lp-sectors__list {
   position: absolute;
   inset: 0;
