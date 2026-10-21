@@ -1,0 +1,150 @@
+/* ===== Portada: capa de movimiento (solo se carga en "/") =====
+   Coreografía por sección en lugar del mismo fundido en todo: los títulos entran palabra por palabra, las fotos se
+   descubren como una cortina, las franjas de sectores se ensanchan al apuntarlas y el hero se aleja al bajar.
+   Solo transform, opacity, clip-path y máscaras. Con "reducir movimiento" la regla general de landing.css apaga
+   animaciones y transiciones, y lo ligado al scroll vive dentro de `no-preference`: la página queda en su estado final. */
+
+/* ----- Palabras y letras (componente Words) ----- */
+.lp-w {
+  display: inline-block;
+}
+
+@keyframes lp-word-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    filter: blur(8px);
+  }
+
+  60% {
+    filter: blur(0);
+  }
+}
+
+/* El título del hero es el LCP: arranca casi invisible (no en 0) para que el navegador lo cuente al instante. */
+@keyframes lp-word-in-lcp {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    filter: blur(8px);
+  }
+
+  60% {
+    filter: blur(0);
+  }
+}
+
+@keyframes lp-char-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 70%, 0);
+    filter: blur(6px);
+  }
+}
+
+/* Títulos de sección dentro de un bloque en cascada: entra cada palabra, no el renglón entero. */
+[data-reveal="stagger"][data-in="late"] > .lp-words {
+  animation: none;
+}
+
+[data-reveal="stagger"][data-in="late"] > .lp-words .lp-w {
+  transform-origin: 0 100%;
+  animation: lp-word-in 820ms var(--mo-ease-out) calc(min(var(--i, 0), 6) * var(--mo-step) + var(--w) * 40ms) backwards;
+}
+
+/* ----- Hero ----- */
+.lp-hero__copy > h1.lp-words {
+  animation: none;
+}
+
+.lp-hero h1 .lp-w {
+  transform-origin: 0 100%;
+  animation: lp-word-in-lcp 900ms var(--mo-ease-out) calc(140ms + var(--w) * 45ms) backwards;
+}
+
+/* La válvula se inclina apenas hacia el puntero (--tx/--ty de -1 a 1, los escribe HeroCarousel). */
+.lp-hero__tilt {
+  position: absolute;
+  inset: 0;
+  transform: perspective(1400px) rotateY(calc(var(--tx, 0) * 7deg)) rotateX(calc(var(--ty, 0) * -5deg)) translate3d(calc(var(--tx, 0) * 10px), calc(var(--ty, 0) * 6px), 0);
+  transition: transform 900ms var(--mo-ease-out);
+}
+
+/* Al bajar, el hero se aleja: la foto se hunde, la válvula sube un poco más rápido, el texto se va y todo se funde
+   hacia el color de la sección siguiente. Ligado al desplazamiento de la página (de 0 a una pantalla), sin JavaScript. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-hero::after {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background: #f6f8fb;
+      content: "";
+      opacity: 0;
+      pointer-events: none;
+      animation: lp-hero-dim linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .lp-hero__copy {
+      animation: lp-hero-lift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80vh;
+    }
+
+    .lp-hero__photo {
+      animation: lp-hero-photo-in 1600ms cubic-bezier(0.16, 1, 0.3, 1) both, lp-kenburns 26s ease-in-out 1600ms infinite alternate, lp-hero-sink linear both;
+      animation-timeline: auto, auto, scroll(root);
+      animation-range: normal, normal, 0 100vh;
+    }
+
+    .lp-hero__stage {
+      animation: lp-stage-in 1100ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both, lp-float 7s ease-in-out 1320ms infinite, lp-hero-rise linear both;
+      animation-timeline: auto, auto, scroll(root);
+      animation-range: normal, normal, 0 100vh;
+    }
+
+    .lp-hero__controls-row {
+      animation: lp-hero-in 700ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both, lp-hero-fade linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0 40vh;
+    }
+
+    html[data-lp-theme="dark"] .lp-hero::after {
+      background: #171716;
+    }
+  }
+}
+
+@keyframes lp-hero-dim {
+  to {
+    opacity: 0.6;
+  }
+}
+
+@keyframes lp-hero-lift {
+  to {
+    opacity: 0;
+    translate: 0 -10vh;
+  }
+}
+
+@keyframes lp-hero-sink {
+  to {
+    translate: 0 12%;
+  }
+}
+
+@keyframes lp-hero-rise {
+  to {
+    translate: 0 -12%;
+    scale: 0.94;
+  }
+}
+
+@keyframes lp-hero-fade {
+  to {
+    opacity: 0;
+  }
+}

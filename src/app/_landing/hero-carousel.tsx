@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import { COPY, useLang } from "@/shared/layout/landing-prefs";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BLUR } from "@/shared/media/blur";
+import { Words } from "./words";
 
 // Ambas variantes comparten lienzo (578×1030): el cuerpo de la válvula queda alineado al píxel
 // y solo cambia el accionamiento superior.
@@ -95,6 +96,26 @@ export function HeroCarousel() {
     if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
   };
 
+  // La válvula se inclina apenas hacia el puntero (solo ratón y sin "reducir movimiento"): se escriben dos variables CSS
+  // por fotograma, sin re-render.
+  const tiltFrame = useRef(0);
+  const onTilt = (e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType !== "mouse" || reducedMotion || tiltFrame.current) return;
+    const { clientX, clientY, currentTarget } = e;
+    tiltFrame.current = requestAnimationFrame(() => {
+      tiltFrame.current = 0;
+      const r = currentTarget.getBoundingClientRect();
+      currentTarget.style.setProperty("--tx", (((clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+      currentTarget.style.setProperty("--ty", (((clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+    });
+  };
+  const resetTilt = (e: React.PointerEvent<HTMLElement>) => {
+    cancelAnimationFrame(tiltFrame.current);
+    tiltFrame.current = 0;
+    e.currentTarget.style.setProperty("--tx", "0");
+    e.currentTarget.style.setProperty("--ty", "0");
+  };
+
   const currentLabel = h.variants[index].label;
 
   return (
@@ -104,6 +125,8 @@ export function HeroCarousel() {
       data-idle={idle ? "" : undefined}
       aria-labelledby="lp-hero-title"
       aria-roledescription={h.carousel}
+      onPointerMove={onTilt}
+      onPointerLeave={resetTilt}
     >
       <Image className="lp-hero__photo" src="/media/home-v3/hero-planta.webp" alt="" fill priority fetchPriority="high" quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/hero-planta.webp"]} sizes="100vw" />
       <div className="lp-hero__veil" aria-hidden="true" />
@@ -112,7 +135,7 @@ export function HeroCarousel() {
         <div className="lp-hero__copy">
           <p className="lp-eyebrow">{h.eyebrow[0]}<br />{h.eyebrow[1]}</p>
           <span className="lp-hero__rule" aria-hidden="true" />
-          <h1 id="lp-hero-title">{h.title}</h1>
+          <h1 id="lp-hero-title" className="lp-words"><Words text={h.title} /></h1>
           <p className="lp-hero__lead">{h.lead}</p>
           <div className="lp-hero__actions">
             <Link href="/productos" className="lp-btn lp-btn--solid">
@@ -134,24 +157,26 @@ export function HeroCarousel() {
           onPointerCancel={() => (swipeStart.current = null)}
           {...hold}
         >
-          <span className="lp-hero__shadow" aria-hidden="true" />
-          {VARIANTS.map((v, i) => (i === 0 || allMounted) && (
-            <Image
-              key={v.id}
-              className={`lp-hero__valve${i === index ? " is-active" : ""}`}
-              src={v.src}
-              alt={h.variants[i].alt}
-              aria-hidden={i !== index}
-              width={578}
-              height={1030}
-              priority={i === 0}
-              loading={i === 0 ? undefined : "eager"}
-              fetchPriority={i === 0 ? "high" : "low"}
-              onLoad={i === 0 ? undefined : () => setRestLoaded(true)}
-              draggable={false}
-              sizes="(max-width: 860px) 78vw, 40vw"
-            />
-          ))}
+          <div className="lp-hero__tilt">
+            <span className="lp-hero__shadow" aria-hidden="true" />
+            {VARIANTS.map((v, i) => (i === 0 || allMounted) && (
+              <Image
+                key={v.id}
+                className={`lp-hero__valve${i === index ? " is-active" : ""}`}
+                src={v.src}
+                alt={h.variants[i].alt}
+                aria-hidden={i !== index}
+                width={578}
+                height={1030}
+                priority={i === 0}
+                loading={i === 0 ? undefined : "eager"}
+                fetchPriority={i === 0 ? "high" : "low"}
+                onLoad={i === 0 ? undefined : () => setRestLoaded(true)}
+                draggable={false}
+                sizes="(max-width: 860px) 78vw, 40vw"
+              />
+            ))}
+          </div>
         </div>
       </div>
 
