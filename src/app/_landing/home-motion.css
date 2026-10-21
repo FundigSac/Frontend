@@ -57,7 +57,7 @@
 /* ----- Cabecera ----- */
 /* En la portada se aparta al bajar y vuelve al subir (clase is-tucked, la pone LandingHeader). */
 html .lp-header {
-  transition: background 240ms ease, border-color 240ms ease, box-shadow 240ms ease, translate 460ms var(--mo-ease-out);
+  transition: translate 460ms var(--mo-ease-out);
 }
 
 html .lp-header.is-tucked:not(:focus-within) {

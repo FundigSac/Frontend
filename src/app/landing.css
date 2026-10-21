@@ -198,16 +198,28 @@
   z-index: 50;
   border-bottom: 1px solid transparent;
   background: transparent;
-  transition: background 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
 }
 
-/* Vidrio esmerilado: deja ver el contenido detrás, con desenfoque y saturación. */
-.lp-header.is-solid {
-  border-bottom-color: rgb(255 255 255 / 55%);
+/* Vidrio esmerilado: deja ver el contenido detrás, con desenfoque y saturación. Vive en una capa propia que solo
+   cambia de opacidad: el degradado y el backdrop-filter no se interpolan y, aplicados a la cabecera, aparecían y
+   desaparecían de golpe (parpadeo al volver al inicio). */
+.lp-header::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 -1px;
+  border-bottom: 1px solid rgb(255 255 255 / 55%);
   background: linear-gradient(180deg, rgb(255 255 255 / 74%), rgb(255 255 255 / 62%));
   box-shadow: 0 10px 30px -20px rgb(11 34 68 / 45%), inset 0 -1px 0 rgb(11 34 68 / 6%);
   -webkit-backdrop-filter: blur(20px) saturate(1.8);
   backdrop-filter: blur(20px) saturate(1.8);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+.lp-header.is-solid::before {
+  opacity: 1;
 }
 
 .lp-header__bar {
@@ -1650,7 +1662,7 @@ html[data-lp-theme="dark"] .lp-header {
   --lp-orange-dark: #ff8a4d;
 }
 
-html[data-lp-theme="dark"] .lp-header.is-solid {
+html[data-lp-theme="dark"] .lp-header::before {
   border-bottom-color: rgb(255 255 255 / 10%);
   background: linear-gradient(180deg, rgb(22 21 20 / 76%), rgb(22 21 20 / 64%));
   box-shadow: 0 8px 24px -18px rgb(0 0 0 / 70%);
