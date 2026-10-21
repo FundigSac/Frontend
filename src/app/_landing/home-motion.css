@@ -52,6 +52,34 @@
   animation: lp-word-in 820ms var(--mo-ease-out) calc(min(var(--i, 0), 6) * var(--mo-step) + var(--w) * 40ms) backwards;
 }
 
+/* ----- Cabecera ----- */
+/* En la portada se aparta al bajar y vuelve al subir (clase is-tucked, la pone LandingHeader). */
+html .lp-header {
+  transition: background 240ms ease, border-color 240ms ease, box-shadow 240ms ease, translate 460ms var(--mo-ease-out);
+}
+
+html .lp-header.is-tucked:not(:focus-within) {
+  translate: 0 -100%;
+}
+
+/* Los submenús abren con sus enlaces en cascada corta. */
+.lp-nav__item.is-open .lp-nav__menu li {
+  animation: lp-menu-item 320ms var(--mo-ease-out) backwards;
+}
+
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(2) { animation-delay: 30ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(3) { animation-delay: 60ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(4) { animation-delay: 90ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(5) { animation-delay: 120ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(n + 6) { animation-delay: 150ms; }
+
+@keyframes lp-menu-item {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
 /* ----- Hero ----- */
 .lp-hero__copy > h1.lp-words {
   animation: none;

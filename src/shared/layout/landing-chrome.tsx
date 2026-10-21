@@ -84,6 +84,9 @@ export function LandingHeader() {
   const segment = useSelectedLayoutSegment();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const mobileId = useId();
+  // En la portada la cabecera se aparta al bajar y vuelve en cuanto se sube (deja más pantalla para leer).
+  const [tucked, setTucked] = useState(false);
+  const tuckable = pathname === "/" && !open && !mobileOpen && !searchOpen && !langOpen && !accountOpen;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -103,7 +106,15 @@ export function LandingHeader() {
       if (!(e.target as Element).closest?.(".lp-account")) setAccountOpen(false);
     };
     // Sobre el hero la cabecera es translúcida; al desplazarse pasa a blanco sólido.
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      setScrolled(y > 24);
+      if (y < 160 || delta < -6) setTucked(false);
+      else if (delta > 6) setTucked(true);
+      if (Math.abs(delta) > 6) lastY = y;
+    };
     onScroll();
     document.addEventListener("keydown", onKey);
     document.addEventListener("click", onClick);
@@ -131,7 +142,7 @@ export function LandingHeader() {
   }, [mobileOpen]);
 
   return (
-    <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${isProductPath(pathname) ? " lp-header--catalog" : ""}${scrolled || mobileOpen ? " is-solid" : ""}`}>
+    <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${isProductPath(pathname) ? " lp-header--catalog" : ""}${scrolled || mobileOpen ? " is-solid" : ""}${tucked && tuckable ? " is-tucked" : ""}`}>
       <div className="lp-shell lp-header__bar">
         <Link className="lp-header__brand" href="/" aria-label={t.a11y.home}>
           <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" priority />
