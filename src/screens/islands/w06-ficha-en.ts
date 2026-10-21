@@ -195,8 +195,8 @@ export const FICHA_EN: Record<"base" | "fundigsac" | "extendida", FichaEn> = {
     highlights: [["Ductile iron", "GJS500-7 (GGG-50)"], ["Resilient seat", "Wedge encapsulated in EPDM"], ["Long service life", "Low head loss"], ["Epoxy RAL 5005", "Suitable for drinking water"]],
     actuations: ["Handwheel", "Square cap"],
     flyers: [
-      { title: "With handwheel", subtitle: "Manual operation · ØD 180 to 600 mm", points: ["Exploded view of 17 parts with their material", "Dimensions DN40 – DN600 with the handwheel ØD", "Real view and dimensioned 3D views"], meta: "PDF · 6.2 MB · 1 page", alt: "Flyer of the FUNDIGSAC flanged gate valve with handwheel: exploded view, real view, 3D views, dimensions and materials" },
-      { title: "With square cap", subtitle: "Opened and closed with a T-key · □K 14.3 to 32.3 mm", points: ["Exploded view of 16 parts with their material", "Dimensions DN40 – DN600 with the □K square", "Real view and dimensioned 3D views"], meta: "PDF · 4.9 MB · 1 page", alt: "Flyer of the FUNDIGSAC flanged gate valve with square cap: exploded view, real view, 3D views, dimensions and materials" },
+      { title: "With handwheel", subtitle: "Manual operation · ØD 180 to 600 mm", points: ["Exploded view of 17 parts with their material", "Dimensions DN40 – DN600 with the handwheel ØD", "Real view and dimensioned 3D views"], meta: "PDF · 3.9 MB · 1 page", alt: "Flyer of the FUNDIGSAC flanged gate valve with handwheel: exploded view, real view, 3D views, dimensions and materials" },
+      { title: "With square cap", subtitle: "Opened and closed with a T-key · □K 14.3 to 32.3 mm", points: ["Exploded view of 16 parts with their material", "Dimensions DN40 – DN600 with the □K square", "Real view and dimensioned 3D views"], meta: "PDF · 3.9 MB · 1 page", alt: "Flyer of the FUNDIGSAC flanged gate valve with square cap: exploded view, real view, 3D views, dimensions and materials" },
     ],
     model3dAlt: "3D model of the FUNDIGSAC flanged gate valve with operating cap",
   },
