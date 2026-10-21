@@ -648,3 +648,141 @@ html[data-motion] .lp-sectors:has(.lp-sectors__list:not([data-in])) .lp-sectors_
     translate: -6% 0;
   }
 }
+
+/* ----- Respaldo ----- */
+/* La foto se desliza dentro de su marco al pasar y los tres puntos entran uno tras otro. */
+.lp-backing__media {
+  overflow: clip;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-backing {
+      view-timeline: --lp-backing block;
+    }
+
+    .lp-backing__media img {
+      scale: 1.12;
+      animation: lp-drift-y linear both;
+      animation-timeline: --lp-backing;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes lp-drift-y {
+  from {
+    translate: 0 -5%;
+  }
+
+  to {
+    translate: 0 5%;
+  }
+}
+
+.lp-backing__copy[data-in="late"] > .lp-backing__list {
+  animation: none;
+}
+
+.lp-backing__copy[data-in="late"] > .lp-backing__list > li {
+  animation: mo-up 760ms var(--mo-ease) 380ms backwards;
+}
+
+.lp-backing__copy[data-in="late"] > .lp-backing__list > li:nth-child(2) { animation-delay: 470ms; }
+.lp-backing__copy[data-in="late"] > .lp-backing__list > li:nth-child(3) { animation-delay: 560ms; }
+
+/* Al apuntar un punto, una línea naranja recorre su filete de izquierda a derecha. */
+.lp-backing__list a {
+  position: relative;
+}
+
+.lp-backing__list a::before {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: var(--lp-orange);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 600ms var(--mo-ease-out);
+}
+
+.lp-backing__list a:hover::before,
+.lp-backing__list a:focus-visible::before {
+  transform: scaleX(1);
+}
+
+/* ----- Documentación ----- */
+/* Las fichas se inclinan hacia el puntero (--tx/--ty, los escribe DocsSection). */
+.lp-docs .lp-docs__media img {
+  transform: perspective(1200px) rotateY(calc(var(--tx, 0) * 6deg)) rotateX(calc(var(--ty, 0) * -5deg)) scale(var(--zoom, 1));
+  transition: transform 900ms var(--mo-ease-out);
+}
+
+.lp-docs .lp-docs__media:hover img {
+  --zoom: 1.025;
+}
+
+.lp-docs__campaigns-icon {
+  transition: transform 420ms var(--mo-ease-out), background 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.lp-docs__campaigns:hover .lp-docs__campaigns-icon,
+.lp-docs__campaigns:focus-visible .lp-docs__campaigns-icon {
+  border-color: var(--lp-orange);
+  background: var(--lp-orange);
+  color: #fff;
+  transform: rotate(-8deg) scale(1.08);
+}
+
+/* ----- Ubicación ----- */
+/* Los datos entran uno tras otro con su ícono, y la tarjeta del mapa cae en su lugar después de la foto. */
+.lp-location__copy[data-in="late"] > .lp-location__list {
+  animation: none;
+}
+
+.lp-location__copy[data-in="late"] > .lp-location__list > li {
+  animation: mo-up 720ms var(--mo-ease) 300ms backwards;
+}
+
+.lp-location__copy[data-in="late"] > .lp-location__list > li:nth-child(2) { animation-delay: 380ms; }
+.lp-location__copy[data-in="late"] > .lp-location__list > li:nth-child(3) { animation-delay: 460ms; }
+.lp-location__copy[data-in="late"] > .lp-location__list > li:nth-child(4) { animation-delay: 540ms; }
+
+.lp-location__copy[data-in="late"] .lp-location__icon {
+  animation: lp-pop 600ms var(--mo-ease-out) 420ms backwards;
+}
+
+.lp-location__copy[data-in="late"] li:nth-child(2) .lp-location__icon { animation-delay: 500ms; }
+.lp-location__copy[data-in="late"] li:nth-child(3) .lp-location__icon { animation-delay: 580ms; }
+.lp-location__copy[data-in="late"] li:nth-child(4) .lp-location__icon { animation-delay: 660ms; }
+
+.lp-location__map[data-in="late"] .lp-location__pin {
+  animation: lp-pin-in 700ms var(--mo-ease-out) 700ms backwards;
+}
+
+.lp-location__list li:hover .lp-location__icon {
+  background: var(--lp-orange);
+  color: #fff;
+  transform: scale(1.06);
+}
+
+.lp-location__icon {
+  transition: background 200ms ease, color 200ms ease, transform 300ms var(--mo-ease-out);
+}
+
+@keyframes lp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes lp-pin-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0) scale(0.94);
+  }
+}

@@ -39,6 +39,19 @@ export function BackingSection() {
   );
 }
 
+// Las fichas se inclinan apenas hacia el puntero (solo ratón): dos variables CSS, sin re-render.
+function tilt(e: React.PointerEvent<HTMLElement>) {
+  if (e.pointerType !== "mouse") return;
+  const r = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--tx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+  e.currentTarget.style.setProperty("--ty", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+}
+
+function untilt(e: React.PointerEvent<HTMLElement>) {
+  e.currentTarget.style.setProperty("--tx", "0");
+  e.currentTarget.style.setProperty("--ty", "0");
+}
+
 export function DocsSection() {
   const t = useHome().docs;
   return (
@@ -58,7 +71,7 @@ export function DocsSection() {
           </Link>
         </div>
 
-        <Link href="/contacto?motivo=documentacion" className="lp-docs__media" data-reveal="right" aria-label={t.mediaLabel}>
+        <Link href="/contacto?motivo=documentacion" className="lp-docs__media" data-reveal="right" aria-label={t.mediaLabel} onPointerMove={tilt} onPointerLeave={untilt}>
           <Image src="/media/home-v3/ficha-plano-recorte.webp" alt={t.alt} width={1186} height={784} quality={75} sizes="(max-width: 860px) 100vw, 55vw" />
         </Link>
       </div>
