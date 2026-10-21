@@ -26,7 +26,7 @@ export const FEATURED_PRODUCTS: readonly CartProduct[] = [
     slug: "valvula-compuerta-fundigsac-garantia-extendida",
     name: { es: "Válvula de compuerta FUNDIGSAC con garantía extendida", en: "FUNDIGSAC gate valve, extended warranty" },
     tag: { es: "Cuadrante de maniobra", en: "Operating cap" },
-    image: "/media/valvula-fundigsac-cuadrante/q-01.webp",
+    image: "/media/valvula-fundigsac-cuadrante/g-01.webp",
     href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida",
     sizes: DATASHEETS.extendida.sizes,
     pressures: ["PN10", "PN16"],

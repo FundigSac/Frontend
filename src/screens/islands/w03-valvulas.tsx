@@ -29,7 +29,7 @@ const GROUPS: readonly { id: GroupId; image: string }[] = [
 const VALVES: readonly { id: string; group: GroupId; image: string; href: string }[] = [
   { id: "compuerta", group: "compuerta", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta" },
   { id: "compuerta-fundigsac", group: "compuerta", image: "/media/valvula-fundigsac/f-07.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
-  { id: "compuerta-garantia-extendida", group: "compuerta", image: "/media/valvula-fundigsac-cuadrante/q-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
+  { id: "compuerta-garantia-extendida", group: "compuerta", image: "/media/valvula-fundigsac-cuadrante/g-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
   { id: "mariposa", group: "mariposa", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
   { id: "check-swing", group: "control", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
   { id: "check-flex", group: "control", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },
