@@ -3,7 +3,7 @@
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFloat } from "@/shared/layout/home-copy";
-import { scrollToTop } from "./smooth-scroll";
+import { scrollToTop } from "./scroll-control";
 
 const WHATSAPP_NUMBER = "51908849664";
 
