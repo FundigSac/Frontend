@@ -1,8 +1,9 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFloat } from "@/shared/layout/home-copy";
+import { scrollToTop } from "./smooth-scroll";
 
 const WHATSAPP_NUMBER = "51908849664";
 
@@ -14,27 +15,63 @@ function WhatsAppIcon() {
   );
 }
 
+// En móvil los botones flotantes tapan texto: se apartan mientras la persona baja leyendo y vuelven en cuanto sube
+// (o al llegar arriba). En escritorio no estorban y se quedan fijos.
+const COMPACT = "(max-width: 860px)";
+const TOLERANCE = 8;
+
 export function FloatingActions() {
   const t = useFloat();
   const [showTop, setShowTop] = useState(false);
+  const topRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 480);
-    onScroll();
+    const root = document.documentElement;
+    const compact = window.matchMedia(COMPACT);
+    let lastY = window.scrollY;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const max = root.scrollHeight - window.innerHeight;
+      setShowTop(y > 480);
+      // El anillo del botón de subir muestra cuánto se recorrió de la página (sin re-render: solo una variable CSS).
+      topRef.current?.style.setProperty("--p", max > 0 ? Math.min(1, y / max).toFixed(3) : "0");
+
+      if (!compact.matches || y < 240) delete root.dataset.floats;
+      else if (y - lastY > TOLERANCE) root.dataset.floats = "hidden";
+      else if (lastY - y > TOLERANCE) delete root.dataset.floats;
+      if (Math.abs(y - lastY) > TOLERANCE) lastY = y;
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+      delete root.dataset.floats;
+    };
   }, []);
 
   return (
     <div className="lp-float">
       <button
+        ref={topRef}
         type="button"
         className={`lp-float__top${showTop ? " is-visible" : ""}`}
         aria-label={t.top}
         title={t.top}
         tabIndex={showTop ? 0 : -1}
-        onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}
+        onClick={scrollToTop}
       >
+        <svg className="lp-float__ring" viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="22" pathLength="100" />
+        </svg>
         <ArrowUp aria-hidden="true" size={20} strokeWidth={2.2} />
       </button>
       <a

@@ -2281,6 +2281,71 @@ html[data-lp-theme="dark"] .lp-float__top:hover {
   }
 }
 
+/* Anillo del botón de subir: se llena a medida que se recorre la página (--p lo pone FloatingActions, de 0 a 1). */
+.lp-float__ring {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(-90deg);
+}
+
+.lp-float__ring circle {
+  fill: none;
+  stroke: var(--lp-orange);
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - var(--p, 0) * 100);
+  stroke-linecap: round;
+  stroke-width: 2.4;
+  transition: stroke-dashoffset 120ms linear, stroke 180ms ease;
+}
+
+.lp-float__top:hover .lp-float__ring circle {
+  stroke: #fff;
+}
+
+/* En móvil los flotantes (subir, WhatsApp y FundigIA) se apartan hacia abajo mientras se baja leyendo y vuelven al
+   subir (html[data-floats="hidden"], lo pone FloatingActions). Con el chat abierto o con foco de teclado se quedan. */
+@media (max-width: 860px) {
+  .lp-float__wa {
+    transition: transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1), background 180ms ease, translate 360ms var(--mo-ease-out), opacity 240ms ease;
+  }
+
+  .lp-float__top {
+    transition: opacity 240ms ease, transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 280ms, background 180ms ease, color 180ms ease, translate 360ms var(--mo-ease-out);
+  }
+
+  .lp-float__top.is-visible {
+    transition-delay: 0s;
+  }
+
+  body:has(.lp-float) .ai-launch {
+    transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms ease, translate 360ms var(--mo-ease-out), opacity 240ms ease;
+  }
+
+  body:has(.lp-float) .ai-teaser {
+    transition: translate 360ms var(--mo-ease-out), opacity 240ms ease;
+  }
+
+  html[data-floats="hidden"]:not(.ai-open) .lp-float__wa:not(:focus-visible),
+  html[data-floats="hidden"]:not(.ai-open) .lp-float__top.is-visible:not(:focus-visible),
+  html[data-floats="hidden"]:not(.ai-open) body:has(.lp-float) .ai-launch:not(:focus-visible),
+  html[data-floats="hidden"]:not(.ai-open) body:has(.lp-float) .ai-teaser:not(:focus-within) {
+    opacity: 0;
+    pointer-events: none;
+    translate: 0 calc(100% + 40px);
+  }
+}
+
+@media (max-width: 860px) and (prefers-reduced-motion: reduce) {
+  body:has(.lp-float) .ai-launch,
+  body:has(.lp-float) .ai-teaser {
+    transition: none;
+  }
+}
+
 /* Ubicación: el texto se centra en su columna para no dejar hueco junto al mapa. */
 .lp-location__inner {
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
