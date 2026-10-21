@@ -19,6 +19,8 @@ export type ChatMessage = {
   attachment?: AttachmentInfo;
   /** Hora de envío o de llegada de la respuesta (ms). */
   at?: number;
+  /** PDF pedidos de forma explícita: el servidor los envía para mostrarlos como tarjetas de descarga. */
+  docs?: { href: string; title: string }[];
 };
 
 export type Settled = "done" | "error";
@@ -194,7 +196,7 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
             buffer = buffer.slice(cut + 2);
             const line = frame.split("\n").find((l) => l.startsWith("data: "));
             if (!line) continue;
-            let event: { type?: string; text?: string; code?: string; mode?: string };
+            let event: { type?: string; text?: string; code?: string; mode?: string; docs?: { href: string; title: string }[] };
             try {
               event = JSON.parse(line.slice(6));
             } catch {
@@ -206,6 +208,9 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
             } else if (event.type === "meta" && (event.mode === "ai" || event.mode === "guide")) {
               const mode = event.mode;
               patch((m) => ({ ...m, mode }));
+            } else if (event.type === "docs" && Array.isArray(event.docs)) {
+              const docs = event.docs.filter((d) => typeof d?.href === "string" && d.href.startsWith("/docs/") && typeof d.title === "string").slice(0, 4);
+              patch((m) => ({ ...m, docs }));
             } else if (event.type === "done") {
               finished = true;
               result = "done";

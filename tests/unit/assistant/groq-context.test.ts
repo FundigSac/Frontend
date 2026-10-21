@@ -28,3 +28,17 @@ describe("contexto compacto para Groq", () => {
     expect(groqSystemPrompt("válvula compuerta DN100 medidas")).not.toMatch(/S\/\s?\d|PEN\s?\d|precio:\s?\d/i);
   });
 });
+
+describe("documentos pedidos", () => {
+  it("entrega el PDF correcto según el producto", async () => {
+    const { requestedDocs } = await import("@/modules/assistant/groq-context");
+    expect(requestedDocs("dame la ficha técnica de la válvula FUNDIGSAC con garantía extendida")).toEqual([
+      expect.objectContaining({ href: "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf" }),
+    ]);
+    expect(requestedDocs("ficha de la válvula H-ITALY")[0].href).toContain("compuerta-bridada.pdf");
+    expect(requestedDocs("flyer con dado")).toEqual([expect.objectContaining({ href: "/docs/flyer-valvula-compuerta-fundigsac-dado.pdf" })]);
+    expect(requestedDocs("ficha técnica de la válvula compuerta")).toHaveLength(3);
+    expect(requestedDocs("qué presión soporta")).toEqual([]);
+    expect(requestedDocs("ficha de la tubería")).toEqual([]);
+  });
+});

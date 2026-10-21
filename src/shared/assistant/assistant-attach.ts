@@ -87,8 +87,9 @@ export function whatsappMention(body: string): boolean {
 }
 
 /** Enlaces a PDF del sitio dentro de una respuesta ([texto](/docs/archivo.pdf)): se muestran además como tarjetas de descarga. */
-export function docLinks(body: string): { href: string; title: string; preview?: string }[] {
+export function docLinks(body: string, extra: { href: string; title: string }[] = []): { href: string; title: string; preview?: string }[] {
   const out = new Map<string, string>();
+  for (const d of extra) if (!out.has(d.href)) out.set(d.href, d.title);
   for (const m of body.matchAll(/\[([^\]]{1,120})\]\((\/docs\/[A-Za-z0-9._\-/]+\.pdf)\)/g)) if (!out.has(m[2])) out.set(m[2], m[1]);
   return [...out].map(([href, title]) => ({ href, title, preview: DOC_PREVIEWS[href] }));
 }

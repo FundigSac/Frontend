@@ -3,7 +3,7 @@ import Groq from "groq-sdk";
 import { guideAnswer, withSuggestions } from "@/modules/assistant/guide";
 import { readAttachment, type ReadAttachment } from "@/modules/assistant/attachments";
 import { ATTACH, createRateLimiter, parseChatRequest } from "@/modules/assistant/limits";
-import { groqSystemPrompt } from "@/modules/assistant/groq-context";
+import { groqSystemPrompt, requestedDocs } from "@/modules/assistant/groq-context";
 import { SYSTEM_PROMPT, visitContext } from "@/modules/assistant/prompt";
 import { isSameOriginRequest, readJsonBody } from "@/shared/security/request-guard";
 
@@ -161,6 +161,8 @@ export async function POST(request: Request) {
                 if (!started) {
                   started = true;
                   send({ type: "meta", mode: "ai" });
+                  const docs = requestedDocs(question);
+                  if (docs.length) send({ type: "docs", docs });
                 }
                 send({ type: "text", text });
               }

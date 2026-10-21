@@ -120,3 +120,27 @@ export function groqSystemPrompt(recentUserText: string): string {
   }
   return parts.join("\n\n");
 }
+
+export type DocRef = { href: string; title: string };
+
+/** PDF que la consulta pide de forma explícita (ficha técnica, flyer): se entregan como tarjetas aunque el modelo no los enlace. */
+export function requestedDocs(question: string): DocRef[] {
+  const q = question.toLowerCase();
+  if (!/ficha|flyer|pdf|datasheet|folleto|brochure/.test(q)) return [];
+  const d = DATASHEETS;
+  const doc = (title: string, href?: string): DocRef[] => (href ? [{ href, title }] : []);
+  const flyers = (d.extendida.flyers ?? []).filter((f) => /flyer|folleto/.test(q) && (!/volante|tim[oó]n|dado/.test(q) || new RegExp(f.id === "dado" ? "dado" : "volante|tim[oó]n").test(q)));
+  if (flyers.length) return flyers.map((f) => ({ href: f.href, title: `Flyer ${f.title.toLowerCase()}` }));
+  const extended = /garant|extendid|cuadrante|dado|volante/.test(q);
+  const italy = /h-?italy|italy/.test(q);
+  const fundigsac = /fundigsac|1 a[nñ]o|un a[nñ]o/.test(q) && !extended;
+  if (extended) return doc("Ficha técnica válvula de compuerta FUNDIGSAC garantía extendida", d.extendida.doc?.href);
+  if (italy) return doc("Ficha técnica válvula de compuerta H-ITALY", d.base.doc?.href);
+  if (fundigsac) return doc("Ficha técnica válvula de compuerta FUNDIGSAC (1 año)", d.fundigsac.doc?.href);
+  if (!/v[aá]lvula|compuerta|valve|gate/.test(q)) return [];
+  return [
+    ...doc("Ficha técnica válvula de compuerta FUNDIGSAC (1 año)", d.fundigsac.doc?.href),
+    ...doc("Ficha técnica válvula de compuerta FUNDIGSAC garantía extendida", d.extendida.doc?.href),
+    ...doc("Ficha técnica válvula de compuerta H-ITALY", d.base.doc?.href),
+  ];
+}

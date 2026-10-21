@@ -135,7 +135,7 @@ function BotMessage({
   const canRetry = notice && notice !== "not_configured" && notice !== "refusal" && notice !== "too_long";
   const { body, suggestions } = parseReply(message.content);
   const done = message.status === "done" && body.length > 0;
-  const docs = done ? docLinks(body) : [];
+  const docs = done ? docLinks(body, message.docs) : [];
   return (
     <div className="ai-msg ai-msg--bot">
       <span className="ai-msg__avatar" aria-hidden="true">
