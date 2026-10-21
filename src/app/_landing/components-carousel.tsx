@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
 import { useHome } from "@/shared/layout/home-copy";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BLUR } from "@/shared/media/blur";
+import { Words } from "./words";
 
 const ITEMS = [
   { href: "/productos/valvulas", image: "/media/home-v2/card-valvulas-hd.webp" },
@@ -17,6 +18,8 @@ const ITEMS = [
 
 const INTERVAL = 2800;
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+// Arrastre con ratón: a partir de este recorrido es un arrastre y el clic que sigue no abre la tarjeta.
+const DRAG_THRESHOLD = 6;
 
 function subscribeMotion(onChange: () => void) {
   const mq = window.matchMedia(REDUCED_MOTION);
@@ -27,16 +30,27 @@ function subscribeMotion(onChange: () => void) {
 export function ComponentsCarousel() {
   const t = useHome().components;
   const track = useRef<HTMLUListElement>(null);
+  const bar = useRef<HTMLSpanElement>(null);
+  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
   const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
   const [hovered, setHovered] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const reducedMotion = useSyncExternalStore(subscribeMotion, () => window.matchMedia(REDUCED_MOTION).matches, () => false);
   const playing = userPlaying ?? !reducedMotion;
 
   const sync = useCallback(() => {
     const el = track.current;
     if (!el) return;
-    setEdges({ start: el.scrollLeft <= 4, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4 });
+    const max = el.scrollWidth - el.clientWidth;
+    setEdges({ start: el.scrollLeft <= 4, end: el.scrollLeft >= max - 4 });
+    // Barra de avance: su largo es la parte visible del carrusel y se desliza con él.
+    if (bar.current && el.scrollWidth > 0) {
+      const size = el.clientWidth / el.scrollWidth;
+      const at = max > 0 ? el.scrollLeft / max : 0;
+      bar.current.style.setProperty("--size", size.toFixed(4));
+      bar.current.style.setProperty("--at", at.toFixed(4));
+    }
   }, []);
 
   useEffect(() => {
@@ -54,7 +68,7 @@ export function ComponentsCarousel() {
     else el.scrollBy({ left: dir * (card.getBoundingClientRect().width + 16), behavior: "smooth" });
   }, []);
 
-  // Avance automático; se detiene mientras el usuario está sobre el carrusel o lo recorre con teclado.
+  // Avance automático; se detiene mientras el usuario está sobre el carrusel, lo arrastra o lo recorre con teclado.
   useEffect(() => {
     if (!playing || hovered) return;
     const timer = window.setInterval(() => step(1, true), INTERVAL);
@@ -66,14 +80,39 @@ export function ComponentsCarousel() {
     step(dir);
   };
 
+  // En pantallas táctiles el carrusel ya se arrastra con el dedo; con ratón se agarra y se suelta igual.
+  const onPointerDown = (e: React.PointerEvent<HTMLUListElement>) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft, moved: false };
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLUListElement>) => {
+    const d = drag.current;
+    if (!d) return;
+    const dx = e.clientX - d.x;
+    if (!d.moved && Math.abs(dx) > DRAG_THRESHOLD) {
+      d.moved = true;
+      setDragging(true);
+      setUserPlaying(false);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    if (d.moved) e.currentTarget.scrollLeft = d.left - dx;
+  };
+  const endDrag = (e: React.PointerEvent<HTMLUListElement>) => {
+    if (!drag.current) return;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    setDragging(false);
+    // El clic que cierra un arrastre no abre la tarjeta (onClickCapture); justo después se olvida.
+    window.setTimeout(() => (drag.current = null), 0);
+  };
+
   return (
     <>
-      <div className="lp-shell lp-components__head" data-reveal>
-        <div>
+      <div className="lp-shell lp-components__head">
+        <div data-reveal="stagger">
           <p className="lp-eyebrow">{t.eyebrow}</p>
-          <h2 id="lp-components-title">{t.title}</h2>
+          <h2 id="lp-components-title" className="lp-words"><Words text={t.title} /></h2>
         </div>
-        <div className="lp-arrows" role="group" aria-label={t.group}>
+        <div className="lp-arrows" role="group" aria-label={t.group} data-reveal="fade">
           <button type="button" className="lp-arrow" onClick={() => manual(-1)} disabled={edges.start} aria-label={t.prev}>
             <ArrowLeft aria-hidden="true" size={17} strokeWidth={2} />
           </button>
@@ -91,7 +130,7 @@ export function ComponentsCarousel() {
         </div>
       </div>
       <ul
-        className="lp-components__track"
+        className={`lp-components__track${dragging ? " is-dragging" : ""}`}
         data-reveal="stagger"
         ref={track}
         onScroll={sync}
@@ -100,6 +139,14 @@ export function ComponentsCarousel() {
         onFocus={() => setHovered(true)}
         onBlur={() => setHovered(false)}
         onTouchStart={() => setUserPlaying(false)}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={(e) => {
+          if (drag.current?.moved) e.preventDefault();
+        }}
+        onDragStart={(e) => e.preventDefault()}
       >
         {ITEMS.map((item, i) => (
           <li key={item.href}>
@@ -115,6 +162,9 @@ export function ComponentsCarousel() {
           </li>
         ))}
       </ul>
+      <div className="lp-shell lp-components__progress" aria-hidden="true">
+        <span ref={bar} />
+      </div>
     </>
   );
 }

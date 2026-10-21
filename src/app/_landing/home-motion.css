@@ -176,3 +176,94 @@ html .lp-header.is-tucked:not(:focus-within) {
     opacity: 0;
   }
 }
+
+/* ----- Componentes ----- */
+/* Cada foto se descubre de abajo arriba y se asienta, en la misma cascada que su tarjeta. */
+.lp-components__track[data-in="late"] > li .lp-card__media {
+  animation: lp-shutter 1000ms var(--mo-ease-in-out) calc(min(var(--i, 0), 6) * var(--mo-step) + 120ms) backwards;
+}
+
+.lp-components__track[data-in="late"] > li .lp-card__media img {
+  animation: lp-settle 1400ms var(--mo-ease-out) calc(min(var(--i, 0), 6) * var(--mo-step) + 120ms) backwards;
+}
+
+@keyframes lp-shutter {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+@keyframes lp-settle {
+  from {
+    scale: 1.18;
+  }
+}
+
+/* Al apuntar una tarjeta, una línea naranja se dibuja bajo su nombre. */
+.lp-card__label {
+  position: relative;
+}
+
+.lp-card__label::after {
+  position: absolute;
+  right: 20px;
+  bottom: 0;
+  left: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--lp-orange);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 460ms var(--mo-ease-out);
+}
+
+.lp-card:focus-visible .lp-card__label::after {
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lp-card:hover .lp-card__label::after {
+    transform: scaleX(1);
+  }
+
+  /* Con ratón el carrusel se agarra y se arrastra. */
+  .lp-components__track {
+    cursor: grab;
+  }
+}
+
+.lp-components__track.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+  user-select: none;
+}
+
+.lp-components__track.is-dragging .lp-card {
+  pointer-events: none;
+}
+
+/* Barra de avance del carrusel: su largo es la parte visible y se desliza con él (--size y --at, de 0 a 1). */
+.lp-components__progress {
+  position: relative;
+  height: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+  border-radius: 3px;
+  background: rgb(11 34 68 / 10%);
+}
+
+.lp-components__progress span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--size, 0.3) * 100%);
+  border-radius: inherit;
+  background: var(--lp-orange);
+  transform: translateX(calc(var(--at, 0) * (1 / var(--size, 0.3) - 1) * 100%));
+  transition: transform 160ms linear, width 240ms ease;
+}
+
+html[data-lp-theme="dark"] .lp-components__progress {
+  background: rgb(255 255 255 / 10%);
+}
