@@ -1049,6 +1049,9 @@
   width: 100%;
   max-width: 600px;
   height: auto;
+  /* Proporción explícita: con height:auto Chrome no daba por declarada la del atributo y avisaba de una imagen
+     diferida sin tamaño. */
+  aspect-ratio: 1186 / 784;
   margin-inline: auto;
   object-fit: contain;
   object-position: center;
