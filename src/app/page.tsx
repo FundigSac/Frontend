@@ -4,6 +4,7 @@ import { HeroCarousel } from "./_landing/hero-carousel";
 import { BackingSection, DocsSection, LocationSection } from "./_landing/home-sections";
 import { FloatingActions } from "./_landing/floating-actions";
 import { SectorsBand } from "./_landing/sectors-band";
+import { SmoothScroll } from "./_landing/smooth-scroll";
 import "./landing.css";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -22,6 +23,7 @@ export default function HomePage() {
       <DocsSection />
       <LocationSection />
       <FloatingActions />
+      <SmoothScroll />
     </main>
   );
 }
