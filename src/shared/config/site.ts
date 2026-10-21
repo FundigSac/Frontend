@@ -8,6 +8,9 @@ export const SITE = {
   url: "https://fundigsac.com",
   locale: "es-PE",
   email: "cotizaciones@fundigsac.com",
+  /** Mismo número que WhatsApp y que `src/lib/site-info.ts` (allí lo usa el asistente). */
+  phone: "+51 908 849 664",
+  phoneHref: "tel:+51908849664",
 } as const;
 
 export const MAIN_NAV = [

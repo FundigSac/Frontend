@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CalendarRange, Mail, MapPin } from "lucide-react";
+import { ArrowRight, CalendarRange, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { MAP_DIRECTIONS } from "@/shared/config/location";
 import { MapEmbed } from "@/shared/consent/map-embed";
 import { SITE } from "@/shared/config/site";
@@ -84,10 +84,24 @@ export function LocationSection() {
               </span>
             </li>
             <li>
+              <span className="lp-location__icon"><Phone aria-hidden="true" size={18} strokeWidth={1.8} /></span>
+              <span>
+                <strong>{t.phoneLabel}</strong>
+                <a href={SITE.phoneHref}>{SITE.phone}</a>
+              </span>
+            </li>
+            <li>
               <span className="lp-location__icon"><Mail aria-hidden="true" size={18} strokeWidth={1.8} /></span>
               <span>
                 <strong>{t.emailLabel}</strong>
                 <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+              </span>
+            </li>
+            <li>
+              <span className="lp-location__icon"><Clock aria-hidden="true" size={18} strokeWidth={1.8} /></span>
+              <span>
+                <strong>{t.hoursLabel}</strong>
+                {t.hours}
               </span>
             </li>
           </ul>
