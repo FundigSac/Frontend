@@ -16,7 +16,7 @@ export function BackingSection() {
   return (
     <section className="lp-backing" aria-labelledby="lp-backing-title">
       <div className="lp-backing__media" data-reveal="media">
-        <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} fill quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/respaldo-ingeniero.webp"]} sizes="(max-width: 860px) 100vw, 46vw" />
+        <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} width={1200} height={800} quality={70} placeholder="blur" blurDataURL={BLUR["/media/home-v3/respaldo-ingeniero.webp"]} sizes="(max-width: 860px) 100vw, 46vw" />
       </div>
       <div className="lp-backing__copy" data-reveal="stagger">
         <p className="lp-eyebrow">{t.eyebrow}</p>

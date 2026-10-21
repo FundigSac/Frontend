@@ -51,7 +51,7 @@ export function SectorsBand() {
         {sectors.map((s, i) => (
           <li key={s.n} className={`lp-sector lp-sector--${i + 1}${i === active ? " is-active" : ""}`} style={{ ["--i" as string]: i }}>
             <span className="lp-sector__img" aria-hidden="true">
-              <Image src={s.img} alt="" fill quality={70} placeholder="blur" blurDataURL={BLUR[s.img]} sizes="(max-width: 860px) 80vw, 45vw" />
+              <Image src={s.img} alt="" width={1122} height={1402} quality={70} placeholder="blur" blurDataURL={BLUR[s.img]} sizes="(max-width: 860px) 80vw, 45vw" />
             </span>
             <Link href={s.href} onFocus={() => setActive(i)} onMouseEnter={() => setActive(i)}>
               <span className="lp-sector__num">{s.n} /</span>

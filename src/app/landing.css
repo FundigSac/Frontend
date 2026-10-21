@@ -892,7 +892,13 @@
   bottom: 0;
 }
 
-.lp-sector__img img {
+/* Fotos con ancho y alto declarados (el navegador conoce su proporción antes de cargarlas) que cubren su marco. */
+.lp-sector__img img,
+.lp-backing__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
