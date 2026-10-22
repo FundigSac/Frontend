@@ -231,6 +231,9 @@
   letter-spacing: 0.08em;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.3s var(--ease);
 }
+/* El conjunto ícono + "3D" queda centrado de verdad: el texto pesa menos arriba y el ícono se veía algo alto. */
+.thumb3d,
+.thumb3dOn { padding-top: 2px; }
 .thumb3d svg { color: var(--accent-ink); }
 .thumb3d:hover { transform: translateY(-2px); border-color: var(--ink); }
 .thumb3dOn { border-color: var(--sel); background: var(--sel); color: var(--sel-ink); }
