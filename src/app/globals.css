@@ -323,3 +323,9 @@ html {
     hyphens: none;
   }
 }
+
+/* Modo oscuro fuera del catálogo: el azul "primary" claro del tema (#004257) casi no se distingue sobre grafito, así que
+   los enlaces con hover:text-primary (migas de pan de cotizar, contacto…) se volvían ilegibles al pasar el mouse. */
+html[data-lp-theme="dark"]:not(:has(.lp-header--catalog)) .hover\:text-primary:hover {
+  color: #7fb6ff;
+}
