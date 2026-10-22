@@ -989,3 +989,12 @@ html[data-lp-theme="dark"] .ag-hero__motion {
     transform: translateY(22px);
   }
 }
+
+/* Safari: un elemento de cuadrícula con aspect-ratio que se estira a una fila vacía mide 0 × 0 y la foto destacada no
+   aparecía en iPhone. Ancho explícito y sin estirarse: la altura sale de la proporción. */
+@media (max-width: 860px) {
+  .ag-featured__media {
+    width: 100%;
+    align-self: start;
+  }
+}

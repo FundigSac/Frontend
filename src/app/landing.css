@@ -1883,6 +1883,8 @@ html[data-lp-theme="dark"] .lp-hero__valve {
   }
 
   .lp-backing__media {
+    width: 100%; /* Safari: sin ancho explícito, el aspect-ratio en la cuadrícula lo dejaba en 0 × 0 */
+    align-self: start; /* y sin estirarse: estirado a la fila (0 px) ignoraba el aspect-ratio */
     min-height: 0;
     aspect-ratio: 3 / 2;
   }

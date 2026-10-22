@@ -113,6 +113,9 @@
 .stage {
   position: relative;
   isolation: isolate;
+  /* Ancho explícito: en Safari un elemento de cuadrícula con aspect-ratio y sin ancho propio se calculaba a 0 × 0 y
+     la foto principal no aparecía en iPhone. */
+  width: 100%;
   aspect-ratio: 1 / 1.04;
   overflow: hidden;
   border-radius: 20px;
@@ -1142,7 +1145,7 @@
   .stage { aspect-ratio: 1 / 0.8; }
   .info h1 { max-width: none; }
   .descGrid { grid-template-columns: minmax(0, 1fr); }
-  .descPhoto { min-height: 0; aspect-ratio: 16 / 10; }
+  .descPhoto { width: 100%; align-self: start; min-height: 0; aspect-ratio: 16 / 10; }
   .dimsTop { grid-template-columns: minmax(0, 1fr); }
   .flyerGrid { grid-template-columns: minmax(0, 1fr); }
   .flyerCard { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); justify-items: stretch; }
