@@ -153,3 +153,26 @@ test("movimiento reducido: la ficha y el listado muestran todo sin esperar anima
   }
   await context.close();
 });
+
+for (const slug of ["valvula-compuerta", "valvula-compuerta-fundigsac", "valvula-compuerta-fundigsac-garantia-extendida"]) {
+  test(`ficha ${slug}: las miniaturas y la vista 3D caben completas en una fila a cualquier ancho`, async ({ page }) => {
+    for (const width of [320, 360, 393, 430, 480, 600, 768, 1024]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/productos/valvulas/${slug}`, { waitUntil: "domcontentloaded" });
+      await dismissCookies(page);
+      const row = page.getByRole("group", { name: "Fotos de la válvula" }).locator("..");
+      const buttons = row.getByRole("button");
+      await expect(buttons.first()).toBeVisible();
+      const info = await row.evaluate((el) => {
+        const bs = [...el.querySelectorAll("button")].filter((b) => b.getBoundingClientRect().width > 0);
+        const box = el.getBoundingClientRect();
+        return { n: bs.length, within: bs.every((b) => { const r = b.getBoundingClientRect(); return r.left >= box.left - 1 && r.right <= box.right + 1; }), tops: new Set(bs.map((b) => Math.round(b.getBoundingClientRect().top))).size, scrolls: el.scrollWidth > el.clientWidth + 1, tiny: bs.some((b) => b.getBoundingClientRect().width < 36) };
+      });
+      expect(info.n, `${width}px`).toBeGreaterThanOrEqual(6);
+      expect(info.within, `${width}px dentro`).toBe(true);
+      expect(info.tops, `${width}px una fila`).toBe(1);
+      expect(info.scrolls, `${width}px sin scroll`).toBe(false);
+      expect(info.tiny, `${width}px tamaño`).toBe(false);
+    }
+  });
+}

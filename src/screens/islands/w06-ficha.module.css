@@ -1129,11 +1129,14 @@
   .gallery { grid-template-columns: minmax(0, 1fr); }
   .gallery > .stage,
   .gallery > .thumbs { grid-column: 1; grid-row: auto; }
-  .thumbs { flex-direction: row; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: thin; }
+  /* Todas las miniaturas (fotos y vista 3D) en una sola fila que se reparte el ancho: se ven completas a cualquier pantalla. */
+  .thumbs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: clamp(5px, 1.8vw, 12px); padding: 2px; overflow: visible; }
   .thumb,
   .thumbActive,
   .thumb3d,
-  .thumb3dOn { width: 72px; height: 72px; flex: 0 0 auto; }
+  .thumb3dOn { width: 100%; height: auto; aspect-ratio: 1 / 1; flex: none; }
+  .thumb img,
+  .thumbActive img { padding: clamp(3px, 1.2vw, 9px); }
   .stage { aspect-ratio: 1 / 0.8; }
   .info h1 { max-width: none; }
   .descGrid { grid-template-columns: minmax(0, 1fr); }
@@ -1175,7 +1178,10 @@
   .thumb,
   .thumbActive,
   .thumb3d,
-  .thumb3dOn { width: 62px; height: 62px; border-radius: 11px; }
+  .thumb3dOn { border-radius: 11px; }
+  .thumb3d,
+  .thumb3dOn { gap: 2px; font-size: 11px; letter-spacing: 0.04em; }
+  .thumb3d svg { width: 18px; height: 18px; }
   .info { gap: 20px; }
   .meta { font-size: 11px; letter-spacing: 0.07em; }
   .meta > span + span::before { width: 12px; margin: 0 8px; }
