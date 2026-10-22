@@ -18,14 +18,19 @@ const ITEMS = [
 
 const INTERVAL = 2800;
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+// En pantallas táctiles el carrusel se recorre con el dedo: el avance automático solo agregaba movimiento y trabajo
+// mientras se hace scroll vertical, y peleaba con el gesto.
+const TOUCH_ONLY = "(hover: none)";
 // Arrastre con ratón: a partir de este recorrido es un arrastre y el clic que sigue no abre la tarjeta.
 const DRAG_THRESHOLD = 6;
 
 function subscribeMotion(onChange: () => void) {
-  const mq = window.matchMedia(REDUCED_MOTION);
-  mq.addEventListener("change", onChange);
-  return () => mq.removeEventListener("change", onChange);
+  const queries = [window.matchMedia(REDUCED_MOTION), window.matchMedia(TOUCH_ONLY)];
+  queries.forEach((mq) => mq.addEventListener("change", onChange));
+  return () => queries.forEach((mq) => mq.removeEventListener("change", onChange));
 }
+
+const noAutoplay = () => window.matchMedia(REDUCED_MOTION).matches || window.matchMedia(TOUCH_ONLY).matches;
 
 export function ComponentsCarousel() {
   const t = useHome().components;
@@ -36,7 +41,7 @@ export function ComponentsCarousel() {
   const [userPlaying, setUserPlaying] = useState<boolean | null>(null);
   const [hovered, setHovered] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const reducedMotion = useSyncExternalStore(subscribeMotion, () => window.matchMedia(REDUCED_MOTION).matches, () => false);
+  const reducedMotion = useSyncExternalStore(subscribeMotion, noAutoplay, () => false);
   const playing = userPlaying ?? !reducedMotion;
 
   const sync = useCallback(() => {
@@ -152,7 +157,7 @@ export function ComponentsCarousel() {
           <li key={item.href}>
             <Link href={item.href} className="lp-card">
               <span className="lp-card__media">
-                <Image src={item.image} alt={t.items[i].alt} width={1000} height={617} fetchPriority="low" quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 640px) 78vw, 340px" />
+                <Image src={item.image} alt={t.items[i].alt} width={1000} height={617} loading="eager" fetchPriority="low" quality={70} placeholder="blur" blurDataURL={BLUR[item.image]} sizes="(max-width: 640px) 78vw, 340px" />
               </span>
               <span className="lp-card__label">
                 {t.items[i].title}

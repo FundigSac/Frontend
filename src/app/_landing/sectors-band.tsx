@@ -90,7 +90,7 @@ export function SectorsBand() {
             style={{ "--i": i } as CSSProperties}
           >
             <span className="lp-sector__img" aria-hidden="true">
-              <Image src={s.img} alt="" width={1122} height={1402} quality={70} placeholder="blur" blurDataURL={BLUR[s.img]} sizes="(max-width: 860px) 80vw, 45vw" />
+              <Image src={s.img} alt="" width={1122} height={1402} quality={70} loading="eager" fetchPriority="low" placeholder="blur" blurDataURL={BLUR[s.img]} sizes="(max-width: 860px) 60vw, 45vw" />
             </span>
             <Link href={s.href} onFocus={() => setOpen(i)} onMouseEnter={() => setOpen(i)}>
               <span className="lp-sector__body">
