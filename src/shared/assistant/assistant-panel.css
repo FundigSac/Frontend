@@ -1625,3 +1625,65 @@ html[data-lp-theme="dark"] .ai-md a {
   -webkit-line-clamp: 2;
   white-space: normal;
 }
+
+/* ===== Barra de escritura pareja: "+", campo y enviar con la misma altura y sin bordes anidados ===== */
+.ai-field {
+  align-items: flex-end;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 26px;
+}
+
+/* Un renglón (40 px) deja los botones centrados; si el texto crece, quedan abajo, junto al último renglón. */
+.ai-field textarea {
+  padding: 9px 4px;
+  line-height: 22px;
+}
+
+.ai-attach-btn,
+.ai-send {
+  width: 40px;
+  height: 40px;
+}
+
+.ai-attach-btn {
+  border: 0;
+  background: rgb(11 34 68 / 7%);
+  color: var(--ai-ink);
+}
+
+.ai-attach-btn:hover:not(:disabled) {
+  background: rgb(26 100 232 / 14%);
+  color: #1a64e8;
+}
+
+html[data-lp-theme="dark"] .ai-attach-btn {
+  background: rgb(255 255 255 / 9%);
+  color: #e6edf7;
+}
+
+html[data-lp-theme="dark"] .ai-attach-btn:hover:not(:disabled) {
+  background: rgb(143 192 255 / 20%);
+  color: #8fc0ff;
+}
+
+.ai-send {
+  box-shadow: none;
+}
+
+.ai-send:hover:not(:disabled) {
+  background: #2f78f5;
+  filter: none;
+  transform: none;
+}
+
+/* El anillo de foco rodea toda la barra una sola vez, con un halo suave. */
+.ai-field:focus-within {
+  border-color: #1a64e8;
+  box-shadow: 0 0 0 3px rgb(26 100 232 / 18%);
+}
+
+html[data-lp-theme="dark"] .ai-field:focus-within {
+  border-color: #5b95f0;
+  box-shadow: 0 0 0 3px rgb(91 149 240 / 22%);
+}
