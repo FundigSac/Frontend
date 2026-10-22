@@ -341,83 +341,93 @@
   background: var(--lp-soft);
 }
 
-/* Buscador animado: la lupa despliega la barra hacia la izquierda. El formulario conserva siempre sus 44 px en la
-   fila de la cabecera: la cápsula (::before) y el campo crecen por encima del menú sin empujar ni apretar nada, así
-   no hay desborde ni saltos a ningún ancho. */
+/* Buscador animado: la lupa despliega un panel bajo la cabecera, anclado a la derecha. El menú, el logo y los botones
+   ni se tapan ni se mueven: el panel vive fuera de la fila, así que no hay desborde a ningún ancho ni en móvil. */
 .lp-search {
-  --lp-search-w: clamp(240px, 22vw, 320px);
-  position: relative;
+  --lp-search-w: min(440px, calc(100vw - 2 * var(--lp-gutter)));
   display: flex;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
+  flex: 0 0 auto;
   align-items: center;
-  justify-content: flex-end;
 }
 
-.lp-search::before {
+.lp-search__panel {
   position: absolute;
-  z-index: 0;
-  top: 0;
-  right: 0;
-  width: 44px;
-  height: 100%;
-  border: 1.5px solid transparent;
+  z-index: 3;
+  top: calc(100% + 10px);
+  right: var(--lp-gutter);
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  overflow: hidden;
+  border: 1.5px solid var(--lp-line);
   border-radius: 999px;
-  background: transparent;
-  content: "";
-  pointer-events: none;
-  transition: width 320ms cubic-bezier(0.2, 0.7, 0.2, 1), background 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  background: #fff;
+  box-shadow: 0 18px 38px -18px rgb(11 34 68 / 45%);
+  opacity: 0;
+  transform: translateY(-8px);
+  transform-origin: right center;
+  visibility: hidden;
+  transition: width 460ms cubic-bezier(0.22, 0.8, 0.2, 1), opacity 220ms ease, transform 460ms cubic-bezier(0.22, 0.8, 0.2, 1), border-color 220ms ease, box-shadow 220ms ease, visibility 0s linear 460ms;
+}
+
+.lp-search.is-open .lp-search__panel {
+  width: var(--lp-search-w);
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.lp-search__panel:focus-within {
+  border-color: var(--lp-orange);
+  box-shadow: 0 0 0 3px rgb(242 106 27 / 22%), 0 18px 38px -18px rgb(11 34 68 / 45%);
 }
 
 .lp-search input {
-  position: relative;
-  z-index: 1;
-  width: 0;
   min-width: 0;
-  flex: 0 0 auto;
-  padding: 0;
+  height: 100%;
+  flex: 1 1 auto;
+  padding: 0 4px 0 20px;
   border: 0;
   background: none;
   color: var(--lp-ink);
   font: inherit;
-  font-size: 14.5px;
-  opacity: 0;
+  font-size: 15px;
   outline: none;
   text-overflow: ellipsis;
-  transition: width 320ms cubic-bezier(0.2, 0.7, 0.2, 1), padding 320ms ease, opacity 200ms ease;
 }
 
 .lp-search input::placeholder {
   color: #7a8699;
 }
 
-/* El navegador dibuja su propia "x" en los campos de búsqueda: sobraba junto a la lupa y el cierre. */
+/* El navegador dibuja su propia "x" en los campos de búsqueda: sobraba junto al botón de cerrar. */
 .lp-search input::-webkit-search-cancel-button,
 .lp-search input::-webkit-search-decoration {
   appearance: none;
 }
 
-.lp-search.is-open::before {
-  width: var(--lp-search-w);
-  border-color: var(--lp-line);
-  background: #fff;
-  box-shadow: 0 10px 28px -16px rgb(11 34 68 / 40%);
+.lp-search__go {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  margin-right: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lp-orange);
+  color: #fff;
+  cursor: pointer;
+  transition: background 160ms ease;
 }
 
-.lp-search.is-open:focus-within::before {
-  border-color: var(--lp-orange);
-}
-
-.lp-search.is-open input {
-  width: calc(var(--lp-search-w) - 44px);
-  padding: 0 4px 0 18px;
-  opacity: 1;
+.lp-search__go:hover {
+  background: var(--lp-orange-dark);
 }
 
 .lp-search .lp-header__search {
-  position: relative;
-  z-index: 1;
   flex: 0 0 auto;
   border: 0;
   background: none;
@@ -425,12 +435,8 @@
 }
 
 .lp-search.is-open .lp-header__search {
+  background: var(--lp-soft);
   color: var(--lp-orange-dark);
-}
-
-/* La salida solo existe en móvil, donde la barra abierta cubre la cabecera. */
-.lp-search__close {
-  display: none;
 }
 
 .lp-header__quote {
@@ -1325,64 +1331,9 @@
     height: 72px;
   }
 
-  /* En móvil la barra abierta toma toda la cabecera, con fondo opaco propio (el vidrio de la cabecera es translúcido y
-     dejaba ver el logo y los íconos detrás). Orden: lupa, campo, cerrar. */
-  .lp-search.is-open {
-    position: absolute;
-    z-index: 2;
-    inset: 0;
-    width: auto;
-    height: auto;
-    flex: none;
-    justify-content: flex-start;
-    padding: 0 var(--lp-gutter);
-    background: #fff;
-  }
-
-  .lp-search.is-open::before {
-    top: 12px;
-    right: var(--lp-gutter);
-    bottom: 12px;
-    left: var(--lp-gutter);
-    width: auto;
-    height: auto;
-    transform-origin: left center;
-    animation: lp-search-pill 380ms cubic-bezier(0.22, 0.8, 0.2, 1) both;
-  }
-
-  .lp-search.is-open .lp-header__search {
-    order: 0;
-  }
-
-  .lp-search.is-open input {
-    order: 1;
-    flex: 1 1 auto;
-    width: auto;
-    padding: 0 4px 0 6px;
-    font-size: 16px;
-  }
-
-  .lp-search.is-open .lp-search__close {
-    position: relative;
-    z-index: 1;
-    display: inline-grid;
-    width: 40px;
-    height: 40px;
-    flex: 0 0 auto;
-    order: 2;
-    place-items: center;
-    border: 0;
-    border-radius: 50%;
-    background: none;
-    color: var(--lp-ink);
-    cursor: pointer;
-  }
-
-  @keyframes lp-search-pill {
-    from {
-      opacity: 0.4;
-      transform: scaleX(0.14);
-    }
+  /* En móvil el panel va bajo la cabecera, a todo el ancho útil. */
+  .lp-search__panel {
+    top: calc(100% + 8px);
   }
 
   /* Hero apilado: texto arriba, válvula y controles debajo. */
@@ -1693,14 +1644,6 @@ html[data-lp-theme="dark"] .lp-theme__moon {
 }
 
 /* Buscador más fluido: la cápsula crece con una curva suave y la lupa respira. */
-.lp-search::before {
-  transition: width 460ms cubic-bezier(0.22, 0.8, 0.2, 1), background 320ms ease, border-color 320ms ease, box-shadow 320ms ease;
-}
-
-.lp-search input {
-  transition: width 460ms cubic-bezier(0.22, 0.8, 0.2, 1), padding 460ms cubic-bezier(0.22, 0.8, 0.2, 1), opacity 260ms ease 80ms;
-}
-
 .lp-search .lp-header__search svg {
   transition: transform 420ms cubic-bezier(0.22, 0.8, 0.2, 1);
 }
@@ -1750,20 +1693,11 @@ html[data-lp-theme="dark"] .lp-header::before {
 
 html[data-lp-theme="dark"] .lp-nav__menu,
 html[data-lp-theme="dark"] .lp-lang__menu,
-html[data-lp-theme="dark"] .lp-search.is-open::before {
+html[data-lp-theme="dark"] .lp-search__panel {
   background: #21201e;
   box-shadow: 0 24px 48px -20px rgb(0 0 0 / 70%);
 }
 
-html[data-lp-theme="dark"] .lp-search__close {
-  color: #f5f4f3;
-}
-
-@media (max-width: 860px) {
-  html[data-lp-theme="dark"] .lp-search.is-open {
-    background: #191918;
-  }
-}
 
 html[data-lp-theme="dark"] .lp-search input {
   color: #f5f4f3;
@@ -3080,11 +3014,6 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
   .lp-hero__controls-row {
     animation: none !important;
   }
-}
-
-.lp-search.is-open:focus-within::before {
-  border-color: var(--lp-orange);
-  box-shadow: 0 0 0 3px rgb(242 106 27 / 22%), 0 10px 28px -16px rgb(11 34 68 / 40%);
 }
 
 /* Pantallas muy angostas (320 px): el logo y los íconos de la cabecera se compactan para no desbordar. */

@@ -87,9 +87,15 @@ export function LandingHeader() {
   const segment = useSelectedLayoutSegment();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const mobileId = useId();
+  const searchId = useId();
   // En la portada la cabecera se aparta al bajar y vuelve en cuanto se sube (deja más pantalla para leer).
   const [tucked, setTucked] = useState(false);
   const tuckable = pathname === "/" && !open && !mobileOpen && !searchOpen && !langOpen && !accountOpen;
+
+  // El panel está oculto (inert) mientras está cerrado: el foco pasa al campo en cuanto se abre.
+  useEffect(() => {
+    if (searchOpen) searchRef.current?.focus({ preventScroll: true });
+  }, [searchOpen]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -189,13 +195,10 @@ export function LandingHeader() {
         </nav>
 
         <div className="lp-header__actions">
+          {/* La lupa abre un panel bajo la cabecera: el menú y los botones nunca se tapan ni se mueven, a ningún ancho. */}
           <form
             className={`lp-search${searchOpen ? " is-open" : ""}`}
             role="search"
-            onMouseEnter={() => setSearchOpen(true)}
-            onMouseLeave={() => {
-              if (!query && document.activeElement !== searchRef.current) setSearchOpen(false);
-            }}
             onBlur={(e) => {
               if (!query && !e.currentTarget.contains(e.relatedTarget as Node)) setSearchOpen(false);
             }}
@@ -207,42 +210,34 @@ export function LandingHeader() {
               router.push(q ? `/productos?q=${encodeURIComponent(q)}` : "/productos");
             }}
           >
-            <input
-              ref={searchRef}
-              type="search"
-              name="q"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              aria-label={t.searchLabel}
-              autoComplete="off"
-              tabIndex={searchOpen ? 0 : -1}
-            />
-            <button
-              type={searchOpen && query.trim() ? "submit" : "button"}
-              className="lp-header__search"
-              aria-label={t.search}
-              onClick={() => {
-                if (!searchOpen || !query.trim()) {
-                  setSearchOpen(true);
-                  searchRef.current?.focus();
-                }
-              }}
-            >
-              <Search aria-hidden="true" size={20} strokeWidth={2} />
-            </button>
-            {/* Solo en móvil: la barra abierta cubre la cabecera y necesita su propia salida. */}
             <button
               type="button"
-              className="lp-search__close"
-              aria-label={t.searchClose}
+              className="lp-header__search"
+              aria-label={searchOpen ? t.searchClose : t.search}
+              aria-expanded={searchOpen}
+              aria-controls={searchId}
               onClick={() => {
                 setQuery("");
-                setSearchOpen(false);
+                setSearchOpen(!searchOpen);
               }}
             >
-              <X aria-hidden="true" size={20} strokeWidth={2} />
+              {searchOpen ? <X aria-hidden="true" size={20} strokeWidth={2} /> : <Search aria-hidden="true" size={20} strokeWidth={2} />}
             </button>
+            <div className="lp-search__panel" id={searchId} inert={!searchOpen}>
+              <input
+                ref={searchRef}
+                type="search"
+                name="q"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t.searchPlaceholder}
+                aria-label={t.searchLabel}
+                autoComplete="off"
+              />
+              <button type="submit" className="lp-search__go" aria-label={t.search}>
+                <Search aria-hidden="true" size={18} strokeWidth={2} />
+              </button>
+            </div>
           </form>
           <div className="lp-lang">
             <button
