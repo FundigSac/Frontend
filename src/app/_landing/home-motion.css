@@ -834,3 +834,28 @@ html.lenis body {
   transition-duration: 1ms;
   transition-property: overflow;
 }
+
+/* Móvil: sin desenfoque en la entrada de palabras y letras. Animar `filter: blur` en decenas de fragmentos a la vez
+   obliga a rasterizar cada uno en cada cuadro; solo con opacidad y desplazamiento la entrada se ve igual y no traba. */
+@media (max-width: 860px) {
+  @keyframes lp-word-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    }
+  }
+
+  @keyframes lp-word-in-lcp {
+    from {
+      opacity: 0.01;
+      transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    }
+  }
+
+  @keyframes lp-char-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 70%, 0);
+    }
+  }
+}

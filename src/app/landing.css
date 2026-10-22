@@ -3264,3 +3264,17 @@ html[data-lp-theme="dark"] .lp-search__close:hover {
     gap: clamp(8px, 0.9vw, 14px);
   }
 }
+
+/* Móvil: el vidrio esmerilado de la cabecera (desenfoque + saturación sobre lo que pasa detrás) se recalcula en cada
+   cuadro del scroll y era lo que más lo trababa. Con un fondo casi opaco se ve igual de limpio y el scroll corre libre. */
+@media (max-width: 860px) {
+  .lp-header::before {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgb(255 255 255 / 95%);
+  }
+
+  html[data-lp-theme="dark"] .lp-header::before {
+    background: rgb(22 21 20 / 96%);
+  }
+}
