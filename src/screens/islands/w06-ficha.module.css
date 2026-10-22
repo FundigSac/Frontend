@@ -600,7 +600,7 @@
 }
 .flyerCard:hover .flyerZoom,
 .flyerPreview:focus-visible .flyerZoom { opacity: 1; transform: none; }
-.flyerBody { display: grid; min-width: 0; align-content: center; justify-items: start; gap: 10px; }
+.flyerBody { display: grid; min-width: 0; align-content: start; justify-items: start; align-self: start; gap: 10px; }
 .flyerOption { color: var(--accent-ink); font-size: 11.5px; font-weight: 800; letter-spacing: 0.12em; line-height: 1; text-transform: uppercase; }
 .flyerBody h3 { margin: 0; color: var(--ink); font-family: var(--display); font-size: clamp(20px, 1.8vw, 25px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
 .flyerSub { margin: -4px 0 0; color: var(--ink-soft); font-size: 13.5px; line-height: 1.5; }
