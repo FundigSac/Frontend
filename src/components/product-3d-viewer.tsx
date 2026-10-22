@@ -31,7 +31,12 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
       return () => { alive = false; };
     }
     import("@google/model-viewer")
-      .then(() => alive && setReady(true))
+      .then(({ ModelViewerElement }) => {
+        // Las mallas de los GLB van comprimidas con EXT_meshopt_compression: el decodificador WASM se sirve
+        // desde el propio sitio (la CSP no admite scripts de terceros).
+        ModelViewerElement.meshoptDecoderLocation = "/vendor/meshopt_decoder.js";
+        if (alive) setReady(true);
+      })
       .catch(() => {
         if (!alive) return;
         setFailed(true);
@@ -69,7 +74,7 @@ export default function Product3DViewer({ src, poster, alt, className, onFail }:
     ? createElement("model-viewer", {
         ref: (element: HTMLElement | null) => { ref.current = element; },
         class: className,
-        src: `${src}?v=sdf-2`,
+        src: `${src}?v=sdf-3`,
         poster,
         alt,
         "camera-controls": "",
