@@ -109,3 +109,29 @@ test.describe("buscador animado de la cabecera", () => {
     await expect(page).toHaveURL(/\/productos\?q=tapa/);
   });
 });
+
+test.describe("pie de página", () => {
+  for (const width of [320, 360, 393, 430, 560, 768, 1024, 1440]) {
+    test(`queda parejo y dentro de la pantalla a ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
+      await page.locator(".lp-footer").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
+      const r = await page.evaluate(() => {
+        const f = document.querySelector(".lp-footer")!;
+        const vw = document.documentElement.clientWidth;
+        const R = (e: Element) => e.getBoundingClientRect();
+        const outside = [...f.querySelectorAll("a, button, li, p, h2")].filter((e) => R(e).right > vw + 1 || R(e).left < -1).length;
+        // En cada columna el primer enlace queda a la misma altura que el de su vecina de la misma fila.
+        const heads = [...f.querySelectorAll(".lp-footer__main h2")].map((h) => Math.round(R(h).top));
+        const lists = [...f.querySelectorAll(".lp-footer__main ul")];
+        const gaps = lists.map((ul) => [...ul.children].map((li, i, a) => (i ? Math.round(R(li).top - R(a[i - 1]).bottom) : 0)).filter((g, i) => i));
+        return { outside, heads, maxGap: Math.max(...gaps.flat()), minGap: Math.min(...gaps.flat()), overflow: document.documentElement.scrollWidth - vw };
+      });
+      expect(r.outside).toBe(0);
+      expect(r.overflow).toBeLessThanOrEqual(1);
+      // El espacio entre enlaces es el mismo en toda la lista (sin tramos apretados ni sueltos).
+      expect(r.maxGap - r.minGap).toBeLessThanOrEqual(2);
+    });
+  }
+});

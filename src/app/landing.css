@@ -3416,19 +3416,56 @@ html[data-lp-theme="dark"] .lp-search__close:hover {
   }
 }
 
-/* Móvil: Productos a la izquierda ocupa lo mismo que Sectores y Recursos apilados a la derecha; Contacto a todo el ancho. */
+/* Móvil: cuadrícula de 2 × 2 (Productos | Sectores, Recursos | Contacto), todo alineado arriba y con la misma altura de
+   fila; la barra legal también va en dos columnas. */
 @media (max-width: 560px) {
   .lp-footer__main {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       "brand brand"
       "prod sect"
-      "prod res"
-      "cont cont";
-    gap: 32px 24px;
+      "res cont";
+    gap: 28px 20px;
   }
 
   .lp-footer__brand-column p {
     max-width: none;
+  }
+
+  /* Un enlace que pasa a dos renglones crece con su propio relleno, sin romper el ritmo de la lista. */
+  .lp-footer li {
+    min-height: 0;
+  }
+
+  .lp-footer li > a,
+  .lp-footer address li:not(:has(a)) {
+    min-height: 40px;
+    padding-block: 9px;
+    font-size: 13.5px;
+    line-height: 1.25;
+  }
+
+  .lp-footer li > a {
+    overflow-wrap: normal;
+  }
+
+  .lp-footer address li:not(:has(a)) {
+    align-items: center;
+  }
+
+  .lp-footer__legal {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+  }
+
+  .lp-footer__legal a,
+  .lp-footer__legal .lp-footer__linkbtn {
+    padding-block: 9px;
+    font-size: 13px;
+    line-height: 1.25;
+    text-align: left;
+    justify-content: flex-start;
   }
 }
