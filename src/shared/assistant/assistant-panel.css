@@ -1775,3 +1775,105 @@ html[data-lp-theme="dark"] .ai-quick__item--wa svg {
   color: #3ddc84;
 }
 
+/* ===== Fondo vivo: aurora naranja y partículas de luz que se desplazan despacio detrás de la conversación =====
+   Solo se animan transform y opacidad en capas propias (GPU), sin desenfoques ni repintados: corre fluido en el
+   teléfono. Los mensajes y la barra de escritura van por encima. */
+.ai-panel::before,
+.ai-panel::after {
+  position: absolute;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+}
+
+/* Aurora: tres focos de luz que derivan y respiran. */
+.ai-panel::before {
+  inset: -35%;
+  background:
+    radial-gradient(38% 30% at 22% 28%, rgb(242 106 27 / 30%) 0%, transparent 70%),
+    radial-gradient(34% 28% at 78% 62%, rgb(255 154 82 / 20%) 0%, transparent 70%),
+    radial-gradient(40% 30% at 46% 92%, rgb(150 150 165 / 16%) 0%, transparent 72%);
+  will-change: transform;
+  animation: ai-aurora 22s ease-in-out infinite alternate;
+}
+
+/* Partículas de luz: motas de distinto tamaño y brillo que suben despacio. Todas las baldosas miden 240 px de alto
+   para que el bucle no tenga costura. */
+.ai-panel::after {
+  inset: 0 0 -240px;
+  background-image:
+    radial-gradient(1.6px 1.6px at 22px 40px, rgb(255 190 140 / 90%), transparent 100%),
+    radial-gradient(1.2px 1.2px at 118px 150px, rgb(255 154 82 / 80%), transparent 100%),
+    radial-gradient(2px 2px at 190px 88px, rgb(255 210 170 / 70%), transparent 100%),
+    radial-gradient(1px 1px at 64px 214px, rgb(255 255 255 / 70%), transparent 100%),
+    radial-gradient(1.4px 1.4px at 46px 120px, rgb(255 154 82 / 55%), transparent 100%),
+    radial-gradient(1px 1px at 150px 20px, rgb(255 255 255 / 45%), transparent 100%),
+    radial-gradient(1.6px 1.6px at 250px 190px, rgb(255 190 140 / 50%), transparent 100%);
+  background-size: 210px 240px, 210px 240px, 210px 240px, 210px 240px, 290px 240px, 290px 240px, 290px 240px;
+  will-change: transform;
+  animation: ai-motes 26s linear infinite;
+}
+
+.ai-head,
+.ai-body,
+.ai-compose {
+  position: relative;
+  z-index: 1;
+}
+
+/* Las capas de fondo se ven a través de la zona de mensajes y de la barra. */
+html[data-lp-theme="dark"] .ai-body {
+  background: transparent;
+}
+
+html[data-lp-theme="dark"] .ai-compose {
+  background: rgb(18 18 17 / 72%);
+}
+
+.ai-body {
+  background: transparent;
+}
+
+.ai-compose {
+  background: rgb(255 255 255 / 76%);
+}
+
+/* En claro el fondo es apenas un tinte. */
+html:not([data-lp-theme="dark"]) .ai-panel::before {
+  opacity: 0.55;
+}
+
+html:not([data-lp-theme="dark"]) .ai-panel::after {
+  opacity: 0.4;
+}
+
+@keyframes ai-aurora {
+  from {
+    transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate3d(5%, 3%, 0) rotate(8deg) scale(1.08);
+  }
+
+  to {
+    transform: translate3d(8%, -5%, 0) rotate(-6deg) scale(1.02);
+  }
+}
+
+@keyframes ai-motes {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, -240px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-panel::before,
+  .ai-panel::after {
+    animation: none;
+  }
+}
