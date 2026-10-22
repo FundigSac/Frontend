@@ -3278,3 +3278,157 @@ html[data-lp-theme="dark"] .lp-search__close:hover {
     background: rgb(22 21 20 / 96%);
   }
 }
+
+/* ===== Pie de página: una sola cuadrícula pareja ===== */
+.lp-footer__main {
+  grid-template-columns: minmax(240px, 1.35fr) repeat(4, minmax(0, 1fr));
+  align-items: start;
+  gap: 40px clamp(24px, 3vw, 48px);
+  padding-block: 56px 44px;
+}
+
+.lp-footer__brand img {
+  width: 172px;
+}
+
+.lp-footer__brand-column p {
+  max-width: 32ch;
+  margin-top: 20px;
+  line-height: 1.65;
+}
+
+/* Todos los títulos y listas comparten el mismo ritmo: el primer enlace de cada columna queda a la misma altura. */
+.lp-footer h2 {
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lp-footer address {
+  margin: 0;
+}
+
+.lp-footer ul {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-footer li + li {
+  margin-top: 0;
+}
+
+.lp-footer li {
+  display: flex;
+  min-height: 22px;
+  align-items: center;
+}
+
+.lp-footer li,
+.lp-footer li > a {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.lp-footer address li:not(:has(a)) {
+  color: rgb(255 255 255 / 72%);
+}
+
+/* Barra legal: copyright a la izquierda y enlaces a la derecha, sin barras separadoras; deja libre la esquina de los
+   botones flotantes para que ningún enlace quede debajo. */
+.lp-footer__bottom {
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  padding: 24px 88px 28px 0;
+}
+
+.lp-footer__legal {
+  gap: 6px 24px;
+}
+
+.lp-footer__legal a + a::before,
+.lp-footer__legal a + .lp-footer__linkbtn::before,
+.lp-footer__legal .lp-footer__linkbtn + a::before {
+  display: none;
+}
+
+.lp-footer__legal a,
+.lp-footer__legal .lp-footer__linkbtn {
+  padding-block: 4px;
+  color: rgb(255 255 255 / 72%);
+}
+
+.lp-footer__legal a:hover,
+.lp-footer__legal .lp-footer__linkbtn:hover {
+  color: #fff;
+}
+
+/* Tableta: logo y contacto arriba, los tres listados de enlaces debajo. */
+@media (max-width: 860px) {
+  .lp-footer__main {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "brand brand cont"
+      "prod sect res";
+    gap: 36px 24px;
+    padding-block: 44px 32px;
+  }
+
+  .lp-footer__main > :nth-child(1) { grid-area: brand; }
+  .lp-footer__main > :nth-child(2) { grid-area: prod; }
+  .lp-footer__main > :nth-child(3) { grid-area: sect; }
+  .lp-footer__main > :nth-child(4) { grid-area: res; }
+  .lp-footer__main > :nth-child(5) { grid-area: cont; }
+
+  /* Objetivos táctiles de 40 px: el aire entre enlaces lo da su alto, no el hueco de la lista. */
+  .lp-footer ul {
+    gap: 0;
+  }
+
+  .lp-footer li {
+    min-height: 40px;
+  }
+
+  .lp-footer li > a,
+  .lp-footer__legal a,
+  .lp-footer__legal .lp-footer__linkbtn {
+    min-height: 40px;
+    align-items: center;
+  }
+
+  .lp-footer h2 {
+    margin-bottom: 8px;
+  }
+
+  .lp-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 0 calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .lp-footer__legal {
+    gap: 0 24px;
+  }
+}
+
+/* Móvil: Productos a la izquierda ocupa lo mismo que Sectores y Recursos apilados a la derecha; Contacto a todo el ancho. */
+@media (max-width: 560px) {
+  .lp-footer__main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "brand brand"
+      "prod sect"
+      "prod res"
+      "cont cont";
+    gap: 32px 24px;
+  }
+
+  .lp-footer__brand-column p {
+    max-width: none;
+  }
+}
