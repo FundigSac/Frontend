@@ -1326,3 +1326,47 @@
 :global(html[data-lp-theme="dark"]) .docPage { background: #242322; }
 :global(html[data-lp-theme="dark"]) .docModal { background: rgb(10 10 10 / 82%); }
 :global(html[data-lp-theme="dark"]) .lightbox { background: rgb(10 10 10 / 92%); }
+
+/* ---------- Asesoría técnica en móvil y tableta: el titular y el texto van sobre la foto ---------- */
+@media (max-width: 860px) {
+  .cta { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 0; }
+  /* Se "disuelven" los contenedores para que titular, texto, lista y botón sean celdas de la misma cuadrícula. */
+  .ctaInner,
+  .ctaCopy { display: contents; }
+  .ctaVisual {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    grid-area: 1 / 1;
+    min-height: clamp(440px, 120vw, 580px);
+    aspect-ratio: auto;
+    order: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  /* La foto es apaisada y aquí se recorta alta: se centra en el ingeniero (a la derecha) para que se vea entero. */
+  .ctaVisual img { object-position: 80% 30%; }
+  .ctaVisual::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(8 10 12 / 80%) 0%, rgb(8 10 12 / 46%) 30%, rgb(8 10 12 / 34%) 52%, rgb(8 10 12 / 84%) 100%);
+    content: "";
+  }
+  .ctaCopy h2 {
+    z-index: 2;
+    grid-area: 1 / 1;
+    align-self: start;
+    max-width: none;
+    margin: clamp(26px, 7vw, 40px) clamp(18px, 5vw, 32px) 0;
+    color: #fff;
+  }
+  .ctaText {
+    z-index: 2;
+    grid-area: 1 / 1;
+    align-self: end;
+    margin: 0 clamp(18px, 5vw, 32px) clamp(26px, 7vw, 36px);
+    color: rgb(255 255 255 / 92%);
+  }
+  .ctaPoints { grid-row: 2; margin: 22px clamp(18px, 5vw, 32px) 0; width: auto; }
+  .ctaActions { grid-row: 3; margin: 24px clamp(18px, 5vw, 32px) 52px; width: auto; }
+}
