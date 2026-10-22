@@ -859,3 +859,23 @@ html.lenis body {
     }
   }
 }
+
+/* Móvil: sin animaciones ligadas al scroll sobre las fotos grandes. Las tarjetas de sector (escala, opacidad y deriva de
+   la foto en cada cuadro), el "asentado" de la foto al entrar y la deriva de la foto de respaldo obligaban a repintar
+   imágenes enormes mientras se desliza el dedo: ahí estaba el tirón y el aspecto raro al cargar. Las fotos quedan
+   quietas, nítidas y a tamaño completo. */
+@media (max-width: 860px) {
+  .lp-sector,
+  .lp-sectors .lp-sector__img img,
+  .lp-sectors__list[data-in="late"] .lp-sector__img img,
+  .lp-backing__media img {
+    animation: none !important;
+    opacity: 1;
+    scale: 1;
+    translate: none;
+  }
+
+  .lp-backing__media img {
+    scale: 1.04;
+  }
+}
