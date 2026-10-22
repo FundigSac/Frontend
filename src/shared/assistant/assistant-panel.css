@@ -17,10 +17,12 @@
   color: var(--ai-ink);
   font-family: var(--ai-font);
   transform-origin: 100% 100%;
+  will-change: transform, opacity;
+  /* Cierre: corto y sin rebote (la cortina baja y se va). */
   transition:
-    opacity 200ms ease,
-    transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    visibility 0s linear 300ms,
+    opacity 180ms ease 60ms,
+    transform 260ms cubic-bezier(0.4, 0, 1, 1),
+    visibility 0s linear 260ms,
     width 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
     height 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -28,15 +30,33 @@
 .ai-panel[data-state="closed"] {
   opacity: 0;
   pointer-events: none;
-  transform: translateY(16px) scale(0.96);
+  transform: translate3d(0, 18px, 0) scale(0.94);
   visibility: hidden;
 }
 
+/* Apertura: curva de desaceleración larga (arranca rápido y se asienta despacio), la opacidad llega antes que el
+   movimiento y el contenido entra un instante después, así no se ve un salto. */
 .ai-panel[data-state="open"] {
   opacity: 1;
   transform: none;
   visibility: visible;
-  transition-delay: 0s;
+  transition:
+    opacity 240ms ease,
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s,
+    width 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ai-panel[data-state="open"] > * {
+  animation: ai-content-in 360ms ease 140ms backwards;
+}
+
+@keyframes ai-content-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
 }
 
 .ai-panel[data-expanded="true"] {
@@ -910,10 +930,26 @@ html[data-lp-theme="dark"] .ai-chip--follow:hover {
     border: 0;
     border-radius: 0;
     transform-origin: 50% 100%;
+    /* Sin animar ancho ni alto en pantalla completa: solo transform y opacidad, que corren en la GPU. */
+    transition:
+      opacity 200ms ease 80ms,
+      transform 320ms cubic-bezier(0.4, 0, 1, 1),
+      visibility 0s linear 320ms;
   }
 
-  .ai-panel[data-state="closed"] {
-    transform: translateY(24px);
+  /* En el teléfono el asistente sube como una hoja desde abajo y se asienta con suavidad. */
+  .ai-panel[data-state="closed"],
+  .ai-panel[data-expanded="true"][data-state="closed"] {
+    opacity: 1;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  .ai-panel[data-state="open"],
+  .ai-panel[data-expanded="true"][data-state="open"] {
+    transition:
+      transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 200ms ease,
+      visibility 0s;
   }
 
   .ai-head {
@@ -998,6 +1034,10 @@ html[data-lp-theme="dark"] .ai-chip--follow:hover {
   .ai-panel,
   .ai-card {
     transition: none;
+  }
+
+  .ai-panel[data-state="open"] > * {
+    animation: none;
   }
 }
 
@@ -1307,6 +1347,13 @@ html[data-lp-theme="dark"] .ai-file__cta {
   .ai-panel,
   .ai-panel[data-expanded="true"] {
     border-radius: 0;
+    /* A pantalla completa la sombra no se ve y repintarla en cada cuadro de la animación pesa en el teléfono. */
+    box-shadow: none;
+  }
+
+  html[data-lp-theme="dark"] .ai-panel,
+  html[data-lp-theme="dark"] .ai-panel[data-expanded="true"] {
+    box-shadow: none;
   }
 }
 
