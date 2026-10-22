@@ -115,3 +115,26 @@ test.describe("movimiento", () => {
     await expect(grid).toHaveAttribute("data-filtered", "");
   });
 });
+
+test("las fotos siguen apareciendo si el IntersectionObserver no avisa (Safari en iPhone)", async ({ page }) => {
+  // Simula un navegador cuyo observador nunca notifica: el barrido por scroll debe mostrar los bloques igualmente.
+  await page.addInitScript(() => {
+    (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+      takeRecords() { return []; }
+    };
+  });
+  await page.setViewportSize({ width: 402, height: 874 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const media = page.locator(".lp-backing__media");
+  await media.scrollIntoViewIfNeeded();
+  await expect(media).toHaveAttribute("data-in", /now|late/);
+  await page.waitForTimeout(1200);
+  expect(await media.evaluate((el) => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.95);
+  await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
+  const photo = page.locator("figure[data-reveal='media']");
+  await photo.scrollIntoViewIfNeeded();
+  await expect(photo).toHaveAttribute("data-in", /now|late/);
+});

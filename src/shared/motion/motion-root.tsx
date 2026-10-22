@@ -15,8 +15,9 @@ function useRevealEngine() {
     if (typeof IntersectionObserver === "undefined" || window.matchMedia(REDUCED).matches) return;
     const root = document.documentElement;
 
-    // El margen superior enorme cuenta como "visto" todo lo que quedó arriba: un salto (ancla, tecla Fin, scroll
-    // rápido) que pasa por encima de un bloque sin cruzarlo no lo deja oculto para siempre.
+    // Margen normal: un rootMargin gigante (100000px) hacía que Safari en iPhone no avisara nunca de ciertos bloques y
+    // sus fotos (el ingeniero, la foto de aplicaciones) se quedaban invisibles. Lo que queda por encima tras un salto
+    // (ancla, tecla Fin, scroll rápido) lo resuelve `sweep` en cada scroll.
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -25,8 +26,36 @@ function useRevealEngine() {
           io.unobserve(entry.target);
         }
       },
-      { rootMargin: "100000px 0px -8% 0px", threshold: 0 },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0 },
     );
+
+    // Red de seguridad que no depende del observador: en cada scroll o cambio de tamaño se muestra todo bloque que ya
+    // entró en pantalla o quedó por encima (así nada se queda oculto aunque el navegador tarde o falle).
+    const sweep = () => {
+      const fold = window.innerHeight * 0.92;
+      for (const el of document.querySelectorAll<HTMLElement>("[data-reveal]:not([data-in])")) {
+        if (el.closest("main.lg")) continue;
+        const r = el.getBoundingClientRect();
+        if (r.bottom <= 0) {
+          el.dataset.in = "now";
+          io.unobserve(el);
+        } else if (r.top < fold) {
+          el.dataset.in = "late";
+          io.unobserve(el);
+        }
+      }
+    };
+    let sweepFrame = 0;
+    const onMove = () => {
+      if (sweepFrame) return;
+      sweepFrame = requestAnimationFrame(() => {
+        sweepFrame = 0;
+        sweep();
+      });
+    };
+    window.addEventListener("scroll", onMove, { passive: true });
+    window.addEventListener("resize", onMove);
+    window.addEventListener("pageshow", onMove);
 
     const scan = () => {
       const fold = window.innerHeight * 0.94;
@@ -61,6 +90,10 @@ function useRevealEngine() {
       io.disconnect();
       mo.disconnect();
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(sweepFrame);
+      window.removeEventListener("scroll", onMove);
+      window.removeEventListener("resize", onMove);
+      window.removeEventListener("pageshow", onMove);
       delete root.dataset.motion;
     };
   }, []);
