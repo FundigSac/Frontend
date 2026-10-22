@@ -51,43 +51,58 @@ test.describe("diseño responsive", () => {
 });
 
 test.describe("buscador animado de la cabecera", () => {
-  // Alrededor de 1280 y 1440 px la cabecera lleva menú y botón de cotización: abrir la barra no puede tapar ni empujar nada.
-  for (const width of [390, 768, 1024, 1280, 1440, 1920]) {
-    test(`abre un panel bajo la cabecera sin tapar ni mover nada a ${width}px`, async ({ page }) => {
+  // La lupa se abre en su sitio: lo que se ve en la fila (logo, menú, íconos) no se tapa, no se superpone y no se sale de la pantalla.
+  for (const width of [320, 390, 768, 870, 1024, 1262, 1280, 1366, 1440, 1920]) {
+    test(`abre en su lugar sin tapar ni desbordar la cabecera a ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
       const search = page.locator(".lp-search");
-      const row = page.locator(".lp-header__bar");
-      const before = await row.evaluate((el) => [...el.querySelectorAll("a, button, img")].filter((n) => !n.closest(".lp-search__panel")).map((n) => JSON.stringify(n.getBoundingClientRect())));
-      await search.locator(".lp-header__search").click();
+      await expect(page.locator(".lp-header__search")).toBeVisible();
+      await page.waitForTimeout(600);
+      await page.locator(".lp-header__search").click();
       await expect(search).toHaveClass(/is-open/);
       await expect(search.getByRole("searchbox")).toBeFocused();
-      const panel = page.locator(".lp-search__panel");
-      // El panel termina de crecer y queda dentro de la pantalla.
-      await expect.poll(async () => (await panel.boundingBox())!.width).toBeGreaterThan(Math.min(300, width - 60));
-      const box = (await panel.boundingBox())!;
-      const header = (await page.locator(".lp-header").boundingBox())!;
-      expect(box.x).toBeGreaterThanOrEqual(0);
-      expect(box.x + box.width).toBeLessThanOrEqual(width);
-      expect(box.y).toBeGreaterThanOrEqual(header.y + header.height - 1);
-      // Ningún enlace, ícono ni botón de la fila de la cabecera se movió.
-      const after = await row.evaluate((el) => [...el.querySelectorAll("a, button, img")].filter((n) => !n.closest(".lp-search__panel")).map((n) => JSON.stringify(n.getBoundingClientRect())));
-      expect(after.length).toBe(before.length);
-      expect(after.filter((r, i) => r !== before[i])).toEqual([]);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-      expect(overflow).toBeLessThanOrEqual(1);
+      // La cápsula termina de crecer (el campo llega a su ancho final).
+      await expect.poll(async () => (await search.getByRole("searchbox").boundingBox())!.width).toBeGreaterThan(100);
+      await page.waitForTimeout(700);
+      const result = await page.evaluate(() => {
+        const R = (e: Element) => e.getBoundingClientRect();
+        const bar = R(document.querySelector(".lp-header__bar")!);
+        const form = R(document.querySelector(".lp-search")!);
+        const visible = (e: Element) => R(e).width > 2 && getComputedStyle(e).visibility !== "hidden" && getComputedStyle(e).opacity !== "0";
+        const others = [...document.querySelectorAll(".lp-header__bar a, .lp-header__bar button, .lp-header__bar img")].filter((e) => !e.closest(".lp-search") && visible(e));
+        const overlaps = others.filter((e) => { const r = R(e); return r.left < form.right - 1 && r.right > form.left + 1; }).map((e) => e.className.toString().slice(0, 30) || e.tagName);
+        const outside = others.filter((e) => R(e).right > bar.right + 2 || R(e).left < bar.left - 2).map((e) => e.className.toString().slice(0, 30) || e.tagName);
+        return { overlaps, outside, formRight: form.right, barRight: bar.right, overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+      });
+      expect(result.overlaps).toEqual([]);
+      expect(result.outside).toEqual([]);
+      expect(result.formRight).toBeLessThanOrEqual(result.barRight + 2);
+      expect(result.overflow).toBeLessThanOrEqual(1);
     });
   }
+
+  test("al pasar el mouse por la lupa se abre la barra y al salir se cierra", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 800 });
+    await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
+    const search = page.locator(".lp-search");
+    await page.waitForTimeout(600);
+    await page.locator(".lp-header__search").hover();
+    await expect(search).toHaveClass(/is-open/);
+    await page.mouse.move(700, 400);
+    await expect(search).not.toHaveClass(/is-open/);
+  });
 
   test("busca con Enter y se cierra con la X", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 800 });
     await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
     const search = page.locator(".lp-search");
-    await search.locator(".lp-header__search").click();
+    await page.waitForTimeout(600);
+    await page.locator(".lp-header__search").click();
     await search.getByRole("searchbox").fill("valvula");
-    await search.locator(".lp-header__search").click();
+    await search.getByRole("button", { name: "Cerrar búsqueda" }).click();
     await expect(search).not.toHaveClass(/is-open/);
-    await search.locator(".lp-header__search").click();
+    await page.locator(".lp-header__search").click();
     await expect(search.getByRole("searchbox")).toHaveValue("");
     await search.getByRole("searchbox").fill("tapa");
     await search.getByRole("searchbox").press("Enter");

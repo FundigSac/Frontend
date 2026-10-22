@@ -79,23 +79,20 @@ export function LandingHeader() {
   const NAV = buildNav(t);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  // En portátiles el campo abierto es corto: un texto breve evita que el marcador se corte.
+  const [shortHint, setShortHint] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const searchCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const segment = useSelectedLayoutSegment();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const mobileId = useId();
-  const searchId = useId();
   // En la portada la cabecera se aparta al bajar y vuelve en cuanto se sube (deja más pantalla para leer).
   const [tucked, setTucked] = useState(false);
   const tuckable = pathname === "/" && !open && !mobileOpen && !searchOpen && !langOpen && !accountOpen;
-
-  // El panel está oculto (inert) mientras está cerrado: el foco pasa al campo en cuanto se abre.
-  useEffect(() => {
-    if (searchOpen) searchRef.current?.focus({ preventScroll: true });
-  }, [searchOpen]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -195,10 +192,23 @@ export function LandingHeader() {
         </nav>
 
         <div className="lp-header__actions">
-          {/* La lupa abre un panel bajo la cabecera: el menú y los botones nunca se tapan ni se mueven, a ningún ancho. */}
+          {/* La lupa se convierte en el campo, en su mismo lugar: la cápsula crece hacia la izquierda y el resto de la fila se
+              compacta con suavidad (botón de cotización, separaciones) en vez de taparse o desbordar. */}
           <form
             className={`lp-search${searchOpen ? " is-open" : ""}`}
             role="search"
+            // Al pasar el mouse la barra se abre sola; al salir se cierra (con un respiro, para no parpadear) salvo que tenga texto o foco.
+            onMouseEnter={() => {
+              if (searchCloseTimer.current) clearTimeout(searchCloseTimer.current);
+              setShortHint(window.innerWidth < 1500 && window.innerWidth > 1260);
+              setSearchOpen(true);
+            }}
+            onMouseLeave={() => {
+              if (searchCloseTimer.current) clearTimeout(searchCloseTimer.current);
+              searchCloseTimer.current = setTimeout(() => {
+                if (!searchRef.current?.value && document.activeElement !== searchRef.current) setSearchOpen(false);
+              }, 260);
+            }}
             onBlur={(e) => {
               if (!query && !e.currentTarget.contains(e.relatedTarget as Node)) setSearchOpen(false);
             }}
@@ -210,34 +220,43 @@ export function LandingHeader() {
               router.push(q ? `/productos?q=${encodeURIComponent(q)}` : "/productos");
             }}
           >
+            <input
+              ref={searchRef}
+              type="search"
+              name="q"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={shortHint ? t.searchShort : t.searchPlaceholder}
+              aria-label={t.searchLabel}
+              autoComplete="off"
+              tabIndex={searchOpen ? 0 : -1}
+            />
             <button
               type="button"
-              className="lp-header__search"
-              aria-label={searchOpen ? t.searchClose : t.search}
-              aria-expanded={searchOpen}
-              aria-controls={searchId}
+              className="lp-search__close"
+              aria-label={t.searchClose}
+              tabIndex={searchOpen ? 0 : -1}
               onClick={() => {
                 setQuery("");
-                setSearchOpen(!searchOpen);
+                setSearchOpen(false);
               }}
             >
-              {searchOpen ? <X aria-hidden="true" size={20} strokeWidth={2} /> : <Search aria-hidden="true" size={20} strokeWidth={2} />}
+              <X aria-hidden="true" size={16} strokeWidth={2.2} />
             </button>
-            <div className="lp-search__panel" id={searchId} inert={!searchOpen}>
-              <input
-                ref={searchRef}
-                type="search"
-                name="q"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                aria-label={t.searchLabel}
-                autoComplete="off"
-              />
-              <button type="submit" className="lp-search__go" aria-label={t.search}>
-                <Search aria-hidden="true" size={18} strokeWidth={2} />
-              </button>
-            </div>
+            <button
+              type={searchOpen && query.trim() ? "submit" : "button"}
+              className="lp-header__search"
+              aria-label={t.search}
+              onClick={() => {
+                if (!searchOpen || !query.trim()) {
+                  setShortHint(window.innerWidth < 1500 && window.innerWidth > 1260);
+                  setSearchOpen(true);
+                  searchRef.current?.focus();
+                }
+              }}
+            >
+              <Search aria-hidden="true" size={20} strokeWidth={2} />
+            </button>
           </form>
           <div className="lp-lang">
             <button
@@ -314,7 +333,7 @@ export function LandingHeader() {
             {quoteCount > 0 && <span className="lp-cart__badge" aria-hidden="true">{quoteCount > 99 ? "99+" : quoteCount}</span>}
           </button>
           <Link href="/cotizar" className="lp-btn lp-btn--solid lp-header__quote">
-            {t.quote} <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
+            <span className="lp-header__quote-label">{t.quote}</span> <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
           <button
             ref={toggleRef}
