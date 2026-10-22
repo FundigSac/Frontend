@@ -385,8 +385,8 @@ function capsWhiteSdf(c) {
 export function buildParts(assets) {
   const c = CONFIG[assets.variant], F = assets.fields;
   const parts = {
-    cuerpo: { sdf: bodySdf(c, F), bounds: [[-97, -114, -114], [97, 114, 114]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
-    bonete: { sdf: bonnetSdf(c, F), bounds: [[-76, SEAM + GASKET - 2, -98], [76, c.neckTop + 3, 98]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
+    cuerpo: { sdf: bodySdf(c, F), bounds: [[-97, -114, -114], [97, 114, 114]], voxel: 0.42, material: 'epoxi', error: 0.16, ratio: 0.005, normalWeight: 0.2 },
+    bonete: { sdf: bonnetSdf(c, F), bounds: [[-76, SEAM + GASKET - 2, -98], [76, c.neckTop + 3, 98]], voxel: 0.42, material: 'epoxi', error: 0.16, ratio: 0.005, normalWeight: 0.2 },
     cuna: { sdf: wedgeSdf(), bounds: [[-32, -26, -70], [32, 152, 70]], voxel: 0.5, material: 'epdm', error: 0.12, ratio: 0.005 },
     acero: { sdf: steelSdf(c), bounds: c.operator === 'cap' ? [[-22, c.neckTop - 2, -22], [22, c.cap.y0 + 12, 22]] : [[-72, Y_BONNET - 2, -88], [72, c.wheel.y + c.wheel.h + 10, 88]], voxel: 0.3, material: 'acero', error: 0.08, ratio: 0.005, aoWeight: 0.1 },
     laton: { sdf: brassSdf(c), bounds: [[-42, c.neckTop - 2, -42], [42, c.neckTop + 22, 42]], voxel: 0.3, material: 'laton', error: 0.1, ratio: 0.005, aoWeight: 0.08 },
@@ -394,11 +394,11 @@ export function buildParts(assets) {
   };
   if (c.operator === 'handwheel') parts.volante = { sdf: handwheelSdf(c, F), bounds: [[-128, c.wheel.y - 14, -128], [128, c.wheel.y + c.wheel.h + 4, 128]], voxel: 0.36, material: 'epoxi', error: 0.2, ratio: 0.005, normalWeight: 0.1, aoWeight: 0.12 };
   else {
-    parts.cuadrante = { sdf: capSdf(c, F), bounds: [[-EAR.cx - EAR.r - 3, c.cap.y0 - 2, -53], [EAR.cx + EAR.r + 3, c.cap.yT + 2, 53]], voxel: 0.32, material: 'epoxi-dado', error: 0.04, ratio: 0.005, normalWeight: 0.2 };
+    parts.cuadrante = { sdf: capSdf(c, F), bounds: [[-EAR.cx - EAR.r - 3, c.cap.y0 - 2, -53], [EAR.cx + EAR.r + 3, c.cap.yT + 2, 53]], voxel: 0.32, material: 'epoxi-dado', error: 0.07, ratio: 0.005, normalWeight: 0.2 };
     parts.inserto = { sdf: capInsertSdf(), bounds: [[-23, CAP_FLOOR - 4, -23], [23, CAP_FLOOR + 7, 23]], voxel: 0.2, material: 'hierro', error: 0.03, ratio: 0.005 };
     parts.tornillo = { sdf: capScrewSdf(), bounds: [[-13, CAP_FLOOR + 1, -13], [13, CAP_FLOOR + 11, 13]], voxel: 0.1, material: 'acero', error: 0.015, ratio: 0.005 };
   }
-  if (c.bonnet !== 'hitaly') parts.tapones = { sdf: capsWhiteSdf(c), bounds: [[-72, c.bossTop - 6, -88], [72, c.bossTop + 2, 88]], voxel: 0.25, material: 'blanco', error: 0.03, ratio: 0.005 };
+  if (c.bonnet !== 'hitaly') parts.tapones = { sdf: capsWhiteSdf(c), bounds: [[-72, c.bossTop - 6, -88], [72, c.bossTop + 2, 88]], voxel: 0.25, material: 'blanco', error: 0.06, ratio: 0.005 };
   const all = Object.values(parts).map((p) => p.sdf);
   parts.escena = { sdf: (x, y, z) => { let d = Infinity; for (const f of all) d = Math.min(d, f(x, y, z)); return d; }, bounds: null };
   return parts;

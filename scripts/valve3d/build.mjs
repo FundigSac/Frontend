@@ -2,8 +2,8 @@
 // Uso: node scripts/valve3d/build.mjs [hitaly|fundigsac|cuadrante|all] [--fast]
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
-import { Document, NodeIO } from '@gltf-transform/core';
-import { KHRMaterialsClearcoat, KHRMeshQuantization, KHRTextureTransform } from '@gltf-transform/extensions';
+import { Document, NodeIO, Format } from '@gltf-transform/core';
+import { EXTMeshoptCompression, KHRMaterialsClearcoat, KHRMeshQuantization, KHRTextureTransform } from '@gltf-transform/extensions';
 import { quantize, reorder } from '@gltf-transform/functions';
 import { MeshoptEncoder } from 'meshoptimizer';
 import { Pool, meshPart } from './mesher.mjs';
@@ -127,36 +127,41 @@ function nameplateGeometry({ side, angle, length, width, R }) {
 }
 
 /**
- * Saca las imágenes del GLB a PNG del mismo origen. La CSP del sitio (connect-src 'self') bloquea las
- * URL blob: que GLTFLoader crea para las texturas incrustadas. El nombre lleva un hash del contenido:
- * la caché de 7 días de /models se renueva sola cuando cambia una textura.
+ * Empaqueta el GLB con las imágenes fuera, como PNG del mismo origen. La CSP del sitio (connect-src 'self') bloquea
+ * las URL blob: que GLTFLoader crea para las texturas incrustadas. El nombre lleva un hash del contenido: la caché
+ * de 7 días de /models se renueva sola cuando cambia una textura. Las mallas van con EXT_meshopt_compression
+ * (sin pérdida sobre la cuantización): el GLB pesa varias veces menos y se decodifica con WASM en el navegador.
  */
-function externalizeImages(glbPath, prefix) {
-  const packed = fs.readFileSync(glbPath), jsonLength = packed.readUInt32LE(12);
-  const json = JSON.parse(packed.subarray(20, 20 + jsonLength).toString());
-  const binStart = 20 + jsonLength + 8, imageViews = new Set(), written = [];
-  const slice = (view) => packed.subarray(binStart + (view.byteOffset ?? 0), binStart + (view.byteOffset ?? 0) + view.byteLength);
-  for (const img of json.images ?? []) {
-    const bytes = slice(json.bufferViews[img.bufferView]), hash = createHash('sha1').update(bytes).digest('hex').slice(0, 8);
-    const name = `${img.name === 'esmalte-piel-naranja' ? 'valvula-esmalte' : `${prefix}-${img.name}`}-${hash}.png`;
-    fs.writeFileSync(`public/models/${name}`, bytes); written.push(name);
-    imageViews.add(img.bufferView); delete img.bufferView; delete img.mimeType; img.uri = name;
+async function writePackedGlb(doc, glbPath, prefix) {
+  const written = [];
+  for (const tex of doc.getRoot().listTextures()) {
+    const hash = createHash('sha1').update(tex.getImage()).digest('hex').slice(0, 8);
+    const name = `${tex.getName() === 'esmalte-piel-naranja' ? 'valvula-esmalte' : `${prefix}-${tex.getName()}`}-${hash}.png`;
+    tex.setURI(name); written.push(name);
   }
-  if (!imageViews.size) return written;
-  const remap = new Map(), views = [], chunks = []; let offset = 0;
-  json.bufferViews.forEach((view, i) => {
-    if (imageViews.has(i)) return;
-    const bytes = slice(view);
-    remap.set(i, views.length); views.push({ ...view, byteOffset: offset }); chunks.push(bytes);
-    const pad = (4 - (bytes.length % 4)) % 4; if (pad) chunks.push(Buffer.alloc(pad)); offset += bytes.length + pad;
-  });
-  for (const acc of json.accessors) if (acc.bufferView !== undefined) acc.bufferView = remap.get(acc.bufferView);
-  json.bufferViews = views; json.buffers[0].byteLength = offset;
+  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.FILTER });
+  const io = new NodeIO().registerExtensions([EXTMeshoptCompression, KHRMaterialsClearcoat, KHRMeshQuantization, KHRTextureTransform]).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
+  const { json, resources } = await io.writeJSON(doc, { format: Format.GLTF, basename: prefix });
+  for (const img of json.images ?? []) fs.writeFileSync(`public/models/${img.uri}`, resources[img.uri]);
+  // El búfer con datos pasa a ser el BIN del GLB (índice 0); el de respaldo de meshopt no lleva bytes.
+  const main = json.buffers.findIndex((buf) => buf.uri);
+  const bin = Buffer.from(resources[json.buffers[main].uri]);
+  delete json.buffers[main].uri;
+  if (main !== 0) {
+    const swap = (i) => (i === main ? 0 : i === 0 ? main : i);
+    [json.buffers[0], json.buffers[main]] = [json.buffers[main], json.buffers[0]];
+    for (const view of json.bufferViews) {
+      view.buffer = swap(view.buffer);
+      const ext = view.extensions?.EXT_meshopt_compression;
+      if (ext) ext.buffer = swap(ext.buffer);
+    }
+  }
   const rawJson = Buffer.from(JSON.stringify(json)), jsonChunk = Buffer.alloc(Math.ceil(rawJson.length / 4) * 4, 0x20); rawJson.copy(jsonChunk);
-  const bin = Buffer.concat(chunks), header = Buffer.alloc(12), jh = Buffer.alloc(8), bh = Buffer.alloc(8);
-  header.writeUInt32LE(0x46546c67, 0); header.writeUInt32LE(2, 4); header.writeUInt32LE(12 + 8 + jsonChunk.length + 8 + bin.length, 8);
-  jh.writeUInt32LE(jsonChunk.length, 0); jh.writeUInt32LE(0x4e4f534a, 4); bh.writeUInt32LE(bin.length, 0); bh.writeUInt32LE(0x004e4942, 4);
-  fs.writeFileSync(glbPath, Buffer.concat([header, jh, jsonChunk, bh, bin]));
+  const binChunk = Buffer.alloc(Math.ceil(bin.length / 4) * 4); bin.copy(binChunk);
+  const header = Buffer.alloc(12), jh = Buffer.alloc(8), bh = Buffer.alloc(8);
+  header.writeUInt32LE(0x46546c67, 0); header.writeUInt32LE(2, 4); header.writeUInt32LE(12 + 8 + jsonChunk.length + 8 + binChunk.length, 8);
+  jh.writeUInt32LE(jsonChunk.length, 0); jh.writeUInt32LE(0x4e4f534a, 4); bh.writeUInt32LE(binChunk.length, 0); bh.writeUInt32LE(0x004e4942, 4);
+  fs.writeFileSync(glbPath, Buffer.concat([header, jh, jsonChunk, bh, binChunk]));
   return written;
 }
 
@@ -291,8 +296,7 @@ async function buildVariant(variant) {
   await MeshoptEncoder.ready;
   await doc.transform(reorder({ encoder: MeshoptEncoder, target: 'size' }), quantize({ quantizePosition: 14, quantizeNormal: 12, quantizeColor: 8, quantizeTexcoord: 16 }));
   const file = `public/models/${OUT[variant]}`;
-  await new NodeIO().registerExtensions([KHRMaterialsClearcoat, KHRMeshQuantization, KHRTextureTransform]).write(file, doc);
-  const base = OUT[variant].replace(/\.glb$/, ''), images = externalizeImages(file, base);
+  const base = OUT[variant].replace(/\.glb$/, ''), images = await writePackedGlb(doc, file, base);
   // Texturas propias de compilaciones anteriores que ya no se usan.
   for (const old of fs.readdirSync('public/models')) if (old.startsWith(`${base}-`) && old.endsWith('.png') && !images.includes(old)) fs.rmSync(`public/models/${old}`);
   console.log(`✔ ${file}: ${(fs.statSync(file).size / 1024).toFixed(0)} KB + ${images.join(', ')} en ${((Date.now() - t0) / 1000).toFixed(1)} s`);

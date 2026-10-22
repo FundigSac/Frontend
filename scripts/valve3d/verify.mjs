@@ -4,13 +4,16 @@
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { dequantize } from '@gltf-transform/functions';
+import { MeshoptDecoder } from 'meshoptimizer';
+
+await MeshoptDecoder.ready;
 
 const FILES = { hitaly: 'valvula-hitaly.glb', fundigsac: 'valvula-fundigsac.glb', cuadrante: 'valvula-fundigsac-cuadrante.glb' };
 let failed = false;
 const check = (ok, msg) => { console.log(`${ok ? '✔' : '✘'} ${msg}`); if (!ok) failed = true; };
 
 for (const [variant, file] of Object.entries(FILES)) {
-  const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).read(`public/models/${file}`);
+  const doc = await new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder }).read(`public/models/${file}`);
   await doc.transform(dequantize());
   const parts = {};
   for (const node of doc.getRoot().listNodes()) {

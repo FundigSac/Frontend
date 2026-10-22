@@ -318,7 +318,7 @@ const EXTENDIDA: Datasheet = {
       alt: "Flyer de la válvula compuerta bridada FUNDIGSAC con dado: despiece, vista real, vistas 3D, dimensiones y materiales",
     },
   ],
-  model3d: { src: "/models/valvula-fundigsac-cuadrante.glb?v=4", alt: "Modelo 3D de la válvula de compuerta bridada FUNDIGSAC con cuadrante de maniobra" },
+  model3d: { src: "/models/valvula-fundigsac-cuadrante.glb", alt: "Modelo 3D de la válvula de compuerta bridada FUNDIGSAC con cuadrante de maniobra" },
 };
 
 export const DATASHEETS = { base: BASE, fundigsac: FUNDIGSAC, extendida: EXTENDIDA } as const;
