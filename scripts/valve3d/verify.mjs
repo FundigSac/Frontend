@@ -45,7 +45,7 @@ for (const [variant, file] of Object.entries(FILES)) {
     const ys = list.map((p) => p[1]), top = Math.max(...ys), bottom = Math.min(...ys);
     const flatTop = list.filter((p) => Math.abs(p[1] - top) < 0.05).length, flatBottom = list.filter((p) => Math.abs(p[1] - bottom) < 0.05).length;
     const flat = Math.max(flatTop, flatBottom) / list.length;
-    check(flat < 0.08 || ['caucho', 'tapones', 'laton', 'acero', 'cuadrante', 'placa'].includes(name), `${variant}: ${name} sin recorte plano (${(flat * 100).toFixed(1)} % de vértices en la cota extrema)`);
+    check(flat < 0.08 || ['caucho', 'tapones', 'laton', 'acero', 'cuadrante', 'inserto', 'tornillo', 'placa'].includes(name), `${variant}: ${name} sin recorte plano (${(flat * 100).toFixed(1)} % de vértices en la cota extrema)`);
   }
 }
 process.exit(failed ? 1 : 0);

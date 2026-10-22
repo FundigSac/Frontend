@@ -45,7 +45,7 @@ export const CONFIG = {
     nose: { hxTop: 40, hxBottom: 28.5 },
     // Cuello 20 mm más bajo que en la primera versión: con el dado arriba la válvula mide H = 335 (FT-HD, DN100).
     bonnet: 'fundig6', domeTop: 158, neckTop: 210,
-    operator: 'cap', cap: { y0: 252, yF: 263, yT: 335 },
+    operator: 'cap', cap: { y0: 252, yF: 266, yT: 335 },
     textFront: { logo: 28, logoWide: 1.3, logoY: 42, lines: [{ text: 'FundigSac', height: 10.6 }, { text: '0721124', height: 10.6 }, { text: 'DN500-7', height: 10.6 }], gap: 3.4, y: -8, relief: 1.0 },
     textBack: { lines: [{ text: 'DN100', height: 10 }, { text: 'PN16/10', height: 10 }, { text: 'GGG50', height: 10 }], gap: 3.2, y: 14, relief: 1.0 },
     bonnetText: ['DN100', 'QT450'],
@@ -238,19 +238,46 @@ function buildSpoke(R, Ri, hubR, yMid) {
 }
 
 // ---------- cuadrante de maniobra (garantía extendida) ----------
+// Medidas de q-01/q-03 con el cuello (Ø75) como referencia: dado de □84 y 69 de alto, aleta de 14 con lóbulos
+// en las cuatro esquinas (q-02, q-04) y boca Ø64 con escalón Ø56 hasta el inserto metálico del fondo (q-05).
+const CAP_HALF = 42, CAP_BORE = 33.5, CAP_STEP = 29.5, CAP_FLOOR = 288;
+const capFlangeOutline = (x, z) => {
+  const ledge = S.sdRoundRect2(x, z, CAP_HALF, CAP_HALF, 8) - 7;
+  const lobe = Math.hypot(Math.abs(x) - 36, Math.abs(z) - 36) - 16;
+  return S.smin(ledge, lobe, 6);
+};
 function capSdf(c, F) {
   const { y0, yF, yT } = c.cap;
   return (x, y, z) => {
-    const box = S.sdBox(x, y - (y0 + yT) / 2, z, 50, (yT - y0) / 2 + 2, 50);
+    const box = S.sdBox(x, y - (y0 + yT) / 2, z, 53, (yT - y0) / 2 + 2, 53);
     if (box > 4) return box;
-    const flange = extrude(S.sdRoundRect2(x, z, 46, 46, 17), y - (y0 + yF) / 2, (yF - y0) / 2, 2.6);
-    const socket = extrude(S.sdRoundRect2(x, z, 28, 28, 6), y - (yF + yT) / 2 + 1, (yT - yF) / 2 + 1, 2.4);
-    let d = U(flange, socket, 8);
-    d = D(d, S.sdCylY(x, y - yT, z, 20, 36), 1.4);
-    d = D(d, S.sdBox(x, y - y0, z, 10, 26, 10, 1), 0.6);
-    if (F.capOpen && z > 28 && y > yF - 3 && y < yF + 2) d = U(d, relief(F.capOpen, x, 37 - z, y - yF + 0.4, 0.9), 0.2);
+    const flange = extrude(capFlangeOutline(x, z), y - (y0 + yF) / 2, (yF - y0) / 2, 2.8);
+    const socket = extrude(S.sdRoundRect2(x, z, CAP_HALF, CAP_HALF, 8), y - (yF + yT) / 2 + 1, (yT - yF) / 2 + 1, 2.6);
+    let d = U(flange, socket, 7);
+    // Boca, escalón y fondo donde asoma el inserto (q-05).
+    const r = Math.hypot(x, z);
+    d = D(d, S.sdCylinderAxis(r, y - (yT + 300) / 2 - 2, CAP_BORE, (yT - 300) / 2 + 2), 1.6);
+    d = D(d, S.sdCylinderAxis(r, y - (CAP_FLOOR + 302) / 2, CAP_STEP, (302 - CAP_FLOOR) / 2), 1);
+    // Alojamiento del vástago por debajo.
+    d = D(d, S.sdCylY(x, y - y0, z, 17.5, 12), 0.6);
+    if (F.capOpen && z > CAP_HALF - 1 && z < CAP_HALF + 9 && y > yF - 3 && y < yF + 2) d = U(d, relief(F.capOpen, x, CAP_HALF + 3.8 - z, y - yF + 0.4, 0.9), 0.2);
     return d;
   };
+}
+
+/** Arandela y pasador inoxidables del tornillo que fija el dado al vástago (q-05); malla fina aparte. */
+function capScrewSdf() {
+  return (x, y, z) => {
+    const r = Math.hypot(x, z), base = CAP_FLOOR + 3;
+    let w = D(S.sdCylinderAxis(r, y - (base + 1.2), 12, 1.8, 0.6), S.sdCylinderAxis(r, y - (base + 3), 7.5, 1.2), 0.4);
+    w = U(w, S.sdCylinderAxis(r, y - (base + 1.5), 3, 1.6, 0.5), 0.3);
+    return D(w, S.sdCylinderAxis(r, y - (base + 3.1), 0.6, 0.4), 0.1);
+  };
+}
+
+/** Inserto de hierro sin pintar en el fondo del dado (disco gris mate de q-05). */
+function capInsertSdf() {
+  return (x, y, z) => D(S.sdCylY(x, y - (CAP_FLOOR + 1.5), z, 21, 3.5, 1.2), S.sdCylY(x, y - (CAP_FLOOR + 5), z, 12.6, 2), 0.3);
 }
 
 // ---------- cuña elastomérica (EPDM) ----------
@@ -285,14 +312,26 @@ function steelSdf(c) {
     parts.push((x, y, z) => S.sdCylY(x, y - (hubTop + 0.9), z, 13, 0.9, 0.3));
     parts.push((x, y, z) => I(extrude(S.sdHexagon2(x, z, 9.5), y - (hubTop + 6), 4.2, 0.6), S.sdSphere(x, y - hubTop, z, 16), 1.2));
   } else {
-    parts.push((x, y, z) => S.sdCylY(x, y - (top + c.cap.y0) / 2, z, 13.5, (c.cap.y0 - top) / 2 + 1, 1));
+    // Vástago inoxidable Ø33 con base acampanada sobre el guardapolvo y una ranura (q-01, q-02, q-04).
+    const yR = top + 28, yS = c.cap.y0 + 10;
+    parts.push((x, y, z) => {
+      const r = Math.hypot(x, z), flare = 2.6 * smoothstep(yR + 5, yR, y);
+      const stem = S.sdCylinderAxis(r, y - (top + yS) / 2, 16.5 + flare, (yS - top) / 2, 1);
+      return D(stem, Math.hypot(r - 16.9, y - (yR + 9)) - 0.9, 0.3);
+    });
   }
   return (x, y, z) => { let d = Infinity; for (const p of parts) d = Math.min(d, p(x, y, z)); return d; };
 }
 
 function brassSdf(c) {
   const top = c.neckTop;
-  if (c.operator === 'cap') return (x, y, z) => D(S.sdCylinderAxis(Math.hypot(x, z), y - (top + 2.5), 39.5, 2.5, 0.8), Math.hypot(x, z) - 14, 0.4);
+  // Prensaestopas: aro redondo sobre el cuello y tuerca hexagonal bajo el guardapolvo (q-02, q-03).
+  if (c.operator === 'cap') return (x, y, z) => {
+    const r = Math.hypot(x, z);
+    const ring = S.sdCylinderAxis(r, y - (top + 2.3), 38.2, 2.3, 0.7);
+    const hex = I(extrude(S.sdHexagon2(x, z, 34.5), y - (top + 5.6), 2.6, 0.6), r - 37.6, 1);
+    return D(U(ring, hex, 0.5), r - 16.8, 0.4);
+  };
   if (c.bonnet === 'hitaly') return (x, y, z) => {
     // Collarín y hexágono solapados (sin plano de contacto de espesor cero).
     const collar = S.sdCylY(x, y - (top + 2.5), z, 27, 2.5, 0.8);
@@ -308,12 +347,15 @@ function brassSdf(c) {
 function rubberSdf(c) {
   const gasket = (x, y, z) => extrude(plateOutline(c, x, z) + 1.2, y - (SEAM + GASKET / 2), GASKET / 2 + 0.2, 0.2);
   if (c.operator !== 'cap') return gasket;
-  const y0 = c.neckTop + 5;
+  const y0 = c.neckTop + 8, y1 = y0 + 16, y2 = y1 + 4;
   return (x, y, z) => {
     const r = Math.hypot(x, z);
-    // Guardapolvo de caucho (q-01, q-02): perfil redondeado, más ancho abajo.
-    const seal = S.sdCylinderAxis(r, y - (y0 + 11), mix(41, 35, smoothstep(y0, y0 + 22, y)), 11, 4.5);
-    return Math.min(gasket(x, y, z), D(seal, r - 14, 1));
+    // Guardapolvo de caucho (q-01 a q-04): disco plano de canto casi vertical, algo más ancho abajo, borde
+    // superior muy redondeado y un anillo interior más bajo que abraza el vástago.
+    const outer = mix(36.8, 35, smoothstep(y0, y1, y)), half = (outer - 17) / 2;
+    const disc = S.sdRoundRect2(r - (17 + half), y - (y0 + y1) / 2, half, (y1 - y0) / 2, y > (y0 + y1) / 2 ? 5.5 : 1.5);
+    const ring = S.sdCylinderAxis(r, y - (y1 + y2) / 2 + 1, 21.5, (y2 - y1) / 2 + 1, 1.6);
+    return Math.min(gasket(x, y, z), D(U(disc, ring, 1.5), r - 17, 0.5));
   };
 }
 
@@ -332,12 +374,16 @@ export function buildParts(assets) {
     cuerpo: { sdf: bodySdf(c, F), bounds: [[-97, -114, -114], [97, 114, 114]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
     bonete: { sdf: bonnetSdf(c, F), bounds: [[-76, SEAM + GASKET - 2, -98], [76, c.neckTop + 3, 98]], voxel: 0.42, material: 'epoxi', error: 0.12, ratio: 0.005, normalWeight: 0.2 },
     cuna: { sdf: wedgeSdf(), bounds: [[-32, -26, -70], [32, 152, 70]], voxel: 0.5, material: 'epdm', error: 0.12, ratio: 0.005 },
-    acero: { sdf: steelSdf(c), bounds: [[-72, Y_BONNET - 2, -88], [72, c.operator === 'cap' ? c.cap.y0 + 4 : c.wheel.y + c.wheel.h + 10, 88]], voxel: 0.3, material: 'acero', error: 0.08, ratio: 0.005, aoWeight: 0.1 },
+    acero: { sdf: steelSdf(c), bounds: c.operator === 'cap' ? [[-22, c.neckTop - 2, -22], [22, c.cap.y0 + 12, 22]] : [[-72, Y_BONNET - 2, -88], [72, c.wheel.y + c.wheel.h + 10, 88]], voxel: 0.3, material: 'acero', error: 0.08, ratio: 0.005, aoWeight: 0.1 },
     laton: { sdf: brassSdf(c), bounds: [[-42, c.neckTop - 2, -42], [42, c.neckTop + 22, 42]], voxel: 0.3, material: 'laton', error: 0.1, ratio: 0.005, aoWeight: 0.08 },
     caucho: { sdf: rubberSdf(c), bounds: [[-74, SEAM - 2, -98], [74, c.operator === 'cap' ? c.neckTop + 30 : SEAM + 4, 98]], voxel: 0.35, material: 'caucho', error: 0.1, ratio: 0.005 },
   };
   if (c.operator === 'handwheel') parts.volante = { sdf: handwheelSdf(c, F), bounds: [[-128, c.wheel.y - 14, -128], [128, c.wheel.y + c.wheel.h + 4, 128]], voxel: 0.36, material: 'epoxi', error: 0.2, ratio: 0.005, normalWeight: 0.1, aoWeight: 0.12 };
-  else parts.cuadrante = { sdf: capSdf(c, F), bounds: [[-50, c.cap.y0 - 2, -50], [50, c.cap.yT + 2, 50]], voxel: 0.32, material: 'epoxi', error: 0.04, ratio: 0.005, normalWeight: 0.2 };
+  else {
+    parts.cuadrante = { sdf: capSdf(c, F), bounds: [[-53, c.cap.y0 - 2, -53], [53, c.cap.yT + 2, 53]], voxel: 0.32, material: 'epoxi-dado', error: 0.04, ratio: 0.005, normalWeight: 0.2 };
+    parts.inserto = { sdf: capInsertSdf(), bounds: [[-23, CAP_FLOOR - 4, -23], [23, CAP_FLOOR + 7, 23]], voxel: 0.2, material: 'hierro', error: 0.03, ratio: 0.005 };
+    parts.tornillo = { sdf: capScrewSdf(), bounds: [[-14, CAP_FLOOR + 1, -14], [14, CAP_FLOOR + 8, 14]], voxel: 0.1, material: 'acero', error: 0.015, ratio: 0.005 };
+  }
   if (c.bonnet !== 'hitaly') parts.tapones = { sdf: capsWhiteSdf(c), bounds: [[-72, c.bossTop - 6, -88], [72, c.bossTop + 2, 88]], voxel: 0.25, material: 'blanco', error: 0.03, ratio: 0.005 };
   const all = Object.values(parts).map((p) => p.sdf);
   parts.escena = { sdf: (x, y, z) => { let d = Infinity; for (const f of all) d = Math.min(d, f(x, y, z)); return d; }, bounds: null };
@@ -356,6 +402,6 @@ export async function prepareAssets(variant, { textBlockField, logoField }) {
   }
   if (c.bonnetText) fields.bonnet = await textBlockField(c.bonnetText.map((t) => ({ text: t, height: 4.2 })), { gap: 1.4 });
   // q-05: flecha ▲ sobre OPEN en la brida del cuadrante.
-  if (c.operator === 'cap') fields.capOpen = await textBlockField([{ text: '▲', height: 2.6 }, { text: 'OPEN', height: 4.5 }], { gap: 0.9 });
+  if (c.operator === 'cap') fields.capOpen = await textBlockField([{ text: '▲', height: 1.6 }, { text: 'OPEN', height: 4.8 }], { gap: 0.5 });
   return { variant, fields };
 }

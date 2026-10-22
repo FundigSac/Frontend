@@ -20,7 +20,11 @@ const OUT = { hitaly: 'valvula-hitaly.glb', fundigsac: 'valvula-fundigsac.glb', 
 // Esmalte epoxi azul RAL 5005 medido en las fotos (sRGB ~ 5, 67, 190 a plena luz), barniz brillante.
 const MATERIALS = {
   epoxi: { color: [0.0045, 0.064, 0.56], rough: 0.3, clearcoat: 1, ccRough: 0.06, peel: 0.05, coatPeel: 0.11 },
+  // Dado del cuadrante: caras planas y lisas en las fotos (q-02, q-04), con la piel de naranja apenas insinuada.
+  'epoxi-dado': { color: [0.0045, 0.064, 0.56], rough: 0.3, clearcoat: 1, ccRough: 0.05, peel: 0.01, coatPeel: 0.015 },
   'epoxi-interior': { color: [0.0045, 0.064, 0.56], rough: 0.55, peel: 0.05 },
+  // Inserto de hierro mecanizado sin pintar en el fondo del dado (q-05): gris mate.
+  hierro: { color: [0.5, 0.5, 0.48], rough: 0.6, metal: 0.6 },
   epdm: { color: [0.055, 0.056, 0.06], rough: 0.42 },
   acero: { color: [0.86, 0.86, 0.87], rough: 0.24, metal: 0.8 },
   laton: { color: [0.95, 0.68, 0.3], rough: 0.22, metal: 1 },
@@ -182,7 +186,7 @@ async function bakeAo(pool, mesh) {
 function isInterior(part, x, y, z) {
   if (part === 'cuerpo') return (Math.hypot(y, z) < BORE_IN && Math.abs(x) < 94) || (Math.abs(x) < 22.6 && Math.abs(z) < 64.6 && y > -60 && y < 92);
   if (part === 'bonete') return Math.abs(x) < 20.6 && Math.abs(z) < 62.6 && y < 150;
-  if (part === 'cuadrante') return Math.hypot(x, z) < 17.4 && y > 300;
+  if (part === 'cuadrante') return Math.hypot(x, z) < 33.9 && y > 286 && y < 334;
   return false;
 }
 const BORE_IN = 50.6;
@@ -228,7 +232,7 @@ async function buildVariant(variant) {
       const cx = (mesh.positions[a * 3] + mesh.positions[b * 3] + mesh.positions[c * 3]) / 3;
       const cy = (mesh.positions[a * 3 + 1] + mesh.positions[b * 3 + 1] + mesh.positions[c * 3 + 1]) / 3;
       const cz = (mesh.positions[a * 3 + 2] + mesh.positions[b * 3 + 2] + mesh.positions[c * 3 + 2]) / 3;
-      const mat = spec.material === 'epoxi' && isInterior(name, cx, cy, cz) ? 'epoxi-interior' : spec.material;
+      const mat = spec.material.startsWith('epoxi') && isInterior(name, cx, cy, cz) ? 'epoxi-interior' : spec.material;
       if (!groups.has(mat)) groups.set(mat, []);
       groups.get(mat).push(a, b, c);
     }
