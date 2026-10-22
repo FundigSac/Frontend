@@ -77,8 +77,8 @@ const DOC_PREVIEWS: Record<string, string> = {
   "/docs/ficha-tecnica-valvula-compuerta-bridada.pdf": "/media/valvula-ficha/ficha-p1-w384.webp",
   "/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf": "/media/valvula-ficha/ft-fundigsac-p1-w384.webp",
   "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf": "/media/valvula-ficha/ficha-garantia-extendida-r4-p1-w384.webp",
-  "/docs/flyer-valvula-compuerta-fundigsac-volante.pdf": "/media/valvula-ficha/flyer-volante-r4-w384.webp",
-  "/docs/flyer-valvula-compuerta-fundigsac-dado.pdf": "/media/valvula-ficha/flyer-dado-r4-w384.webp",
+  "/docs/flyer-valvula-compuerta-fundigsac-volante.pdf": "/media/valvula-ficha/flyer-volante-r5-w384.webp",
+  "/docs/flyer-valvula-compuerta-fundigsac-dado.pdf": "/media/valvula-ficha/flyer-dado-r5-w384.webp",
 };
 
 /** Número de WhatsApp o enlace wa.me dentro de una respuesta: se muestra además como botón. */
