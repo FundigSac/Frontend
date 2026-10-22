@@ -240,14 +240,14 @@ function buildSpoke(R, Ri, hubR, yMid) {
 // ---------- cuadrante de maniobra (garantía extendida) ----------
 // Medidas de q-01/q-03 con el cuello (Ø75) como referencia: dado de □84 y 69 de alto con boca Ø67 y escalón Ø59
 // hasta el inserto metálico del fondo (q-05). La aleta es una pestaña de 6 mm alrededor del dado con dos orejas
-// semicirculares a los costados, a lo largo del tubo (fotos de taller del 2026-10-22): su cara superior baja en
-// pendiente hacia el borde; una lleva ▲ OPEN y la otra tres nervios en arco.
+// semicirculares planas a los costados, a lo largo del tubo (fotos de taller del 2026-10-22), del mismo espesor
+// que la pestaña; una lleva ▲ OPEN y la otra tres nervios en arco.
 const CAP_HALF = 42, CAP_BORE = 33.5, CAP_STEP = 29.5, CAP_FLOOR = 288;
-const EAR = { cx: 44, r: 38, rise: 9 };
+const EAR = { cx: 42, r: 40 };
 const capFlangeOutline = (x, z) => {
   const ledge = S.sdRoundRect2(x, z, CAP_HALF, CAP_HALF, 8) - 6;
   const ear = Math.hypot(Math.abs(x) - EAR.cx, z) - EAR.r;
-  return S.smin(ledge, ear, 10);
+  return S.smin(ledge, ear, 4);
 };
 function capSdf(c, F) {
   const { y0, yF, yT } = c.cap, xOut = EAR.cx + EAR.r;
@@ -255,10 +255,7 @@ function capSdf(c, F) {
     const box = S.sdBox(x, y - (y0 + yT) / 2, z, xOut + 3, (yT - y0) / 2 + 2, 53);
     if (box > 4) return box;
     const ax = Math.abs(x), r = Math.hypot(x, z);
-    // Cara superior de la aleta: abombada, alta junto al dado y cayendo hasta el borde de las orejas.
-    const t = clamp((ax - CAP_HALF) / (xOut - 4 - CAP_HALF), 0, 1), yTop = yF + EAR.rise * (1 - t * t);
-    let flange = extrude(capFlangeOutline(x, z), y - (y0 + yF + EAR.rise) / 2, (yF + EAR.rise - y0) / 2, 2.8);
-    flange = I(flange, (y - yTop) * 0.985, 3);
+    const flange = extrude(capFlangeOutline(x, z), y - (y0 + yF) / 2, (yF - y0) / 2, 2.8);
     const socket = extrude(S.sdRoundRect2(x, z, CAP_HALF, CAP_HALF, 8), y - (yF + yT) / 2 + 1, (yT - yF) / 2 + 1, 2.6);
     let d = U(flange, socket, 6);
     // Boca, escalón y fondo donde asoma el inserto (q-05).
@@ -267,8 +264,8 @@ function capSdf(c, F) {
     // Alojamiento del vástago por debajo.
     d = D(d, S.sdCylY(x, y - y0, z, 17.5, 12), 0.6);
     // Marcas fundidas sobre las orejas: ▲ OPEN (+X, se lee desde fuera) y nervios en arco (−X).
-    if (ax > CAP_HALF + 2 && y > yTop - 3 && y < yTop + 2.5) {
-      const w = (y - yTop) * 0.985;
+    if (ax > CAP_HALF + 2 && y > yF - 3 && y < yF + 2.5) {
+      const w = y - yF;
       if (x > 0 && F.capOpen) d = U(d, relief(F.capOpen, -z, EAR.cx + 18 - x, w, 1.0), 0.25);
       if (x < 0) {
         const er = Math.hypot(ax - EAR.cx, z), ang = Math.abs(Math.atan2(z, ax - EAR.cx));
