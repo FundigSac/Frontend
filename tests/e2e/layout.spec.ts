@@ -49,3 +49,49 @@ test.describe("diseño responsive", () => {
     });
   }
 });
+
+test.describe("buscador animado de la cabecera", () => {
+  // Alrededor de 1280 y 1440 px la cabecera lleva menú y botón de cotización: abrir la barra no puede empujarlos ni desbordar.
+  for (const width of [1024, 1280, 1440, 1920]) {
+    test(`abre sin mover la cabecera ni desbordar a ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
+      const search = page.locator(".lp-search");
+      const actions = page.locator(".lp-header__actions");
+      const before = await actions.boundingBox();
+      await search.getByRole("button", { name: "Buscar" }).click();
+      await expect(search).toHaveClass(/is-open/);
+      await expect(search.getByRole("searchbox")).toBeFocused();
+      // La cápsula termina de crecer: su ancho animado llega al valor final.
+      await expect.poll(() => search.evaluate((el) => parseFloat(getComputedStyle(el, "::before").width))).toBeGreaterThan(200);
+      const after = await actions.boundingBox();
+      expect(after).toEqual(before);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow).toBeLessThanOrEqual(1);
+      const quote = page.locator(".lp-header__quote");
+      if (await quote.isVisible()) {
+        const box = await quote.boundingBox();
+        expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+      }
+    });
+  }
+
+  test("en móvil cubre la cabecera con fondo opaco y se cierra con la X", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
+    const search = page.locator(".lp-search");
+    await search.getByRole("button", { name: "Buscar" }).click();
+    await expect(search).toHaveClass(/is-open/);
+    const header = await page.locator(".lp-header").boundingBox();
+    const bar = await search.boundingBox();
+    expect(bar!.x).toBeLessThanOrEqual(1);
+    expect(bar!.width).toBeGreaterThanOrEqual(388);
+    expect(bar!.height).toBeGreaterThanOrEqual(header!.height - 2);
+    const alpha = await search.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(alpha).not.toMatch(/rgba\(.*,\s*0\)$|transparent/);
+    await search.getByRole("searchbox").fill("valvula");
+    await search.getByRole("button", { name: "Cerrar búsqueda" }).click();
+    await expect(search).not.toHaveClass(/is-open/);
+    await expect(search.getByRole("searchbox")).toHaveValue("");
+  });
+});

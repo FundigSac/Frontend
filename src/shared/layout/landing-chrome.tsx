@@ -231,6 +231,18 @@ export function LandingHeader() {
             >
               <Search aria-hidden="true" size={20} strokeWidth={2} />
             </button>
+            {/* Solo en móvil: la barra abierta cubre la cabecera y necesita su propia salida. */}
+            <button
+              type="button"
+              className="lp-search__close"
+              aria-label={t.searchClose}
+              onClick={() => {
+                setQuery("");
+                setSearchOpen(false);
+              }}
+            >
+              <X aria-hidden="true" size={20} strokeWidth={2} />
+            </button>
           </form>
           <div className="lp-lang">
             <button
