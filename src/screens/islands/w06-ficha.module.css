@@ -381,7 +381,7 @@
   white-space: nowrap;
   transition: background 0.2s ease, color 0.2s ease;
 }
-.segment button:hover { color: var(--ink); }
+.segment button:not(.segmentOn):hover { color: var(--ink); }
 .segment .segmentOn { background: var(--sel); color: var(--sel-ink); box-shadow: 0 6px 14px -8px rgb(15 27 45 / 60%); }
 .segment button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
