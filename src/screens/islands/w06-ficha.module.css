@@ -1253,15 +1253,10 @@
   .relCard { scroll-snap-align: start; }
   .measure dd { font-size: 17px; }
   .sizeGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  /* En pantallas muy angostas el texto justificado se abre demasiado: vuelve a la izquierda. */
-  .lead,
-  .descText,
-  .featText span,
-  .flangeCard p,
-  .relBody > span,
-  .ctaText { text-align: left; }
+  /* El texto sigue justificado también en móvil (sin cortar palabras): los titulares quedan alineados a ambos lados
+     salvo su última línea. */
   .info h1,
-  .descMain h2 { text-align: left; text-align-last: auto; }
+  .descMain h2 { text-align: justify; text-align-last: left; }
 }
 
 @media (max-width: 420px) {

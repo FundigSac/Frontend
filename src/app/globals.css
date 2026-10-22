@@ -313,3 +313,13 @@ html[data-lp-theme="dark"] .text-outline-variant {
 html {
   scroll-padding-top: 96px;
 }
+
+/* Móvil: el texto corrido va justificado en todo el sitio (sin cortar palabras con guion), como en escritorio. Varias
+   pantallas lo dejaban a la izquierda en pantallas angostas. El aviso del mapa queda como está. */
+@media (max-width: 860px) {
+  main p:not(.ce__copy *) {
+    text-align: justify !important;
+    text-justify: inter-word;
+    hyphens: none;
+  }
+}
