@@ -1687,3 +1687,30 @@ html[data-lp-theme="dark"] .ai-field:focus-within {
   border-color: #5b95f0;
   box-shadow: 0 0 0 3px rgb(91 149 240 / 22%);
 }
+
+/* Texto de varios renglones: el campo ocupa todo el ancho y los botones pasan a una fila propia debajo, "+" a la
+   izquierda y enviar a la derecha, dentro de la barra y alineados con sus bordes. */
+.ai-field[data-multiline="true"] {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "text text text"
+    "plus . send";
+  gap: 2px 6px;
+  padding: 8px 8px 8px 8px;
+  border-radius: 24px;
+}
+
+.ai-field[data-multiline="true"] textarea {
+  grid-area: text;
+  padding: 4px 8px 6px;
+}
+
+.ai-field[data-multiline="true"] .ai-attach-btn {
+  grid-area: plus;
+}
+
+.ai-field[data-multiline="true"] .ai-send {
+  grid-area: send;
+}

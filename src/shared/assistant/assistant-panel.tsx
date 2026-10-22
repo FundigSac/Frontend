@@ -311,12 +311,20 @@ export default function AssistantPanel({
 
   useEffect(() => () => window.clearTimeout(reactionTimer.current), []);
 
+  // Con más de un renglón la barra pasa a dos filas (texto arriba, "+" y enviar abajo) para que los botones no queden
+  // pegados a la esquina del texto. Solo vuelve a una fila al vaciarse, así no parpadea al cambiar el ancho.
+  const [multiline, setMultiline] = useState(false);
   const resize = useCallback(() => {
     const el = inputRef.current;
     if (!el) return;
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
+    setMultiline((was) => (!el.value ? false : was || el.scrollHeight > 46 || /\n/.test(el.value)));
   }, []);
+  // También al vaciarse el campo (envío o borrado), que no pasa por onChange.
+  useEffect(() => {
+    resize();
+  }, [input, resize]);
 
   const attach = useCallback(async (file: File | undefined) => {
     if (!file) return;
@@ -574,7 +582,7 @@ export default function AssistantPanel({
             {attachError && <p className="ai-attach__error" role="alert">{t.attachErrors[attachError]}</p>}
           </div>
         )}
-        <div className="ai-field">
+        <div className="ai-field" data-multiline={multiline ? "true" : "false"}>
           <input
             ref={fileRef}
             type="file"
