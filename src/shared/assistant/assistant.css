@@ -367,10 +367,20 @@ body:has(.ck) .ai-teaser {
   display: none;
 }
 
-/* En la portada sube por encima de los controles del carrusel del hero, que quedan en la misma esquina. */
+/* En la portada los controles del carrusel ocupan la franja junto al botón, así que el aviso sube sobre la columna de
+   flotantes: queda por encima del WhatsApp (118 px + 56 px + 26 px de aire) y no a su costado. */
 @media (min-width: 861px) {
   body:has(.lp-hero__controls-row) .ai-teaser {
-    bottom: 132px;
+    right: 18px;
+    bottom: 200px;
+    border-radius: 16px;
+  }
+}
+
+/* En pantallas angostas el aviso nunca invade la columna de botones. */
+@media (max-width: 860px) {
+  .ai-teaser {
+    max-width: calc(100vw - 112px);
   }
 }
 
