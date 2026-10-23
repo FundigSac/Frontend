@@ -52,7 +52,8 @@ function AttachmentChip({ info, photoLabel, onRemove, removeLabel }: { info: Att
         <img className="ai-attach__thumb" src={info.thumb} alt="" width={36} height={36} />
       ) : (
         <span className="ai-attach__icon" aria-hidden="true">
-          <FileText size={18} />
+          <FileText size={16} strokeWidth={2.2} />
+          <b>{(/\.([a-z0-9]{1,4})$/i.exec(info.name)?.[1] ?? (info.kind === "pdf" ? "pdf" : "txt")).toUpperCase()}</b>
         </span>
       )}
       <span className="ai-attach__name">{name}</span>

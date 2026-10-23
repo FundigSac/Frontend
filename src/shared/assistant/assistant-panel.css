@@ -1225,9 +1225,24 @@ html[data-lp-theme="dark"] .ai-compose {
   object-fit: cover;
 }
 
+/* Ficha blanca con el tipo de archivo: el naranja sobre la burbuja naranja (modo oscuro) no se distinguía. */
 .ai-attach__icon {
-  background: rgb(242 106 27 / 14%);
-  color: var(--ai-orange);
+  gap: 1px;
+  align-content: center;
+  background: #fff;
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 35%);
+  color: #0b2244;
+}
+
+.ai-attach__icon svg {
+  color: #d9560f;
+}
+
+.ai-attach__icon b {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
 
 .ai-attach__name {
