@@ -20,6 +20,12 @@ const MAX_IMAGE_CHARS = 1_500_000;
 
 export const infoOf = (a: PendingAttachment): AttachmentInfo => ({ kind: a.kind, name: a.name, thumb: a.kind === "image" ? a.thumb : undefined });
 
+/** Nombres que pone la cámara o el sistema (IMG_2026…, image.jpg, un UUID): no dicen nada a la persona, se muestran como «Foto». */
+export function isGeneratedName(name: string): boolean {
+  const stem = name.replace(/\.[^.]+$/, "").trim();
+  return !stem || /^(image|img|photo|foto|dsc|pxl|mvimg|screenshot|captura|whatsapp|camera|cam|capture|snap|blob|download)/i.test(stem) || /\d{6,}/.test(stem) || /^[0-9a-f-]{16,}$/i.test(stem);
+}
+
 const toBase64 = (file: Blob) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();

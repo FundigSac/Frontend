@@ -31,7 +31,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type 
 import { site } from "@/lib/site-info";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ASSISTANT_COPY, suggestionsFor, whatsappHref } from "./assistant-copy";
-import { ACCEPT, docLinks, whatsappMention, prepareAttachment, type AttachError, type AttachmentInfo, type PendingAttachment } from "./assistant-attach";
+import { ACCEPT, docLinks, isGeneratedName, whatsappMention, prepareAttachment, type AttachError, type AttachmentInfo, type PendingAttachment } from "./assistant-attach";
 import { AssistantMarkdown } from "./assistant-markdown";
 import { AssistantMascot, type MascotMood } from "./assistant-mascot";
 import { MAX_INPUT, parseReply, useAssistantChat, type ChatMessage, type Settled } from "./use-assistant-chat";
@@ -43,7 +43,8 @@ const ICONS = { gauge: Gauge, file: FileText, shield: ShieldCheck, quote: Clipbo
 
 const isPhone = () => window.matchMedia("(max-width: 640px)").matches;
 
-function AttachmentChip({ info, onRemove, removeLabel }: { info: AttachmentInfo; onRemove?: () => void; removeLabel?: string }) {
+function AttachmentChip({ info, photoLabel, onRemove, removeLabel }: { info: AttachmentInfo; photoLabel: string; onRemove?: () => void; removeLabel?: string }) {
+  const name = info.kind === "image" && isGeneratedName(info.name) ? photoLabel : info.name;
   return (
     <span className={`ai-attach${onRemove ? " is-pending" : ""}`}>
       {info.thumb ? (
@@ -54,7 +55,7 @@ function AttachmentChip({ info, onRemove, removeLabel }: { info: AttachmentInfo;
           <FileText size={18} />
         </span>
       )}
-      <span className="ai-attach__name">{info.name}</span>
+      <span className="ai-attach__name">{name}</span>
       {onRemove && (
         <button type="button" className="ai-attach__remove" onClick={onRemove} aria-label={removeLabel} title={removeLabel}>
           <X size={14} aria-hidden="true" />
@@ -507,7 +508,7 @@ export default function AssistantPanel({
                 <div key={m.id} className="ai-msg ai-msg--user">
                   <span className="ai-sr">{t.you}: </span>
                   <div className="ai-bubble">
-                    {m.attachment && <AttachmentChip info={m.attachment} />}
+                    {m.attachment && <AttachmentChip info={m.attachment} photoLabel={t.attachPhoto} />}
                     {m.content}
                   </div>
                   {m.at && (
@@ -577,7 +578,7 @@ export default function AssistantPanel({
         )}
         {(attachment || attachError || preparing) && (
           <div className="ai-attach-bar" aria-live="polite">
-            {attachment && <AttachmentChip info={{ kind: attachment.kind, name: attachment.name, thumb: attachment.kind === "image" ? attachment.thumb : undefined }} onRemove={() => setAttachment(null)} removeLabel={t.attachRemove} />}
+            {attachment && <AttachmentChip info={{ kind: attachment.kind, name: attachment.name, thumb: attachment.kind === "image" ? attachment.thumb : undefined }} photoLabel={t.attachPhoto} onRemove={() => setAttachment(null)} removeLabel={t.attachRemove} />}
             {preparing && <span className="ai-attach__status">…</span>}
             {attachError && <p className="ai-attach__error" role="alert">{t.attachErrors[attachError]}</p>}
           </div>
