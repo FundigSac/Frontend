@@ -248,18 +248,6 @@ html[data-lp-theme="dark"] .ac-lead {
   width: min(100%, 540px);
 }
 
-.ac-brand {
-  display: block;
-  width: 200px;
-  margin: 0 auto 30px;
-}
-
-.ac-brand img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .ac-head {
   display: grid;
   justify-items: start;
@@ -1100,11 +1088,6 @@ html[data-lp-theme="dark"] .ac-done h2 {
 
 
 
-  .ac-brand {
-    width: 168px;
-    margin-bottom: 24px;
-  }
-
   .ac-grid,
   .ac-rules {
     grid-template-columns: 1fr;
@@ -1120,11 +1103,6 @@ html[data-lp-theme="dark"] .ac-done h2 {
 @media (min-width: 961px) and (max-height: 900px) {
   .ac-side {
     padding-block: 24px 28px;
-  }
-
-  .ac-brand {
-    width: 164px;
-    margin-bottom: 16px;
   }
 
   .ac-head h2 {
