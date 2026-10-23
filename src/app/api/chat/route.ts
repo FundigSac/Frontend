@@ -188,12 +188,12 @@ export async function POST(request: Request) {
         let started = false;
         try {
           const client = new Anthropic();
-          const reply = client.beta.messages.stream(
+          // Haiku 5.5 no admite `fallbacks` en el servidor: una negativa del modelo se informa al cliente como «refusal».
+          const reply = client.messages.stream(
             {
               model: MODEL,
               max_tokens: 4096,
-              betas: ["server-side-fallback-2026-07-01"],
-              fallbacks: "default",
+              cache_control: { type: "ephemeral" },
               thinking: { type: "adaptive" },
               output_config: { effort: EFFORT },
               // Prefijo estable (rol + base de conocimiento) en caché; el contexto de la visita va al final.
