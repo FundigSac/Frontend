@@ -1189,8 +1189,14 @@ html[data-lp-theme="dark"] .ai-compose {
   margin: 0 0 8px;
 }
 
+/* La burbuja es un grid: sin min-width: 0 el chip no baja de lo que mide su nombre y se sale de la burbuja. */
+.ai-bubble:has(> .ai-attach) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .ai-attach {
   display: inline-flex;
+  min-width: 0;
   max-width: 100%;
   align-items: center;
   gap: 9px;
