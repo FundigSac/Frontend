@@ -18,7 +18,7 @@ import { isSameOriginRequest, readJsonBody } from "@/shared/security/request-gua
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const MODEL = process.env.CHAT_MODEL || "claude-opus-5-5";
+const MODEL = process.env.CHAT_MODEL || "claude-haiku-5-5";
 const EFFORT = (["low", "medium", "high"] as const).find((e) => e === process.env.CHAT_EFFORT) ?? "low";
 /** GroqCloud: plan gratuito con tope de tokens por minuto, así que el historial y la respuesta se acotan. */
 const GROQ_MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
