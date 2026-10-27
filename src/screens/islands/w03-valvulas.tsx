@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, BadgeCheck, ChevronDown, Download, Filter, Headset, Layers, Mail, MessageCircleMore, PackageCheck, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState, type PointerEvent } from "react";
+import { useMemo, useState } from "react";
+import { CardMedia } from "./w03-valve-media";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { DATASHEETS } from "./w06-ficha-data";
@@ -26,15 +27,18 @@ const GROUPS: readonly { id: GroupId; image: string }[] = [
   { id: "control", image: "/media/valvulas-page/check-swing.webp" },
 ];
 
-const VALVES: readonly { id: string; group: GroupId; image: string; href: string }[] = [
-  { id: "compuerta", group: "compuerta", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta" },
-  { id: "compuerta-fundigsac", group: "compuerta", image: "/media/valvula-fundigsac/f-07.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
-  { id: "compuerta-garantia-extendida", group: "compuerta", image: "/media/valvula-fundigsac-cuadrante/g-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
-  { id: "mariposa", group: "mariposa", image: "/media/valvulas-page/mariposa.webp", href: "/productos/valvulas/valvula-mariposa" },
-  { id: "check-swing", group: "control", image: "/media/valvulas-page/check-swing.webp", href: "/contacto" },
-  { id: "check-flex", group: "control", image: "/media/valvulas-page/check-flex.webp", href: "/contacto" },
-  { id: "reductora", group: "reduccion", image: "/media/valvulas-page/valvula-reductora.webp", href: "/contacto" },
-  { id: "aire", group: "aire", image: "/media/valvulas-page/valvula-aire.webp", href: "/contacto" },
+/** Fotos reales de cada compuerta (recortes con transparencia), las mismas de su ficha: el carrusel de la tarjeta las recorre. */
+const photos = (dir: string, files: readonly string[]) => files.map((file) => `/media/${dir}/${file}.webp`);
+
+const VALVES: readonly { id: string; group: GroupId; images: readonly string[]; href: string }[] = [
+  { id: "compuerta", group: "compuerta", images: photos("valvula-hd", ["v-01", "v-02", "v-03", "v-04", "v-05"]), href: "/productos/valvulas/valvula-compuerta" },
+  { id: "compuerta-fundigsac", group: "compuerta", images: photos("valvula-fundigsac", ["f-07", "f-02", "f-03", "f-04", "f-06"]), href: "/productos/valvulas/valvula-compuerta-fundigsac" },
+  { id: "compuerta-garantia-extendida", group: "compuerta", images: photos("valvula-fundigsac-cuadrante", ["g-01", "g-02", "g-03", "g-04", "q-05"]), href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
+  { id: "mariposa", group: "mariposa", images: ["/media/valvulas-page/mariposa.webp"], href: "/productos/valvulas/valvula-mariposa" },
+  { id: "check-swing", group: "control", images: ["/media/valvulas-page/check-swing.webp"], href: "/contacto" },
+  { id: "check-flex", group: "control", images: ["/media/valvulas-page/check-flex.webp"], href: "/contacto" },
+  { id: "reductora", group: "reduccion", images: ["/media/valvulas-page/valvula-reductora.webp"], href: "/contacto" },
+  { id: "aire", group: "aire", images: ["/media/valvulas-page/valvula-aire.webp"], href: "/contacto" },
 ];
 
 /** Rango de diámetros de las fichas que ya tienen datos aprobados. */
@@ -48,23 +52,6 @@ const BENEFIT_ICONS = [Headset, ShieldCheck, PackageCheck, SlidersHorizontal] as
 
 function normalize(value: string) {
   return value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-}
-
-/** Inclina la válvula hacia el cursor y mueve el brillo; solo con ratón (en táctil queda la flotación). */
-function tilt(event: PointerEvent<HTMLElement>) {
-  if (event.pointerType !== "mouse") return;
-  const el = event.currentTarget;
-  const box = el.getBoundingClientRect();
-  const x = (event.clientX - box.left) / box.width;
-  const y = (event.clientY - box.top) / box.height;
-  el.style.setProperty("--ry", ((x - 0.5) * 16).toFixed(2) + "deg");
-  el.style.setProperty("--rx", ((0.5 - y) * 12).toFixed(2) + "deg");
-  el.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
-  el.style.setProperty("--my", (y * 100).toFixed(1) + "%");
-}
-function untilt(event: PointerEvent<HTMLElement>) {
-  const el = event.currentTarget;
-  for (const name of ["--rx", "--ry", "--mx", "--my"]) el.style.removeProperty(name);
 }
 
 export function W03Valvulas() {
@@ -178,12 +165,17 @@ export function W03Valvulas() {
                 const range = RANGES[valve.id];
                 return (
                 <article key={valve.id} className={styles.card} style={{ ["--i" as string]: index % 3, ["--n" as string]: index }}>
-                  <Link href={sheetHref(valve.href, info.name)} className={styles.cardImage + (valve.group === "compuerta" ? "" : " " + styles.cardFlat)} onPointerMove={tilt} onPointerLeave={untilt} aria-label={(valve.href === "/contacto" ? t.requestSheetOf : t.viewSheetOf) + info.name + (info.badge ? " · " + info.badge : "")}>
-                    <span className={styles.cardMotion} aria-hidden="true">
-                      <Image src={valve.image} alt="" fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
-                    </span>
+                  <CardMedia
+                    href={sheetHref(valve.href, info.name)}
+                    label={(valve.href === "/contacto" ? t.requestSheetOf : t.viewSheetOf) + info.name + (info.badge ? " · " + info.badge : "")}
+                    images={valve.images}
+                    flat={valve.group !== "compuerta"}
+                    index={index}
+                    sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw"
+                    dotLabel={(position, total) => (lang === "en" ? `Photo ${position} of ${total}` : `Foto ${position} de ${total}`)}
+                  >
                     {info.badge && <span className={styles.cardBadge}>{info.badge}</span>}
-                  </Link>
+                  </CardMedia>
                   <div className={styles.cardBody}>
                     <h3>{info.name}</h3>
                     <p>{info.description}</p>

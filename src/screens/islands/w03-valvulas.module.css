@@ -769,6 +769,76 @@
 
 }
 
+/* Carrusel de fotos de la tarjeta. */
+.cardMedia {
+  position: relative;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slide[data-pos="active"] {
+  opacity: 1;
+}
+
+.dots {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.dot {
+  display: block;
+  padding: 8px 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.dotTrack {
+  display: block;
+  width: 18px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(100, 112, 124, .34);
+  transition: width .35s var(--ease), background-color .25s ease;
+}
+
+.dot:hover .dotTrack {
+  background: rgba(100, 112, 124, .55);
+}
+
+.dot[aria-current="true"] .dotTrack {
+  width: 34px;
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: -4px;
+  border-radius: 6px;
+}
+
+.dotFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #c94f0a;
+  transform-origin: left center;
+}
+
 /* Etiqueta que distingue la válvula FUNDIGSAC con garantía extendida. */
 .cardBadge {
   position: absolute;
@@ -1051,6 +1121,17 @@
 
   .card:hover .cardImage img { transform: none; }
 
+  /* Cambio de foto: la que sale se desliza a la izquierda y la nueva entra por la derecha. */
+  .slide { transition: opacity .75s ease, transform .95s var(--ease); }
+  .slide[data-pos="prev"] { transform: translateX(-24%) scale(.88) rotate(-2.5deg); }
+  .slide[data-pos="next"] { transform: translateX(24%) scale(.88) rotate(2.5deg); }
+
+  /* La barra del punto activo marca el tiempo de la foto; al terminar, avanza. Se detiene con el cursor o fuera de pantalla. */
+  .dotFill { animation: dotFill var(--dur, 3.6s) linear forwards; }
+  .card:hover .dotFill,
+  .cardMedia:focus-within .dotFill,
+  .mediaOff .dotFill { animation-play-state: paused; }
+
   /* Fotos con fondo blanco: no se flotan (se vería moverse el rectángulo); deriva lenta de zoom y sin sombra de suelo. */
   .cardFlat::after { display: none; }
   .cardFlat img { animation: valveDrift 9s ease-in-out infinite alternate; animation-delay: calc(var(--n, 0) * -1.3s); }
@@ -1069,6 +1150,11 @@
 @keyframes valveFloat {
   0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
   50% { transform: translate3d(0, -6px, 0) rotate(.5deg); }
+}
+
+@keyframes dotFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 @keyframes valveDrift {
