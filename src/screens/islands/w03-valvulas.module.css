@@ -774,7 +774,7 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  z-index: 1;
+  z-index: 2;
   padding: 5px 11px;
   border-radius: 999px;
   /* Naranja profundo de los botones (#c94f0a): el #ed762b daba 2,9:1 con texto blanco de 12 px. */
@@ -1001,8 +1001,89 @@
     }
   }
 
-  .cardImage img { transition: transform .7s var(--ease); }
-  .card:hover .cardImage img { transform: scale(1.06) translateY(-3px); }
+  /* Válvula viva: flota, proyecta sombra de suelo, brilla y se inclina hacia el cursor. */
+  .cardImage { perspective: 900px; --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 38%; }
+
+  .cardImage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(60% 55% at var(--mx) var(--my), rgba(59, 130, 246, .22), rgba(59, 130, 246, 0) 70%);
+    opacity: .55;
+    transition: opacity .5s ease;
+    pointer-events: none;
+  }
+
+  .card:hover .cardImage::before { opacity: 1; }
+
+  .cardImage::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    z-index: 0;
+    width: 52%;
+    height: 7%;
+    margin-left: -26%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(10, 18, 30, .34), rgba(10, 18, 30, 0));
+    animation: valveShadow 6s ease-in-out infinite;
+    animation-delay: calc(var(--n, 0) * -.9s);
+    pointer-events: none;
+  }
+
+  .cardMotion {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s, 1));
+    transition: transform .45s var(--ease);
+    will-change: transform;
+  }
+
+  .card:hover .cardMotion { --s: 1.05; transition-duration: .18s; }
+
+  .cardImage img {
+    animation: valveFloat 6s ease-in-out infinite;
+    animation-delay: calc(var(--n, 0) * -.9s);
+  }
+
+  .card:hover .cardImage img { transform: none; }
+
+  /* Fotos con fondo blanco: no se flotan (se vería moverse el rectángulo); deriva lenta de zoom y sin sombra de suelo. */
+  .cardFlat::after { display: none; }
+  .cardFlat img { animation: valveDrift 9s ease-in-out infinite alternate; animation-delay: calc(var(--n, 0) * -1.3s); }
+
+  .cardBadge { overflow: hidden; }
+  .cardBadge::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .45) 50%, transparent 65%);
+    transform: translateX(-120%);
+    animation: badgeSheen 4.5s ease-in-out 1.2s infinite;
+  }
+}
+
+@keyframes valveFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -6px, 0) rotate(.5deg); }
+}
+
+@keyframes valveDrift {
+  from { transform: scale(1); }
+  to { transform: scale(1.045); }
+}
+
+@keyframes valveShadow {
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50% { transform: scaleX(.82); opacity: .55; }
+}
+
+@keyframes badgeSheen {
+  0%, 55% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
 }
 
 @media (max-width: 1100px) {

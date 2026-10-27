@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, BadgeCheck, ChevronDown, Download, Filter, Headset, Layers, Mail, MessageCircleMore, PackageCheck, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type PointerEvent } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { DATASHEETS } from "./w06-ficha-data";
@@ -48,6 +48,23 @@ const BENEFIT_ICONS = [Headset, ShieldCheck, PackageCheck, SlidersHorizontal] as
 
 function normalize(value: string) {
   return value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+/** Inclina la válvula hacia el cursor y mueve el brillo; solo con ratón (en táctil queda la flotación). */
+function tilt(event: PointerEvent<HTMLElement>) {
+  if (event.pointerType !== "mouse") return;
+  const el = event.currentTarget;
+  const box = el.getBoundingClientRect();
+  const x = (event.clientX - box.left) / box.width;
+  const y = (event.clientY - box.top) / box.height;
+  el.style.setProperty("--ry", ((x - 0.5) * 16).toFixed(2) + "deg");
+  el.style.setProperty("--rx", ((0.5 - y) * 12).toFixed(2) + "deg");
+  el.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
+  el.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+}
+function untilt(event: PointerEvent<HTMLElement>) {
+  const el = event.currentTarget;
+  for (const name of ["--rx", "--ry", "--mx", "--my"]) el.style.removeProperty(name);
 }
 
 export function W03Valvulas() {
@@ -160,9 +177,11 @@ export function W03Valvulas() {
                 const info = text[valve.id];
                 const range = RANGES[valve.id];
                 return (
-                <article key={valve.id} className={styles.card} style={{ ["--i" as string]: index % 3 }}>
-                  <Link href={sheetHref(valve.href, info.name)} className={styles.cardImage} aria-label={(valve.href === "/contacto" ? t.requestSheetOf : t.viewSheetOf) + info.name + (info.badge ? " · " + info.badge : "")}>
-                    <Image src={valve.image} alt={info.name} fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
+                <article key={valve.id} className={styles.card} style={{ ["--i" as string]: index % 3, ["--n" as string]: index }}>
+                  <Link href={sheetHref(valve.href, info.name)} className={styles.cardImage + (valve.group === "compuerta" ? "" : " " + styles.cardFlat)} onPointerMove={tilt} onPointerLeave={untilt} aria-label={(valve.href === "/contacto" ? t.requestSheetOf : t.viewSheetOf) + info.name + (info.badge ? " · " + info.badge : "")}>
+                    <span className={styles.cardMotion} aria-hidden="true">
+                      <Image src={valve.image} alt="" fill sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw" />
+                    </span>
                     {info.badge && <span className={styles.cardBadge}>{info.badge}</span>}
                   </Link>
                   <div className={styles.cardBody}>
