@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type AnimationEvent, type PointerEvent, type ReactNode } from "react";
 import styles from "./w03-valvulas.module.css";
 
-/** Inclina la válvula hacia el cursor y mueve el brillo; solo con ratón (en táctil queda la flotación). */
+/** Inclina la válvula hacia el cursor; solo con ratón (en táctil queda la flotación). */
 function tilt(event: PointerEvent<HTMLElement>) {
   if (event.pointerType !== "mouse") return;
   const el = event.currentTarget;
@@ -15,13 +15,11 @@ function tilt(event: PointerEvent<HTMLElement>) {
   const y = (event.clientY - box.top) / box.height;
   el.style.setProperty("--ry", ((x - 0.5) * 16).toFixed(2) + "deg");
   el.style.setProperty("--rx", ((0.5 - y) * 12).toFixed(2) + "deg");
-  el.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
-  el.style.setProperty("--my", (y * 100).toFixed(1) + "%");
 }
 
 function untilt(event: PointerEvent<HTMLElement>) {
   const el = event.currentTarget;
-  for (const name of ["--rx", "--ry", "--mx", "--my"]) el.style.removeProperty(name);
+  for (const name of ["--rx", "--ry"]) el.style.removeProperty(name);
 }
 
 type Props = {
@@ -70,7 +68,7 @@ export function CardMedia({ href, label, images, flat, index, sizes, dotLabel, a
   };
 
   return (
-    <div ref={root} className={styles.cardMedia + (onScreen ? "" : " " + styles.mediaOff)} style={{ ["--dur" as string]: (2.1 + (index % 3) * 0.4).toFixed(2) + "s" }}>
+    <div ref={root} className={styles.cardMedia + (onScreen ? "" : " " + styles.mediaOff)} style={{ ["--dur" as string]: (1.5 + (index % 3) * 0.3).toFixed(2) + "s" }}>
       <Link href={href} className={styles.cardImage + (flat ? " " + styles.cardFlat : "")} onPointerMove={tilt} onPointerLeave={untilt} aria-label={label}>
         <span className={styles.cardMotion} aria-hidden="true">
           {images.map((src, i) =>

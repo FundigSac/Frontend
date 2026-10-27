@@ -1136,20 +1136,7 @@
   }
 
   /* Válvula viva: flota, proyecta sombra de suelo, brilla y se inclina hacia el cursor. */
-  .cardImage { perspective: 900px; --rx: 0deg; --ry: 0deg; --mx: 50%; --my: 38%; }
-
-  .cardImage::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: radial-gradient(60% 55% at var(--mx) var(--my), rgba(59, 130, 246, .22), rgba(59, 130, 246, 0) 70%);
-    opacity: .55;
-    transition: opacity .5s ease;
-    pointer-events: none;
-  }
-
-  .card:hover .cardImage::before { opacity: 1; }
+  .cardImage { perspective: 900px; --rx: 0deg; --ry: 0deg; }
 
   .cardImage::after {
     content: "";
@@ -1186,7 +1173,7 @@
   .card:hover .cardImage img { transform: none; }
 
   /* Cambio de foto: la que sale se desliza a la izquierda y la nueva entra por la derecha. */
-  .slide { transition: opacity .45s ease, transform .6s var(--ease); }
+  .slide { transition: opacity .28s ease, transform .38s var(--ease); }
   .slide[data-pos="prev"] { transform: translateX(-24%) scale(.88) rotate(-2.5deg); }
   .slide[data-pos="next"] { transform: translateX(24%) scale(.88) rotate(2.5deg); }
 
