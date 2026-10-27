@@ -172,6 +172,7 @@ export function W03Valvulas() {
                     flat={valve.group !== "compuerta"}
                     index={index}
                     sizes="(min-width: 1100px) 28vw, (min-width: 640px) 44vw, 92vw"
+                    arrowLabels={lang === "en" ? ["Previous photo", "Next photo"] : ["Foto anterior", "Foto siguiente"]}
                     dotLabel={(position, total) => (lang === "en" ? `Photo ${position} of ${total}` : `Foto ${position} de ${total}`)}
                   >
                     {info.badge && <span className={styles.cardBadge}>{info.badge}</span>}

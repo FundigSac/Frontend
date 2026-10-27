@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, type AnimationEvent, type PointerEvent, type ReactNode } from "react";
@@ -33,6 +34,8 @@ type Props = {
   index: number;
   sizes: string;
   dotLabel: (position: number, total: number) => string;
+  /** Textos de las flechas: anterior y siguiente. */
+  arrowLabels: readonly [string, string];
   children?: ReactNode;
 };
 
@@ -41,7 +44,7 @@ type Props = {
  * marca el tiempo (su fin avanza), se detiene con el cursor encima o fuera de pantalla y, con
  * movimiento reducido, no avanza sola pero los puntos siguen sirviendo.
  */
-export function CardMedia({ href, label, images, flat, index, sizes, dotLabel, children }: Props) {
+export function CardMedia({ href, label, images, flat, index, sizes, dotLabel, arrowLabels, children }: Props) {
   const total = images.length;
   const [current, setCurrent] = useState(0);
   const [visited, setVisited] = useState<readonly number[]>(total > 1 ? [0, 1] : [0]);
@@ -67,7 +70,7 @@ export function CardMedia({ href, label, images, flat, index, sizes, dotLabel, c
   };
 
   return (
-    <div ref={root} className={styles.cardMedia + (onScreen ? "" : " " + styles.mediaOff)} style={{ ["--dur" as string]: (3.4 + (index % 3) * 0.55).toFixed(2) + "s" }}>
+    <div ref={root} className={styles.cardMedia + (onScreen ? "" : " " + styles.mediaOff)} style={{ ["--dur" as string]: (2.1 + (index % 3) * 0.4).toFixed(2) + "s" }}>
       <Link href={href} className={styles.cardImage + (flat ? " " + styles.cardFlat : "")} onPointerMove={tilt} onPointerLeave={untilt} aria-label={label}>
         <span className={styles.cardMotion} aria-hidden="true">
           {images.map((src, i) =>
@@ -80,6 +83,16 @@ export function CardMedia({ href, label, images, flat, index, sizes, dotLabel, c
         </span>
         {children}
       </Link>
+      {total > 1 && (
+        <>
+          <button type="button" className={styles.arrow + " " + styles.arrowPrev} aria-label={arrowLabels[0]} onClick={() => go((current - 1 + total) % total)}>
+            <ChevronLeft size={20} strokeWidth={2.2} aria-hidden="true" />
+          </button>
+          <button type="button" className={styles.arrow + " " + styles.arrowNext} aria-label={arrowLabels[1]} onClick={() => go((current + 1) % total)}>
+            <ChevronRight size={20} strokeWidth={2.2} aria-hidden="true" />
+          </button>
+        </>
+      )}
       {total > 1 && (
         <div className={styles.dots} role="group">
           {images.map((src, i) => (
