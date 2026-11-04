@@ -27,6 +27,8 @@ export const metadata: Metadata = {
   // Sin `url`: cada página que comparta este bloque heredaría la URL de inicio. La imagen sale de opengraph-image.jpg.
   openGraph: { type: "website", locale: "es_PE", siteName: SITE.name },
   twitter: { card: "summary_large_image" },
+  // Propiedad de Search Console (prefijo de URL) del dominio canónico. No es secreto: Google solo comprueba que esté publicada.
+  verification: { google: "vW6DdHGIHuwfbfSHuNzvmeeYQh-XdmnFbwzrF2u7b50" },
 };
 
 export const viewport: Viewport = {
