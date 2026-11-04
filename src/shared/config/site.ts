@@ -1,3 +1,5 @@
+import { SITE_URL } from "./env";
+
 export const SITE = {
   name: "FUNDIGSAC",
   legalName: "FUNDIGSAC S.A.C.",
@@ -5,7 +7,8 @@ export const SITE = {
   /** Razón social completa y domicilio para documentos legales (misma fuente que src/lib/site-info.ts). */
   registeredName: "Fundición y Desarrollo de Ingeniería y Gestión S.A.C.",
   address: "Jirón Pacasmayo Mz. E Lt. 12, Cercado de Lima, Lima",
-  url: "https://fundigsac.com",
+  /** Dominio canónico: se configura en `env.ts` (NEXT_PUBLIC_SITE_URL). */
+  url: SITE_URL,
   locale: "es-PE",
   email: "cotizaciones@fundigsac.com",
   /** Mismo número que WhatsApp y que `src/lib/site-info.ts` (allí lo usa el asistente). */

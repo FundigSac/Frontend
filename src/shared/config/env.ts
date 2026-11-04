@@ -5,5 +5,12 @@
  */
 export const SITE_INDEXABLE = process.env.SITE_INDEXABLE === "true" && process.env.VERCEL_ENV !== "preview";
 
-/** Dominio público canónico (sin www). Cualquier otro host, como *.vercel.app, se sirve con `X-Robots-Tag: noindex`. */
-export const CANONICAL_HOST_PATTERN = "(www\\.)?fundigsac\\.com";
+/**
+ * URL pública canónica del sitio (sin barra final). Mientras fundigsac.com siga en el WordPress anterior, el lanzamiento
+ * provisional usa fundigsac-web.vercel.app. Al conectar el dominio propio en Vercel basta definir
+ * NEXT_PUBLIC_SITE_URL=https://fundigsac.com y redirigir el dominio vercel.app al nuevo (ver SEO-GOOGLE-LAUNCH.md).
+ */
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://fundigsac-web.vercel.app").replace(/\/+$/, "");
+
+/** Host canónico como expresión regular. Cualquier otro host (URLs de despliegue de Vercel) se sirve con `X-Robots-Tag: noindex`. */
+export const CANONICAL_HOST_PATTERN = new URL(SITE_URL).host.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
