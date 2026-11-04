@@ -19,9 +19,9 @@ test.describe("listado de válvulas: estructura", () => {
     for (const label of ["Alta resistencia", "Cumplimiento", "Variedad de", "Soporte técnico"]) await expect(page.getByText(label).first()).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Catálogo de válvulas" })).toBeVisible();
 
-    // Solo las tres compuertas con ficha aprobada muestran el rango de diámetros.
+    // Las tarjetas con ficha publicada muestran el rango de diámetros (la mariposa y la válvula de aire, no).
     const cards = valveCards(page);
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(12);
     await expect(cards.filter({ hasText: "DN40 – DN600" })).toHaveCount(2);
     await expect(cards.filter({ hasText: "DN50 – DN600" })).toHaveCount(1);
     await expect(cards.first().getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
@@ -37,9 +37,9 @@ test.describe("listado de válvulas: estructura", () => {
     await page.goto("/productos/valvulas");
     await dismissCookies(page);
     await page.getByRole("tab", { name: /Compuerta/ }).click();
-    await expect(valveCards(page)).toHaveCount(3);
+    await expect(valveCards(page)).toHaveCount(5);
     await page.getByRole("tab", { name: /Compuerta/ }).click();
-    await expect(valveCards(page)).toHaveCount(8);
+    await expect(valveCards(page)).toHaveCount(12);
     await page.getByPlaceholder(/Buscar válvula/).fill("mariposa");
     await expect(valveCards(page)).toHaveCount(1);
     await page.getByPlaceholder(/Buscar válvula/).fill("zzz");

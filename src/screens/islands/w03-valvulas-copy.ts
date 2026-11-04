@@ -6,8 +6,8 @@ type Pair<T> = Record<Lang, T>;
 export type GroupId = "compuerta" | "mariposa" | "reduccion" | "aire" | "control";
 
 export const GROUP_LABELS: Pair<Record<GroupId, string>> = {
-  es: { compuerta: "Compuerta", mariposa: "Mariposa", reduccion: "Reducción", aire: "Aire", control: "Control" },
-  en: { compuerta: "Gate", mariposa: "Butterfly", reduccion: "Reducing", aire: "Air", control: "Check" },
+  es: { compuerta: "Compuerta", mariposa: "Mariposa", reduccion: "Regulación", aire: "Aire", control: "Control" },
+  en: { compuerta: "Gate", mariposa: "Butterfly", reduccion: "Regulating", aire: "Air", control: "Check" },
 };
 
 type ValveText = { name: string; badge?: string; description: string };
@@ -22,6 +22,10 @@ export const VALVE_TEXT: Pair<Record<string, ValveText>> = {
     "check-swing": { name: "Válvula check swing", description: "Evita el retorno de flujo en sistemas de conducción y protege bombas y tuberías de inversiones de caudal." },
     "check-flex": { name: "Válvula check flex", description: "Solución confiable para redes de agua y alcantarillado, que impide el retorno del flujo y protege el sistema." },
     reductora: { name: "Válvula reductora de presión", description: "Controla y estabiliza la presión en la red de distribución, protegiendo tuberías y equipos aguas abajo." },
+    acerrojada: { name: "Válvula de compuerta acerrojada", description: "Compuerta con extremos acerrojados que se une directamente a la tubería HDPE de 63 a 315 mm, sin bridas." },
+    luflex: { name: "Válvula de compuerta de embone tipo Luflex", description: "Compuerta con extremos de embone (espiga-campana) para unir la tubería sin bridas ni pernos." },
+    alivio: { name: "Válvula de alivio bridada", description: "Descarga el exceso de presión y protege la red de sobrepresiones y golpes de ariete." },
+    flotadora: { name: "Válvula flotadora bridada", description: "Controla el nivel de tanques, cisternas y reservorios para evitar reboses y vaciados." },
     aire: { name: "Válvula de aire", description: "Elimina y admite aire en redes de agua, mejorando la eficiencia y evitando daños por bolsas de aire." },
   },
   en: {
@@ -32,6 +36,10 @@ export const VALVE_TEXT: Pair<Record<string, ValveText>> = {
     "check-swing": { name: "Swing check valve", description: "Prevents backflow in conveyance systems and protects pumps and pipes from flow reversals." },
     "check-flex": { name: "Flex check valve", description: "A reliable solution for water and sewerage networks that stops backflow and protects the system." },
     reductora: { name: "Pressure-reducing valve", description: "Controls and stabilizes pressure in the distribution network, protecting downstream pipes and equipment." },
+    acerrojada: { name: "Restrained-joint gate valve", description: "Gate valve with restrained ends that joins 63 to 315 mm HDPE pipe directly, with no flanges." },
+    luflex: { name: "Luflex push-on gate valve", description: "Gate valve with push-on (spigot-and-socket) ends that joins the pipe with no flanges or bolts." },
+    alivio: { name: "Flanged relief valve", description: "Discharges excess pressure and protects the network from overpressure and water hammer." },
+    flotadora: { name: "Flanged float valve", description: "Controls the level of tanks, cisterns and reservoirs to prevent overflows and empty tanks." },
     aire: { name: "Air valve", description: "Releases and admits air in water networks, improving efficiency and preventing damage from air pockets." },
   },
 };

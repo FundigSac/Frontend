@@ -404,7 +404,7 @@ lineTests({
   describe: "W03 válvulas",
   route: "/productos/valvulas",
   region: "Catálogo de válvulas",
-  total: 8,
+  total: 12,
   search: { label: "Buscar válvula por nombre o referencia", hit: "mariposa", hitCount: 1 },
   filterLabel: "Filtrar por tipo de válvula",
   sortLabel: "Ordenar válvulas",
@@ -414,7 +414,7 @@ lineTests({
   za: "Válvula reductora de presión",
   emptyHeading: "No encontramos válvulas con esos datos",
   resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/contacto?motivo=documentacion&documento=V%C3%A1lvula%20check%20swing"]],
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/productos/valvulas/valvula-check-swing"], ["Válvula de compuerta acerrojada", "/productos/valvulas/valvula-compuerta-acerrojada"], ["Válvula de aire", "/contacto?motivo=documentacion&documento=V%C3%A1lvula%20de%20aire"]],
 });
 
 lineTests({
@@ -556,7 +556,7 @@ test.describe("W03 válvulas · idioma", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Valves");
     const cards = page.locator("section[aria-label='Valve catalog'] article");
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(12);
     await expect(cards.filter({ hasText: "Extended warranty" })).toHaveCount(1);
     await expect(page.locator("main").getByText("Garantía extendida")).toHaveCount(0);
     await page.getByPlaceholder("Search valves by name or reference…").fill("butterfly");
@@ -565,7 +565,7 @@ test.describe("W03 válvulas · idioma", () => {
     await page.getByPlaceholder("Search valves by name or reference…").fill("zzzz");
     await expect(page.getByRole("heading", { name: "We couldn’t find valves matching that" })).toBeVisible();
     await page.getByRole("button", { name: "Show all valves" }).click();
-    await expect(cards).toHaveCount(8);
+    await expect(cards).toHaveCount(12);
     await pick("Español");
     await expect(page.locator("html")).toHaveAttribute("lang", "es-PE");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvulas");

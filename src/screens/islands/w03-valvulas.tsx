@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { CardMedia } from "./w03-valve-media";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
+import { findValveSheet } from "@/modules/catalog/valve-sheets";
 import { DATASHEETS } from "./w06-ficha-data";
 import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
 import { blurBackdrop } from "@/shared/media/blur-backdrop";
@@ -34,18 +35,31 @@ const VALVES: readonly { id: string; group: GroupId; images: readonly string[]; 
   { id: "compuerta", group: "compuerta", images: photos("valvula-hd", ["v-01", "v-02", "v-03", "v-04", "v-05"]), href: "/productos/valvulas/valvula-compuerta" },
   { id: "compuerta-fundigsac", group: "compuerta", images: photos("valvula-fundigsac", ["f-07", "f-02", "f-03", "f-04", "f-06"]), href: "/productos/valvulas/valvula-compuerta-fundigsac" },
   { id: "compuerta-garantia-extendida", group: "compuerta", images: photos("valvula-fundigsac-cuadrante", ["g-01", "g-02", "g-03", "g-04", "q-05"]), href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida" },
+  { id: "acerrojada", group: "compuerta", images: ["/media/catalog/compuerta-acerrojada.webp"], href: "/productos/valvulas/valvula-compuerta-acerrojada" },
+  { id: "luflex", group: "compuerta", images: ["/media/catalog/compuerta-luflex.webp"], href: "/productos/valvulas/valvula-embone-tipo-luflex" },
   { id: "mariposa", group: "mariposa", images: ["/media/valvulas-page/mariposa.webp"], href: "/productos/valvulas/valvula-mariposa" },
-  { id: "check-swing", group: "control", images: ["/media/valvulas-page/check-swing.webp"], href: "/contacto" },
-  { id: "check-flex", group: "control", images: ["/media/valvulas-page/check-flex.webp"], href: "/contacto" },
-  { id: "reductora", group: "reduccion", images: ["/media/valvulas-page/valvula-reductora.webp"], href: "/contacto" },
+  { id: "check-swing", group: "control", images: ["/media/valvulas-page/check-swing.webp"], href: "/productos/valvulas/valvula-check-swing" },
+  { id: "check-flex", group: "control", images: ["/media/valvulas-page/check-flex.webp"], href: "/productos/valvulas/valvula-check-flex" },
+  { id: "reductora", group: "reduccion", images: ["/media/valvulas-page/valvula-reductora.webp"], href: "/productos/valvulas/valvula-reductora-de-presion" },
+  { id: "alivio", group: "reduccion", images: ["/media/catalog/valvula-alivio.webp"], href: "/productos/valvulas/valvula-de-alivio-bridada" },
+  { id: "flotadora", group: "reduccion", images: ["/media/catalog/valvula-flotadora.webp"], href: "/productos/valvulas/valvula-flotadora-bridada" },
   { id: "aire", group: "aire", images: ["/media/valvulas-page/valvula-aire.webp"], href: "/contacto" },
 ];
+
+const sheetRange = (slug: string) => findValveSheet(slug)?.range ?? "";
 
 /** Rango de diámetros de las fichas que ya tienen datos aprobados. */
 const RANGES: Record<string, string> = {
   compuerta: DATASHEETS.base.sizeRange,
   "compuerta-fundigsac": DATASHEETS.fundigsac.sizeRange,
   "compuerta-garantia-extendida": DATASHEETS.extendida.sizeRange,
+  "check-swing": sheetRange("valvula-check-swing"),
+  "check-flex": sheetRange("valvula-check-flex"),
+  reductora: sheetRange("valvula-reductora-de-presion"),
+  acerrojada: sheetRange("valvula-compuerta-acerrojada"),
+  luflex: sheetRange("valvula-embone-tipo-luflex"),
+  alivio: sheetRange("valvula-de-alivio-bridada"),
+  flotadora: sheetRange("valvula-flotadora-bridada"),
 };
 const HERO_ICONS = [ShieldCheck, BadgeCheck, Layers, Headset] as const;
 const BENEFIT_ICONS = [Headset, ShieldCheck, PackageCheck, SlidersHorizontal] as const;
