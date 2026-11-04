@@ -23,7 +23,7 @@ const GROUPS: readonly { id: GroupId; image: string }[] = [
 ];
 
 const VALVES: readonly { id: string; group: GroupId; image: string; href: string }[] = [
-  { id: "hdpe", group: "junta", image: "/media/tuberias-page/hdpe.webp", href: "/productos/tuberias/tuberia-tyton" },
+  { id: "hdpe", group: "junta", image: "/media/tuberias-page/hdpe.webp", href: "/contacto" },
   { id: "revestimiento", group: "mecanica", image: "/media/tuberias-page/revestimiento.webp", href: "/contacto" },
   { id: "bridas", group: "accesorios", image: "/media/tuberias-page/bridas.webp", href: "/contacto" },
   { id: "union-junta", group: "junta", image: "/media/tuberias-page/union-junta.webp", href: "/contacto" },

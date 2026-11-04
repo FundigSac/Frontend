@@ -431,7 +431,7 @@ lineTests({
   za: "Tubería HDPE",
   emptyHeading: "No encontramos tuberías con esos datos",
   resetButton: "Ver todos los productos",
-  cards: [["Tubería HDPE", "/productos/tuberias/tuberia-tyton"], ["Tubería con bridas", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20con%20bridas"]],
+  cards: [["Tubería HDPE", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20HDPE"], ["Tubería con bridas", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20con%20bridas"]],
 });
 
 lineTests({
@@ -460,13 +460,11 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
       expect(await page.locator("main button[type='button']:not([role='tab'])").count()).toBe(0);
     });
   }
-  test("W04: 'Ver ficha' de la tubería HDPE abre su ficha y esta lleva a cotizar", async ({ page }) => {
+  test("W04: solicitar ficha de tubería HDPE abre contacto con el producto indicado", async ({ page }) => {
     await page.goto("/productos/tuberias");
-    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Ver ficha", exact: true }).click();
-    await expect(page).toHaveURL(/\/productos\/tuberias\/tuberia-tyton$/);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Tubería de hierro dúctil");
-    await page.getByRole("link", { name: "Solicitar cotización" }).first().click();
-    await expect(page).toHaveURL(/\/cotizar$/);
+    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Solicitar ficha", exact: true }).click();
+    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion&documento=Tuber%C3%ADa%20HDPE$/);
+    await expect(page.locator('textarea[name="message"]')).toHaveValue(/Tubería HDPE/);
   });
 });
 
