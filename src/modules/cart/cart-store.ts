@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { track } from "@/shared/analytics/track";
 
 /**
  * Carrito de cotización: productos que la persona quiere cotizar, guardados en su equipo
@@ -85,6 +86,8 @@ export function addToCart(item: Omit<CartItem, "quantity"> & { quantity?: number
   if (found >= 0) items[found] = { ...items[found], quantity: Math.min(MAX_QTY, items[found].quantity + qty) };
   else items.push({ ...item, quantity: Math.min(MAX_QTY, qty) });
   write(items);
+  // Intención real de cotizar un producto (solo se envía si la persona aceptó la analítica).
+  track("product_quote_click", { method: "add_to_quote", item_id: item.slug, item_name: item.name, item_variant: item.variant, page_path: window.location.pathname });
 }
 
 export function setQuantity(item: Pick<CartItem, "slug" | "variant">, quantity: number) {

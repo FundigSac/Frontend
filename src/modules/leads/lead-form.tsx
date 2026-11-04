@@ -10,6 +10,7 @@ import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
 import { cartSummary, clearCart, useCart, type CartItem } from "@/modules/cart/cart-store";
 import { generalQuote, productQuote, withoutCatalogLinks, type QuoteBody } from "@/modules/quote/quote-request";
 import { PENDING_QUOTE_REFERENCE } from "@/modules/quote/format";
+import { track } from "@/shared/analytics/track";
 import { SITE } from "@/shared/config/site";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { submitLead } from "./actions";
@@ -59,6 +60,8 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
         if (result.ok && result.reference === PENDING_QUOTE_REFERENCE && (formId === "quote-general" || formId === "quote-product")) {
           const saved = await registerQuote(formId, data, cart, idempotencyKey.current);
           if (saved.kind === "saved") {
+            // El Backend registró la cotización con folio: envío confirmado.
+            track("contact_form_submit_success", { form_type: formId === "quote-product" ? "quote_product" : "quote_general" });
             if (formId === "quote-general" && cart.length) clearCart();
             idempotencyKey.current = newIdempotencyKey();
             router.push(`/cotizar/confirmacion?ref=${encodeURIComponent(saved.folio)}`);

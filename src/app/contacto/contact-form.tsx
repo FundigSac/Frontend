@@ -6,6 +6,7 @@ import { useId, useState } from "react";
 import { mailtoUrl, whatsappUrl } from "../_legal/claim-message";
 import { useCopy } from "../_legal/use-copy";
 import { submitForm } from "@/modules/backend/client";
+import { track } from "@/shared/analytics/track";
 import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
 import { buildContactMessage } from "./contact-message";
 import { CONTACT, type ReasonId } from "./copy";
@@ -61,6 +62,8 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
     });
     setSending(false);
     if (outcome.kind === "saved") {
+      // Solo aquí el sistema confirmó el envío (folio). Preparar un correo o WhatsApp no cuenta como envío.
+      track("contact_form_submit_success", { form_type: "contact", reason: prefill.reason ?? "general" });
       form.reset();
       setLength(0);
       setSaved(outcome.data.folio);
