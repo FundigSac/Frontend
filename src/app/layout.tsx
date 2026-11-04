@@ -57,7 +57,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 logo: `${SITE.url}/brand/fundigsac.svg`,
                 email: SITE.email,
                 telephone: site.phone,
-                address: { "@type": "PostalAddress", streetAddress: "Jirón Pacasmayo Mz. E Lt. 12", addressLocality: "Cercado de Lima", addressRegion: "Lima", addressCountry: "PE" },
+                // Se omite la calle hasta confirmar la dirección: las webs publican direcciones distintas.
+                address: { "@type": "PostalAddress", addressLocality: "Cercado de Lima", addressRegion: "Lima", addressCountry: "PE" },
                 contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: site.phone, email: SITE.email, areaServed: "PE", availableLanguage: ["es"] },
                 // Perfiles oficiales publicados en fundigsac.com.
                 sameAs: [site.instagram, site.facebook],
