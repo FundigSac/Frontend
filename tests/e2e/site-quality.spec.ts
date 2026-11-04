@@ -129,7 +129,7 @@ test.describe("diseño", () => {
   test("las fotos hero llegan con miniatura difuminada (sin hueco blanco al navegar)", async ({ request }) => {
     for (const path of ["/terminos", "/privacidad", "/cookies", "/nosotros", "/contacto", "/productos/valvulas"]) {
       const html = await (await request.get(path)).text();
-      const hero = html.match(/<img[^>]*class="(?:lg-hero__photo|[^"]*heroPhoto)"[^>]*>/)?.[0] ?? "";
+      const hero = html.match(/<img[^>]*class="(?:lg-hero__photo|[^"]*heroPhoto[^"]*)"[^>]*>/)?.[0] ?? "";
       expect(hero, path).toContain("background-image");
     }
   });
