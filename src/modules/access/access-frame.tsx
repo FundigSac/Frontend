@@ -136,8 +136,6 @@ function AccessScene({ kind }: { kind: AccessKind }) {
 
 /** Marco común de las pantallas de acceso: se monta una vez en el layout y solo cambia el formulario. */
 export function AccessFrame({ children }: { children: ReactNode }) {
-  const [lang] = useLang();
-  const t = ACCESS_COPY[lang];
   const kind = kindFor(usePathname() || "/login");
 
   // Al recargar o volver, estas pantallas empiezan siempre desde arriba (el navegador no restaura el desplazamiento).
