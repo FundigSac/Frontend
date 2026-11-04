@@ -23,8 +23,8 @@ export type ProductEntry = {
 };
 
 export const CATEGORIES: readonly CategoryEntry[] = [
-  { slug: "valvulas", name: "Válvulas", title: "Válvulas para redes de agua y alcantarillado", description: "Válvulas de compuerta, mariposa, check swing, check flex, reductoras de presión y de aire para redes de agua, alcantarillado e infraestructura urbana." },
-  { slug: "tuberias", name: "Tuberías", title: "Tuberías de hierro dúctil y HDPE", description: "Tuberías con unión junta, unión mecánica, bridas o revestimiento de mortero de cemento y tubería HDPE para redes de agua, alcantarillado e infraestructura." },
+  { slug: "valvulas", name: "Válvulas", title: "Válvulas industriales de hierro dúctil en Perú", description: "Válvulas de compuerta bridadas, mariposa, check swing, check flex, reductoras de presión y de aire en hierro dúctil para redes de agua y saneamiento en Perú." },
+  { slug: "tuberias", name: "Tuberías", title: "Tuberías HDPE y de hierro dúctil en Perú", description: "Tuberías con unión junta, unión mecánica, bridas o revestimiento de mortero de cemento y tubería HDPE para redes de agua, alcantarillado e infraestructura." },
   { slug: "marcos-y-tapas", name: "Marcos y tapas", title: "Marcos y tapas de hierro dúctil", description: "Marcos y tapas de hierro dúctil para redes de agua y alcantarillado: tapas circulares, marcos rectangulares, rejillas pluviales y tapas de registro." },
 ];
 

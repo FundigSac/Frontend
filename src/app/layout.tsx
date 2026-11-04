@@ -21,8 +21,8 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Válvulas, tuberías y tapas de hierro dúctil | FUNDIGSAC", template: "%s | FUNDIGSAC" },
-  description: "Válvulas, tuberías, marcos y tapas de hierro dúctil para redes de agua potable, saneamiento, minería y riego en el Perú. Atención comercial en Lima.",
+  title: { default: "Válvulas industriales y tuberías HDPE en Perú | FUNDIGSAC", template: "%s | FUNDIGSAC" },
+  description: "Válvulas de compuerta bridadas, check y mariposa, tuberías HDPE y de hierro dúctil, marcos, tapas y accesorios para agua y saneamiento en Perú.",
   robots: { index: SITE_INDEXABLE, follow: SITE_INDEXABLE },
   // Sin `url`: cada página que comparta este bloque heredaría la URL de inicio. La imagen sale de opengraph-image.jpg.
   openGraph: { type: "website", locale: "es_PE", siteName: SITE.name },

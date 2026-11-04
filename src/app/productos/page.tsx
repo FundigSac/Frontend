@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ScreenW02 } from "@/screens/w02";
 
 export const metadata: Metadata = {
-  title: "Catálogo de válvulas, tuberías, marcos y tapas",
+  title: "Catálogo de válvulas, tuberías HDPE y accesorios",
   description: "Catálogo FUNDIGSAC de válvulas, tuberías, marcos y tapas de hierro dúctil, accesorios HDPE y conexiones para redes de agua, alcantarillado e infraestructura.",
   alternates: { canonical: "/productos" },
 };
