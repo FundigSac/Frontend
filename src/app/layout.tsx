@@ -51,12 +51,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 "@id": `${SITE.url}/#organizacion`,
                 name: SITE.name,
                 legalName: SITE.registeredName,
-                taxID: SITE.ruc,
+                // Sin taxID: el RUC configurado no pasa el dígito verificador de SUNAT; se agrega cuando esté confirmado.
                 url: SITE.url,
                 logo: `${SITE.url}/brand/fundigsac.svg`,
                 email: SITE.email,
                 telephone: site.phone,
                 address: { "@type": "PostalAddress", streetAddress: "Jirón Pacasmayo Mz. E Lt. 12", addressLocality: "Cercado de Lima", addressRegion: "Lima", addressCountry: "PE" },
+                contactPoint: { "@type": "ContactPoint", contactType: "sales", telephone: site.phone, email: SITE.email, areaServed: "PE", availableLanguage: ["es"] },
+                // Perfiles oficiales publicados en fundigsac.com.
+                sameAs: [site.instagram, site.facebook],
               },
               { "@context": "https://schema.org", "@type": "WebSite", "@id": `${SITE.url}/#sitio`, name: SITE.name, url: SITE.url, inLanguage: "es-PE", publisher: { "@id": `${SITE.url}/#organizacion` } },
             ]}
