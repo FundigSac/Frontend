@@ -39,7 +39,8 @@ test.describe("seguridad", () => {
     expect(notJson.status()).toBe(415);
 
     const huge = await request.post("/api/chat", {
-      data: JSON.stringify({ ...valid, messages: [{ role: "user", content: "x".repeat(300_000) }] }),
+      // Más que ATTACH.bodyBytes (4,2 MB): el tope subió al admitir adjuntos (PDF o imagen) en el chat.
+      data: JSON.stringify({ ...valid, messages: [{ role: "user", content: "x".repeat(4_300_000) }] }),
       headers: { "content-type": "application/json", "x-forwarded-for": "203.0.113.72" },
     });
     expect(huge.status()).toBe(413);
