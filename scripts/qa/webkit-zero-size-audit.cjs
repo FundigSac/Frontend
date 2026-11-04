@@ -1,6 +1,8 @@
 // Detecta, con el motor de Safari (WebKit), elementos con aspect-ratio que miden 0 × 0 (fotos invisibles en iPhone).
 // Uso: node scripts/qa/webkit-zero-size-audit.cjs http://localhost:3000 / /productos /nosotros
 // Requiere `npx playwright install webkit`. Chrome es más permisivo: este caso solo se ve en WebKit.
+// Script CommonJS de Node (.cjs): require es lo correcto aquí.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { webkit, devices } = require("playwright-core");
 
 const [base, ...routes] = process.argv.slice(2);
