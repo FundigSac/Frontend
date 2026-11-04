@@ -394,10 +394,9 @@ test.describe("Términos y condiciones", () => {
   test("texto justificado sin cortar palabras con guiones y tipografía de lectura", async ({ page }) => {
     await go(page, "/terminos", ".lg-toc a");
     const body = page.locator(".lg-term p").first();
-    // Justificado desde 640 px; en móvil queda alineado a la izquierda para evitar "ríos" entre palabras.
-    const wide = (page.viewportSize()?.width ?? 0) >= 640;
-    await expect(body).toHaveCSS("text-align", wide ? "justify" : "start");
-    if (wide) await expect(body).toHaveCSS("hyphens", "none");
+    // Justificado en todos los anchos (regla global de globals.css para `main p` en móvil), sin guiones.
+    await expect(body).toHaveCSS("text-align", "justify");
+    await expect(body).toHaveCSS("hyphens", "none");
     await expect(body).toHaveCSS("font-family", /Inter/);
   });
 
