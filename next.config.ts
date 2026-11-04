@@ -4,26 +4,31 @@ import { CANONICAL_HOST_PATTERN } from "./src/shared/config/env";
 const isDev = process.env.NODE_ENV !== "production";
 
 /**
- * CSP: sin terceros. 'unsafe-inline' en script-src es necesario hoy por los scripts inline de Next
+ * CSP: el único tercero en scripts es Google Analytics 4, y solo se carga tras aceptar la analítica. 'unsafe-inline' en script-src es necesario hoy por los scripts inline de Next
  * (datos de hidratación y JSON-LD); no hay HTML de usuarios renderizado sin escapar.
  * 'wasm-unsafe-eval' permite compilar WebAssembly (y nada más: no habilita eval de JS): el visor 3D descomprime
  * las mallas meshopt de los GLB con un decodificador WASM incluido en el propio bundle.
  * Mejora futura: nonces por petición vía proxy (obliga a render dinámico).
  * 'unsafe-eval' sólo en desarrollo (React Refresh).
  */
+// Google Analytics 4 (solo se carga tras aceptar la analítica): orígenes de la guía de CSP de Google para gtag.js.
+const GA_SCRIPT = "https://*.googletagmanager.com";
+const GA_CONNECT = "https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com";
+const GA_IMG = "https://*.google-analytics.com https://*.googletagmanager.com";
+
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' ${GA_SCRIPT}${isDev ? " 'unsafe-eval'" : ""}`,
   // Ningún HTML del sitio usa manejadores en atributos (onclick="…"): se prohíben para cortar inyecciones por esa vía.
   "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.googleusercontent.com",
+  `img-src 'self' data: blob: https://*.googleusercontent.com ${GA_IMG}`,
   "font-src 'self' data:",
   "media-src 'self'",
   // El decodificador meshopt del visor 3D puede trabajar en workers creados desde blob:.
   "worker-src 'self' blob:",
   "manifest-src 'self'",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self' ${GA_CONNECT}${isDev ? " ws: wss:" : ""}`,
   "frame-src https://www.google.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

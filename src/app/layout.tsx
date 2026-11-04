@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { AssistantLauncher } from "@/shared/assistant/assistant-launcher";
+import { GoogleAnalytics } from "@/shared/analytics/google-analytics";
 import { CartHost } from "@/shared/cart/cart-host";
 import { SITE_INDEXABLE } from "@/shared/config/env";
 import { site } from "@/lib/site-info";
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <div id="contenido">{children}</div>
           <LandingFooter />
           <CookieBanner />
+          <GoogleAnalytics />
           <AssistantLauncher />
           <CartHost />
           <LazyWarmup />
