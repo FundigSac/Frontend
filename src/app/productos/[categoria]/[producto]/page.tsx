@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
-import { CATEGORIES, PRODUCTS, findProduct } from "@/modules/catalog/registry";
+import { CATEGORIES, PRODUCTS, findProduct, type ProductEntry } from "@/modules/catalog/registry";
+import { findValveSheet } from "@/modules/catalog/valve-sheets";
+import { ValveSheetView } from "@/screens/islands/valve-sheet";
 import { W06Ficha } from "@/screens/islands/w06-ficha";
 import { W06FichaFundigsac, W06FichaGarantiaExtendida } from "@/screens/islands/w06-ficha-garantia";
 import { ScreenW07 } from "@/screens/w07";
@@ -39,13 +41,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/**
+ * Product solo con datos publicados en la ficha (nombre, descripción, foto, código y marca impresa).
+ * Sin `offers`, `review` ni `aggregateRating`: no hay precios públicos ni reseñas, y no se inventan.
+ */
+function productJsonLd(product: ProductEntry, categoryName: string, url: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    url,
+    category: categoryName,
+    ...(product.image ? { image: `${SITE.url}${product.image}` } : {}),
+    ...(product.sku ? { sku: product.sku } : {}),
+    ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
+  };
+}
+
 export default async function ProductPage({ params }: Props) {
   const { categoria, producto } = await params;
   const product = findProduct(categoria, producto);
+  const sheet = product ? findValveSheet(product.slug) : undefined;
   const view = product && SCREENS[product.slug];
-  if (!product || !view) notFound();
+  if (!product || (!view && !sheet)) notFound();
   const category = CATEGORIES.find((c) => c.slug === product.category);
   const path = `/productos/${product.category}/${product.slug}`;
+  const url = `${SITE.url}${path}`;
   return (
     <>
       <JsonLd
@@ -54,11 +76,13 @@ export default async function ProductPage({ params }: Props) {
             [{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }, { name: category?.name ?? product.category, path: `/productos/${product.category}` }, { name: product.name, path }],
             SITE.url,
           ),
-          // Estas pantallas representan exports de diseño, no productos aprobados del catálogo maestro.
-          { "@context": "https://schema.org", "@type": "WebPage", name: product.name, description: product.description, url: `${SITE.url}${path}` },
+          // Las pantallas de referencia representan exports de diseño, no productos aprobados: solo WebPage.
+          product.indexable === false
+            ? { "@context": "https://schema.org", "@type": "WebPage", name: product.name, description: product.description, url }
+            : productJsonLd(product, category?.name ?? product.category, url),
         ]}
       />
-      <view.Screen />
+      {sheet ? <ValveSheetView slug={sheet.slug} /> : view && <view.Screen />}
     </>
   );
 }

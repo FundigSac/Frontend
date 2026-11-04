@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
 import { ScreenW23 } from "@/screens/w23";
+import { VALVE_SHEETS } from "./valve-sheets";
 
 export type CategorySlug = "valvulas" | "tuberias" | "marcos-y-tapas";
 
@@ -20,6 +21,12 @@ export type ProductEntry = {
   indexable?: false;
   /** W23: visor 3D del producto (solo existe diseño para la válvula de compuerta). */
   Viewer3D?: ComponentType;
+  /** Foto principal (datos estructurados Product). */
+  image?: string;
+  /** Marca impresa en la ficha técnica; se omite si no está confirmada. */
+  brand?: string;
+  /** Código de la lista de precios (sku en los datos estructurados). */
+  sku?: string;
 };
 
 export const CATEGORIES: readonly CategoryEntry[] = [
@@ -29,9 +36,11 @@ export const CATEGORIES: readonly CategoryEntry[] = [
 ];
 
 export const PRODUCTS: readonly ProductEntry[] = [
-  { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Viewer3D: ScreenW23 },
-  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", title: "Válvula de compuerta FUNDIGSAC DIN 3352 F4, DN50–DN600", description: "Válvula compuerta bridada FUNDIGSAC de asiento resiliente, diseño DIN 3352 F4, DN50 a DN600, PN10/PN16, en hierro dúctil GGG50 para redes de agua." },
-  { category: "valvulas", slug: "valvula-compuerta-fundigsac-garantia-extendida", name: "Válvula de compuerta bridada FUNDIGSAC", title: "Válvula de compuerta FUNDIGSAC con garantía extendida", description: "Válvula de compuerta FUNDIGSAC con garantía extendida: cierre elástico, extremos bridados, DN40 a DN600, PN10/PN16, EN 1074-2, hierro dúctil." },
+  { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600, PN10/PN16, según EN1074-2.", Viewer3D: ScreenW23, image: "/media/valvula-hd/v-01.webp", brand: "H-ITALY" },
+  { category: "valvulas", slug: "valvula-compuerta-fundigsac", name: "Válvula de compuerta bridada FUNDIGSAC", title: "Válvula de compuerta FUNDIGSAC DIN 3352 F4, DN50–DN600", description: "Válvula compuerta bridada FUNDIGSAC de asiento resiliente, diseño DIN 3352 F4, DN50 a DN600, PN10/PN16, en hierro dúctil GGG50 para redes de agua.", image: "/media/valvula-fundigsac/f-02.webp", brand: "FUNDIGSAC" },
+  { category: "valvulas", slug: "valvula-compuerta-fundigsac-garantia-extendida", name: "Válvula de compuerta bridada FUNDIGSAC", title: "Válvula de compuerta FUNDIGSAC con garantía extendida", description: "Válvula de compuerta FUNDIGSAC con garantía extendida: cierre elástico, extremos bridados, DN40 a DN600, PN10/PN16, EN 1074-2, hierro dúctil.", image: "/media/valvula-fundigsac-cuadrante/g-01.webp", brand: "FUNDIGSAC" },
+  // Fichas con datos de la lista de precios y de fundigsac.com (src/modules/catalog/valve-sheets.ts).
+  ...VALVE_SHEETS.map((s): ProductEntry => ({ category: "valvulas", slug: s.slug, name: s.es.name, title: `${s.title} | FUNDIGSAC`, description: s.description, image: s.image, sku: s.code })),
   { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
   { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
   { category: "marcos-y-tapas", slug: "marco-tapa-d400", name: "Referencia visual de marco y tapa", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
