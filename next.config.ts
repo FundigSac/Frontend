@@ -88,6 +88,15 @@ const nextConfig: NextConfig = {
       { source: "/shop", destination: "/productos", permanent: true },
       { source: "/product-category/valvulas-hierro-ductil", destination: "/productos/valvulas", permanent: true },
       { source: "/product/valvula-compuerta-bridada", destination: "/productos/valvulas/valvula-compuerta", permanent: true },
+      // Fichas del WordPress con equivalente 1:1 en el sitio nuevo (mismo producto, misma intención de búsqueda).
+      { source: "/product/valvula-check-swing", destination: "/productos/valvulas/valvula-check-swing", permanent: true },
+      { source: "/product/valvula-check-flex", destination: "/productos/valvulas/valvula-check-flex", permanent: true },
+      { source: "/product/valvula-reductora-de-presion", destination: "/productos/valvulas/valvula-reductora-de-presion", permanent: true },
+      { source: "/product/valvula-compuerta-acerrojada", destination: "/productos/valvulas/valvula-compuerta-acerrojada", permanent: true },
+      { source: "/product/valvula-embone-tipo-luflex", destination: "/productos/valvulas/valvula-embone-tipo-luflex", permanent: true },
+      { source: "/product/valvula-de-alivio-bridada", destination: "/productos/valvulas/valvula-de-alivio-bridada", permanent: true },
+      { source: "/product/valvula-flotadora-bridada", destination: "/productos/valvulas/valvula-flotadora-bridada", permanent: true },
+      // Sin ficha propia todavía (guillotina, mariposa excéntrica): al listado de válvulas.
       { source: "/product/:slug", destination: "/productos/valvulas", permanent: true },
       { source: "/cart", destination: "/carrito", permanent: true },
       { source: "/checkout", destination: "/cotizar", permanent: true },
