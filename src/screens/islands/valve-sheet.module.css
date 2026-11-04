@@ -423,8 +423,9 @@
     border-bottom: 0;
   }
 
-  .prose p {
-    text-align: left;
+  .eyebrow {
+    letter-spacing: .12em;
+    line-height: 1.6;
   }
 }
 

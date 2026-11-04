@@ -100,7 +100,8 @@ export function ValveSheetView({ slug }: { slug: string }) {
             <Image src={sheet.image} alt={text.imageAlt} width={480} height={480} priority sizes="(min-width: 960px) 440px, 80vw" />
           </figure>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>{text.technicalName}</p>
+            {/* div y no p: en móvil todo `main p` va justificado y un antetítulo de dos líneas se abría en huecos. */}
+            <div className={styles.eyebrow}>{text.technicalName}</div>
             <h1 id="ficha-title">{text.name}</h1>
             <p className={styles.lead}>{text.lead}</p>
             <dl className={styles.facts}>
