@@ -38,9 +38,17 @@ export function getConsent(): ConsentRecord | null {
 /** Atajo para condicionar herramientas opcionales: `if (hasConsent("thirdParty")) { ... }`. */
 export const hasConsent = (category: OptionalCategory): boolean => isCategoryAllowed(getConsent(), category);
 
-/** Guarda la elección en la cookie propia `fundigsac-consent` y avisa a los suscriptores. */
-export function saveConsent(choices: ConsentChoices, source: ConsentSource = "banner"): ConsentRecord {
-  const record = createRecord(choices, source);
+/**
+ * Guarda la elección en la cookie propia `fundigsac-consent` y avisa a los suscriptores. Las categorías que no se
+ * indiquen conservan la decisión anterior (o quedan desactivadas si no la había).
+ */
+export function saveConsent(choices: Partial<ConsentChoices>, source: ConsentSource = "banner"): ConsentRecord {
+  const previous = getConsent();
+  const full: ConsentChoices = {
+    thirdParty: choices.thirdParty ?? previous?.thirdParty ?? false,
+    analytics: choices.analytics ?? previous?.analytics ?? false,
+  };
+  const record = createRecord(full, source);
   const secure = typeof location !== "undefined" && location.protocol === "https:";
   document.cookie = buildConsentCookie(record, { secure });
   cachedRaw = null;
@@ -49,6 +57,7 @@ export function saveConsent(choices: ConsentChoices, source: ConsentSource = "ba
   // Con Backend, cada decisión queda además registrada como evidencia (fecha, versión de la política, origen y
   // elecciones), sin identificador del navegador. Si no hay Backend, la cookie sigue siendo la constancia.
   void submitForm("consent", {
+    // El Backend (ConsentRecord.CATEGORIES) acepta hoy solo estas dos; la analítica queda en la cookie hasta ampliarlo.
     choices: { necessary: true, thirdParty: record.thirdParty },
     policyVersion: record.policy,
     source: record.source.toUpperCase(),

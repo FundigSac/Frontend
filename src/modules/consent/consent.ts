@@ -2,7 +2,7 @@
  * Modelo de consentimiento de cookies (puro, sin acceso al DOM: usable en servidor y cliente).
  *
  * Qué requiere permiso hoy: el contenido de terceros (el mapa de Google Maps, que puede instalar cookies propias
- * y recibir la IP). Lo demás que el sitio guarda (elección de cookies, idioma, tema, cotización y conversación del
+ * y recibir la IP) y la analítica (Google Analytics 4, que solo se carga después de aceptarla). Lo demás que el sitio guarda (elección de cookies, idioma, tema, cotización y conversación del
  * asistente) es necesario o lo pidió la persona, y se informa en la política de cookies.
  * Criterio: Ley N.º 29733 y D. S. N.º 016-2024-JUS (consentimiento libre, previo, expreso, inequívoco e informado,
  * demostrable) y buenas prácticas de RGPD/ePrivacy (granular, sin casillas premarcadas, rechazar tan fácil como aceptar,
@@ -14,11 +14,16 @@
 export const CONSENT_COOKIE = "fundigsac-consent";
 export const CONSENT_VERSION = 2;
 /** Versión de la política de cookies; si cambia, la decisión guardada deja de valer y se vuelve a preguntar. */
-export const POLICY_VERSION = "2026-10";
+export const POLICY_VERSION = "2026-11";
+/**
+ * Políticas anteriores cuya decisión sigue valiendo. La de 2026-10 no tenía analítica: se lee como analítica rechazada,
+ * así nada nuevo se activa sin un permiso expreso (la persona puede activarla desde las preferencias).
+ */
+const PREVIOUS_POLICIES: readonly string[] = ["2026-10"];
 export const CONSENT_MAX_AGE_DAYS = 180;
 export const CONSENT_MAX_AGE_SECONDS = CONSENT_MAX_AGE_DAYS * 24 * 60 * 60;
 
-export const OPTIONAL_CATEGORIES = ["thirdParty"] as const;
+export const OPTIONAL_CATEGORIES = ["thirdParty", "analytics"] as const;
 export type OptionalCategory = (typeof OPTIONAL_CATEGORIES)[number];
 export type ConsentChoices = Record<OptionalCategory, boolean>;
 /** Desde dónde se tomó la decisión (evidencia de cómo se obtuvo). */
@@ -38,7 +43,7 @@ export type ConsentRecord = ConsentChoices & {
 export type ConsentStatus = "necessary-only" | "all";
 
 export function createRecord(choices: ConsentChoices, source: ConsentSource = "banner", now: Date = new Date()): ConsentRecord {
-  return { necessary: true, thirdParty: choices.thirdParty, version: CONSENT_VERSION, policy: POLICY_VERSION, source, savedAt: now.toISOString() };
+  return { necessary: true, thirdParty: choices.thirdParty, analytics: choices.analytics, version: CONSENT_VERSION, policy: POLICY_VERSION, source, savedAt: now.toISOString() };
 }
 
 export function statusOf(choices: ConsentChoices): ConsentStatus {
@@ -63,11 +68,15 @@ export function parseConsent(raw: string | null | undefined): ConsentRecord | nu
     if (typeof data !== "object" || data === null) return null;
     const d = data as Record<string, unknown>;
     if (d.version === 1 && typeof d.performance === "boolean" && typeof d.customization === "boolean") {
-      return { necessary: true, thirdParty: false, version: CONSENT_VERSION, policy: POLICY_VERSION, source: "banner", savedAt: validDate(d.savedAt) };
+      return { necessary: true, thirdParty: false, analytics: false, version: CONSENT_VERSION, policy: POLICY_VERSION, source: "banner", savedAt: validDate(d.savedAt) };
     }
-    if (d.version !== CONSENT_VERSION || d.policy !== POLICY_VERSION || typeof d.thirdParty !== "boolean") return null;
+    if (d.version !== CONSENT_VERSION || typeof d.thirdParty !== "boolean") return null;
+    const current = d.policy === POLICY_VERSION;
+    if (!current && !PREVIOUS_POLICIES.includes(d.policy as string)) return null;
+    if (current && typeof d.analytics !== "boolean") return null;
     const source = CONSENT_SOURCES.includes(d.source as ConsentSource) ? (d.source as ConsentSource) : "banner";
-    return { necessary: true, thirdParty: d.thirdParty, version: CONSENT_VERSION, policy: POLICY_VERSION, source, savedAt: validDate(d.savedAt) };
+    // Se conserva la versión de la política con la que se decidió: es la constancia de qué se aceptó.
+    return { necessary: true, thirdParty: d.thirdParty, analytics: current ? (d.analytics as boolean) : false, version: CONSENT_VERSION, policy: d.policy as string, source, savedAt: validDate(d.savedAt) };
   } catch {
     return null;
   }

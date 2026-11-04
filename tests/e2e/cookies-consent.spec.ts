@@ -46,7 +46,7 @@ test.describe("consentimiento de cookies: aviso", () => {
     await page.goto("/contacto");
     await banner(page).getByRole("button", { name: "Rechazar todas" }).click();
     await expect(banner(page)).toBeHidden();
-    expect(await consentCookie(page)).toMatchObject({ necessary: true, thirdParty: false, source: "banner" });
+    expect(await consentCookie(page)).toMatchObject({ necessary: true, thirdParty: false, analytics: false, source: "banner" });
     await expect(mapFrames(page)).toHaveCount(0);
     await page.reload();
     await expect(banner(page)).toBeHidden();
@@ -56,7 +56,7 @@ test.describe("consentimiento de cookies: aviso", () => {
   test("aceptar todas: guarda la decisión y el mapa de Google se carga, también tras recargar", async ({ page }) => {
     await page.goto("/contacto");
     await banner(page).getByRole("button", { name: "Aceptar todas" }).click();
-    expect(await consentCookie(page)).toMatchObject({ thirdParty: true, source: "banner" });
+    expect(await consentCookie(page)).toMatchObject({ thirdParty: true, analytics: true, source: "banner" });
     await expect(mapFrames(page)).toHaveCount(1);
     await page.reload();
     await expect(banner(page)).toBeHidden();
@@ -73,9 +73,34 @@ test.describe("consentimiento de cookies: aviso", () => {
     await expect(dialog).toBeHidden();
     expect(await consentCookie(page)).toBeNull();
     await banner(page).getByRole("button", { name: "Configurar" }).click();
+    await expect(dialog.getByRole("switch", { name: "Analítica" })).toHaveAttribute("aria-checked", "false");
     await dialog.getByRole("switch", { name: "Contenido de terceros" }).click();
     await dialog.getByRole("button", { name: "Guardar preferencias" }).click();
-    expect(await consentCookie(page)).toMatchObject({ thirdParty: true, source: "preferences" });
+    expect(await consentCookie(page)).toMatchObject({ thirdParty: true, analytics: false, source: "preferences" });
+  });
+
+  test("la analítica es una elección aparte y una decisión de la política 2026-10 se lee como analítica rechazada", async ({ page, baseURL }) => {
+    const previous = { necessary: true, thirdParty: true, version: 2, policy: "2026-10", source: "banner", savedAt: new Date().toISOString() };
+    await page.context().addCookies([{ name: "fundigsac-consent", value: encodeURIComponent(JSON.stringify(previous)), url: baseURL ?? "http://127.0.0.1:3100" }]);
+    await page.goto("/");
+    await expect(banner(page)).toBeHidden();
+    await page.getByRole("button", { name: "Preferencias de cookies" }).first().click();
+    const dialog = page.getByRole("dialog", { name: "Preferencias de cookies" });
+    await expect(dialog.getByRole("switch", { name: "Contenido de terceros" })).toHaveAttribute("aria-checked", "true");
+    await expect(dialog.getByRole("switch", { name: "Analítica" })).toHaveAttribute("aria-checked", "false");
+    await dialog.getByRole("switch", { name: "Analítica" }).click();
+    await dialog.getByRole("button", { name: "Guardar preferencias" }).click();
+    expect(await consentCookie(page)).toMatchObject({ thirdParty: true, analytics: true, policy: "2026-11", source: "preferences" });
+  });
+
+  test("fuera del dominio canónico nunca se carga Google Analytics, aunque se acepte", async ({ page }) => {
+    const requests: string[] = [];
+    page.on("request", (r) => { if (/googletagmanager|google-analytics/.test(r.url())) requests.push(r.url()); });
+    await page.goto("/");
+    await banner(page).getByRole("button", { name: "Aceptar todas" }).click();
+    await page.reload();
+    await page.waitForTimeout(500);
+    expect(requests).toEqual([]);
   });
 
   test("retirar el consentimiento: «Preferencias de cookies» del pie reabre el panel y el mapa vuelve al recuadro", async ({ page }) => {

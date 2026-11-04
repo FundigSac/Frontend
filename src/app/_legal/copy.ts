@@ -160,7 +160,7 @@ export const COOKIES: Pair<{
   es: {
     crumb: "Política de cookies",
     title: "Política de cookies",
-    lead: "En FUNDIGSAC guardamos solo lo necesario para que el sitio funcione y pedimos tu permiso antes de cargar contenido de terceros.",
+    lead: "En FUNDIGSAC guardamos lo necesario para que el sitio funcione y pedimos tu permiso antes de activar la analítica o cargar contenido de terceros.",
     prefs: {
       eyebrow: "Gestiona tus preferencias",
       title: "Preferencias de cookies",
@@ -168,7 +168,7 @@ export const COOKIES: Pair<{
       cards: [
         { title: "Almacenamiento necesario", text: "Recuerda tu elección de cookies, tu idioma y tema, los productos de tu cotización y la conversación con el asistente. Es indispensable para el funcionamiento del sitio y no se puede desactivar." },
         { title: "Contenido de terceros", text: "Muestra el mapa de Google Maps. Google puede instalar sus propias cookies y recibir tu dirección IP, por eso solo se carga si lo autorizas." },
-        { title: "Analítica y publicidad", text: "No utilizamos cookies de medición de audiencia, de publicidad ni de seguimiento. Si algún día las incorporamos, te pediremos permiso antes." },
+        { title: "Analítica", text: "Google Analytics 4 mide de forma agregada las visitas y el uso de botones clave (WhatsApp, cotizar, formularios enviados) para mejorar el sitio. Solo se carga si la activas; no la usamos para publicidad ni para crear perfiles." },
       ],
       always: "Siempre activo",
       unused: "No utilizadas",
@@ -177,7 +177,7 @@ export const COOKIES: Pair<{
       acceptAll: "Aceptar todas",
       rejectOptional: "Rechazar opcionales",
       save: "Guardar preferencias",
-      statusAll: "Aceptaste el contenido de terceros.",
+      statusAll: "Aceptaste la analítica y el contenido de terceros.",
       statusNecessary: "Solo se usará el almacenamiento necesario.",
       statusSaved: "Preferencias guardadas.",
       note: "Tu decisión se guarda en tu navegador durante 180 días y después te volveremos a preguntar. Si borras las cookies, también se borra tu decisión.",
@@ -187,7 +187,7 @@ export const COOKIES: Pair<{
     },
     info: [
       { title: "¿Qué son las cookies?", alt: "Tanques circulares de una planta de tratamiento de agua", text: "Las cookies son pequeños archivos de texto que se guardan en tu dispositivo cuando visitas un sitio web. Junto con tecnologías parecidas, como el almacenamiento local del navegador, permiten recordar tu información y preferencias durante un tiempo." },
-      { title: "¿Cómo las usamos?", alt: "Acople bridado de hierro dúctil", text: "Usamos solo lo imprescindible: recordar tu elección de cookies, tu idioma y tema, los productos de tu cotización y el asistente. El mapa de Google Maps es contenido de terceros y únicamente se carga con tu consentimiento." },
+      { title: "¿Cómo las usamos?", alt: "Acople bridado de hierro dúctil", text: "Usamos lo imprescindible: recordar tu elección de cookies, tu idioma y tema, los productos de tu cotización y el asistente. La analítica (Google Analytics) y el mapa de Google Maps son opcionales y solo se cargan con tu consentimiento." },
       { title: "Duración de las cookies", alt: "Cascada de agua en una planta de tratamiento", text: "Las cookies pueden ser de sesión (se eliminan al cerrar el navegador) o persistentes (permanecen un tiempo en tu dispositivo). La tabla de abajo indica la duración de cada una." },
     ],
     inventory: {
@@ -205,8 +205,9 @@ export const COOKIES: Pair<{
         ["fundigsac-quote", "FUNDIGSAC (propia)", "Conservar en tu equipo los productos de tu cotización.", "Hasta que envíes o borres la cotización", "Necesaria · almacenamiento local"],
         ["fundigsac-assistant-v1 · fundigsac-assistant-teaser", "FUNDIGSAC (propia)", "Mantener la conversación con el asistente virtual mientras navegas.", "Hasta cerrar la pestaña", "Necesaria · almacenamiento de sesión"],
         ["Cookies de Google Maps", "Google LLC (tercero)", "Mostrar el mapa interactivo de nuestra ubicación. Google puede instalar sus propias cookies y recibir tu dirección IP.", "Según Google", "Contenido de terceros · solo con tu permiso"],
+        ["_ga · _ga_8867SXGEH3", "Google LLC (Google Analytics 4)", "Distinguir visitas con un identificador seudónimo y medir, en conjunto, qué páginas se ven y qué botones se usan. Google Analytics 4 no guarda tu dirección IP.", "13 meses", "Analítica · solo con tu permiso"],
       ],
-      note: "No usamos cookies de analítica, de publicidad ni de seguimiento entre sitios.",
+      note: "No usamos cookies de publicidad ni de seguimiento entre sitios. La analítica está desactivada hasta que la aceptes.",
     },
     legal: {
       eyebrow: "Marco legal",
@@ -217,7 +218,7 @@ export const COOKIES: Pair<{
         { title: "Criterios internacionales", text: "Seguimos también el Reglamento General de Protección de Datos y la Directiva ePrivacy de la Unión Europea: consentimiento previo y por finalidades, sin casillas premarcadas, con la misma facilidad para rechazar que para aceptar y con posibilidad de retirarlo cuando quieras." },
         { title: "Cómo retirar tu consentimiento", text: "Usa «Preferencias de cookies» al pie de cualquier página o el panel de esta misma página. Retirarlo es tan sencillo como darlo y no afecta el uso del sitio." },
         { title: "Tus derechos", text: "Puedes ejercer tus derechos de información, acceso, rectificación, cancelación y oposición escribiéndonos desde el formulario de contacto. Si consideras que no atendimos tu solicitud, puedes acudir a la Autoridad Nacional de Protección de Datos Personales, del Ministerio de Justicia y Derechos Humanos." },
-        { title: "Señales del navegador", text: "Si tu navegador envía la señal Global Privacy Control, no activamos contenido de terceros por defecto: solo se carga si tú lo autorizas." },
+        { title: "Señales del navegador", text: "Si tu navegador envía la señal Global Privacy Control, no activamos la analítica ni el contenido de terceros por defecto: solo se cargan si tú los autorizas." },
       ],
     },
     faq: {
@@ -225,18 +226,18 @@ export const COOKIES: Pair<{
       title: "Preguntas frecuentes",
       lead: "Resolvemos las dudas más comunes sobre el uso de cookies en nuestro sitio web.",
       items: [
-        { q: "¿Qué tipos de cookies utiliza FUNDIGSAC?", a: "Solo almacenamiento necesario (tu elección de cookies, idioma, tema, cotización y asistente) y, si lo autorizas, contenido de terceros: el mapa de Google Maps. No usamos cookies de analítica ni de publicidad." },
+        { q: "¿Qué tipos de cookies utiliza FUNDIGSAC?", a: "Almacenamiento necesario (tu elección de cookies, idioma, tema, cotización y asistente) y, solo si lo autorizas, analítica (Google Analytics) y contenido de terceros (el mapa de Google Maps). No usamos cookies de publicidad." },
         { q: "¿Puedo cambiar mis preferencias de cookies más adelante?", a: "Sí. Puedes volver a esta página o usar el enlace «Preferencias de cookies» del pie de página cuando quieras para modificar tu elección." },
         { q: "¿Cómo puedo gestionar o eliminar las cookies desde mi navegador?", a: "Todos los navegadores permiten bloquear o eliminar cookies desde su configuración de privacidad. Ten en cuenta que, si bloqueas el almacenamiento necesario, algunas funciones del sitio, como tu cotización, podrían dejar de estar disponibles." },
-        { q: "¿Las cookies recopilan información personal?", a: "El almacenamiento necesario no se usa para seguimiento. Al cargar el mapa, Google puede recibir tu dirección IP y datos de tu navegador según su propia política; por eso solo se carga con tu permiso. Para más detalle consulta nuestra Política de Privacidad." },
-        { q: "¿Qué sucede si rechazo las cookies opcionales?", a: "Podrás seguir navegando con normalidad. En lugar del mapa verás un botón para cargarlo cuando quieras y un enlace para abrirlo en Google Maps." },
+        { q: "¿Las cookies recopilan información personal?", a: "El almacenamiento necesario no se usa para seguimiento. Si aceptas la analítica, Google Analytics usa un identificador seudónimo para contar visitas en conjunto y no guarda tu dirección IP. Al cargar el mapa, Google puede recibir tu IP y datos de tu navegador según su propia política. Por eso ambos solo se cargan con tu permiso. Para más detalle consulta nuestra Política de Privacidad." },
+        { q: "¿Qué sucede si rechazo las cookies opcionales?", a: "Podrás seguir navegando con normalidad. La analítica no se carga y, en lugar del mapa, verás un botón para cargarlo cuando quieras y un enlace para abrirlo en Google Maps." },
       ],
     },
   },
   en: {
     crumb: "Cookie policy",
     title: "Cookie policy",
-    lead: "At FUNDIGSAC we only store what the site needs to work and we ask for your permission before loading third-party content.",
+    lead: "At FUNDIGSAC we store what the site needs to work and we ask for your permission before enabling analytics or loading third-party content.",
     prefs: {
       eyebrow: "Manage your preferences",
       title: "Cookie preferences",
@@ -244,7 +245,7 @@ export const COOKIES: Pair<{
       cards: [
         { title: "Necessary storage", text: "It remembers your cookie choice, your language and theme, the products in your quote and your conversation with the assistant. It is essential for the site to work and cannot be turned off." },
         { title: "Third-party content", text: "It shows the Google Maps map. Google may set its own cookies and receive your IP address, so it only loads if you allow it." },
-        { title: "Analytics and advertising", text: "We do not use audience measurement, advertising or tracking cookies. If we ever add them, we will ask for your permission first." },
+        { title: "Analytics", text: "Google Analytics 4 measures, in aggregate, visits and the use of key buttons (WhatsApp, quote, submitted forms) to improve the site. It only loads if you turn it on; we do not use it for advertising or profiling." },
       ],
       always: "Always active",
       unused: "Not used",
@@ -253,7 +254,7 @@ export const COOKIES: Pair<{
       acceptAll: "Accept all",
       rejectOptional: "Reject optional",
       save: "Save preferences",
-      statusAll: "You accepted third-party content.",
+      statusAll: "You accepted analytics and third-party content.",
       statusNecessary: "Only necessary storage will be used.",
       statusSaved: "Preferences saved.",
       note: "Your decision is kept in your browser for 180 days and then we will ask you again. If you clear your cookies, your decision is cleared too.",
@@ -263,7 +264,7 @@ export const COOKIES: Pair<{
     },
     info: [
       { title: "What are cookies?", alt: "Circular tanks at a water treatment plant", text: "Cookies are small text files stored on your device when you visit a website. Together with similar technologies, such as the browser’s local storage, they let a site remember your information and preferences for a period of time." },
-      { title: "How do we use them?", alt: "Ductile iron flange coupling", text: "We only use what is essential: remembering your cookie choice, your language and theme, the products in your quote and the assistant. The Google Maps map is third-party content and only loads with your consent." },
+      { title: "How do we use them?", alt: "Ductile iron flange coupling", text: "We use what is essential: remembering your cookie choice, your language and theme, the products in your quote and the assistant. Analytics (Google Analytics) and the Google Maps map are optional and only load with your consent." },
       { title: "Cookie duration", alt: "Water cascade at a treatment plant", text: "Cookies can be session cookies (deleted when you close the browser) or persistent cookies (kept on your device for a set period). The table below shows how long each one lasts." },
     ],
     inventory: {
@@ -281,8 +282,9 @@ export const COOKIES: Pair<{
         ["fundigsac-quote", "FUNDIGSAC (first party)", "Keep the products in your quote on your device.", "Until you send or clear the quote", "Necessary · local storage"],
         ["fundigsac-assistant-v1 · fundigsac-assistant-teaser", "FUNDIGSAC (first party)", "Keep your conversation with the virtual assistant while you browse.", "Until you close the tab", "Necessary · session storage"],
         ["Google Maps cookies", "Google LLC (third party)", "Show the interactive map of our location. Google may set its own cookies and receive your IP address.", "As set by Google", "Third-party content · only with your permission"],
+        ["_ga · _ga_8867SXGEH3", "Google LLC (Google Analytics 4)", "Tell visits apart with a pseudonymous identifier and measure, in aggregate, which pages are viewed and which buttons are used. Google Analytics 4 does not store your IP address.", "13 months", "Analytics · only with your permission"],
       ],
-      note: "We do not use analytics, advertising or cross-site tracking cookies.",
+      note: "We do not use advertising or cross-site tracking cookies. Analytics stays off until you accept it.",
     },
     legal: {
       eyebrow: "Legal framework",
@@ -293,7 +295,7 @@ export const COOKIES: Pair<{
         { title: "International criteria", text: "We also follow the EU General Data Protection Regulation and the ePrivacy Directive: prior, purpose-specific consent, no pre-ticked boxes, rejecting as easy as accepting, and the ability to withdraw whenever you want." },
         { title: "How to withdraw your consent", text: "Use “Cookie preferences” at the bottom of any page or the panel on this page. Withdrawing is as easy as giving it and does not affect how you use the site." },
         { title: "Your rights", text: "You can exercise your rights of information, access, rectification, cancellation and objection by writing to us through the contact form. If you believe we did not handle your request, you can go to the National Authority for Personal Data Protection, part of the Ministry of Justice and Human Rights." },
-        { title: "Browser signals", text: "If your browser sends the Global Privacy Control signal, we do not enable third-party content by default: it only loads if you allow it." },
+        { title: "Browser signals", text: "If your browser sends the Global Privacy Control signal, we do not enable analytics or third-party content by default: they only load if you allow them." },
       ],
     },
     faq: {
@@ -301,11 +303,11 @@ export const COOKIES: Pair<{
       title: "Frequently asked questions",
       lead: "We answer the most common questions about the use of cookies on our website.",
       items: [
-        { q: "What types of cookies does FUNDIGSAC use?", a: "Only necessary storage (your cookie choice, language, theme, quote and assistant) and, if you allow it, third-party content: the Google Maps map. We do not use analytics or advertising cookies." },
+        { q: "What types of cookies does FUNDIGSAC use?", a: "Necessary storage (your cookie choice, language, theme, quote and assistant) and, only if you allow it, analytics (Google Analytics) and third-party content (the Google Maps map). We do not use advertising cookies." },
         { q: "Can I change my cookie preferences later?", a: "Yes. You can return to this page or use the “Cookie preferences” link in the footer at any time to change your choice." },
         { q: "How can I manage or delete cookies from my browser?", a: "All browsers let you block or delete cookies from their privacy settings. Keep in mind that, if you block necessary storage, some site features, such as your quote, may stop working." },
-        { q: "Do cookies collect personal information?", a: "Necessary storage is not used for tracking. When the map loads, Google may receive your IP address and browser data under its own policy, which is why it only loads with your permission. For more detail, see our Privacy Policy." },
-        { q: "What happens if I reject optional cookies?", a: "You can keep browsing normally. Instead of the map you will see a button to load it whenever you want and a link to open it in Google Maps." },
+        { q: "Do cookies collect personal information?", a: "Necessary storage is not used for tracking. If you accept analytics, Google Analytics uses a pseudonymous identifier to count visits in aggregate and does not store your IP address. When the map loads, Google may receive your IP address and browser data under its own policy. That is why both only load with your permission. For more detail, see our Privacy Policy." },
+        { q: "What happens if I reject optional cookies?", a: "You can keep browsing normally. Analytics does not load and, instead of the map, you will see a button to load it whenever you want and a link to open it in Google Maps." },
       ],
     },
   },

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Cookie, Lock, MapPinned, ShieldCheck, X } from "lucide-react";
+import { BarChart3, Cookie, Lock, MapPinned, ShieldCheck, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { expiresAt, type ConsentSource } from "@/modules/consent/consent";
 import { isGpcEnabled, saveConsent, useConsent } from "@/modules/consent/store";
@@ -12,7 +12,7 @@ import "./cookie-banner.css";
 const COPY = {
   es: {
     title: "Tu privacidad importa",
-    text: "Guardamos solo lo necesario para que el sitio funcione (tu idioma, tema y cotización). El contenido de terceros, como el mapa de Google Maps, únicamente se carga si lo autorizas. Puedes aceptar, rechazar o configurar.",
+    text: "Guardamos lo necesario para que el sitio funcione (tu idioma, tema y cotización). La analítica de Google Analytics y el mapa de Google Maps solo se cargan si los autorizas. Puedes aceptar, rechazar o configurar.",
     policy: "Política de cookies",
     acceptAll: "Aceptar todas",
     rejectAll: "Rechazar todas",
@@ -28,6 +28,7 @@ const COPY = {
     categories: {
       necessary: { title: "Necesarias", text: "Recuerdan tu elección de cookies, tu idioma y tema, los productos de tu cotización y la conversación con el asistente. No se pueden desactivar." },
       thirdParty: { title: "Contenido de terceros", text: "Muestra el mapa de Google Maps. Google puede instalar sus propias cookies y recibir tu dirección IP. Desactivado, verás un botón para cargarlo cuando quieras." },
+      analytics: { title: "Analítica", text: "Google Analytics mide de forma agregada qué páginas se visitan y qué botones se usan (por ejemplo, WhatsApp o cotizar) para mejorar el sitio. Guarda las cookies _ga y _ga_8867SXGEH3 durante 13 meses. Sin publicidad ni perfiles." },
     },
     gpc: "Tu navegador envía la señal Global Privacy Control: no activamos nada opcional hasta que tú lo autorices.",
     saved: "Decisión guardada el",
@@ -35,7 +36,7 @@ const COPY = {
   },
   en: {
     title: "Your privacy matters",
-    text: "We only store what the site needs to work (your language, theme and quote). Third-party content, such as the Google Maps map, only loads if you allow it. You can accept, reject or customize.",
+    text: "We store what the site needs to work (your language, theme and quote). Google Analytics and the Google Maps map only load if you allow them. You can accept, reject or customize.",
     policy: "Cookie policy",
     acceptAll: "Accept all",
     rejectAll: "Reject all",
@@ -51,6 +52,7 @@ const COPY = {
     categories: {
       necessary: { title: "Necessary", text: "They remember your cookie choice, your language and theme, the products in your quote and your conversation with the assistant. They cannot be turned off." },
       thirdParty: { title: "Third-party content", text: "It shows the Google Maps map. Google may set its own cookies and receive your IP address. Turned off, you will see a button to load it whenever you want." },
+      analytics: { title: "Analytics", text: "Google Analytics measures, in aggregate, which pages are visited and which buttons are used (for example WhatsApp or quote) to improve the site. It sets the _ga and _ga_8867SXGEH3 cookies for 13 months. No advertising or profiling." },
     },
     gpc: "Your browser sends the Global Privacy Control signal: we do not enable anything optional until you allow it.",
     saved: "Decision saved on",
@@ -74,6 +76,7 @@ export function CookieBanner() {
   const [mounted, setMounted] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [thirdParty, setThirdParty] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
   const [gpc, setGpc] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -91,6 +94,7 @@ export function CookieBanner() {
   const openPrefs = useCallback(() => {
     returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setThirdParty(consent?.thirdParty ?? false);
+    setAnalytics(consent?.analytics ?? false);
     setPrefsOpen(true);
   }, [consent]);
 
@@ -118,7 +122,7 @@ export function CookieBanner() {
     window.setTimeout(() => returnFocus.current?.focus?.(), 0);
   }, []);
 
-  const decide = (choices: { thirdParty: boolean }, source: ConsentSource) => {
+  const decide = (choices: { thirdParty: boolean; analytics: boolean }, source: ConsentSource) => {
     saveConsent(choices, source);
     closePrefs();
   };
@@ -142,10 +146,10 @@ export function CookieBanner() {
             </p>
           </div>
           <div className="ck__actions">
-            <button type="button" className="ck__btn ck__btn--accept" onClick={() => decide({ thirdParty: true }, "banner")}>
+            <button type="button" className="ck__btn ck__btn--accept" onClick={() => decide({ thirdParty: true, analytics: true }, "banner")}>
               {t.acceptAll}
             </button>
-            <button type="button" className="ck__btn ck__btn--reject" onClick={() => decide({ thirdParty: false }, "banner")}>
+            <button type="button" className="ck__btn ck__btn--reject" onClick={() => decide({ thirdParty: false, analytics: false }, "banner")}>
               {t.rejectAll}
             </button>
             <button type="button" className="ck__btn ck__btn--outline" onClick={openPrefs}>
@@ -199,6 +203,14 @@ export function CookieBanner() {
                 </div>
                 <Switch checked={thirdParty} onChange={setThirdParty} labelledBy={`${uid}-t`} label={thirdParty ? t.on : t.off} />
               </li>
+              <li className="ck-cat">
+                <span className="ck-cat__icon" aria-hidden="true"><BarChart3 size={18} strokeWidth={1.8} /></span>
+                <div className="ck-cat__text">
+                  <strong id={`${uid}-a`}>{t.categories.analytics.title}</strong>
+                  <p>{t.categories.analytics.text}</p>
+                </div>
+                <Switch checked={analytics} onChange={setAnalytics} labelledBy={`${uid}-a`} label={analytics ? t.on : t.off} />
+              </li>
             </ul>
 
             {gpc && <p className="ck-dialog__note">{t.gpc}</p>}
@@ -209,13 +221,13 @@ export function CookieBanner() {
             )}
 
             <footer className="ck-dialog__actions">
-              <button type="button" className="ck__btn ck__btn--reject" onClick={() => decide({ thirdParty: false }, "preferences")}>
+              <button type="button" className="ck__btn ck__btn--reject" onClick={() => decide({ thirdParty: false, analytics: false }, "preferences")}>
                 {t.rejectAll}
               </button>
-              <button type="button" className="ck__btn ck__btn--outline" onClick={() => decide({ thirdParty }, "preferences")}>
+              <button type="button" className="ck__btn ck__btn--outline" onClick={() => decide({ thirdParty, analytics }, "preferences")}>
                 {t.save}
               </button>
-              <button type="button" className="ck__btn ck__btn--accept" onClick={() => decide({ thirdParty: true }, "preferences")}>
+              <button type="button" className="ck__btn ck__btn--accept" onClick={() => decide({ thirdParty: true, analytics: true }, "preferences")}>
                 {t.acceptAll}
               </button>
             </footer>

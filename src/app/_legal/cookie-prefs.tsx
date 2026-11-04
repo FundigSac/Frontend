@@ -10,7 +10,7 @@ import { useCopy } from "./use-copy";
 
 type StatusKey = "" | "all" | "necessary" | "saved";
 
-const CARD_KEYS = ["necessary", "thirdParty", "unused"] as const;
+const CARD_KEYS = ["necessary", "thirdParty", "analytics"] as const;
 const CARD_ICONS = [ShieldCheck, MapPinned, BarChart3] as const;
 
 function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange?: (next: boolean) => void; label: string; disabled?: boolean }) {
@@ -26,6 +26,7 @@ export function CookiePrefs() {
   const consent = useConsent();
   const uid = useId();
   const [thirdParty, setThirdParty] = useState(false);
+  const [analytics, setAnalytics] = useState(false);
   const [status, setStatus] = useState<StatusKey>("");
   const [gpc, setGpc] = useState(false);
 
@@ -33,16 +34,20 @@ export function CookiePrefs() {
   useEffect(() => {
     const id = window.requestAnimationFrame(() => {
       setThirdParty(consent?.thirdParty ?? false);
+      setAnalytics(consent?.analytics ?? false);
       setGpc(isGpcEnabled());
     });
     return () => window.cancelAnimationFrame(id);
   }, [consent]);
 
-  const decide = (next: boolean, key: Exclude<StatusKey, "">) => {
-    saveConsent({ thirdParty: next }, "policy");
-    setThirdParty(next);
+  const decide = (next: { thirdParty: boolean; analytics: boolean }, key: Exclude<StatusKey, "">) => {
+    saveConsent(next, "policy");
+    setThirdParty(next.thirdParty);
+    setAnalytics(next.analytics);
     setStatus(key);
   };
+  const values = { thirdParty, analytics };
+  const setters = { thirdParty: setThirdParty, analytics: setAnalytics };
 
   const statusText = status === "all" ? t.statusAll : status === "necessary" ? t.statusNecessary : status === "saved" ? t.statusSaved : "";
   const dateFmt = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "es-PE", { day: "numeric", month: "long", year: "numeric" });
@@ -60,23 +65,20 @@ export function CookiePrefs() {
           const key = CARD_KEYS[i];
           const Icon = CARD_ICONS[i];
           const locked = key === "necessary";
-          const unused = key === "unused";
-          const on = locked ? true : unused ? false : thirdParty;
+          const on = key === "necessary" ? true : values[key];
           return (
             <li className="lg-cookie" key={key}>
               <span className="lg-cookie__icon" aria-hidden="true"><Icon size={28} strokeWidth={1.5} /></span>
               <h3>{card.title}</h3>
               <p>{card.text}</p>
               <div className="lg-switch-row">
-                {locked || unused ? (
+                {key === "necessary" ? (
                   <Switch checked={on} label={card.title} disabled />
                 ) : (
-                  <Switch checked={on} label={card.title} onChange={(next) => { setThirdParty(next); setStatus(""); }} />
+                  <Switch checked={on} label={card.title} onChange={(next) => { setters[key](next); setStatus(""); }} />
                 )}
                 {locked ? (
                   <span className="lg-chip"><Lock aria-hidden="true" size={13} /> {t.always}</span>
-                ) : unused ? (
-                  <span className="lg-chip">{t.unused}</span>
                 ) : (
                   <span className={`lg-chip${on ? " lg-chip--on" : ""}`}>{on ? t.on : t.off}</span>
                 )}
@@ -87,13 +89,13 @@ export function CookiePrefs() {
       </ul>
 
       <div className="lg-prefs__actions">
-        <button type="button" className="lp-btn lp-btn--solid" onClick={() => decide(true, "all")}>
+        <button type="button" className="lp-btn lp-btn--solid" onClick={() => decide({ thirdParty: true, analytics: true }, "all")}>
           {t.acceptAll} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
         </button>
-        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide(false, "necessary")}>
+        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide({ thirdParty: false, analytics: false }, "necessary")}>
           {t.rejectOptional}
         </button>
-        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide(thirdParty, "saved")}>
+        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide({ thirdParty, analytics }, "saved")}>
           {t.save}
         </button>
       </div>
