@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { ComponentsCarousel } from "./_landing/components-carousel";
-import { HeroCarousel } from "./_landing/hero-carousel";
-import { BackingSection, DocsSection, LocationSection } from "./_landing/home-sections";
 import { FloatingActions } from "./_landing/floating-actions";
-import { SectorsBand } from "./_landing/sectors-band";
-import { SmoothScroll } from "./_landing/smooth-scroll";
+import { HomeHero } from "./_landing/hero";
+import { BackingSection, DocsSection, FamiliesSection, LocationSection, SectorsSection } from "./_landing/home-sections";
 import "./landing.css";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -12,18 +9,13 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default function HomePage() {
   return (
     <main className="lp">
-      <HeroCarousel />
-
-      <section className="lp-components" aria-labelledby="lp-components-title">
-        <ComponentsCarousel />
-      </section>
-
-      <SectorsBand />
+      <HomeHero />
+      <FamiliesSection />
+      <SectorsSection />
       <BackingSection />
       <DocsSection />
       <LocationSection />
       <FloatingActions />
-      <SmoothScroll />
     </main>
   );
 }
