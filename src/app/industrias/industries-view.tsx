@@ -90,7 +90,7 @@ export function IndustriesView({ sectors }: { sectors: SectorData[] }) {
               </div>
               <div className="in-bloque__media">
                 <div className="in-bloque__foto" data-reveal="media">
-                  <Image src={PHOTOS[s.id]} alt={text.alt} fill quality={70} sizes="(max-width: 1023px) 100vw, 56vw" />
+                  <Image src={PHOTOS[s.id]} alt={text.alt} fill quality={70} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 56vw" />
                 </div>
                 <ProductCells
                   columns={3}

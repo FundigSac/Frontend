@@ -36,7 +36,7 @@ export function SanitationSections() {
             {t.redes.items.map((red, i) => (
               <article className="sa-red" key={red.title}>
                 <div className="sa-red__foto">
-                  <Image src={RED_IMAGES[i]} alt={red.alt} fill quality={70} sizes="(max-width: 1023px) 100vw, 31vw" />
+                  <Image src={RED_IMAGES[i]} alt={red.alt} fill quality={70} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 31vw" />
                 </div>
                 <h3>{red.title}</h3>
                 <p>{red.text}</p>

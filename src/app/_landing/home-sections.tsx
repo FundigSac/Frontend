@@ -98,7 +98,7 @@ export function SectorsSection() {
         {SECTORS.map((s, i) => (
           <li key={s.href} className="ho-strip">
             <span className="ho-strip__img" aria-hidden="true">
-              <Image src={s.image} alt="" width={1122} height={1402} quality={70} sizes="(max-width: 1023px) 60vw, 46vw" />
+              <Image src={s.image} alt="" width={1122} height={1402} quality={70} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 60vw, 46vw" />
             </span>
             <span className="ho-strip__band" aria-hidden="true" />
             <IntentLink href={s.href}>
@@ -123,7 +123,7 @@ export function BackingSection() {
     <section className="sec ho-backing" aria-labelledby="lp-backing-title">
       <div className="lp-shell ho-split">
         <div className="lp-backing__media ho-split__wide" data-reveal="media">
-          <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} width={1200} height={800} quality={70} sizes="(max-width: 1023px) 100vw, 56vw" />
+          <Image src="/media/home-v3/respaldo-ingeniero.webp" alt={t.alt} width={1200} height={800} quality={70} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 56vw" />
         </div>
         <div className="ho-split__narrow" data-reveal="up">
           <div className="cota">
@@ -176,7 +176,7 @@ export function DocsSection() {
           </IntentLink>
         </div>
         <IntentLink href={DOCS_HREF} className="ho-split__wide ho-docs__plate" data-reveal="media" aria-label={t.mediaLabel}>
-          <Image src="/media/home-v3/ficha-plano-recorte.webp" alt={t.alt} width={1186} height={784} quality={75} sizes="(max-width: 1023px) 100vw, 56vw" />
+          <Image src="/media/home-v3/ficha-plano-recorte.webp" alt={t.alt} width={1186} height={784} quality={75} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 56vw" />
         </IntentLink>
       </div>
     </section>

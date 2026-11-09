@@ -39,7 +39,7 @@ export function MiningSections() {
             {t.usos.items.map((uso, i) => (
               <article className="mi-uso" key={uso.title}>
                 <div className="mi-uso__foto">
-                  <SectorImage prepared={MINING_IMAGES[USES[i]]} src={USES[i]} alt={uso.alt} fill quality={72} sizes="(max-width: 1023px) 100vw, 46vw" />
+                  <SectorImage prepared={MINING_IMAGES[USES[i]]} src={USES[i]} alt={uso.alt} fill quality={72} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 46vw" />
                 </div>
                 <div>
                   <h3>{uso.title}</h3>

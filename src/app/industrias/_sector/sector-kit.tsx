@@ -91,7 +91,7 @@ const FEATURED_HREF = "/productos/valvulas/valvula-compuerta-fundigsac";
 const FEATURED_PDF = "/docs/ficha-tecnica-valvula-compuerta-fundigsac.pdf";
 
 /** Destacado: foto y texto en dos mitades, con los datos que publica la ficha técnica. */
-export function SectorFeatured({ id, t, image, prepared, sizes = "(max-width: 1023px) 100vw, 50vw" }: { id: string; t: FeaturedText; image: string; prepared?: PreparedImage; sizes?: string }) {
+export function SectorFeatured({ id, t, image, prepared, sizes = "(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 50vw" }: { id: string; t: FeaturedText; image: string; prepared?: PreparedImage; sizes?: string }) {
   return (
     <section className="sec" aria-labelledby={`${id}-featured-title`}>
       <div className="lp-shell in-feat">

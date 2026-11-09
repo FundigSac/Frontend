@@ -35,7 +35,7 @@ export function AboutView() {
         <section className="sec" aria-labelledby="ab-sectores-title">
           <div className="lp-shell ab-sectores">
             <div className="ab-sectores__foto" data-reveal="media">
-              <Image src="/media/nosotros/planta.webp" alt={t.essence.photoAlt} fill quality={72} sizes="(max-width: 1023px) 100vw, 50vw" />
+              <Image src="/media/nosotros/planta.webp" alt={t.essence.photoAlt} fill quality={72} sizes="(max-width: 480px) 52vw, (max-width: 1023px) 100vw, 50vw" />
             </div>
             <div className="ab-sectores__texto" data-reveal="up">
               <h2 id="ab-sectores-title">{t.sectors.title}</h2>

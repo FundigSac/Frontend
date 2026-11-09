@@ -322,7 +322,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={view.model3dAlt} className={styles.viewer} onFail={() => setSpin(false)} />
               ) : (
                 <>
-                  {photo("(min-width: 1024px) 50vw, (min-width: 481px) 88vw, 56vw", true)}
+                  {photo("(min-width: 1024px) 50vw, (min-width: 481px) 88vw, 52vw", true)}
                   {/* La anterior va después en el DOM y debajo por z-index: la primera imagen sigue siendo la foto vigente. */}
                   {previous !== null && previous !== active && (
                     <Image key={`prev-${THUMBS[previous].src}`} src={THUMBS[previous].dir + THUMBS[previous].src} alt="" aria-hidden="true" fill sizes="(min-width: 1024px) 50vw, 88vw" />

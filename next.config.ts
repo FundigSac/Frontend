@@ -68,6 +68,8 @@ const nextConfig: NextConfig = {
     "/docs/ficha-tecnica-valvula-compuerta-fundigsac-garantia-extendida.pdf": ["./src/modules/datasheets/templates/*.pdf", "./src/modules/datasheets/fonts/*.ttf"],
   },
   reactStrictMode: true,
+  // Los estilos viajan con el HTML: el título se pinta antes de evaluar el JavaScript, que era lo que retrasaba el LCP móvil.
+  experimental: { inlineCss: true },
   // Loader propio: las fotos se sirven como variantes WebP pregeneradas (ver src/shared/media/image-loader.ts).
   images: { loader: "custom", loaderFile: "./src/shared/media/image-loader.ts", minimumCacheTTL: 60 * 60 * 24 * 30, qualities: [60, 70, 72, 75, 85] },
   async redirects() {
