@@ -24,8 +24,6 @@ export default async function ContactPage({ searchParams }: Props) {
         reason: motivo === "documentacion" || motivo === "reunion" ? motivo : documento ? "documentacion" : undefined,
         document: documento || undefined,
       }}
-      hero="/media/contacto/sede.webp"
-      closing="/media/contacto/equipo.webp"
     />
   );
 }

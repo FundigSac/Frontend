@@ -1,99 +1,88 @@
 "use client";
 
 import { useLang } from "@/shared/layout/landing-prefs";
+import type { FeaturedText } from "../_sector/sector-kit";
 
-export const AGRI = {
+type Station = { fn: string; name: string; text: string };
+
+export const AGRI: Record<"es" | "en", {
+  crumbs: { home: string; section: string; current: string };
+  hero: { title: string; lead: string; explore: string; alt: string };
+  linea: { title: string; lead: string; stations: readonly Station[]; pipe: string; pipeLink: string; note: string };
+  featured: FeaturedText;
+  cta: { title: string; text: string; quote: string };
+}> = {
   es: {
+    crumbs: { home: "Inicio", section: "Industrias", current: "Agricultura" },
     hero: {
-      eyebrow: "Sector agricultura",
-      title: "Soluciones para riego que trabajan con precisión.",
-      lead: "Componentes confiables para una conducción y distribución de agua más eficiente.",
-      explore: "Explorar productos",
-      quote: "Solicitar cotización",
+      title: "Válvulas, filtros y tubería HDPE para sistemas de riego",
+      lead: "Componentes para riego y distribución de agua en campo, con control de aire, presión y filtrado.",
+      explore: "Ver productos del sector",
       alt: "Campo de cultivo con riego por aspersión y montañas al fondo",
     },
+    linea: {
+      title: "Qué hace cada pieza en la línea de riego",
+      lead: "Cada pieza resuelve una función. Abre la que necesites para ver su ficha o su familia.",
+      stations: [
+        { fn: "Filtrado", name: "Filtro tipo Y bridado", text: "Protege válvulas y equipos de la red." },
+        { fn: "Corte", name: "Válvula de compuerta acerrojada", text: "Se une directamente a la tubería HDPE, sin bridas." },
+        { fn: "Presión", name: "Válvula reductora de presión", text: "Mantiene estable la presión aguas abajo." },
+        { fn: "Aire", name: "Válvula de aire de 3 funciones", text: "Ventosa para el control de aire en la línea." },
+        { fn: "Retención", name: "Válvula check swing", text: "Cierra sola cuando el flujo se invierte." },
+      ],
+      pipe: "Tubería y accesorios HDPE",
+      pipeLink: "Ver accesorios HDPE",
+      note: "Esquema referencial. La posición de cada pieza depende del diseño hidráulico de tu proyecto.",
+    },
     featured: {
-      eyebrow: "Producto destacado",
       title: "Válvula de compuerta FUNDIGSAC",
-      lead: "Diseñada para un control de flujo confiable en sistemas de riego agrícola.",
-      features: ["Alta resistencia", "Ideal para sistemas de riego", "Larga vida útil"],
-      datasheet: "Ver ficha técnica",
+      lead: "De asiento resiliente y extremos bridados, para aislar y cortar el flujo en sistemas de riego.",
+      facts: [["Rango nominal", "DN50 a DN600"], ["Presión nominal", "PN10 / PN16"], ["Diseño", "DIN 3352 F4"], ["Cuerpo y tapa", "Hierro dúctil GGG50"]],
       product: "Ver producto",
-      quote: "Solicitar cotización",
+      datasheet: "Descargar ficha técnica",
       alt: "Válvula de compuerta bridada FUNDIGSAC de hierro dúctil junto a una línea de riego",
     },
-    line: {
-      eyebrow: "Nuestra línea para agricultura",
-      title: "Componentes para un sistema de riego completo.",
-      all: "Ver toda la línea agrícola",
-      items: [
-        { title: "Ventosas", alt: "Ventosa de hierro dúctil sobre una tubería de riego" },
-        { title: "Filtros Y", alt: "Filtro tipo Y bridado de hierro dúctil" },
-        { title: "Tuberías HDPE", alt: "Tuberías HDPE negras con franja azul apiladas" },
-        { title: "Válvulas de retención", alt: "Válvula de retención bridada de hierro dúctil" },
-      ],
-    },
-    docs: {
-      eyebrow: "Recursos técnicos",
-      title: "Documentación para tus proyectos de riego.",
-      lead: "Fichas técnicas, especificaciones y catálogos en un solo lugar.",
-      cta: "Ver documentación",
-      catalogAlt: "Catálogo FUNDIGSAC Válvulas para agricultura",
-      drawingAlt: "Plano técnico de la válvula de compuerta con tabla de dimensiones",
-    },
     cta: {
-      title: "Hagamos más eficiente tu sistema de riego.",
-      text: "Nuestro equipo te asesora para encontrar la mejor solución.",
+      title: "¿Estás armando o ampliando un sistema de riego?",
+      text: "Cuéntanos cómo es tu línea y te orientamos hacia la referencia adecuada.",
       quote: "Solicitar cotización",
     },
-    motion: { pause: "Pausar animación del fondo", play: "Reproducir animación del fondo" },
-    crumbs: { home: "Inicio", current: "Agricultura" },
   },
   en: {
+    crumbs: { home: "Home", section: "Industries", current: "Agriculture" },
     hero: {
-      eyebrow: "Agriculture sector",
-      title: "Irrigation solutions that work with precision.",
-      lead: "Reliable components for more efficient water conveyance and distribution.",
-      explore: "Explore products",
-      quote: "Request a quote",
+      title: "Valves, strainers and HDPE pipe for irrigation systems",
+      lead: "Components for irrigation and field water distribution, with air, pressure and filtration control.",
+      explore: "See products for this sector",
       alt: "Crop field with sprinkler irrigation and mountains in the background",
     },
+    linea: {
+      title: "What each part does on the irrigation line",
+      lead: "Each part handles one function. Open the one you need to see its data sheet or family.",
+      stations: [
+        { fn: "Filtration", name: "Flanged Y-strainer", text: "Protects valves and equipment on the network." },
+        { fn: "Shut-off", name: "Restrained-joint gate valve", text: "Joins HDPE pipe directly, with no flanges." },
+        { fn: "Pressure", name: "Pressure-reducing valve", text: "Keeps downstream pressure steady." },
+        { fn: "Air", name: "3-function air valve", text: "Air valve for air control along the line." },
+        { fn: "Backflow", name: "Swing check valve", text: "Closes by itself when the flow reverses." },
+      ],
+      pipe: "HDPE pipe and fittings",
+      pipeLink: "See HDPE fittings",
+      note: "Reference diagram. The position of each part depends on the hydraulic design of your project.",
+    },
     featured: {
-      eyebrow: "Featured product",
       title: "FUNDIGSAC gate valve",
-      lead: "Designed for reliable flow control in agricultural irrigation systems.",
-      features: ["High strength", "Ideal for irrigation systems", "Long service life"],
-      datasheet: "View data sheet",
+      lead: "Resilient seat and flanged ends, to isolate and shut off flow in irrigation systems.",
+      facts: [["Nominal range", "DN50 to DN600"], ["Nominal pressure", "PN10 / PN16"], ["Design", "DIN 3352 F4"], ["Body and bonnet", "Ductile iron GGG50"]],
       product: "View product",
-      quote: "Request a quote",
+      datasheet: "Download data sheet",
       alt: "FUNDIGSAC flanged ductile iron gate valve next to an irrigation line",
     },
-    line: {
-      eyebrow: "Our agriculture line",
-      title: "Components for a complete irrigation system.",
-      all: "See the full agricultural line",
-      items: [
-        { title: "Air valves", alt: "Ductile iron air valve on an irrigation pipe" },
-        { title: "Y strainers", alt: "Flanged ductile iron Y strainer" },
-        { title: "HDPE pipes", alt: "Stacked black HDPE pipes with a blue stripe" },
-        { title: "Check valves", alt: "Flanged ductile iron check valve" },
-      ],
-    },
-    docs: {
-      eyebrow: "Technical resources",
-      title: "Documentation for your irrigation projects.",
-      lead: "Data sheets, specifications and catalogs in one place.",
-      cta: "View documentation",
-      catalogAlt: "FUNDIGSAC catalog: Valves for agriculture",
-      drawingAlt: "Gate valve technical drawing with a dimensions table",
-    },
     cta: {
-      title: "Let's make your irrigation system more efficient.",
-      text: "Our team advises you to find the best solution.",
+      title: "Are you building or expanding an irrigation system?",
+      text: "Tell us about your line and we will point you to the right reference.",
       quote: "Request a quote",
     },
-    motion: { pause: "Pause background animation", play: "Play background animation" },
-    crumbs: { home: "Home", current: "Agriculture" },
   },
 };
 

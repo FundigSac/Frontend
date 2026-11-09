@@ -1,180 +1,142 @@
-/* Industrias: familias clicables, tarjeta destacada de la válvula H-ITALY y sección objetivo resaltada. */
-.x-need {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color 160ms ease, border-color 160ms ease, gap 160ms ease;
-}
+/* /industrias: cuatro puertas en el héroe y un bloque por sector. La plantilla común vive en _sector/sector.css. */
 
-.x-need svg {
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity 160ms ease, transform 160ms ease;
-}
-
-.x-need:hover,
-.x-need:focus-visible {
-  gap: 9px;
-  border-bottom-color: currentColor;
-  color: #b84508;
-}
-
-.x-need:hover svg,
-.x-need:focus-visible svg {
-  opacity: 1;
-  transform: none;
-}
-
-.x-featured {
-  position: relative;
+.in-puertas {
   display: grid;
-  grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1.3fr);
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 18px;
-  padding: 22px;
-  overflow: hidden;
-  border: 1px solid rgb(242 106 27 / 28%);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 22px 46px -30px rgb(11 34 68 / 50%);
-  color: #13233d;
-  text-decoration: none;
-  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 260ms ease, border-color 260ms ease;
-}
-
-.x-featured:hover {
-  transform: translateY(-4px);
-  border-color: #f26a1b;
-  box-shadow: 0 30px 56px -28px rgb(242 106 27 / 45%);
-}
-
-.x-featured:focus-visible {
-  outline: 2px solid #f26a1b;
-  outline-offset: 3px;
-}
-
-.x-featured__badge {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #c94f0a; /* AA con texto blanco de 11 px */
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.x-featured__media {
-  display: block;
-  padding-top: 18px;
-}
-
-.x-featured__media img {
-  display: block;
   width: 100%;
-  height: auto;
-  max-height: 260px;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 18px rgb(11 34 68 / 28%));
-  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--sp-6);
+  border-top: 1px solid rgb(255 255 255 / 32%);
+  border-left: 1px solid rgb(255 255 255 / 32%);
 }
 
-.x-featured:hover .x-featured__media img {
-  transform: scale(1.05) translateY(-3px);
-}
-
-.x-featured__body {
-  display: grid;
-  gap: 10px;
-}
-
-.x-featured__body strong {
-  font-size: 19px;
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-}
-
-.x-featured__body > span:not(.x-featured__cta) {
-  color: #4a5568;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.x-featured__cta {
-  display: inline-flex;
+.in-puerta {
+  position: relative;
+  display: flex;
+  min-height: 72px;
   align-items: center;
-  gap: 8px;
-  color: #b84508;
-  font-size: 14px;
-  font-weight: 700;
-  transition: gap 200ms ease;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-right: 1px solid rgb(255 255 255 / 32%);
+  border-bottom: 1px solid rgb(255 255 255 / 32%);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  text-decoration: none;
+  isolation: isolate;
 }
 
-.x-featured:hover .x-featured__cta {
-  gap: 13px;
+.in-puerta::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: rgb(255 255 255 / 16%);
+  content: "";
+  opacity: 0;
+  transition: opacity var(--mo-fast) linear;
 }
 
-/* Tema oscuro: la tarjeta destacada seguía blanca, un bloque claro aislado en la página oscura. */
-html[data-lp-theme="dark"] .x-featured {
-  border-color: #42403d;
-  background: #282726;
-  color: #f5f4f3;
+.in-puerta:hover::after {
+  opacity: 1;
 }
 
-html[data-lp-theme="dark"] .x-featured__body > span:not(.x-featured__cta) {
-  color: #c8c5c0;
+.in-bloque {
+  scroll-margin-top: var(--header-h);
 }
 
-html[data-lp-theme="dark"] .x-featured__cta {
-  color: #ff9a62;
+.in-bloque__rejilla {
+  display: grid;
+  gap: var(--sp-6);
 }
 
-/* Al llegar desde un enlace #sector, la sección se ilumina un instante. */
-section[id]:target {
-  animation: x-target 1800ms ease-out 1;
+.in-bloque__media {
+  order: -1;
+  display: grid;
+  gap: var(--sp-4);
 }
 
-@keyframes x-target {
-  0% { box-shadow: inset 0 0 0 3px rgb(242 106 27 / 55%); background-color: rgb(242 106 27 / 8%); }
-  100% { box-shadow: inset 0 0 0 3px rgb(242 106 27 / 0%); background-color: transparent; }
+.in-bloque__foto {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-media);
+  background: var(--c-surface-container-low);
 }
 
-@media (max-width: 560px) {
-  .x-featured {
-    grid-template-columns: 1fr;
-    text-align: left;
+.in-bloque__foto img {
+  object-fit: cover;
+}
+
+.in-bloque__sub {
+  margin-bottom: var(--sp-3);
+  color: var(--c-on-surface);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: var(--lh-label);
+}
+
+.in-bloque .sa-piezas {
+  margin-top: 0;
+}
+
+.in-bloque__mas {
+  margin-top: var(--sp-4);
+}
+
+.in-aviso {
+  padding-block: var(--sp-6);
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
+}
+
+.in-aviso p {
+  max-width: var(--measure);
+  color: var(--c-on-surface-variant);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+}
+
+.in-aviso strong {
+  color: var(--c-on-surface);
+  font-weight: 600;
+}
+
+@media (min-width: 860px) {
+  .in-puertas {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .in-bloque__rejilla {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--sp-5);
   }
 
-  .x-featured__media {
-    max-width: 150px;
-    margin-inline: auto;
+  .in-bloque__texto {
+    grid-column: 1 / span 5;
+  }
+
+  .in-bloque__media {
+    order: 0;
+    grid-column: 6 / span 7;
+  }
+
+  .in-bloque--par .in-bloque__texto {
+    grid-column: 8 / span 5;
+  }
+
+  .in-bloque--par .in-bloque__media {
+    order: -1;
+    grid-column: 1 / span 7;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .x-featured,
-  .x-featured__media img,
-  .x-need,
-  .x-need svg {
+  .in-puerta::after {
     transition: none;
   }
-
-  section[id]:target {
-    animation: none;
-  }
-}
-
-/* La página usa `.container` de Tailwind, que no centra ni da margen lateral: se lo damos aquí. */
-main:has(#agricultura) .container {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: clamp(20px, 5vw, 48px);
 }
