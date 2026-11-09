@@ -56,7 +56,8 @@ export function SheetView({ sheet }: { sheet: CatalogSheet }) {
           </header>
 
           <figure className={styles.sheetPhoto} data-lcp>
-            <Image src={sheet.image} alt={sheet.alt[lang]} width={768} height={768} loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 50vw, 92vw" />
+            <Image src={sheet.image} alt={sheet.alt[lang]} width={768} height={768} loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 50vw, 88vw" />
+            {pending && <figcaption className={styles.photoNote}>{t.referencePhoto}</figcaption>}
           </figure>
 
           <aside className={styles.panel} aria-label={t.addSheet} data-enter>

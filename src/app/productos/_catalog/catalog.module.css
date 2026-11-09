@@ -735,6 +735,7 @@
 }
 
 .sheetPhoto {
+  position: relative;
   overflow: hidden;
   border-radius: var(--r-media);
   aspect-ratio: 1;
@@ -747,6 +748,19 @@
   height: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
+}
+
+.photoNote {
+  position: absolute;
+  bottom: var(--sp-3);
+  left: var(--sp-3);
+  padding: 2px 8px;
+  border-radius: var(--r-badge);
+  background: #ffffff;
+  color: #41484c;
+  font-size: var(--fs-label);
+  font-weight: 600;
+  line-height: var(--lh-label);
 }
 
 .panel {
