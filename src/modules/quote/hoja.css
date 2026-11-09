@@ -97,7 +97,6 @@ a.hj-paso:hover span:last-child {
   place-items: center;
   border: 1px solid var(--c-outline);
   border-radius: 2px;
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--fs-label);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
@@ -501,7 +500,6 @@ a.hj-paso:hover span:last-child {
 
 .hj-lista__n {
   flex: none;
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--fs-data);
   font-variant-numeric: tabular-nums;
 }
@@ -593,7 +591,6 @@ a.hj-paso:hover span:last-child {
 .hj-pasos-texto li::before {
   color: var(--c-text-secondary);
   content: counter(paso);
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--fs-data);
   line-height: var(--lh-body);
 }

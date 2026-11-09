@@ -255,11 +255,11 @@ export function CarritoView() {
                 <dl>
                   <div>
                     <dt>{lang === "en" ? "Products" : "Productos"}</dt>
-                    <dd className="dato">{items.length}</dd>
+                    <dd>{items.length}</dd>
                   </div>
                   <div>
                     <dt>{lang === "en" ? "Units" : "Unidades"}</dt>
-                    <dd className="dato">{count}</dd>
+                    <dd>{count}</dd>
                   </div>
                   <div>
                     <dt>{t.price}</dt>

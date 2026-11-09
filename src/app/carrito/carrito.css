@@ -248,7 +248,6 @@
   border-inline: 1px solid var(--c-border);
   background: none;
   color: var(--c-on-surface);
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--fs-body);
   font-variant-numeric: tabular-nums;
   text-align: center;
