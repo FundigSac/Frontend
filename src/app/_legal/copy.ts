@@ -23,7 +23,7 @@ export const TERMS: Pair<{
   es: {
     crumb: "Términos y condiciones",
     title: "Términos y condiciones",
-    lead: "A continuación, te presentamos los términos y condiciones que rigen el uso de nuestro sitio web y la información que ponemos a tu disposición.",
+    lead: "Las reglas para usar este sitio y la información que publicamos en él. Al navegar aquí, las aceptas.",
     tocLabel: "Contenido de los términos",
     sections: [
       { id: "aceptacion", label: "Aceptación de los términos", text: "Al acceder y utilizar este sitio web, usted acepta cumplir con los presentes Términos y Condiciones. Si no está de acuerdo con alguno de ellos, le recomendamos no utilizar este sitio." },
@@ -43,7 +43,7 @@ export const TERMS: Pair<{
   en: {
     crumb: "Terms and conditions",
     title: "Terms and conditions",
-    lead: "Below you will find the terms and conditions that govern the use of our website and the information we make available to you.",
+    lead: "The rules for using this site and the information we publish on it. By browsing here, you accept them.",
     tocLabel: "Terms contents",
     sections: [
       { id: "aceptacion", label: "Acceptance of the terms", text: "By accessing and using this website, you agree to comply with these Terms and Conditions. If you do not agree with any of them, we recommend that you do not use this site." },
@@ -78,7 +78,7 @@ export const PRIVACY: Pair<{
   es: {
     crumb: "Política de privacidad",
     title: "Política de privacidad",
-    lead: "En FUNDIGSAC protegemos la información personal que nos confías, con un trato responsable, seguro y transparente.",
+    lead: "Qué datos personales recopilamos, para qué los usamos y cómo puedes acceder a ellos, corregirlos o pedir que los eliminemos.",
     introTitle: "Nuestro compromiso con tu privacidad",
     intro: "En FUNDIGSAC valoramos la confianza de nuestros clientes, proveedores y visitantes. Esta Política de Privacidad explica cómo recopilamos, usamos, protegemos y tratamos tus datos personales, de acuerdo con la normativa vigente en materia de protección de datos en el Perú.",
     callout: { small: "Tratamiento responsable", title: "Tu información, protegida", text: "Aplicamos medidas técnicas y organizativas para garantizar la seguridad y confidencialidad de tus datos personales.", label: "Resumen" },
@@ -103,7 +103,7 @@ export const PRIVACY: Pair<{
   en: {
     crumb: "Privacy policy",
     title: "Privacy policy",
-    lead: "At FUNDIGSAC we protect the personal information you entrust to us, with responsible, secure and transparent handling.",
+    lead: "What personal data we collect, what we use it for, and how you can access it, correct it or ask us to delete it.",
     introTitle: "Our commitment to your privacy",
     intro: "At FUNDIGSAC we value the trust of our customers, suppliers and visitors. This Privacy Policy explains how we collect, use, protect and process your personal data, in accordance with the data protection regulations in force in Peru.",
     callout: { small: "Responsible processing", title: "Your information, protected", text: "We apply technical and organizational measures to ensure the security and confidentiality of your personal data.", label: "Summary" },
@@ -382,10 +382,10 @@ export const CLAIMS: Pair<{
   cta: Cta;
 }> = {
   es: {
-    crumb: "Libro de reclamaciones",
+    crumb: "Libro de Reclamaciones",
     eyebrow: "Atención al cliente",
     title: "Libro de Reclamaciones",
-    lead: "Tu opinión nos ayuda a seguir mejorando. Registra aquí tu reclamo o queja de manera rápida, segura y transparente.",
+    lead: "Registra aquí tu reclamo o queja; no necesitas una cuenta. Te respondemos por escrito, por el medio que elijas, en un máximo de 15 días hábiles.",
     heroAlt: "Asesora de FUNDIGSAC atendiendo a un cliente en la oficina",
     formTitle: "Formulario de reclamos y quejas",
     formIntro: "Completa la siguiente información. Todos los campos marcados con * son obligatorios.",
@@ -445,7 +445,7 @@ export const CLAIMS: Pair<{
     },
     consent: { pre: "Declaro que la información registrada es veraz y acepto que sea tratada para la gestión de mi {kind}, de acuerdo con la ", link: "Política de privacidad" },
     clear: "Limpiar formulario",
-    submit: { reclamo: "Enviar reclamo", queja: "Enviar queja" },
+    submit: { reclamo: "Registrar reclamo", queja: "Registrar queja" },
     sending: "Enviando…",
     success: { title: "Recibimos tu {kind}", text: "Guarda tu código de registro. Te contactaremos por el medio que elegiste para darte una respuesta.", again: "Registrar otra solicitud",
       sheet: "Hoja de reclamación N.°",
@@ -494,7 +494,7 @@ export const CLAIMS: Pair<{
     crumb: "Complaints book",
     eyebrow: "Customer service",
     title: "Complaints Book",
-    lead: "Your feedback helps us keep improving. Register your claim or complaint here quickly, securely and transparently.",
+    lead: "Register your claim or complaint here; you do not need an account. We reply in writing, through the channel you choose, within 15 business days at most.",
     heroAlt: "FUNDIGSAC advisor assisting a customer in the office",
     formTitle: "Claims and complaints form",
     formIntro: "Please complete the information below. All fields marked with * are required.",
@@ -554,7 +554,7 @@ export const CLAIMS: Pair<{
     },
     consent: { pre: "I declare that the information provided is true and I agree to it being processed to handle my {kind}, in accordance with the ", link: "Privacy policy" },
     clear: "Clear form",
-    submit: { reclamo: "Submit claim", queja: "Submit complaint" },
+    submit: { reclamo: "Register claim", queja: "Register complaint" },
     sending: "Sending…",
     success: { title: "We received your {kind}", text: "Keep your registration code. We will contact you through the channel you chose to give you a response.", again: "Submit another request",
       sheet: "Complaint sheet No.",
@@ -615,7 +615,7 @@ export const NOT_FOUND: Pair<{
     eyebrow: "Página no encontrada",
     srError: "Error 404. ",
     title: "Ups, esta página no se encuentra.",
-    lead: "Parece que la dirección que buscaste no existe o ha sido movida. Pero no te preocupes, te ayudamos a continuar.",
+    lead: "La dirección que abriste no existe o cambió de lugar. Desde aquí puedes volver al inicio o ir al catálogo.",
     home: "Volver al inicio",
     products: "Explorar productos",
     cards: [
@@ -628,7 +628,7 @@ export const NOT_FOUND: Pair<{
     eyebrow: "Page not found",
     srError: "Error 404. ",
     title: "Oops, this page can’t be found.",
-    lead: "It looks like the address you were looking for doesn’t exist or has been moved. Don’t worry, we’ll help you move on.",
+    lead: "The address you opened doesn’t exist or has moved. From here you can go back home or open the catalog.",
     home: "Back to home",
     products: "Explore products",
     cards: [

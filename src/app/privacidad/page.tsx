@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { privacyAsideImage, privacyClosingImage, privacyHeroImage } from "../_legal/images";
 import { PrivacyView } from "../_legal/privacidad-view";
 
 export const metadata: Metadata = {
@@ -9,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-  return <PrivacyView hero={privacyHeroImage()} aside={privacyAsideImage()} closing={privacyClosingImage()} />;
+  return <PrivacyView />;
 }

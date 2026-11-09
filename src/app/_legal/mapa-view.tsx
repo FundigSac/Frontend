@@ -1,51 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Boxes, Building2, Factory, Scale, UserRound } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { FloatingActions } from "../_landing/floating-actions";
 import { COMMON } from "./copy";
-import { LegalCta, LegalHero } from "./legal-parts";
-import { LegalMotion } from "./motion";
+import { SheetEnd, SheetHead } from "./sheet";
 import { SITEMAP } from "./sitemap-copy";
 import { useCopy } from "./use-copy";
 
-const ICONS = [Boxes, Factory, Building2, Scale, UserRound] as const;
-
-export function SitemapView({ hero, closing }: { hero: string; closing: string }) {
+export function SitemapView() {
   const t = useCopy(SITEMAP);
   const home = useCopy(COMMON.home);
 
   return (
-    <main className="lp lg">
-      <LegalHero home={home} crumb={t.crumb} title={t.title} lead={t.lead} image={hero} alt="" wide />
+    <main className="lp lg ls">
+      <SheetHead home={home} crumb={t.crumb} title={t.title} lead={t.lead} />
 
-      <div className="lp-shell lg-body">
+      <div className="lp-shell ls-page">
         <ul className="lg-map">
-          {t.groups.map((group, i) => {
-            const Icon = ICONS[i];
-            return (
-              <li className="lg-map__card" key={group.title} data-reveal="" style={{ ["--d" as string]: `${(i % 3) * 90}ms` }}>
-                <span className="lg-map__icon" aria-hidden="true"><Icon size={26} strokeWidth={1.5} /></span>
+          {t.groups.map((group) => (
+            <li className="ls-section lg-map__card" key={group.title}>
+              <div className="lg-map__intro">
                 <h2>{group.title}</h2>
                 <p>{group.text}</p>
-                <ul className="lg-map__links">
-                  {group.links.map((link) => (
-                    <li key={link.href}>
-                      <Link href={link.href}>
-                        <span>{link.label}</span>
-                        <ArrowUpRight aria-hidden="true" size={16} strokeWidth={2} />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            );
-          })}
+              </div>
+              <ul className="lg-map__links">
+                {group.links.map((link) => (
+                  <li key={`${link.href}-${link.label}`}>
+                    <Link href={link.href}>
+                      <span>{link.label}</span>
+                      <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
         </ul>
+        <SheetEnd title={t.cta.eyebrow} text={t.cta.text} cta={t.cta.cta} href="/contacto" />
       </div>
-
-      <LegalCta {...t.cta} href="/contacto" image={closing} />
-      <LegalMotion />
       <FloatingActions />
     </main>
   );

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { legalClosingImage, legalHeroImage } from "../_legal/images";
 import { SitemapView } from "../_legal/mapa-view";
 
 export const metadata: Metadata = {
@@ -9,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function SitemapPage() {
-  return <SitemapView hero={legalHeroImage()} closing={legalClosingImage()} />;
+  return <SitemapView />;
 }

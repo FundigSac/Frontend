@@ -1,23 +1,17 @@
 "use client";
 
+import { ChevronRight, Mail, MessageCircle, Phone } from "lucide-react";
+import { LibroReclamacionesIcon } from "@/shared/ui/libro-reclamaciones-icon";
 import { FloatingActions } from "../_landing/floating-actions";
-import { LegalMotion } from "./motion";
-import { ChevronRight, FileText, Info, Mail, MessageCircle, Phone, Search, ShieldCheck } from "lucide-react";
 import { ClaimForm } from "./claim-form";
 import { CLAIMS, COMMON } from "./copy";
-import { LegalCta, LegalHero } from "./legal-parts";
+import { SheetHead } from "./sheet";
+import { SHEET_UI } from "./sheet-copy";
 import { useCopy } from "./use-copy";
 
-const HOW_ICONS = [FileText, Mail, Search, ShieldCheck] as const;
-
-export function ClaimsView({ hero, closing, email, phoneHref, whatsappNumber }: {
-  hero: string;
-  closing: string;
-  email: string;
-  phoneHref: string;
-  whatsappNumber: string;
-}) {
+export function ClaimsView({ email, phoneHref, whatsappNumber }: { email: string; phoneHref: string; whatsappNumber: string }) {
   const t = useCopy(CLAIMS);
+  const ui = useCopy(SHEET_UI).claims;
   const home = useCopy(COMMON.home);
   const s = t.side;
   const whatsapp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(s.help.whatsappMsg)}`;
@@ -28,73 +22,55 @@ export function ClaimsView({ hero, closing, email, phoneHref, whatsappNumber }: 
   ];
 
   return (
-    <main className="lp lg">
-      <LegalHero modifier="lg-hero--claims" home={home} crumb={t.crumb} eyebrow={t.eyebrow} title={t.title} lead={t.lead} image={hero} alt={t.heroAlt} />
+    <main className="lp lg ls">
+      <SheetHead home={home} crumb={t.crumb} title={t.title} lead={t.lead} mark={<LibroReclamacionesIcon size={112} />} />
 
-      <div className="lp-shell" style={{ paddingBottom: "clamp(40px, 6vw, 84px)" }}>
-        <div className="lg-claims">
-          <ClaimForm email={email} whatsappNumber={whatsappNumber} />
+      <div className="lp-shell ls-page">
+        <ClaimForm
+          email={email}
+          whatsappNumber={whatsappNumber}
+          summary={({ kind, medium }) => (
+            <aside className="ls-summary" aria-label={s.aria}>
+              <h2>{ui.summary}</h2>
+              <dl>
+                <div><dt>{ui.type}</dt><dd>{kind === "RECLAMO" ? t.kinds.reclamo.title : t.kinds.queja.title}</dd></div>
+                <div><dt>{ui.deadline}</dt><dd>{ui.deadlineValue}</dd></div>
+                <div><dt>{ui.medium}</dt><dd>{t.fields.mediums.find((m) => m.value === medium)?.label}</dd></div>
+              </dl>
 
-          <aside className="lg-side" aria-label={s.aria}>
-            <div data-reveal="" style={{ ["--d" as string]: "0ms" }} className="lg-side__card lg-side__card--blue">
-              <FileText aria-hidden="true" size={56} strokeWidth={1.3} />
-              <div>
-                <h3>{s.blue.title}</h3>
-                <p>{s.blue.text}</p>
-              </div>
-            </div>
-
-            <div data-reveal="" style={{ ["--d" as string]: "80ms" }} className="lg-side__card">
               <h3>{s.how.title}</h3>
-              <ol className="lg-how">
-                {s.how.items.map((item, i) => {
-                  const Icon = HOW_ICONS[i];
-                  return (
-                    <li key={item.title}>
-                      <span className="lg-how__icon" aria-hidden="true"><Icon size={22} strokeWidth={1.6} /></span>
-                      <div><strong>{item.title}</strong><span>{item.text}</span></div>
-                    </li>
-                  );
-                })}
+              <ol className="ls-how">
+                {s.how.items.map((item) => (
+                  <li key={item.title}>
+                    <strong>{item.title}</strong>
+                    <span>{item.text}</span>
+                  </li>
+                ))}
               </ol>
-            </div>
 
-            <div data-reveal="" style={{ ["--d" as string]: "160ms" }} className="lg-side__card lg-side__card--amber">
-              <h3><Info aria-hidden="true" size={20} strokeWidth={1.8} /> {s.important.title}</h3>
-              <ul>
-                {s.important.items.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
-
-            <div data-reveal="" style={{ ["--d" as string]: "0ms" }} className="lg-side__card">
               <h3>{s.help.title}</h3>
-              <p>{s.help.text}</p>
-              <ul className="lg-help">
+              <ul className="ls-help">
                 {help.map(({ icon: Icon, title, text, href, external }) => (
                   <li key={title}>
                     <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-                      <Icon aria-hidden="true" size={24} strokeWidth={1.6} />
-                      <div><strong>{title}</strong><span>{text}</span></div>
+                      <Icon aria-hidden="true" size={20} strokeWidth={1.75} />
+                      <span><strong>{title}</strong><small>{text}</small></span>
                       <ChevronRight aria-hidden="true" size={18} strokeWidth={2} />
                     </a>
                   </li>
                 ))}
               </ul>
-            </div>
+            </aside>
+          )}
+        />
 
-            <div data-reveal="" style={{ ["--d" as string]: "80ms" }} className="lg-side__card lg-side__card--pledge">
-              <ShieldCheck aria-hidden="true" size={40} strokeWidth={1.5} />
-              <div>
-                <h3>{s.pledge.title}</h3>
-                <p>{s.pledge.text}</p>
-              </div>
-            </div>
-          </aside>
-        </div>
+        <section className="ls-section ls-important" aria-labelledby="ls-important-title">
+          <h2 id="ls-important-title">{s.important.title}</h2>
+          <ul className="ls-bullets">
+            {s.important.items.map((item) => <li key={item}>{item}</li>)}
+          </ul>
+        </section>
       </div>
-
-      <LegalCta {...t.cta} href="/contacto" image={closing} />
-      <LegalMotion />
       <FloatingActions />
     </main>
   );

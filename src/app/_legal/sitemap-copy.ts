@@ -13,7 +13,7 @@ export const SITEMAP: Pair<{
   es: {
     crumb: "Mapa del sitio",
     title: "Mapa del sitio",
-    lead: "Encuentra rápidamente cada sección de FUNDIGSAC: productos, sectores, recursos técnicos, atención y documentos legales.",
+    lead: "Todas las páginas de FUNDIGSAC en un solo lugar, agrupadas por tema. Elige una y entra directo.",
     groups: [
       {
         title: "Productos",
@@ -54,7 +54,7 @@ export const SITEMAP: Pair<{
           { href: "/privacidad", label: "Política de privacidad" },
           { href: "/cookies", label: "Política de cookies" },
           { href: "/eliminar-cuenta", label: "Eliminar cuenta y datos" },
-          { href: "/reclamaciones", label: "Libro de reclamaciones" },
+          { href: "/reclamaciones", label: "Libro de Reclamaciones" },
         ],
       },
     ],
@@ -63,7 +63,7 @@ export const SITEMAP: Pair<{
   en: {
     crumb: "Sitemap",
     title: "Sitemap",
-    lead: "Quickly find every section of FUNDIGSAC: products, industries, technical resources, customer service and legal documents.",
+    lead: "Every FUNDIGSAC page in one place, grouped by topic. Pick one and go straight there.",
     groups: [
       {
         title: "Products",
@@ -104,7 +104,7 @@ export const SITEMAP: Pair<{
           { href: "/privacidad", label: "Privacy policy" },
           { href: "/cookies", label: "Cookie policy" },
           { href: "/eliminar-cuenta", label: "Delete account and data" },
-          { href: "/reclamaciones", label: "Complaints book" },
+          { href: "/reclamaciones", label: "Libro de Reclamaciones" },
         ],
       },
     ],
