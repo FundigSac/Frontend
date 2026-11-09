@@ -65,7 +65,7 @@ export function AboutView() {
             <ol className="ab-tiempo">
               {t.timeline.map((hito, i) => (
                 <li key={hito.year} data-reveal="up" style={delay(i)}>
-                  <span className="ab-tiempo__anio dato">{hito.year}</span>
+                  <span className="ab-tiempo__anio">{hito.year}</span>
                   <h3>{hito.title}</h3>
                   <p>{hito.text}</p>
                 </li>
@@ -99,10 +99,10 @@ export function AboutView() {
             <SectionHead id="ab-datos-title" title={t.company.title} />
             <dl className="ab-datos" data-reveal="up">
               <div><dt>{labels.name}</dt><dd>{SITE.registeredName}</dd></div>
-              <div><dt>{labels.ruc}</dt><dd className="dato">{SITE.ruc}</dd></div>
+              <div><dt>{labels.ruc}</dt><dd className="ab-num">{SITE.ruc}</dd></div>
               <div><dt>{labels.address}</dt><dd>{SITE.address}</dd></div>
-              <div><dt>{labels.phone}</dt><dd><a className="dato" href={SITE.phoneHref}>{SITE.phone}</a></dd></div>
-              <div><dt>{labels.email}</dt><dd><a className="dato" href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
+              <div><dt>{labels.phone}</dt><dd><a className="ab-num" href={SITE.phoneHref}>{SITE.phone}</a></dd></div>
+              <div><dt>{labels.email}</dt><dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd></div>
               <div><dt>{labels.hours}</dt><dd>{t.company.hours}</dd></div>
             </dl>
           </div>

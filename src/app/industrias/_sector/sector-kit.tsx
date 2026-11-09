@@ -188,7 +188,7 @@ export function SectorDocs({ id }: { id: string }) {
           {t.items.map((doc) => (
             <li className="fila" key={doc.href}>
               <span className="in-docs__nombre">{doc.name}</span>
-              <span className="in-docs__meta dato">{t.pdf}</span>
+              <span className="in-docs__meta">{t.pdf}</span>
               <a className="lp-link" href={doc.href} target="_blank" rel="noopener noreferrer">
                 <Download aria-hidden="true" size={16} strokeWidth={1.8} /> <span>{t.download}</span>
               </a>
@@ -196,7 +196,7 @@ export function SectorDocs({ id }: { id: string }) {
           ))}
           <li className="fila">
             <span className="in-docs__nombre">{t.other}</span>
-            <span className="in-docs__meta dato">{t.onRequest}</span>
+            <span className="in-docs__meta">{t.onRequest}</span>
             <Link className="lp-link" href="/contacto?motivo=documentacion">
               <ArrowRight aria-hidden="true" size={16} strokeWidth={2} /> <span>{t.request}</span>
             </Link>

@@ -112,6 +112,9 @@
 .ct-cuenta {
   justify-self: end;
   color: var(--c-text-muted);
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--lh-small);
 }
 
 .ct-error {

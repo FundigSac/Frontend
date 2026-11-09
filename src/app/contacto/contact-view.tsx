@@ -9,7 +9,7 @@ import { Crumbs, SectorClosing } from "../industrias/_sector/sector-kit";
 import { MAP_VIEW } from "@/shared/config/location";
 import { MapEmbed } from "@/shared/consent/map-embed";
 import { useHome } from "@/shared/layout/home-copy";
-import { ContactForm, type ContactPrefill } from "./contact-form";
+import { ContactForm } from "./contact-form";
 import { CONTACT } from "./copy";
 import "@/app/landing.css";
 import "../industrias/_sector/sector.css";
@@ -26,7 +26,7 @@ function ChannelLink({ channel }: { channel: Channel }) {
       <Icon aria-hidden="true" size={20} strokeWidth={1.8} />
       <span className="ct-canal__texto">
         <strong>{channel.title}</strong>
-        <span className={channel.key === "quote" ? "ct-canal__valor" : "ct-canal__valor dato"}>{channel.main}</span>
+        <span className="ct-canal__valor">{channel.main}</span>
         <small>{channel.text}</small>
       </span>
       {channel.external ? <ArrowUpRight aria-hidden="true" size={18} strokeWidth={2} /> : <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />}
@@ -36,7 +36,7 @@ function ChannelLink({ channel }: { channel: Channel }) {
   return <a className="ct-canal" href={channel.href} target={channel.external ? "_blank" : undefined} rel={channel.external ? "noopener noreferrer" : undefined}>{body}</a>;
 }
 
-export function ContactView({ site, prefill }: { site: ContactSite; prefill: ContactPrefill }) {
+export function ContactView({ site }: { site: ContactSite }) {
   const t = useCopy(CONTACT);
   const home = useCopy(COMMON.home);
   const loc = useHome().location;
@@ -63,7 +63,7 @@ export function ContactView({ site, prefill }: { site: ContactSite; prefill: Con
 
         <div className="lp-shell ct-main">
           <div className="ct-form-wrap">
-            <ContactForm email={site.email} whatsappNumber={site.whatsappNumber} prefill={prefill} />
+            <ContactForm email={site.email} whatsappNumber={site.whatsappNumber} />
           </div>
 
           <section className="ct-canales" aria-label={c.aria}>

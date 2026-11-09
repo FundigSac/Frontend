@@ -179,7 +179,6 @@
 .in-facts dd {
   margin: 0;
   color: var(--c-on-surface);
-  font-family: var(--font-mono), ui-monospace, monospace;
   font-size: var(--fs-data);
   font-variant-numeric: tabular-nums;
   line-height: var(--lh-data);
@@ -783,6 +782,18 @@ html[data-lp-theme="dark"] .ag-linea::before {
   .ag-est small {
     margin-top: var(--sp-1);
   }
+}
+
+/* Sin esto, "lazy" las pide igual en móvil (el navegador adelanta hasta 2500 px) y compiten con el LCP. Cada contenedor ya
+   reserva su alto con aspect-ratio o medidas fijas. */
+.in-feat__media,
+.in-bloque__foto,
+.sa-red__foto,
+.mi-uso__foto,
+.in-celdas .celda__media,
+.mi-tabla__foto,
+.ag-est__foto {
+  content-visibility: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

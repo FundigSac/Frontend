@@ -2,7 +2,7 @@
 
 import { AlertCircle, ArrowRight, CheckCircle2, Copy, Loader2, Lock, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { mailtoUrl, whatsappUrl } from "../_legal/claim-message";
 import { useCopy } from "../_legal/use-copy";
 import { submitForm } from "@/modules/backend/client";
@@ -12,6 +12,22 @@ import { buildContactMessage } from "./contact-message";
 import { CONTACT, type FieldName, type ReasonId } from "./copy";
 
 export type ContactPrefill = { reason?: ReasonId; document?: string };
+
+const noSubscribe = () => () => undefined;
+
+/** Lee ?motivo= y ?documento= en el navegador: así la página se prerenderiza y su primer byte no espera al servidor. */
+function usePrefill(): ContactPrefill {
+  const search = useSyncExternalStore(noSubscribe, () => window.location.search, () => "");
+  return useMemo(() => {
+    const params = new URLSearchParams(search);
+    const motivo = params.get("motivo");
+    const document = params.get("documento")?.replace(/[\u0000-\u001F\u007F]/g, " ").trim().slice(0, 120);
+    return {
+      reason: motivo === "documentacion" || motivo === "reunion" ? motivo : document ? "documentacion" : undefined,
+      document: document || undefined,
+    };
+  }, [search]);
+}
 
 /** Motivo del sitio → motivo de la API (InquiryRequest.reason). */
 const INQUIRY_REASONS: Record<ReasonId, string> = { documentacion: "DOCUMENTATION", reunion: "MEETING" };
@@ -37,12 +53,13 @@ function Field({ id, label, required, full, error, children }: { id: string; lab
   );
 }
 
-export function ContactForm({ email, whatsappNumber, prefill }: { email: string; whatsappNumber: string; prefill: ContactPrefill }) {
+export function ContactForm({ email, whatsappNumber }: { email: string; whatsappNumber: string }) {
+  const prefill = usePrefill();
   const t = useCopy(CONTACT);
   const f = t.form;
   const uid = useId();
   const defaultMessage = prefill.document ? f.documentMessage.replace("{document}", prefill.document) : "";
-  const [length, setLength] = useState(defaultMessage.length);
+  const [typed, setTyped] = useState<number | null>(null);
   const [prepared, setPrepared] = useState<{ subject: string; body: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState<string | null>(null);
@@ -127,7 +144,7 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
       // Solo aquí el sistema confirmó el envío (folio). Preparar un correo o WhatsApp no cuenta como envío.
       track("contact_form_submit_success", { form_type: "contact", reason: prefill.reason ?? "general" });
       form.reset();
-      setLength(0);
+      setTyped(null);
       setSaved(outcome.data.folio);
       window.requestAnimationFrame(() => document.getElementById("contacto-listo")?.scrollIntoView({ block: "center", behavior: "smooth" }));
       return;
@@ -192,8 +209,8 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
             <input {...fieldProps("phone")} type="tel" required pattern="[0-9+\s\(\)\-]{7,20}" autoComplete="tel" placeholder={f.phone[1]} />
           </Field>
           <Field id={ids.message} label={f.message[0]} required full error={errors.message}>
-            <textarea {...fieldProps("message")} required minLength={10} maxLength={1000} rows={5} defaultValue={defaultMessage} placeholder={f.message[1]} onChange={(e) => setLength(e.target.value.length)} />
-            <span className="ct-cuenta dato" aria-hidden="true">{length} / 1000</span>
+            <textarea {...fieldProps("message")} required minLength={10} maxLength={1000} rows={5} defaultValue={defaultMessage} placeholder={f.message[1]} onChange={(e) => setTyped(e.target.value.length)} />
+            <span className="ct-cuenta" aria-hidden="true">{typed ?? defaultMessage.length} / 1000</span>
           </Field>
         </div>
 
@@ -225,7 +242,7 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
           <p>{t.saved.text}</p>
           <p className="ct-folio">
             <span>{t.saved.folio}</span>
-            <strong className="dato">{saved}</strong>
+            <strong>{saved}</strong>
           </p>
           <button type="button" className="ct-enlace" onClick={() => setSaved(null)}>
             {t.saved.again}

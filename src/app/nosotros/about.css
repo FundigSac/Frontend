@@ -17,6 +17,14 @@
   object-fit: cover;
 }
 
+.ab-sectores__foto {
+  content-visibility: auto; /* no se pide antes del primer pintado */
+}
+
+.ab-num {
+  font-variant-numeric: tabular-nums;
+}
+
 .ab-sectores__texto h2 {
   color: var(--c-on-surface);
   font-size: var(--fs-h2);
@@ -60,7 +68,8 @@
 .ab-tiempo__anio {
   color: var(--c-link);
   font-size: var(--fs-h3);
-  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
   line-height: 1.2;
 }
 
