@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FloatingActions } from "../_landing/floating-actions";
-import { COMMON } from "../_legal/copy";
 import { useCopy } from "../_legal/use-copy";
 import { SectionHead, SectorClosing, SectorHero } from "../industrias/_sector/sector-kit";
 import { SITE } from "@/shared/config/site";
@@ -18,7 +17,6 @@ const delay = (i: number) => ({ ["--d" as string]: `${Math.min(i * 90, 250)}ms` 
 
 export function AboutView() {
   const t = useCopy(ABOUT);
-  const home = useCopy(COMMON.home);
   const { labels } = t.company;
 
   return (
@@ -28,7 +26,7 @@ export function AboutView() {
           id="ab"
           image="/media/nosotros/hero.webp"
           alt={t.heroAlt}
-          crumbs={{ home, current: t.crumb }}
+          crumbs={{ home: t.home, current: t.crumb }}
           title={t.title}
           lead={t.lead}
           action={{ href: "/contacto", label: t.heroAction }}

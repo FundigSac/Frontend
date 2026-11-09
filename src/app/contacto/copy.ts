@@ -6,6 +6,7 @@ export type ReasonId = "documentacion" | "reunion";
 export type FieldName = "fullName" | "companyName" | "position" | "email" | "phone" | "message";
 
 export const CONTACT: Pair<{
+  home: string;
   crumb: string;
   title: string;
   lead: string;
@@ -58,6 +59,7 @@ export const CONTACT: Pair<{
   cta: { title: string; text: string; cta: string };
 }> = {
   es: {
+    home: "Inicio",
     crumb: "Contacto",
     title: "Contáctanos",
     lead: "Déjanos tus datos y tu consulta en el formulario, y el equipo de FUNDIGSAC te responde por correo o teléfono. Si tienes prisa, llama o escribe por WhatsApp.",
@@ -137,6 +139,7 @@ export const CONTACT: Pair<{
     },
   },
   en: {
+    home: "Home",
     crumb: "Contact",
     title: "Contact us",
     lead: "Leave your details and your question in the form, and the FUNDIGSAC team will reply by email or phone. If you are in a hurry, call or message us on WhatsApp.",

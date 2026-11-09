@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, FileText, Mail, MessageCircle, Phone, type LucideIcon } from "lucide-react";
 import { FloatingActions } from "../_landing/floating-actions";
-import { COMMON } from "../_legal/copy";
 import { useCopy } from "../_legal/use-copy";
 import { Crumbs, SectorClosing } from "../industrias/_sector/sector-kit";
 import { MAP_VIEW } from "@/shared/config/location";
@@ -38,7 +37,6 @@ function ChannelLink({ channel }: { channel: Channel }) {
 
 export function ContactView({ site }: { site: ContactSite }) {
   const t = useCopy(CONTACT);
-  const home = useCopy(COMMON.home);
   const loc = useHome().location;
   const c = t.channels;
   const whatsapp = `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(c.whatsapp.message)}`;
@@ -55,7 +53,7 @@ export function ContactView({ site }: { site: ContactSite }) {
       <main className="lp in ct">
         <section className="ct-intro on-dark" aria-labelledby="ct-title">
           <div className="lp-shell">
-            <Crumbs t={{ home, current: t.crumb }} />
+            <Crumbs t={{ home: t.home, current: t.crumb }} />
             <h1 id="ct-title">{t.title}</h1>
             <p>{t.lead}</p>
           </div>

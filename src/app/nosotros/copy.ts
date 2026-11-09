@@ -1,6 +1,7 @@
 import type { Pair } from "../_legal/copy";
 
 type About = {
+  home: string;
   crumb: string;
   title: string;
   lead: string;
@@ -21,6 +22,7 @@ type About = {
 
 export const ABOUT: Pair<About> = {
   es: {
+    home: "Inicio",
     crumb: "Nosotros",
     title: "Quiénes somos",
     lead: "FUNDIGSAC es una empresa peruana especializada en soluciones de hierro dúctil para agua, alcantarillado e infraestructura urbana.",
@@ -65,6 +67,7 @@ export const ABOUT: Pair<About> = {
     cta: { title: "¿Tienes una obra en marcha?", text: "Cuéntanos qué necesitas y te ayudamos a definir piezas, medidas y clase de presión.", cta: "Solicitar cotización" },
   },
   en: {
+    home: "Home",
     crumb: "About us",
     title: "Who we are",
     lead: "FUNDIGSAC is a Peruvian company specialized in ductile iron solutions for water, sewerage and urban infrastructure.",
