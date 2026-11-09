@@ -44,7 +44,8 @@ export function SectorHero({
 }) {
   return (
     <section className="in-hero on-dark" aria-labelledby={`${id}-title`}>
-      <SectorImage prepared={prepared} className="in-hero__photo" src={image} alt={alt} fill loading="eager" fetchPriority="high" quality={60} sizes="100vw" />
+      {/* Bajo un velo al 68 % la foto es fondo: en teléfono basta una variante ligera, y es el elemento que marca el LCP. */}
+      <SectorImage prepared={prepared} className="in-hero__photo" src={image} alt={alt} fill loading="eager" fetchPriority="high" quality={60} sizes="(max-width: 480px) 50vw, 100vw" />
       {media}
       <div className="in-hero__veil" aria-hidden="true" />
       <div className="lp-shell in-hero__inner">
