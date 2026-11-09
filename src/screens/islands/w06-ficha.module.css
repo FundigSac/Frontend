@@ -871,6 +871,12 @@
 }
 
 /* ---- Relacionados ---- */
+/* Las secciones bajo la galería no se calculan hasta acercarse: el primer pintado móvil no carga con toda la tabla técnica. */
+.detail > section {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 720px;
+}
+
 .related {
   padding-bottom: var(--sp-8);
 }

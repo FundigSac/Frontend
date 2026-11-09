@@ -787,6 +787,12 @@ html[data-lp-theme="dark"] .ag-linea::before {
 /* Sin esto, "lazy" las pide igual en móvil (el navegador adelanta hasta 2500 px) y compiten con el LCP. Cada contenedor ya
    reserva su alto con aspect-ratio o medidas fijas. */
 .in-feat__media,
+/* Las secciones bajo el héroe no entran en el primer pintado. */
+.in > .sec {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 720px;
+}
+
 .in-bloque__foto,
 .sa-red__foto,
 .mi-uso__foto,

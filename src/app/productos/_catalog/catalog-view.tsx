@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, ArrowUpDown, Check, Download, Mail, Search } from "lucide-react";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CatalogCell, FamilySlug, Localized } from "@/modules/catalog/public-catalog";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
@@ -42,6 +42,9 @@ function AddressWatcher({ onChange }: { onChange: (key: string) => void }) {
   useEffect(() => onChange(key), [key, onChange]);
   return null;
 }
+
+/** Celdas que salen en el HTML: el resto se monta al hidratar. Las páginas de familia enlazan todas las fichas para Google. */
+const FIRST_RENDER_CELLS = 24;
 
 export function CatalogView({ cells, families }: { cells: readonly CatalogCell[]; families: readonly FamilyIndexEntry[] }) {
   const [lang] = useLang();
@@ -103,6 +106,13 @@ export function CatalogView({ cells, families }: { cells: readonly CatalogCell[]
   }, [cells, families, family, lang, query, sort]);
 
   const { filtered, fresh } = useNewCells(visible.map((c) => c.slug));
+  const [allMounted, setAllMounted] = useState(false);
+  useEffect(() => {
+    // Después del primer pintado: montar 60 celdas durante la carga bloquearía el hilo principal.
+    const id = window.setTimeout(() => startTransition(() => setAllMounted(true)), 250);
+    return () => window.clearTimeout(id);
+  }, []);
+  const shown = allMounted || query.trim() || family !== "todas" ? visible : visible.slice(0, FIRST_RENDER_CELLS);
 
   function pickFamily(next: FamilyFilter) {
     setFamily(next);
@@ -180,7 +190,7 @@ export function CatalogView({ cells, families }: { cells: readonly CatalogCell[]
 
           {visible.length ? (
             <div className={`celdas ${styles.grid}`}>
-              {visible.map((cell, index) => <ProductCell key={cell.slug} cell={cell} lang={lang} index={index} filtered={filtered} isNew={fresh.has(cell.slug)} heading="h2" />)}
+              {shown.map((cell, index) => <ProductCell key={cell.slug} cell={cell} lang={lang} index={index} filtered={filtered} isNew={fresh.has(cell.slug)} heading="h2" />)}
             </div>
           ) : (
             <div className={styles.empty} role="status">
