@@ -95,7 +95,7 @@ test("cotización real: el folio lo asigna la API y la confirmación lo verifica
   await form.locator("[name=razonSocial]").fill("Constructora Andina SAC");
   await form.locator("[name=rucEmpresa]").fill("20131312955");
   await form.locator("[name=tipoProyecto]").selectOption("saneamiento");
-  await form.locator("[name=departamentoDestino]").fill("Arequipa");
+  await form.locator("[name=departamentoDestino]").selectOption("Arequipa");
   await form.locator("[name=nombreSolicitante]").fill("Prueba Automatizada");
   await form.locator("[name=cargoSolicitante]").fill("Compras");
   await form.locator("[name=correoCorporativo]").fill("compras.qa@andina.pe");

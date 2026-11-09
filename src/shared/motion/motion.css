@@ -162,6 +162,11 @@ details[data-animated][open] > :not(summary) {
   animation: mo-spin 800ms linear infinite;
 }
 
+/* Un indicador que se guarda oculto para reservar el ancho del botón no gira: sin petición no hay bucle. */
+:is(.is-oculto, [hidden], [data-hidden]) .mo-spin {
+  animation: none;
+}
+
 /* ===== Barra de navegación entre páginas =====
    Aparece solo si la página nueva tarda más de un instante; nunca tapa ni bloquea nada. */
 .mo-progress {

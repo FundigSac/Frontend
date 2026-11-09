@@ -11,8 +11,8 @@ import "./cookie-banner.css";
 
 const COPY = {
   es: {
-    title: "Tu privacidad importa",
-    text: "Guardamos lo necesario para que el sitio funcione (tu idioma, tema y cotización). La analítica de Google Analytics y el mapa de Google Maps solo se cargan si los autorizas. Puedes aceptar, rechazar o configurar.",
+    title: "Cookies en este sitio",
+    text: "Guardamos en tu navegador tu idioma, tu tema y tu cotización. Google Analytics y el mapa de Google Maps solo se cargan si los autorizas.",
     policy: "Política de cookies",
     acceptAll: "Aceptar todas",
     rejectAll: "Rechazar todas",
@@ -35,8 +35,8 @@ const COPY = {
     until: "Vale hasta el",
   },
   en: {
-    title: "Your privacy matters",
-    text: "We store what the site needs to work (your language, theme and quote). Google Analytics and the Google Maps map only load if you allow them. You can accept, reject or customize.",
+    title: "Cookies on this site",
+    text: "We keep your language, theme and quote in your browser. Google Analytics and the Google Maps map only load if you allow them.",
     policy: "Cookie policy",
     acceptAll: "Accept all",
     rejectAll: "Reject all",
@@ -139,7 +139,7 @@ export function CookieBanner() {
           </div>
           <div className="ck__body">
             <h2>
-              {t.title} <ShieldCheck aria-hidden="true" size={16} strokeWidth={2} />
+              <span>{t.title}</span> <ShieldCheck aria-hidden="true" size={16} strokeWidth={2} />
             </h2>
             <p>
               {t.text} <Link href="/cookies" prefetch={false}>{t.policy}</Link>

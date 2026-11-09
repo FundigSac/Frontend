@@ -35,11 +35,16 @@
   }
 
   .ls-summary {
+    grid-column: 9 / 13;
+  }
+}
+
+/* El resumen solo queda fijo cuando cabe entero en la ventana. Antes se recortaba en una caja con su propia barra de
+   desplazamiento y la ayuda por WhatsApp quedaba oculta. */
+@media (min-width: 1024px) and (min-height: 980px) {
+  .ls-summary {
     position: sticky;
     top: calc(var(--header-h) + var(--sp-5));
-    grid-column: 9 / 13;
-    max-height: calc(100svh - var(--header-h) - var(--sp-7));
-    overflow-y: auto;
   }
 }
 

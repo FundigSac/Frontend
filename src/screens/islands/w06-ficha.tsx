@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import {
+  ArrowDown,
   ArrowRight,
   Check,
   ChevronDown,
@@ -314,6 +315,10 @@ export function W06Ficha(props: { variant?: Variant }) {
               <p className={styles.warranty}><ShieldCheck size={17} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
             )}
             <p className={styles.lead}>{view.lead}</p>
+            {/* En móvil el pedido queda bajo la galería: este acceso lo trae al primer pantallazo. Desde 1024 px el pedido ya está a la vista. */}
+            <a href="#pedido" className={`lp-btn lp-btn--solid lp-btn--lg ${styles.jump}`}>
+              <ShoppingCart size={18} aria-hidden="true" /> {t.jump} <ArrowDown size={17} aria-hidden="true" />
+            </a>
           </header>
 
           <div className={styles.gallery}>
@@ -354,7 +359,7 @@ export function W06Ficha(props: { variant?: Variant }) {
 
           <aside className={styles.panel} data-enter>
             {/* Pedido rápido: el DN es el mismo del plano y las tablas de dimensiones. */}
-            <div className={styles.order} role="group" aria-label={t.order} ref={orderRef} data-flash={flash || undefined}>
+            <div id="pedido" className={styles.order} role="group" aria-label={t.order} ref={orderRef} data-flash={flash || undefined}>
               <label className={styles.field}>
                 <span>{t.dnLabel}</span>
                 <span className={styles.selectBox}>

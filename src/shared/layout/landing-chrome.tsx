@@ -214,8 +214,10 @@ export function LandingHeader() {
           >
             {searchOpen ? <X aria-hidden="true" size={20} strokeWidth={2} /> : <Search aria-hidden="true" size={20} strokeWidth={2} />}
           </button>
+          {/* Con nombre visible en escritorio ancho; en móvil y tableta, icono en la barra y fila con nombre en el menú. */}
           <IntentLink href="/reclamaciones" className="lp-icon-btn lp-claims-btn" aria-label={complaints} title={complaints}>
             <LibroReclamacionesIcon size={24} />
+            <span className="lp-claims-btn__label" aria-hidden="true">{complaints}</span>
           </IntentLink>
           <div className="lp-lang">
             <button

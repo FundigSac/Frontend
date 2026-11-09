@@ -9,7 +9,7 @@ import { useSanea } from "./copy";
 const RED_IMAGES = ["/media/saneamiento/agua-potable.webp", "/media/saneamiento/alcantarillado.webp", "/media/contacto/planta-valvula.webp"] as const;
 
 const LINE = [
-  { href: "/productos/tuberias", image: "/media/catalog/tuberia-hierro-ductil.webp" },
+  { href: "/productos/tuberias", image: "/media/catalog/tuberia-hierro-ductil.webp", photo: true },
   { href: "/productos/valvulas", image: "/media/catalog/compuerta-bridada.webp" },
   { href: "/productos/marcos-y-tapas", image: "/media/catalog/marco-tapa-pesada.webp" },
   { href: "/productos/conexiones-y-fittings", image: "/media/catalog/acople-gran-rango.webp" },

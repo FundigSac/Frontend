@@ -227,6 +227,11 @@
   height: 100%;
 }
 
+/* La tubería es una foto de patio, no un recorte: llena la celda como las demás. */
+.in-celdas .in-celda__media--foto img {
+  object-fit: cover;
+}
+
 .in-celda__texto {
   display: block;
 }

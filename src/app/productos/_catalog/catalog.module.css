@@ -155,16 +155,20 @@
   background: var(--c-background);
 }
 
+/* Las píldoras se desplazan en su propia fila. El borde derecho se desvanece (máscara estática) para que se note que
+   hay más familias; el relleno final deja ver la última píldora completa al llegar al fondo. */
 .pills {
   display: flex;
   min-width: 0;
   flex: 1 1 auto;
   gap: var(--sp-2);
-  padding: 2px;
+  padding: 2px 40px 2px 2px;
   margin: -2px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
+  scroll-padding-inline: 2px 40px;
   scrollbar-width: none;
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
 }
 
 .pills::-webkit-scrollbar {
@@ -376,6 +380,8 @@
   color: var(--c-text-secondary);
   font-size: var(--fs-small);
   line-height: var(--lh-small);
+  text-align: justify;
+  hyphens: auto;
 }
 
 .pendingTag {
@@ -716,6 +722,7 @@
 
 .sheet {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-5);
   padding-bottom: var(--sp-8);
 }
@@ -761,6 +768,11 @@
   font-size: var(--fs-label);
   font-weight: 600;
   line-height: var(--lh-label);
+}
+
+.jump {
+  width: 100%;
+  margin-top: var(--sp-4);
 }
 
 .panel {
@@ -858,6 +870,7 @@
 .detail {
   display: grid;
   min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: var(--sp-7);
 }
@@ -987,6 +1000,10 @@
 
   .sheetTitle {
     grid-area: titulo;
+  }
+
+  .jump {
+    display: none;
   }
 
   .sheetPhoto {

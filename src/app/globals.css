@@ -435,13 +435,20 @@ html {
   scroll-padding-top: calc(var(--header-h) + 12px);
 }
 
-/* El texto corrido va justificado en todos los anchos, sin cortar palabras con guion. Títulos, botones, rótulos y
-   columnas numéricas conservan su alineación. El aviso del mapa queda como está. */
-main p:not(.ce__copy *, .text-center, .text-center *, .text-right, .text-end, [style*="text-align"], button *, label *, summary *, th *, td *),
-.lp-footer__brand-column > p {
+/* El texto corrido va justificado en todos los anchos. Títulos, botones, rótulos y columnas numéricas conservan su
+   alineación. Además de los párrafos de `main`, cuentan como texto corrido el aviso de cookies, el aviso del mapa y
+   las notas largas que no son <p> (`.prosa-just`). Con `lang="es-PE"` el navegador parte las palabras largas con
+   guion: sin eso, en 320–390 px la justificación abría huecos grandes entre palabras. */
+main p:not(.text-center, .text-center *, .text-right, .text-end, [style*="text-align"], button *, label *, summary *, th *, td *),
+.lp-footer__brand-column > p,
+.ck__body p,
+main :is(.lg-prefs__note, .dl-note, .lg-notices > li),
+.prosa-just {
   text-align: justify !important;
   text-justify: inter-word;
-  hyphens: none;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 8 4 4;
 }
 
 /* Modo oscuro fuera del catálogo: los enlaces con hover:text-primary quedaban ilegibles sobre el fondo oscuro. */

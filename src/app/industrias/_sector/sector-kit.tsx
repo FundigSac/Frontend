@@ -123,7 +123,8 @@ export function SectorFeatured({ id, t, image, prepared, sizes = "(max-width: 48
   );
 }
 
-export type Cell = { href: string; image: string; name: string; note: string; alt?: string };
+/** `photo`: foto de ambiente (no recorte sobre blanco); llena la celda en lugar de quedar con franjas. */
+export type Cell = { href: string; image: string; name: string; note: string; alt?: string; photo?: boolean };
 
 /** Línea de producto: celdas separadas por líneas de 1 px, con la foto de catálogo sobre superficie neutra. */
 export function ProductCells({ items, label, columns = 4 }: { items: readonly Cell[]; label?: string; columns?: 3 | 4 }) {
@@ -132,7 +133,7 @@ export function ProductCells({ items, label, columns = 4 }: { items: readonly Ce
       {items.map((item) => (
         <li key={item.name}>
           <Link href={item.href} className="celda">
-            <span className="celda__media">
+            <span className={item.photo ? "celda__media in-celda__media--foto" : "celda__media"}>
               {item.image && <Image src={item.image} alt={item.alt ?? ""} width={640} height={640} loading="lazy" sizes={columns === 3 ? "(max-width: 859px) 96px, 18vw" : "(max-width: 859px) 46vw, (max-width: 1260px) 31vw, 23vw"} />}
             </span>
             <span className="in-celda__texto">

@@ -106,7 +106,7 @@ async function fillQuoteGeneral(page: Page) {
   await page.locator("#razonSocial").fill("Consorcio Prueba E2E S.A.C.");
   await page.locator("#rucEmpresa").fill("20100070970");
   await page.locator("#tipoProyecto").selectOption("saneamiento");
-  await page.locator("#departamentoDestino").fill("Lima");
+  await page.locator("#departamentoDestino").selectOption("Lima");
   await page.locator("#nombreSolicitante").fill("Ing. Prueba");
   await page.locator("#cargoSolicitante").fill("Jefe de Compras");
   await page.locator("#correoCorporativo").fill("compras@prueba.com.pe");
@@ -391,12 +391,13 @@ test.describe("Términos y condiciones", () => {
     await expect(page.locator(".lg-term").getByRole("link", { name: "Política de Privacidad" })).toHaveAttribute("href", "/privacidad");
   });
 
-  test("texto justificado sin cortar palabras con guiones y tipografía de lectura", async ({ page }) => {
+  test("texto justificado con partición silábica y tipografía de lectura", async ({ page }) => {
     await go(page, "/terminos", ".lg-toc a");
     const body = page.locator(".lg-term p").first();
-    // Justificado en todos los anchos (regla global de globals.css para `main p` en móvil), sin guiones.
+    // Justificado en todos los anchos (regla global de globals.css para `main p`). Con lang es-PE el navegador parte
+    // las palabras largas con guion para que la justificación no abra huecos en 320–390 px.
     await expect(body).toHaveCSS("text-align", "justify");
-    await expect(body).toHaveCSS("hyphens", "none");
+    await expect(body).toHaveCSS("hyphens", "auto");
     await expect(body).toHaveCSS("font-family", /Plex/i);
   });
 

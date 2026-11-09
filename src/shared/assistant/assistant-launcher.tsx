@@ -96,7 +96,7 @@ export function AssistantLauncher() {
       {teaser && !open && (
         <div className="ai-teaser">
           <button type="button" className="ai-teaser__text" onClick={() => show()}>
-            <AssistantMascot size={34} />
+            <AssistantMascot size={34} animated={false} />
             {t.teaser}
           </button>
           <button type="button" className="ai-teaser__close" onClick={hideTeaser} aria-label={t.teaserDismiss} title={t.teaserDismiss}>
@@ -119,7 +119,8 @@ export function AssistantLauncher() {
         onClick={() => (open ? close() : show())}
       >
         <span className="ai-launch__glyph ai-launch__glyph--mark" aria-hidden="true">
-          <AssistantMascot size={66} mood={unread ? "happy" : "idle"} />
+          {/* Quieta en el botón: la mascota solo se anima con el panel abierto (brief §4.4, cero bucles al cargar). */}
+          <AssistantMascot size={66} animated={false} />
         </span>
         {unread && !open && <span className="ai-launch__dot" aria-hidden="true">1</span>}
         <span className="ai-launch__glyph ai-launch__glyph--close" aria-hidden="true">

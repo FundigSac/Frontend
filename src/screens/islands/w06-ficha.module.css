@@ -45,10 +45,17 @@
 }
 
 /* ---- Dos paneles: el orden del DOM es el orden de lectura en móvil ---- */
+/* Una pista explícita `minmax(0, 1fr)`: la pista implícita `auto` crece hasta el ancho mínimo de su contenido
+   (las tablas de dimensiones) y empujaba toda la ficha fuera de la pantalla a 320 px. */
 .sheet {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-5);
   padding-bottom: var(--sp-8);
+}
+
+.sheet > * {
+  min-width: 0;
 }
 
 .title h1 {
@@ -100,6 +107,11 @@
   color: var(--c-on-surface-variant);
   font-size: var(--fs-lead);
   line-height: var(--lh-lead);
+}
+
+.jump {
+  width: 100%;
+  margin-top: var(--sp-4);
 }
 
 /* ---- Galería ---- */
@@ -343,8 +355,14 @@
 .detail {
   display: grid;
   min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: var(--sp-7);
+}
+
+/* Cada sección se queda en el ancho de la columna; la tabla ancha se desplaza dentro de su propio marco. */
+.detail > * {
+  min-width: 0;
 }
 
 .detailTitle {
@@ -578,6 +596,11 @@
   stroke-width: 4px;
 }
 
+.planDraw :global(.w06-plan__knock) {
+  fill: var(--c-background);
+  stroke: none;
+}
+
 .planDraw :global(.w06-plan__dn) {
   fill: var(--c-link) !important;
 }
@@ -639,7 +662,9 @@
 }
 
 .tableWrap {
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 .dims {
@@ -1175,6 +1200,10 @@
 
   .title {
     grid-area: titulo;
+  }
+
+  .jump {
+    display: none;
   }
 
   .gallery {

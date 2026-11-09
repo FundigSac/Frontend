@@ -389,32 +389,6 @@
   background: var(--c-surface);
 }
 
-/* Aviso de consentimiento del mapa con la paleta del sitio (consent-embed.css aún trae naranja y degradados). */
-.ct-map .ce.ce {
-  --ce-ink: var(--c-on-surface);
-  --ce-text: var(--c-on-surface-variant);
-  --ce-orange-dark: var(--c-link);
-  background: var(--c-surface);
-}
-
-.ct-map .ce .ce__icon {
-  background: var(--c-surface-container-low);
-  color: var(--c-action);
-}
-
-.ct-map .ce .ce__btn--solid,
-.ct-map .ce .ce__btn--solid:hover {
-  background: var(--c-action);
-  color: var(--c-on-action);
-}
-
-.ct-map .ce .ce__btn--outline,
-.ct-map .ce .ce__btn--outline:hover {
-  border-color: var(--c-outline);
-  background: transparent;
-  color: var(--c-action);
-}
-
 .ct-map iframe {
   position: absolute;
   inset: 0;

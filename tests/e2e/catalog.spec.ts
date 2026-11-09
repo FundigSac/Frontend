@@ -439,7 +439,7 @@ test.describe("W05 formulario de requerimiento", () => {
     await form.locator("#razonSocial").fill("Consorcio Prueba E2E");
     await form.locator("#rucEmpresa").fill("20601839281");
     await form.locator("#tipoProyecto").selectOption("saneamiento");
-    await form.locator("#departamentoDestino").fill("Lima");
+    await form.locator("#departamentoDestino").selectOption("Lima");
     await form.locator("#nombreSolicitante").fill("Ing. Prueba E2E");
     await form.locator("#cargoSolicitante").fill("Jefe de compras");
     await form.locator("#correoCorporativo").fill("e2e@example.com");

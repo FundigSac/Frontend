@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, CircleDashed, FileText, MessageCircleMore, ShoppingCart } from "lucide-react";
+import { ArrowDown, ArrowRight, Check, ChevronDown, CircleDashed, FileText, MessageCircleMore, ShoppingCart } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { whatsappLink } from "@/lib/site-info";
 import { addToCart, openCart } from "@/modules/cart/cart-store";
@@ -54,6 +54,10 @@ export function SheetView({ sheet }: { sheet: CatalogSheet }) {
             <h1 id="ficha-title">{name}</h1>
             {sheet.technicalName && <span className={styles.sheetTechnical}>{sheet.technicalName[lang]}</span>}
             <p className={styles.lead}>{sheet.note[lang]}</p>
+            {/* En móvil el pedido queda bajo la foto: este acceso lo trae al primer pantallazo. Desde 1024 px ya está a la vista. */}
+            <a href="#pedido" className={`lp-btn lp-btn--solid lp-btn--lg ${styles.jump}`}>
+              <ShoppingCart size={18} aria-hidden="true" /> {variants.length > 0 ? t.jumpSize : t.jumpQuote} <ArrowDown size={17} aria-hidden="true" />
+            </a>
           </header>
 
           <figure className={styles.sheetPhoto} data-lcp>
@@ -61,7 +65,7 @@ export function SheetView({ sheet }: { sheet: CatalogSheet }) {
             {pending && <figcaption className={styles.photoNote}>{t.referencePhoto}</figcaption>}
           </figure>
 
-          <aside className={styles.panel} aria-label={t.addSheet} data-enter>
+          <aside id="pedido" className={styles.panel} aria-label={t.addSheet} data-enter>
             {pending && (
               <div className={styles.pendingBox}>
                 <CircleDashed size={18} aria-hidden="true" />

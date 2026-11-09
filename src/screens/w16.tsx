@@ -116,12 +116,17 @@ export function ScreenW16({ online = false }: { online?: boolean }) {
                   <h2 id="paso-entrega-t">{t.whereTitle}</h2>
                 </div>
                 <div className="hj-campos">
-                  <QInput name="departamentoDestino" label={t.destination} type="text" autoComplete="address-level1" list="departamentos" required />
-                  <datalist id="departamentos">
+                  {/* Lista cerrada de departamentos del Perú: evita errores de escritura y se elige en dos toques. */}
+                  <QSelect name="departamentoDestino" label={t.destination} defaultValue="" autoComplete="address-level1" required>
+                    <option disabled value="">
+                      {t.selectOption}
+                    </option>
                     {PERU_DEPARTMENTS.map((d) => (
-                      <option key={d} value={d} />
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
                     ))}
-                  </datalist>
+                  </QSelect>
                   <QSelect name="tipoProyecto" label={t.projectType} defaultValue="" required>
                     <option disabled value="">
                       {t.selectOption}

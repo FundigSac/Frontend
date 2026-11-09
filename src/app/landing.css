@@ -376,7 +376,20 @@ html[data-lp-theme="dark"] .lp-header__brand,
 }
 
 .lp-claims-btn {
-  padding: 0;
+  padding: 0 6px;
+  gap: 8px;
+}
+
+/* Nombre visible junto al libro, en dos líneas cortas: así nadie lo confunde con un icono de catálogo. */
+.lp-claims-btn__label {
+  display: block;
+  max-width: 96px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 15px;
+  text-align: left;
+  white-space: normal;
 }
 
 .lp-header__quote {
@@ -675,8 +688,12 @@ html[data-lp-theme="dark"] .lp-theme__moon {
 @media (max-width: 1260px) {
   .lp-nav,
   .lp-header__quote,
-  .lp-claims-btn {
+  .lp-claims-btn__label {
     display: none;
+  }
+
+  .lp-claims-btn {
+    padding: 0;
   }
 
   .lp-header__toggle {
@@ -933,13 +950,20 @@ html[data-lp-theme="dark"] .lp-theme__moon {
   }
 }
 
-@media (max-width: 359px) {
+/* En teléfono el libro queda en la barra: la cuenta se mueve al menú (allí ya están Ingresar y Crear cuenta). */
+@media (max-width: 419px) {
   .lp-header__actions > .lp-account {
     display: none;
   }
+}
+
+@media (max-width: 359px) {
+  .lp-header__bar {
+    gap: 4px;
+  }
 
   .lp-header__brand img {
-    width: 108px;
+    width: 100px;
   }
 }
 

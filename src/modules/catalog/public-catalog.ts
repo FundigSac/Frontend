@@ -330,7 +330,8 @@ const W06_CELLS: readonly CatalogCell[] = [
   },
   {
     slug: "valvula-compuerta-fundigsac-garantia-extendida", family: "valvulas", line: "compuerta", href: PATH("valvulas", "valvula-compuerta-fundigsac-garantia-extendida"),
-    name: { es: "Válvula de compuerta FUNDIGSAC", en: "FUNDIGSAC gate valve" },
+    // Mismo nombre que en la cotización: sin el apellido, el catálogo mostraba dos fichas idénticas.
+    name: { es: "Válvula de compuerta FUNDIGSAC con garantía extendida", en: "FUNDIGSAC gate valve, extended warranty" },
     note: { es: "Garantía extendida. Cierre elástico con extremos bridados, con volante o dado.", en: "Extended warranty. Resilient seat with flanged ends, with handwheel or operating cap." },
     code: "FUNDIGSAC", range: DATASHEETS.extendida.sizeRange, image: "/media/valvula-fundigsac-cuadrante/g-01.webp", alt: { es: "Válvula de compuerta azul FUNDIGSAC con cuadrante de maniobra", en: "Blue FUNDIGSAC gate valve with operating cap" }, status: "publicado",
     search: "valvula compuerta fundigsac garantia extendida cuadrante dado volante hierro ductil gate valve extended warranty",
