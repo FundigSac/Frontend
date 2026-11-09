@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { AssistantLauncher } from "@/shared/assistant/assistant-launcher";
 import { GoogleAnalytics } from "@/shared/analytics/google-analytics";
 import { CartHost } from "@/shared/cart/cart-host";
@@ -16,9 +16,9 @@ import { SourceGuard } from "@/shared/security/source-guard";
 import { ToastProvider } from "@/shared/ui/toast";
 import "./globals.css";
 
-// Pesos 400/600/700, igual que el export de Stitch (font-medium cae a 400 como en el diseño original).
-const inter = Inter({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-inter", display: "swap", adjustFontFallback: false });
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-display", display: "swap" });
+// Una sola familia variable con eje de ancho: los títulos usan font-stretch 85 %. La monoespaciada es solo para códigos y medidas.
+const plex = IBM_Plex_Sans({ subsets: ["latin"], axes: ["wdth"], variable: "--font-sans", display: "swap" });
+const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: "400", variable: "--font-mono", display: "swap", preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-PE" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
+    <html lang="es-PE" data-scroll-behavior="smooth" className={`${plex.variable} ${plexMono.variable}`} suppressHydrationWarning>
       <body className="bg-background font-body-default text-body-default text-on-surface antialiased">
         <SourceGuard />
         <ToastProvider>
