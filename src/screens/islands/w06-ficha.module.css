@@ -59,9 +59,12 @@
   line-height: 1.1;
 }
 
+/* La monoespaciada llega después y es más estrecha que su respaldo: en móvil se reservan las dos líneas para que nada salte. */
 .meta {
   display: flex;
+  min-height: calc(2 * var(--lh-data) + var(--sp-1));
   flex-wrap: wrap;
+  align-content: flex-start;
   gap: var(--sp-1) var(--sp-3);
   margin-bottom: var(--sp-2);
   color: var(--c-text-secondary);
@@ -1116,6 +1119,12 @@
 @keyframes fade {
   from {
     opacity: 0;
+  }
+}
+
+@media (min-width: 520px) {
+  .meta {
+    min-height: var(--lh-data);
   }
 }
 
