@@ -1,97 +1,28 @@
 export type AccessKind = "login" | "register" | "forgot" | "reset";
-export type FeatureIcon = "file" | "settings" | "users" | "clipboard" | "history" | "shield" | "mail" | "headset" | "key" | "lock";
-
-type Panel = { eyebrow: string; title: string[]; lead: string; features: { icon: FeatureIcon; title: string; text: string }[] };
+type Panel = { title: string; text: string };
 
 const PANELS_ES: Record<AccessKind, Panel> = {
-  login: {
-    eyebrow: "Bienvenido a FUNDIGSAC",
-    title: ["Infraestructura", "que impulsa", "el desarrollo."],
-    lead: "Accede a nuestros recursos técnicos, catálogos y herramientas exclusivas para nuestros clientes y aliados.",
-    features: [
-      { icon: "file", title: "Catálogos y fichas técnicas", text: "Consulta información detallada de nuestros productos." },
-      { icon: "settings", title: "Herramientas y recursos", text: "Accede a documentación, planos y manuales." },
-      { icon: "users", title: "Soporte especializado", text: "Nuestro equipo está listo para asesorarte." },
-    ],
-  },
-  register: {
-    eyebrow: "Únete a FUNDIGSAC",
-    title: ["Tu proyecto,", "con respaldo", "técnico."],
-    lead: "Crea tu cuenta y gestiona cotizaciones, fichas técnicas y pedidos en un solo lugar.",
-    features: [
-      { icon: "clipboard", title: "Cotizaciones más rápidas", text: "Guarda tus productos y envía solicitudes en minutos." },
-      { icon: "history", title: "Historial de proyectos", text: "Revisa tus cotizaciones y documentos cuando los necesites." },
-      { icon: "shield", title: "Datos protegidos", text: "Tratamos tu información según la Ley 29733." },
-    ],
-  },
-  forgot: {
-    eyebrow: "Recupera tu acceso",
-    title: ["Vuelve a", "tu cuenta", "en minutos."],
-    lead: "Te enviaremos un enlace seguro a tu correo para que crees una contraseña nueva.",
-    features: [
-      { icon: "mail", title: "Enlace seguro", text: "Válido por 30 minutos y de un solo uso." },
-      { icon: "lock", title: "Cuenta protegida", text: "Nadie más puede cambiar tu contraseña sin ese enlace." },
-      { icon: "headset", title: "¿Necesitas ayuda?", text: "Escríbenos por WhatsApp y te atendemos." },
-    ],
-  },
-  reset: {
-    eyebrow: "Seguridad de tu cuenta",
-    title: ["Una contraseña", "nueva y", "segura."],
-    lead: "Elige una contraseña que no uses en otros sitios y guárdala en un lugar seguro.",
-    features: [
-      { icon: "key", title: "Contraseña robusta", text: "12 caracteres o más, con mayúsculas, números y símbolos." },
-      { icon: "shield", title: "Conexión cifrada", text: "Tus datos viajan protegidos por HTTPS." },
-      { icon: "headset", title: "¿No pediste el cambio?", text: "Avísanos de inmediato por WhatsApp." },
-    ],
-  },
+  login: { title: "Tus datos", text: "Tu información viaja cifrada y se trata según nuestra política de privacidad." },
+  register: { title: "Tus datos", text: "Tratamos tu información según la Ley 29733, de protección de datos personales." },
+  forgot: { title: "El enlace dura 30 minutos", text: "Solo funciona una vez, y sin él nadie puede cambiar tu contraseña." },
+  reset: { title: "¿No pediste este cambio?", text: "Avísanos de inmediato por WhatsApp." },
 };
 
 const PANELS_EN: Record<AccessKind, Panel> = {
-  login: {
-    eyebrow: "Welcome to FUNDIGSAC",
-    title: ["Infrastructure", "that drives", "development."],
-    lead: "Access our technical resources, catalogs and exclusive tools for our clients and partners.",
-    features: [
-      { icon: "file", title: "Catalogs and datasheets", text: "Check detailed information about our products." },
-      { icon: "settings", title: "Tools and resources", text: "Access documentation, drawings and manuals." },
-      { icon: "users", title: "Specialized support", text: "Our team is ready to advise you." },
-    ],
-  },
-  register: {
-    eyebrow: "Join FUNDIGSAC",
-    title: ["Your project,", "with technical", "backing."],
-    lead: "Create your account and manage quotes, datasheets and orders in one place.",
-    features: [
-      { icon: "clipboard", title: "Faster quotes", text: "Save your products and send requests in minutes." },
-      { icon: "history", title: "Project history", text: "Review your quotes and documents anytime." },
-      { icon: "shield", title: "Protected data", text: "We handle your information under Peru's Law 29733." },
-    ],
-  },
-  forgot: {
-    eyebrow: "Recover your access",
-    title: ["Get back", "into your account", "in minutes."],
-    lead: "We'll email you a secure link to create a new password.",
-    features: [
-      { icon: "mail", title: "Secure link", text: "Valid for 30 minutes, single use." },
-      { icon: "lock", title: "Protected account", text: "Nobody can change your password without that link." },
-      { icon: "headset", title: "Need help?", text: "Message us on WhatsApp." },
-    ],
-  },
-  reset: {
-    eyebrow: "Account security",
-    title: ["A new,", "strong", "password."],
-    lead: "Choose a password you don't use on other sites and keep it somewhere safe.",
-    features: [
-      { icon: "key", title: "Strong password", text: "12+ characters with uppercase, numbers and symbols." },
-      { icon: "shield", title: "Encrypted connection", text: "Your data travels protected over HTTPS." },
-      { icon: "headset", title: "Didn't request it?", text: "Tell us right away on WhatsApp." },
-    ],
-  },
+  login: { title: "Your data", text: "Your information is encrypted in transit and handled under our privacy policy." },
+  register: { title: "Your data", text: "We handle your information under Peru's Law 29733 on personal data protection." },
+  forgot: { title: "The link lasts 30 minutes", text: "It works only once, and nobody can change your password without it." },
+  reset: { title: "Didn't request this?", text: "Tell us right away on WhatsApp." },
 };
 
 export const ACCESS_COPY = {
   es: {
     panels: PANELS_ES,
+    panelLabel: "Sobre FUNDIGSAC",
+    panelPhrase: "Válvulas, tuberías, marcos y tapas de hierro dúctil para saneamiento, agricultura y minería.",
+    noAccountTitle: "¿Solo quieres cotizar?",
+    noAccountText: "No necesitas una cuenta. Arma tu lista y envíanos la solicitud.",
+    noAccountCta: "Cotizar sin cuenta",
     email: "Correo electrónico",
     emailPh: "tu@empresa.com",
     password: "Contraseña",
@@ -111,7 +42,8 @@ export const ACCESS_COPY = {
     optional: "opcional",
     remember: "Recordarme",
     forgot: "¿Olvidaste tu contraseña?",
-    or: "o continúa con",
+    or: "o",
+    orEmailOff: "o con tu correo, cuando esté activo",
     orEmail: "o regístrate con tu correo",
     google: "Continuar con Google",
     googleSignup: "Registrarme con Google",
@@ -120,13 +52,23 @@ export const ACCESS_COPY = {
     haveAccount: "¿Ya tienes una cuenta?",
     loginHere: "Inicia sesión",
     back: "Volver a iniciar sesión",
-    secureTitle: "Acceso seguro",
-    secureText: "Tu información viaja cifrada y se trata según nuestra política de privacidad.",
-    login: { title: "Inicia sesión", lead: "Accede a tu cuenta para continuar", submit: "Iniciar sesión" },
-    register: { title: "Crea tu cuenta", lead: "Regístrate en menos de un minuto", submit: "Crear cuenta" },
+    login: {
+      title: "Inicia sesión",
+      lead: "Usa tu correo y tu contraseña, o tu cuenta de Google.",
+      leadOff: "Por ahora se entra con tu cuenta de Google. El ingreso con correo aún no está activo.",
+      submit: "Iniciar sesión",
+    },
+    register: {
+      title: "Crea tu cuenta",
+      lead: "Solo te pedimos tu nombre, tu correo y una contraseña.",
+      leadOff: "Por ahora la cuenta se crea con Google. El registro con correo aún no está activo.",
+      submit: "Crear cuenta",
+    },
+    optionalData: "Agregar empresa y celular (opcional)",
     forgotScreen: {
       title: "¿Olvidaste tu contraseña?",
-      lead: "Ingresa el correo de tu cuenta y te enviaremos un enlace para restablecerla.",
+      lead: "Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.",
+      leadOff: "La recuperación por correo aún no está activa. Si entras con Google, tu contraseña se cambia en tu cuenta de Google.",
       submit: "Enviar enlace",
       doneTitle: "Revisa tu correo",
       doneText: (email: string) => `Si existe una cuenta con ${email}, recibirás un enlace para crear una contraseña nueva en los próximos minutos.`,
@@ -138,6 +80,7 @@ export const ACCESS_COPY = {
     resetScreen: {
       title: "Actualiza tu contraseña",
       lead: "Elige una contraseña nueva que no hayas usado antes en tu cuenta.",
+      leadOff: "El cambio de contraseña por correo aún no está activo. Si entras con Google, tu contraseña se cambia en tu cuenta de Google.",
       submit: "Actualizar contraseña",
       doneTitle: "¡Contraseña actualizada!",
       doneText: "Tu contraseña se cambió correctamente. Ya puedes iniciar sesión con la nueva.",
@@ -156,6 +99,7 @@ export const ACCESS_COPY = {
       emailFormat: "Revisa el formato del correo (ej.: nombre@empresa.com).",
       password: "Ingresa tu contraseña.",
       passwordWeak: "Usa al menos 12 caracteres con letras y números.",
+      passwordStrong: "Usa al menos 12 caracteres, con mayúsculas, minúsculas y números.",
       confirm: "Las contraseñas no coinciden.",
       name: "Ingresa tu nombre.",
       terms: "Debes aceptar los términos para continuar.",
@@ -218,6 +162,11 @@ export const ACCESS_COPY = {
   },
   en: {
     panels: PANELS_EN,
+    panelLabel: "About FUNDIGSAC",
+    panelPhrase: "Ductile iron valves, pipes, frames and covers for sanitation, agriculture and mining.",
+    noAccountTitle: "Just need a quote?",
+    noAccountText: "You don't need an account. Build your list and send us the request.",
+    noAccountCta: "Get a quote without an account",
     email: "Email",
     emailPh: "you@company.com",
     password: "Password",
@@ -237,7 +186,8 @@ export const ACCESS_COPY = {
     optional: "optional",
     remember: "Remember me",
     forgot: "Forgot your password?",
-    or: "or continue with",
+    or: "or",
+    orEmailOff: "or with your email, once it is active",
     orEmail: "or sign up with your email",
     google: "Continue with Google",
     googleSignup: "Sign up with Google",
@@ -246,13 +196,23 @@ export const ACCESS_COPY = {
     haveAccount: "Already have an account?",
     loginHere: "Log in",
     back: "Back to log in",
-    secureTitle: "Secure access",
-    secureText: "Your information is encrypted in transit and handled under our privacy policy.",
-    login: { title: "Log in", lead: "Access your account to continue", submit: "Log in" },
-    register: { title: "Create your account", lead: "Sign up in less than a minute", submit: "Create account" },
+    login: {
+      title: "Log in",
+      lead: "Use your email and password, or your Google account.",
+      leadOff: "For now, log in with your Google account. Email login isn't active yet.",
+      submit: "Log in",
+    },
+    register: {
+      title: "Create your account",
+      lead: "We only ask for your name, your email and a password.",
+      leadOff: "For now, accounts are created with Google. Email sign-up isn't active yet.",
+      submit: "Create account",
+    },
+    optionalData: "Add company and mobile (optional)",
     forgotScreen: {
       title: "Forgot your password?",
-      lead: "Enter your account email and we'll send you a link to reset it.",
+      lead: "Enter your account email and we'll send you a link to create a new password.",
+      leadOff: "Password recovery by email isn't active yet. If you log in with Google, change your password in your Google account.",
       submit: "Send link",
       doneTitle: "Check your email",
       doneText: (email: string) => `If an account exists for ${email}, you'll receive a link to create a new password in the next few minutes.`,
@@ -264,6 +224,7 @@ export const ACCESS_COPY = {
     resetScreen: {
       title: "Update your password",
       lead: "Choose a new password you haven't used before.",
+      leadOff: "Password change by email isn't active yet. If you log in with Google, change your password in your Google account.",
       submit: "Update password",
       doneTitle: "Password updated!",
       doneText: "Your password was changed. You can now log in with the new one.",
@@ -282,6 +243,7 @@ export const ACCESS_COPY = {
       emailFormat: "Check the email format (e.g.: name@company.com).",
       password: "Enter your password.",
       passwordWeak: "Use at least 12 characters with letters and numbers.",
+      passwordStrong: "Use at least 12 characters, with uppercase, lowercase and numbers.",
       confirm: "Passwords don't match.",
       name: "Enter your name.",
       terms: "You must accept the terms to continue.",

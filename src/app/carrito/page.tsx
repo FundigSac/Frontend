@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CartPage } from "@/shared/cart/cart-page";
+import { CarritoView } from "./carrito-view";
 
 export const metadata: Metadata = {
   title: "Carrito de cotización",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function CarritoPage() {
-  return <CartPage />;
+  return <CarritoView />;
 }

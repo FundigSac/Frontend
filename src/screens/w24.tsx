@@ -6,45 +6,118 @@ import { PENDING_QUOTE_REFERENCE } from "@/modules/quote/format";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { W24CopyButton, W24PrintButton } from "./islands/w24-actions";
 import { translate } from "./w24-en";
+import "@/modules/quote/hoja.css";
 
 export type ConfirmationLead = { reference: string; dateLabel: string; typeLabel: string };
 
-function Breadcrumbs() {
-  const [lang] = useLang();
-  const t = (es: string) => translate(lang, es);
-  return <nav aria-label={t("Migas de pan")} className="font-ui-label text-ui-label text-text-muted print:hidden"><ol className="flex flex-wrap items-center gap-2"><li><Link className="hover:text-primary" href="/">{t("Inicio")}</Link></li><li aria-hidden="true">/</li><li><Link className="hover:text-primary" href="/cotizar">{t("Cotización")}</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-semibold text-on-surface">{t("Confirmación")}</li></ol></nav>;
-}
-
-function ConfirmationNotFound({ unavailable }: { unavailable: boolean }) {
-  const [lang] = useLang();
-  const t = (es: string) => translate(lang, es);
-  return <main lang={lang} className="min-h-screen bg-background"><div className="mx-auto flex max-w-[1200px] flex-col gap-8 px-6 py-8 sm:py-12"><Breadcrumbs /><section className="mx-auto w-full max-w-3xl overflow-hidden rounded-xl border border-border bg-surface shadow-sm"><div className="flex flex-wrap items-center justify-between gap-3 bg-surface-container-low px-5 py-4"><span className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-primary">{t("Estado de la solicitud")}</span><span className="rounded bg-surface px-3 py-1 font-ui-label text-ui-label text-text-secondary">{t("Consulta no disponible")}</span></div><div className="p-6 sm:p-9"><div className="flex items-start gap-4"><span aria-hidden="true" className="inline-flex items-center justify-center rounded-full bg-surface-container-low p-3 text-text-muted"><FileText size={24} strokeWidth={1.8} /></span><div><h1 className="font-headline-section text-headline-section font-semibold tracking-tight text-on-surface">{unavailable ? t("No se pudo consultar la solicitud") : t("No hay una solicitud registrada")}</h1><p className="mt-3 max-w-xl font-body-compact text-body-compact leading-relaxed text-text-secondary">{unavailable ? t("El servicio de consulta no respondió. Inténtalo de nuevo más tarde.") : t("El folio no está disponible en este enlace. Revisa la dirección o inicia una solicitud.")}</p></div></div><div className="mt-7 grid gap-4 border-t border-border pt-6 sm:grid-cols-2"><div className="rounded-lg bg-surface-container-low p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Código de seguimiento")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("Pendiente de consulta")}</p></div><div className="rounded-lg bg-surface-container-low p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Estado de atención")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("Sin datos disponibles")}</p></div></div><div className="mt-7 flex flex-wrap gap-3 print:hidden"><Link href="/cotizar" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 font-button-text text-button-text text-on-primary">{t("Nueva solicitud")}</Link><Link href="/productos" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-surface px-5 font-button-text text-button-text text-on-surface">{t("Volver al catálogo")}</Link></div></div></section></div></main>;
-}
-
+/**
+ * Solo se dice "registrada" si el Backend confirmó el folio. Sin folio, o con un marcador de la etapa sin conexión, la
+ * pantalla lo dice tal cual y ofrece volver a solicitar.
+ */
 export function ScreenW24({ lead, unavailable = false }: { lead: ConfirmationLead | null; unavailable?: boolean }) {
   const [lang] = useLang();
   const t = (es: string) => translate(lang, es);
-  const hasLead = lead !== null;
-  // Folio de marcador de la etapa de diseño: nada se guardó, así que no se presenta como registro.
   const pending = lead?.reference === PENDING_QUOTE_REFERENCE;
-  if (!lead && unavailable) return <ConfirmationNotFound unavailable />;
-  if (!lead) lead = { reference: t("Pendiente de consulta"), dateLabel: t("Sin datos disponibles"), typeLabel: t("Sin datos disponibles") };
+  const saved = lead !== null && !pending;
+
+  const title = pending ? t("Solicitud pendiente de conexión") : saved ? t("Solicitud registrada") : unavailable ? t("No se pudo consultar la solicitud") : t("No hay una solicitud registrada");
+  const text = pending
+    ? t("Recibimos el formulario, pero el sistema de atención aún no está conectado: ninguna solicitud se guardó. Vuelve a enviarla cuando el servicio esté disponible.")
+    : saved
+      ? t("El sistema asignó este folio al guardar la solicitud. Ventas revisará tu requerimiento y te enviará la propuesta por correo; también te enviamos una constancia.")
+      : unavailable
+        ? t("El servicio de consulta no respondió. Inténtalo de nuevo más tarde.")
+        : t("El folio no está disponible en este enlace. Revisa la dirección o inicia una solicitud.");
+  const status = pending ? t("Solicitud no guardada") : saved ? t("Registro confirmado") : t("Consulta no disponible");
 
   return (
-    <main lang={lang} className="min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-7 px-5 py-7 sm:px-6 sm:py-10">
-        <Breadcrumbs />
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface-container-low px-4 py-3"><span className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-primary">{t("Estado del registro")}</span><span className="inline-flex items-center gap-2 rounded bg-surface px-3 py-1.5 font-ui-label text-ui-label font-semibold text-on-surface"><span aria-hidden="true" className={`size-2 rounded-full ${hasLead && !pending ? "bg-success" : "bg-outline"}`} />{pending ? t("Pendiente de conexión") : hasLead ? t("Solicitud registrada") : t("Consulta no disponible")}</span></div>
+    <main lang={lang} className="hj">
+      <div className="hj-shell">
+        <nav aria-label={t("Migas de pan")} className="hj-migas">
+          <ol>
+            <li>
+              <Link href="/">{t("Inicio")}</Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li>
+              <Link href="/cotizar">{t("Cotización")}</Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li aria-current="page">{t("Confirmación")}</li>
+          </ol>
+        </nav>
 
-        <section aria-labelledby="confirmation-title" className="rounded-xl border border-border bg-surface p-5 shadow-sm sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start"><span aria-hidden="true" className={`inline-flex items-center justify-center rounded-lg p-3 text-[30px] ${hasLead && !pending ? "bg-success/10 text-success" : "bg-surface-container-low text-text-muted"}`}>{hasLead && !pending ? <CircleCheck size={30} strokeWidth={1.8} /> : <FileText size={30} strokeWidth={1.8} />}</span><div className="min-w-0 flex-1"><p className="font-ui-label text-ui-label font-bold uppercase tracking-[.14em] text-primary">{pending ? t("Solicitud no guardada") : hasLead ? t("Registro confirmado") : t("Estado de la solicitud")}</p><h1 id="confirmation-title" className="mt-2 font-headline-section text-headline-section font-semibold tracking-tight text-on-surface">{pending ? t("Solicitud pendiente de conexión") : hasLead ? t("Solicitud registrada") : unavailable ? t("No se pudo consultar la solicitud") : t("No hay una solicitud registrada")}</h1><p className="mt-3 max-w-3xl font-body-compact text-body-compact leading-relaxed text-text-secondary">{pending ? t("Recibimos el formulario, pero el sistema de atención aún no está conectado: ninguna solicitud se guardó. Vuelve a enviarla cuando el servicio esté disponible.") : hasLead ? t("El sistema asignó este folio al guardar la solicitud. Ventas revisará tu requerimiento y te enviará la propuesta por correo; también te enviamos una constancia.") : unavailable ? t("El servicio de consulta no respondió. Inténtalo de nuevo más tarde.") : t("El folio no está disponible en este enlace. Revisa la dirección o inicia una solicitud.")}</p>
-            <div className="mt-6 grid gap-3 rounded-lg bg-surface-container-low p-4 sm:grid-cols-[1.3fr_1fr_1fr] sm:gap-5 sm:p-5"><div><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Código de seguimiento")}</p><div className="mt-2 flex flex-wrap items-center gap-2"><span className="break-all font-headline-card text-headline-card font-bold tracking-tight text-on-surface" id="folio-code">{pending ? t("Sin folio") : lead.reference}</span>{hasLead && !pending && <W24CopyButton value={lead.reference} />}</div><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{pending ? t("No se generó un folio para seguimiento.") : hasLead ? t("Guarda el folio para identificar el registro.") : t("Inicia una solicitud para obtener un código de seguimiento.")}</p></div><div className="border-t border-border pt-3 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Tipo")}</p><p className="mt-2 font-body-compact text-body-compact text-on-surface">{t(lead.typeLabel)}</p></div><div className="border-t border-border pt-3 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Fecha de registro")}</p><p className="mt-2 font-body-compact text-body-compact text-on-surface">{t(lead.dateLabel)}</p></div></div>
-          </div></div>
-        </section>
+        <div className="hj-grid">
+          <div className="hj-col">
+            <div className="hj-head">
+              <div className="hj-estado" data-ok={saved || undefined}>
+                {saved ? <CircleCheck aria-hidden="true" size={18} /> : <FileText aria-hidden="true" size={18} />}
+                <span>{status}</span>
+              </div>
+              <h1 id="confirmation-title">{title}</h1>
+              <p className="hj-lead">{text}</p>
+            </div>
 
-        <div className="grid items-start gap-6 lg:grid-cols-[1.55fr_.8fr]">
-          <section className="space-y-4 rounded-xl border border-border bg-surface p-5 sm:p-6"><div className="flex items-center justify-between gap-3"><h2 className="font-headline-card text-headline-card font-semibold text-on-surface">{t("Resumen de la solicitud")}</h2><span className="rounded bg-surface-container px-2.5 py-1 font-ui-label text-ui-label text-text-secondary">{t("Detalles pendientes")}</span></div><div className="rounded-lg bg-surface-container-low p-5"><p className="font-button-text text-button-text font-semibold text-on-surface">{t("Información comercial por confirmar")}</p><p className="mt-2 font-body-compact text-body-compact leading-relaxed text-text-secondary">{t("Esta consulta muestra el folio, tipo y fecha disponibles. No presenta especificaciones, cantidades ni plazos hasta que esos datos se validen para este registro.")}</p></div><div className="grid gap-3 sm:grid-cols-2"><article className="rounded-lg border border-border p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Productos o servicios")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("Detalle asociado al registro pendiente de consulta.")}</p></article><article className="rounded-lg border border-border p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Cantidades y condiciones")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("Por confirmar. No se muestran valores no disponibles.")}</p></article><article className="rounded-lg border border-border p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Requisitos técnicos")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("Pendientes de revisión para esta solicitud.")}</p></article><article className="rounded-lg border border-border p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Documentos adjuntos")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("No hay documentos de confirmación disponibles para descargar.")}</p></article><article className="rounded-lg border border-border p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Titular de la solicitud")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("La información del titular no forma parte de los datos disponibles para esta consulta.")}</p></article><article className="rounded-lg border border-border p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Punto de entrega")}</p><p className="mt-2 font-body-compact text-body-compact text-text-secondary">{t("Ubicación, transporte y condiciones de entrega por confirmar.")}</p></article></div><div className="rounded-lg border border-border bg-surface-container-low p-4"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-primary">{t("Archivos y comprobantes")}</p><div className="mt-3 grid gap-3 sm:grid-cols-3">{[t("Resumen de partidas"), t("Documentación técnica"), t("Comprobante PDF")].map((label) => <div key={label} className="flex items-start gap-3 rounded-lg border border-border bg-surface p-4"><span aria-hidden="true" className="inline-flex items-center justify-center text-text-muted"><FileText size={20} strokeWidth={1.8} /></span><div><p className="font-button-text text-button-text font-semibold">{label}</p><p className="mt-1 font-ui-label text-ui-label text-text-muted">{t("No disponible para descarga")}</p></div></div>)}</div></div><div className="flex flex-wrap gap-3 print:hidden"><W24PrintButton className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-surface px-5 font-button-text text-button-text text-on-surface hover:bg-surface-container-low focus-visible:outline-2 focus-visible:outline-focus"><span aria-hidden="true" className="inline-flex items-center justify-center"><Printer size={18} strokeWidth={1.8} /></span>{t("Imprimir confirmación")}</W24PrintButton><Link href="/productos" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 font-button-text text-button-text text-on-primary hover:bg-primary-container hover:text-brand-on">{t("Volver al catálogo")}</Link></div></section>
-          <aside className="space-y-4"><section className="rounded-xl border border-border bg-surface-container-low p-5"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-primary">{t("Estado de atención")}</p><h2 className="mt-2 font-headline-card text-headline-card font-semibold text-on-surface">{pending ? t("Pendiente de conexión") : hasLead ? t("En revisión de Ventas") : t("Sin datos disponibles")}</h2><p className="mt-2 font-body-compact text-body-compact leading-relaxed text-text-secondary">{pending ? t("La solicitud no se registró en el sistema. La revisión y la atención comercial empezarán cuando el servicio esté conectado.") : hasLead ? t("El folio confirma el registro. Ventas revisa el requerimiento y te responde por correo con la propuesta.") : t("La consulta no contiene un folio registrado. Las etapas de atención se mostrarán cuando haya datos disponibles.")}</p><ol className="mt-5 space-y-4 border-l border-outline-variant pl-4"><li className="relative"><span aria-hidden="true" className={`absolute -left-[21px] top-1 size-2.5 rounded-full ${hasLead && !pending ? "bg-success" : "bg-outline"} ring-4 ring-surface-container-low`}/><p className="font-button-text text-button-text font-semibold">{pending ? t("Pendiente de conexión") : hasLead ? t("Solicitud registrada") : t("Consulta de solicitud")}</p><p className="font-ui-label text-ui-label text-text-muted">{pending ? t("Sin folio") : hasLead ? t("Folio asignado por el sistema") : t("Sin folio disponible")}</p></li><li className="relative"><span aria-hidden="true" className="absolute -left-[21px] top-1 size-2.5 rounded-full bg-outline ring-4 ring-surface-container-low"/><p className="font-button-text text-button-text font-semibold text-text-secondary">{t("Validación de datos")}</p><p className="font-ui-label text-ui-label text-text-muted">{t("Etapa no disponible")}</p></li><li className="relative"><span aria-hidden="true" className="absolute -left-[21px] top-1 size-2.5 rounded-full bg-outline ring-4 ring-surface-container-low"/><p className="font-button-text text-button-text font-semibold text-text-secondary">{t("Revisión técnica y comercial")}</p><p className="font-ui-label text-ui-label text-text-muted">{t("Estado pendiente de conexión")}</p></li><li className="relative"><span aria-hidden="true" className="absolute -left-[21px] top-1 size-2.5 rounded-full bg-outline ring-4 ring-surface-container-low"/><p className="font-button-text text-button-text font-semibold text-text-secondary">{t("Respuesta al solicitante")}</p><p className="font-ui-label text-ui-label text-text-muted">{t("Canal y plazo por confirmar")}</p></li></ol></section><section className="rounded-xl border border-border bg-surface p-5"><h2 className="font-button-text text-button-text font-semibold text-on-surface">{t("Siguiente paso")}</h2><p className="mt-2 font-body-compact text-body-compact leading-relaxed text-text-secondary">{hasLead && !pending ? t("Conserva el código de seguimiento y revisa tu correo: ahí llegarán la constancia y la propuesta.") : t("Conserva el código de seguimiento. Los canales de atención se mostrarán cuando estén confirmados.")}</p><Link href="/" className="mt-4 inline-flex min-h-10 items-center font-button-text text-button-text font-semibold text-primary hover:underline">{t("Ir al inicio")} <span aria-hidden="true" className="ml-1">→</span></Link></section><section className="rounded-xl border border-border bg-surface p-5"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-text-muted">{t("Comprobante")}</p><p className="mt-2 font-body-compact text-body-compact leading-relaxed text-text-secondary">{t("La confirmación puede imprimirse desde esta página. No hay un PDF separado disponible.")}</p></section><section className="rounded-xl border border-border bg-surface p-5"><p className="font-ui-label text-ui-label font-semibold uppercase tracking-wide text-primary">{t("Canal de seguimiento")}</p><h2 className="mt-2 font-button-text text-button-text font-semibold">{t("Información de contacto pendiente")}</h2><p className="mt-2 font-body-compact text-body-compact leading-relaxed text-text-secondary">{t("No se muestra correo, teléfono ni persona de atención hasta que FUNDIGSAC confirme esos datos.")}</p></section></aside>
+            {saved && (
+              <section aria-labelledby="next-title" className="hj-seccion">
+                <div className="cota">
+                  <h2 id="next-title">{t("Siguiente paso")}</h2>
+                </div>
+                <ol className="hj-pasos-texto">
+                  <li>{t("Guarda el folio para identificar el registro.")}</li>
+                  <li>{t("Revisa tu correo: ahí llegarán la constancia y la propuesta.")}</li>
+                </ol>
+              </section>
+            )}
+
+            <div className="hj-botones">
+              {saved ? (
+                <>
+                  <Link href="/productos" className="lp-btn lp-btn--solid">
+                    {t("Volver al catálogo")}
+                  </Link>
+                  <W24PrintButton className="lp-btn lp-btn--outline">
+                    <Printer aria-hidden="true" size={18} strokeWidth={1.8} />
+                    {t("Imprimir confirmación")}
+                  </W24PrintButton>
+                </>
+              ) : (
+                <>
+                  <Link href="/cotizar" className="lp-btn lp-btn--solid">
+                    {t("Nueva solicitud")}
+                  </Link>
+                  <Link href="/productos" className="lp-btn lp-btn--outline">
+                    {t("Volver al catálogo")}
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          <aside className="hj-aside">
+            <section className="hj-cajetin" aria-label={t("Resumen de la solicitud")}>
+              <h2 className="hj-cajetin__titulo on-dark">{t("Resumen de la solicitud")}</h2>
+              <dl>
+                <div className="hj-celda--full">
+                  <dt>{t("Código de seguimiento")}</dt>
+                  <dd>
+                    <div className="hj-folio">
+                      <span id="folio-code" data-code={saved || undefined}>{pending ? t("Sin folio") : saved ? lead.reference : t("Pendiente de consulta")}</span>
+                      {saved && <W24CopyButton value={lead.reference} />}
+                    </div>
+                  </dd>
+                </div>
+                <div>
+                  <dt>{t("Tipo")}</dt>
+                  <dd>{lead ? t(lead.typeLabel) : t("Sin datos disponibles")}</dd>
+                </div>
+                <div>
+                  <dt>{t("Fecha de registro")}</dt>
+                  <dd>{lead ? t(lead.dateLabel) : t("Sin datos disponibles")}</dd>
+                </div>
+              </dl>
+            </section>
+          </aside>
         </div>
       </div>
     </main>

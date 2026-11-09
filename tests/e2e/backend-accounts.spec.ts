@@ -100,9 +100,7 @@ test("cotización real: el folio lo asigna la API y la confirmación lo verifica
   await form.locator("[name=cargoSolicitante]").fill("Compras");
   await form.locator("[name=correoCorporativo]").fill("compras.qa@andina.pe");
   await form.locator("[name=celularContacto]").fill("+51 987 654 321");
-  await form.locator("[name=familiaPrincipal]").selectOption("valvulas");
-  await form.locator("[name=diametrosNominales]").fill("DN100");
-  await form.locator("[name=cantidadMetrado]").fill("8 unidades");
+  // Con productos en el carrito, familia, medidas y cantidad salen de la lista: no se vuelven a pedir.
   await form.locator("[name=consentimiento]").check({ force: true });
   await form.locator("button[type=submit]").click();
 

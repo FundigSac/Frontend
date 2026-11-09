@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Building2, KeyRound, Loader2, Lock, LogOut, Mail, MailCheck, Phone, ShoppingCart, UserRound } from "lucide-react";
+import { AlertCircle, ArrowLeft, Loader2, LogOut, Mail, MailCheck, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
@@ -8,7 +8,7 @@ import { setSignedIn, signOut, useAuth, type AuthUser } from "@/modules/auth/use
 import { useLang } from "@/shared/layout/landing-prefs";
 import { ACCESS_COPY, type AccessCopy } from "./access-copy";
 import { Divider, Field, isEmail, Notice, PasswordField, SocialButtons, StrengthMeter, passwordChecks, useQueryParam } from "./access-fields";
-import { SecureNote } from "./access-frame";
+import { useAccountsEnabled } from "./access-frame";
 import { accountApi, accountError, signupSource, useHashToken, type AccountResult } from "./account-api";
 
 type Status = "idle" | "loading" | "done";
@@ -47,19 +47,26 @@ function safeNext(value: string | null): string | null {
   return value.slice(0, 300);
 }
 
+const emailError = (t: AccessCopy, value: string) => (!value.trim() ? t.errors.email : !isEmail(value) ? t.errors.emailFormat : undefined);
+
+/** Errores por campo: un campo deja de marcarse en cuanto se corrige. */
+function useFieldErrors<K extends string>() {
+  const [errors, setErrors] = useState<Partial<Record<K, string>>>({});
+  const setError = (key: K, message: string | undefined) => setErrors((prev) => (prev[key] === message ? prev : { ...prev, [key]: message }));
+  const clear = (key: K) => setErrors((prev) => (prev[key] ? { ...prev, [key]: undefined } : prev));
+  return { errors, setErrors, setError, clear };
+}
+
 function Submit({ status, label, t, disabled = false }: { status: Status; label: string; t: AccessCopy; disabled?: boolean }) {
   return (
-    <button type="submit" className="ac-submit" disabled={disabled || status === "loading"} aria-busy={status === "loading"}>
+    <button type="submit" className="lp-btn lp-btn--solid ac-submit" disabled={disabled || status === "loading"} aria-busy={status === "loading"}>
       {status === "loading" ? (
         <>
-          <Loader2 className="ac-spin" aria-hidden="true" size={18} />
+          <Loader2 className="mo-spin" aria-hidden="true" size={18} />
           {t.loading}
         </>
       ) : (
-        <>
-          {label}
-          <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
-        </>
+        label
       )}
     </button>
   );
@@ -81,23 +88,22 @@ function SignedIn({ t, user }: { t: AccessCopy; user: AuthUser }) {
     <div className="ac-signed" role="status">
       {user.picture && !broken ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="ac-signed__avatar" src={user.picture} alt="" width={72} height={72} referrerPolicy="no-referrer" onError={() => setBroken(true)} />
+        <img className="ac-signed__avatar" src={user.picture} alt="" width={64} height={64} referrerPolicy="no-referrer" onError={() => setBroken(true)} />
       ) : (
         <span className="ac-signed__avatar" aria-hidden="true">
           {(user.name.trim()[0] ?? "?").toUpperCase()}
         </span>
       )}
-      <h2>{t.auth.signedTitle}</h2>
+      <h1>{t.auth.signedTitle}</h1>
       <p>
         <strong>{user.name}</strong>
         <br />
         {t.auth.signedText(user.email)}
       </p>
-      <Link href="/" className="ac-submit">
+      <Link href="/" className="lp-btn lp-btn--solid">
         {t.auth.home}
-        <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
       </Link>
-      <button type="button" className="ac-ghost" onClick={() => void signOut()}>
+      <button type="button" className="lp-btn lp-btn--outline ac-ghost" onClick={() => void signOut()}>
         <LogOut aria-hidden="true" size={16} />
         {t.auth.logout}
       </button>
@@ -117,13 +123,21 @@ function SoonNotice({ t }: { t: AccessCopy }) {
   );
 }
 
-function CardHead({ title, lead, icon }: { title: string; lead: string; icon?: ReactNode }) {
+function CardHead({ title, lead }: { title: string; lead: string }) {
   return (
     <header className="ac-head">
-      {icon && <span className="ac-head__icon">{icon}</span>}
-      <h2>{title}</h2>
+      <h1>{title}</h1>
       <p>{lead}</p>
     </header>
+  );
+}
+
+function BackLink({ t }: { t: AccessCopy }) {
+  return (
+    <Link href="/login" className="ac-back">
+      <ArrowLeft aria-hidden="true" size={16} />
+      {t.back}
+    </Link>
   );
 }
 
@@ -134,7 +148,7 @@ function ResendVerification({ t, email }: { t: AccessCopy; email: string }) {
   return (
     <button
       type="button"
-      className="ac-ghost"
+      className="lp-btn lp-btn--outline ac-ghost"
       disabled={state === "loading"}
       onClick={async () => {
         setState("loading");
@@ -153,7 +167,7 @@ function GoogleConsent({ t }: { t: AccessCopy }) {
   const { accounts } = useAuth();
   if (!accounts) return null;
   return (
-    <p className="ac-legal">
+    <div className="ac-legal">
       {t.googleTerms("§a", "§b").map((part, i) =>
         part === "§a" ? (
           <Link key={i} href="/terminos" className="ac-link">
@@ -167,7 +181,23 @@ function GoogleConsent({ t }: { t: AccessCopy }) {
           part
         ),
       )}
-    </p>
+    </div>
+  );
+}
+
+/** Google va debajo del formulario; mientras el correo no esté activo, va primero porque es la acción que funciona. */
+function AccessLayout({ social, form }: { social: ReactNode; form: ReactNode }) {
+  const live = useAccountsEnabled();
+  return live ? (
+    <>
+      {form}
+      {social}
+    </>
+  ) : (
+    <>
+      {social}
+      {form}
+    </>
   );
 }
 
@@ -179,20 +209,18 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const { errors, setErrors, setError, clear } = useFieldErrors<"email" | "password">();
   const [unverified, setUnverified] = useState(false);
   const fake = useFakeSubmit();
   const api = useApiSubmit(t);
   const { user, accounts } = useAuth();
+  const live = useAccountsEnabled();
   const authError = useAuthError();
   const next = safeNext(useQueryParam("next"));
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const fields = {
-      email: !email.trim() ? t.errors.email : !isEmail(email) ? t.errors.emailFormat : undefined,
-      password: !password ? t.errors.password : undefined,
-    };
+    const fields = { email: emailError(t, email), password: !password ? t.errors.password : undefined };
     setErrors(fields);
     if (fields.email || fields.password) return;
     if (!accounts) return fake.run();
@@ -208,61 +236,96 @@ export function LoginScreen() {
   const status = accounts ? api.status : fake.status;
   return (
     <>
-      <CardHead title={t.login.title} lead={t.login.lead} />
+      <CardHead title={t.login.title} lead={live ? t.login.lead : t.login.leadOff} />
       <AuthError t={t} code={authError} />
-      <form className="ac-form" onSubmit={onSubmit} noValidate>
-        <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
-        <PasswordField t={t} label={t.password} icon={Lock} autoComplete="current-password" placeholder={t.passwordPh} value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
-        <div className="ac-row">
-          <label className="ac-check">
-            <input type="checkbox" name="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-            <span aria-hidden="true" />
-            {t.remember}
-          </label>
-          <Link href="/recuperar" className="ac-link">
-            {t.forgot}
-          </Link>
-        </div>
-        {api.error && <Notice tone="error">{api.error}</Notice>}
-        {unverified && <ResendVerification t={t} email={email.trim()} />}
-        <Submit status={status} label={t.login.submit} t={t} />
-        {!accounts && fake.status === "done" && <SoonNotice t={t} />}
-      </form>
-      <Divider>{t.or}</Divider>
-      <SocialButtons labels={{ google: t.google, connecting: t.auth.connecting }} from="login" lang={lang} />
-      <GoogleConsent t={t} />
-      <p className="ac-switch">
+      <AccessLayout
+        form={
+          <form className="ac-form" onSubmit={onSubmit} noValidate data-enter>
+            <Field
+              label={t.email}
+              type="email"
+              autoComplete="email"
+              placeholder={t.emailPh}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clear("email");
+              }}
+              onBlur={() => email.trim() && setError("email", emailError(t, email))}
+              error={errors.email}
+            />
+            <PasswordField
+              t={t}
+              label={t.password}
+              autoComplete="current-password"
+              placeholder={t.passwordPh}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clear("password");
+              }}
+              error={errors.password}
+            />
+            <div className="ac-row">
+              <label className="ac-check">
+                <input type="checkbox" name="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+                <span>{t.remember}</span>
+              </label>
+              <Link href="/recuperar" className="ac-link">
+                {t.forgot}
+              </Link>
+            </div>
+            {api.error && <Notice tone="error">{api.error}</Notice>}
+            {unverified && <ResendVerification t={t} email={email.trim()} />}
+            <Submit status={status} label={t.login.submit} t={t} />
+            {!accounts && fake.status === "done" && <SoonNotice t={t} />}
+          </form>
+        }
+        social={
+          <>
+            {live && <Divider>{t.or}</Divider>}
+            <SocialButtons labels={{ google: t.google, connecting: t.auth.connecting }} from="login" lang={lang} />
+            <GoogleConsent t={t} />
+            {!live && <Divider>{t.orEmailOff}</Divider>}
+          </>
+        }
+      />
+      <div className="ac-switch">
         {t.noAccount} <Link href={next ? `/registro?next=${encodeURIComponent(next)}` : "/registro"}>{t.signupHere}</Link>
-      </p>
-      <SecureNote />
+      </div>
     </>
   );
 }
 
 // ───────── Crear cuenta ─────────
-type RegisterErrors = Partial<Record<"name" | "email" | "phone" | "password" | "confirm" | "terms", string>>;
+type RegisterField = "name" | "email" | "phone" | "password" | "confirm" | "terms";
 
 /** Campo de la API (DTO del Backend) → campo del formulario. */
-const REGISTER_FIELDS: Record<string, keyof RegisterErrors> = { email: "email", password: "password", fullName: "name", phone: "phone", acceptPrivacyNotice: "terms" };
+const REGISTER_FIELDS: Record<string, RegisterField> = { email: "email", password: "password", fullName: "name", phone: "phone", acceptPrivacyNotice: "terms" };
 
 export function RegisterScreen() {
   const [lang] = useLang();
   const t = ACCESS_COPY[lang];
   const [form, setForm] = useState({ name: "", company: "", email: "", phone: "", password: "", confirm: "", terms: false, news: false });
-  const [errors, setErrors] = useState<RegisterErrors>({});
+  const { errors, setErrors, setError, clear } = useFieldErrors<RegisterField>();
+  const [optionalOpen, setOptionalOpen] = useState(false);
   const fake = useFakeSubmit();
   const api = useApiSubmit(t);
   const { user, accounts } = useAuth();
+  const live = useAccountsEnabled();
   const authError = useAuthError();
   const next = useQueryParam("next");
-  const set = (k: keyof typeof form) => (e: ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
+  const set = (k: keyof typeof form) => (e: ChangeEvent<HTMLInputElement>) => {
+    setForm((f) => ({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
+    if (k !== "company" && k !== "news") clear(k);
+  };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const c = passwordChecks(form.password);
-    const fields: RegisterErrors = {
+    const fields: Partial<Record<RegisterField, string>> = {
       name: form.name.trim().length < 3 ? t.errors.name : undefined,
-      email: !form.email.trim() ? t.errors.email : !isEmail(form.email) ? t.errors.emailFormat : undefined,
+      email: emailError(t, form.email),
       password: !c.length || !(c.number && /[a-z]/i.test(form.password)) ? t.errors.passwordWeak : undefined,
       confirm: form.confirm !== form.password || !form.confirm ? t.errors.confirm : undefined,
       terms: !form.terms ? t.errors.terms : undefined,
@@ -284,8 +347,10 @@ export function RegisterScreen() {
     );
     // Un error de un campo concreto se muestra junto a ese campo, no arriba.
     if (!result.ok && result.field && REGISTER_FIELDS[result.field]) {
-      setErrors({ [REGISTER_FIELDS[result.field]]: accountError(t, result) });
+      const field = REGISTER_FIELDS[result.field];
+      setErrors({ [field]: accountError(t, result) });
       api.setError(null);
+      if (field === "phone") setOptionalOpen(true);
     }
   };
 
@@ -294,78 +359,87 @@ export function RegisterScreen() {
   if (accounts && api.status === "done") {
     return (
       <>
-        <CardHead title={t.api.registerDoneTitle} lead={t.api.registerDoneText(form.email.trim())} icon={<MailCheck aria-hidden="true" size={26} strokeWidth={1.8} />} />
+        <CardHead title={t.api.registerDoneTitle} lead={t.api.registerDoneText(form.email.trim())} />
         <ResendVerification t={t} email={form.email.trim()} />
-        <Link href="/login" className="ac-back">
-          <ArrowLeft aria-hidden="true" size={16} />
-          {t.back}
-        </Link>
+        <BackLink t={t} />
       </>
     );
   }
   const status = accounts ? api.status : fake.status;
   return (
     <>
-      <CardHead title={t.register.title} lead={t.register.lead} />
+      <CardHead title={t.register.title} lead={live ? t.register.lead : t.register.leadOff} />
       <AuthError t={t} code={authError} />
-      <SocialButtons labels={{ google: t.googleSignup, connecting: t.auth.connecting }} from="registro" lang={lang} />
-      <GoogleConsent t={t} />
-      <Divider>{t.orEmail}</Divider>
-      <form className="ac-form" onSubmit={onSubmit} noValidate>
-        <div className="ac-grid">
-          <Field label={t.name} icon={UserRound} autoComplete="name" placeholder={t.namePh} value={form.name} onChange={set("name")} error={errors.name} />
-          <Field label={t.company} optional={t.optional} icon={Building2} autoComplete="organization" placeholder={t.companyPh} value={form.company} onChange={set("company")} />
-          <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={form.email} onChange={set("email")} error={errors.email} />
-          <Field label={t.phone} optional={t.optional} icon={Phone} type="tel" autoComplete="tel" placeholder={t.phonePh} value={form.phone} onChange={set("phone")} error={errors.phone} />
-        </div>
-        <PasswordField
-          t={t}
-          label={t.password}
-          icon={Lock}
-          autoComplete="new-password"
-          placeholder={t.newPasswordPh}
-          value={form.password}
-          onChange={set("password")}
-          error={errors.password}
-          hint={<StrengthMeter value={form.password} t={t} />}
-        />
-        <PasswordField t={t} label={t.confirmPassword} icon={KeyRound} autoComplete="new-password" placeholder={t.confirmPh} value={form.confirm} onChange={set("confirm")} error={errors.confirm} />
-        <label className={`ac-check ac-check--block${errors.terms ? " has-error" : ""}`}>
-          <input type="checkbox" checked={form.terms} onChange={set("terms")} aria-invalid={errors.terms ? true : undefined} />
-          <span aria-hidden="true" />
-          <span>
-            {terms.map((part, i) =>
-              part === "§a" ? (
-                <Link key={i} href="/terminos" className="ac-link">
-                  {t.termsLink}
-                </Link>
-              ) : part === "§b" ? (
-                <Link key={i} href="/privacidad" className="ac-link">
-                  {t.privacyLink}
-                </Link>
-              ) : (
-                part
-              ),
-            )}
-          </span>
-        </label>
-        {errors.terms && (
-          <p className="ac-error" role="alert">
-            {errors.terms}
-          </p>
-        )}
-        <label className="ac-check ac-check--block">
-          <input type="checkbox" checked={form.news} onChange={set("news")} />
-          <span aria-hidden="true" />
-          <span>{t.news}</span>
-        </label>
-        {api.error && <Notice tone="error">{api.error}</Notice>}
-        <Submit status={status} label={t.register.submit} t={t} />
-        {!accounts && fake.status === "done" && <SoonNotice t={t} />}
-      </form>
-      <p className="ac-switch">
+      <AccessLayout
+        form={
+          <form className="ac-form" onSubmit={onSubmit} noValidate data-enter>
+            <Field label={t.name} autoComplete="name" placeholder={t.namePh} value={form.name} onChange={set("name")} error={errors.name} />
+            <Field label={t.email} type="email" autoComplete="email" placeholder={t.emailPh} value={form.email} onChange={set("email")} onBlur={() => form.email.trim() && setError("email", emailError(t, form.email))} error={errors.email} />
+            <PasswordField
+              t={t}
+              label={t.password}
+              autoComplete="new-password"
+              placeholder={t.newPasswordPh}
+              value={form.password}
+              onChange={set("password")}
+              error={errors.password}
+              hint={<StrengthMeter value={form.password} t={t} />}
+            />
+            <PasswordField t={t} label={t.confirmPassword} autoComplete="new-password" placeholder={t.confirmPh} value={form.confirm} onChange={set("confirm")} onBlur={() => form.confirm && setError("confirm", form.confirm !== form.password ? t.errors.confirm : undefined)} error={errors.confirm} />
+            <details className="ac-opcional" data-animated open={optionalOpen} onToggle={(e) => setOptionalOpen(e.currentTarget.open)}>
+              <summary>{t.optionalData}</summary>
+              <div className="ac-opcional__campos">
+                <Field label={t.company} optional={t.optional} autoComplete="organization" placeholder={t.companyPh} value={form.company} onChange={set("company")} />
+                <Field label={t.phone} optional={t.optional} type="tel" autoComplete="tel" placeholder={t.phonePh} value={form.phone} onChange={set("phone")} error={errors.phone} />
+                <label className="ac-check ac-check--block">
+                  <input type="checkbox" checked={form.news} onChange={set("news")} />
+                  <span>{t.news}</span>
+                </label>
+              </div>
+            </details>
+            <div>
+              <label className={`ac-check ac-check--block${errors.terms ? " has-error" : ""}`}>
+                <input type="checkbox" checked={form.terms} onChange={set("terms")} aria-invalid={errors.terms ? true : undefined} />
+                <span>
+                  {terms.map((part, i) =>
+                    part === "§a" ? (
+                      <Link key={i} href="/terminos" className="ac-link">
+                        {t.termsLink}
+                      </Link>
+                    ) : part === "§b" ? (
+                      <Link key={i} href="/privacidad" className="ac-link">
+                        {t.privacyLink}
+                      </Link>
+                    ) : (
+                      part
+                    ),
+                  )}
+                </span>
+              </label>
+              {errors.terms && (
+                <div className="campo__error ac-error" role="alert">
+                  <AlertCircle aria-hidden="true" size={16} />
+                  <span>{errors.terms}</span>
+                </div>
+              )}
+            </div>
+            {api.error && <Notice tone="error">{api.error}</Notice>}
+            <Submit status={status} label={t.register.submit} t={t} />
+            {!accounts && fake.status === "done" && <SoonNotice t={t} />}
+          </form>
+        }
+        social={
+          <>
+            {live && <Divider>{t.or}</Divider>}
+            <SocialButtons labels={{ google: t.googleSignup, connecting: t.auth.connecting }} from="registro" lang={lang} />
+            <GoogleConsent t={t} />
+            {!live && <Divider>{t.orEmailOff}</Divider>}
+          </>
+        }
+      />
+      <div className="ac-switch">
         {t.haveAccount} <Link href="/login">{t.loginHere}</Link>
-      </p>
+      </div>
     </>
   );
 }
@@ -391,6 +465,7 @@ export function ForgotScreen() {
   const fake = useFakeSubmit();
   const api = useApiSubmit(t);
   const { accounts } = useAuth();
+  const live = useAccountsEnabled();
   const countdown = useCountdown(60);
 
   const send = async () => {
@@ -400,7 +475,7 @@ export function ForgotScreen() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const err = !email.trim() ? t.errors.email : !isEmail(email) ? t.errors.emailFormat : undefined;
+    const err = emailError(t, email);
     setError(err);
     if (err) return;
     if (!accounts) return fake.run();
@@ -410,33 +485,38 @@ export function ForgotScreen() {
   if (accounts && api.status === "done") {
     return (
       <>
-        <CardHead title={s.doneTitle} lead={s.doneText(email.trim())} icon={<MailCheck aria-hidden="true" size={26} strokeWidth={1.8} />} />
-        <button type="button" className="ac-ghost" disabled={countdown.left > 0} onClick={() => void send()}>
+        <CardHead title={s.doneTitle} lead={s.doneText(email.trim())} />
+        <button type="button" className="lp-btn lp-btn--outline ac-ghost" disabled={countdown.left > 0} onClick={() => void send()}>
           <Mail aria-hidden="true" size={16} />
           {countdown.left > 0 ? s.resendIn(countdown.left) : s.resend}
         </button>
-        <Link href="/login" className="ac-back">
-          <ArrowLeft aria-hidden="true" size={16} />
-          {t.back}
-        </Link>
+        <BackLink t={t} />
       </>
     );
   }
   const status = accounts ? api.status : fake.status;
   return (
     <>
-      <CardHead title={s.title} lead={s.lead} icon={<KeyRound aria-hidden="true" size={26} strokeWidth={1.8} />} />
-      <form className="ac-form" onSubmit={onSubmit} noValidate>
-        <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={error} />
+      <CardHead title={s.title} lead={live ? s.lead : s.leadOff} />
+      <form className="ac-form" onSubmit={onSubmit} noValidate data-enter>
+        <Field
+          label={t.email}
+          type="email"
+          autoComplete="email"
+          placeholder={t.emailPh}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError(undefined);
+          }}
+          onBlur={() => email.trim() && setError(emailError(t, email))}
+          error={error}
+        />
         {api.error && <Notice tone="error">{api.error}</Notice>}
         <Submit status={status} label={s.submit} t={t} />
         {!accounts && fake.status === "done" && <SoonNotice t={t} />}
       </form>
-      <Link href="/login" className="ac-back">
-        <ArrowLeft aria-hidden="true" size={16} />
-        {t.back}
-      </Link>
-      <SecureNote />
+      <BackLink t={t} />
     </>
   );
 }
@@ -448,18 +528,19 @@ export function ResetScreen() {
   const s = t.resetScreen;
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
+  const { errors, setErrors, setError, clear } = useFieldErrors<"password" | "confirm">();
   // El token llega en el fragmento del enlace del correo: solo existe en el navegador.
   const token = useHashToken();
   const fake = useFakeSubmit();
   const api = useApiSubmit(t);
   const { accounts } = useAuth();
+  const live = useAccountsEnabled();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const c = passwordChecks(password);
     const fields = {
-      password: !c.length || !c.number || !c.upper ? t.errors.passwordWeak : undefined,
+      password: !c.length || !c.number || !c.upper ? t.errors.passwordStrong : undefined,
       confirm: !confirm || confirm !== password ? t.errors.confirm : undefined,
     };
     setErrors(fields);
@@ -478,10 +559,9 @@ export function ResetScreen() {
   if (accounts && api.status === "done") {
     return (
       <>
-        <CardHead title={s.doneTitle} lead={s.doneText} icon={<Lock aria-hidden="true" size={26} strokeWidth={1.8} />} />
-        <Link href="/login" className="ac-submit">
+        <CardHead title={s.doneTitle} lead={s.doneText} />
+        <Link href="/login" className="lp-btn lp-btn--solid ac-submit">
           {s.goLogin}
-          <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
         </Link>
       </>
     );
@@ -490,7 +570,7 @@ export function ResetScreen() {
   const missing = accounts && token === null;
   return (
     <>
-      <CardHead title={s.title} lead={s.lead} icon={<Lock aria-hidden="true" size={26} strokeWidth={1.8} />} />
+      <CardHead title={s.title} lead={live ? s.lead : s.leadOff} />
       {missing && (
         <Notice tone="error">
           <p>{t.api.resetMissing}</p>
@@ -499,19 +579,33 @@ export function ResetScreen() {
           </Link>
         </Notice>
       )}
-      <form className="ac-form" onSubmit={onSubmit} noValidate>
+      <form className="ac-form" onSubmit={onSubmit} noValidate data-enter>
         <PasswordField
           t={t}
           label={t.newPassword}
-          icon={Lock}
           autoComplete="new-password"
           placeholder={t.newPasswordPh}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            clear("password");
+          }}
           error={errors.password}
           hint={<StrengthMeter value={password} t={t} rules />}
         />
-        <PasswordField t={t} label={t.confirmPassword} icon={KeyRound} autoComplete="new-password" placeholder={t.confirmPh} value={confirm} onChange={(e) => setConfirm(e.target.value)} error={errors.confirm} />
+        <PasswordField
+          t={t}
+          label={t.confirmPassword}
+          autoComplete="new-password"
+          placeholder={t.confirmPh}
+          value={confirm}
+          onChange={(e) => {
+            setConfirm(e.target.value);
+            clear("confirm");
+          }}
+          onBlur={() => confirm && setError("confirm", confirm !== password ? t.errors.confirm : undefined)}
+          error={errors.confirm}
+        />
         {api.error && (
           <Notice tone="error">
             <p>{api.error}</p>
@@ -523,10 +617,7 @@ export function ResetScreen() {
         <Submit status={status} label={s.submit} t={t} disabled={missing} />
         {!accounts && fake.status === "done" && <SoonNotice t={t} />}
       </form>
-      <Link href="/login" className="ac-back">
-        <ArrowLeft aria-hidden="true" size={16} />
-        {t.back}
-      </Link>
+      <BackLink t={t} />
     </>
   );
 }
@@ -539,7 +630,7 @@ export function VerifyScreen() {
   const token = useHashToken();
   const [state, setState] = useState<"checking" | "done" | "failed">("checking");
   const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState<string>();
+  const [emailErr, setEmailErr] = useState<string>();
   const [resent, setResent] = useState(false);
   const started = useRef(false);
 
@@ -555,8 +646,8 @@ export function VerifyScreen() {
 
   const resend = async (e: FormEvent) => {
     e.preventDefault();
-    const err = !email.trim() ? t.errors.email : !isEmail(email) ? t.errors.emailFormat : undefined;
-    setEmailError(err);
+    const err = emailError(t, email);
+    setEmailErr(err);
     if (err) return;
     await accountApi.resendVerification(email.trim());
     setResent(true);
@@ -565,7 +656,7 @@ export function VerifyScreen() {
   if (state === "checking" && token !== null) {
     return (
       <div className="ac-signed" role="status" aria-live="polite">
-        <Loader2 className="ac-spin" aria-hidden="true" size={28} />
+        <Loader2 className="mo-spin" aria-hidden="true" size={28} />
         <p>{v.checking}</p>
       </div>
     );
@@ -573,32 +664,27 @@ export function VerifyScreen() {
   if (state === "done") {
     return (
       <>
-        <CardHead title={v.doneTitle} lead={v.doneText} icon={<MailCheck aria-hidden="true" size={26} strokeWidth={1.8} />} />
-        <Link href="/login" className="ac-submit">
+        <CardHead title={v.doneTitle} lead={v.doneText} />
+        <Link href="/login" className="lp-btn lp-btn--solid ac-submit">
           {t.login.submit}
-          <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
         </Link>
       </>
     );
   }
   return (
     <>
-      <CardHead title={state === "failed" ? v.failTitle : v.title} lead={state === "failed" ? v.failText : v.missing} icon={<Mail aria-hidden="true" size={26} strokeWidth={1.8} />} />
+      <CardHead title={state === "failed" ? v.failTitle : v.title} lead={state === "failed" ? v.failText : v.missing} />
       {resent ? (
         <Notice tone="success">{t.api.resent}</Notice>
       ) : (
         <form className="ac-form" onSubmit={resend} noValidate>
-          <Field label={t.email} icon={Mail} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={emailError} />
-          <button type="submit" className="ac-submit">
+          <Field label={t.email} type="email" autoComplete="email" placeholder={t.emailPh} value={email} onChange={(e) => setEmail(e.target.value)} error={emailErr} />
+          <button type="submit" className="lp-btn lp-btn--solid ac-submit">
             {t.api.resend}
-            <ArrowRight aria-hidden="true" size={18} strokeWidth={2.2} />
           </button>
         </form>
       )}
-      <Link href="/login" className="ac-back">
-        <ArrowLeft aria-hidden="true" size={16} />
-        {t.back}
-      </Link>
+      <BackLink t={t} />
     </>
   );
 }
