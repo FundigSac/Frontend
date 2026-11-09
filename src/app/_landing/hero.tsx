@@ -8,7 +8,7 @@ import { HeroValve } from "./hero-valve";
 import { IntentLink } from "./intent-link";
 
 // Mismo orden que COPY[lang].products (sin "Catálogo general") y COPY[lang].sectors.
-const PRODUCT_HREFS = ["/productos/valvulas", "/productos/marcos-y-tapas", "/cotizar", "/productos?q=acople", "/productos/tuberias"] as const;
+const PRODUCT_HREFS = ["/productos/valvulas", "/productos/marcos-y-tapas", "/cotizar", "/productos/conexiones-y-fittings", "/productos/tuberias"] as const;
 const SECTOR_HREFS = ["/industrias/saneamiento", "/industrias/agricultura", "/industrias/mineria"] as const;
 
 export function HomeHero() {

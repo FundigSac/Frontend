@@ -8,10 +8,10 @@ import { useAgri } from "./copy";
 import { HeroVideo } from "./hero-video";
 
 const STATIONS = [
-  { href: "/productos?q=filtro", image: "/media/catalog/filtro-y.webp" },
+  { href: "/productos/valvulas/filtro-tipo-y-bridado-fyb", image: "/media/catalog/filtro-y.webp" },
   { href: "/productos/valvulas/valvula-compuerta-acerrojada", image: "/media/catalog/compuerta-acerrojada.webp" },
   { href: "/productos/valvulas/valvula-reductora-de-presion", image: "/media/catalog/reductora-presion.webp" },
-  { href: "/productos?q=ventosa", image: "/media/catalog/ventosa-3-funciones.webp" },
+  { href: "/productos/valvulas/valvula-de-aire-3-funciones-premium-vdap", image: "/media/catalog/ventosa-3-funciones.webp" },
   { href: "/productos/valvulas/valvula-check-swing", image: "/media/catalog/check-swing.webp" },
 ] as const;
 
@@ -49,7 +49,7 @@ export function AgricultureSections() {
           </ul>
           <div className="ag-tubo" data-reveal="up">
             <strong>{t.linea.pipe}</strong>
-            <Link className="lp-link" href="/productos?familia=accesorios-hdpe">
+            <Link className="lp-link" href="/productos/accesorios-hdpe">
               <span>{t.linea.pipeLink}</span> <ArrowRight aria-hidden="true" size={17} strokeWidth={2} />
             </Link>
           </div>

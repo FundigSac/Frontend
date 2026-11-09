@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import { findCatalogSheet } from "@/modules/catalog/public-catalog";
 import { CATEGORIES, PRODUCTS, findProduct, type ProductEntry } from "@/modules/catalog/registry";
 import { W06Ficha } from "@/screens/islands/w06-ficha";
+import { DATASHEETS } from "@/screens/islands/w06-ficha-data";
 import { W06FichaFundigsac, W06FichaGarantiaExtendida } from "@/screens/islands/w06-ficha-garantia";
 import { SITE } from "@/shared/config/site";
 import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
+import { pageMetadata, withBrand } from "@/shared/seo/page-metadata";
 import { SheetView } from "../../_catalog/sheet-view";
 
 type Props = { params: Promise<{ categoria: string; producto: string }> };
@@ -26,20 +28,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = findProduct(categoria, producto);
   if (!product) return {};
   return {
-    // `title` ya lleva la marca: sin la plantilla para no repetir "FUNDIGSAC".
-    title: product.title ? { absolute: product.title } : product.name,
-    description: product.description,
-    alternates: { canonical: `/productos/${product.category}/${product.slug}` },
+    ...pageMetadata({ title: withBrand(product.title ?? product.name), description: product.description, path: `/productos/${product.category}/${product.slug}` }),
     // Las pantallas de referencia (datos sin validar) no deben aparecer en buscadores aunque el sitio se indexe.
     ...(product.indexable === false ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
+/** Ficha técnica oficial de cada compuerta con pantalla propia. */
+const W06_SPECS: Record<string, readonly (readonly [string, string])[]> = {
+  "valvula-compuerta": DATASHEETS.base.specs,
+  "valvula-compuerta-fundigsac": DATASHEETS.fundigsac.specs,
+  "valvula-compuerta-fundigsac-garantia-extendida": DATASHEETS.extendida.specs,
+};
+
+// Normas, ensayos y garantías entran al marcado solo cuando se validen (PLAN_SEO.md, V-08 a V-10). La marca ya va en `brand`.
+const PENDING_LABEL = /norma|dise[ñn]o|conformidad|certific|garant|marcado|prueba|ensayo|^marca$|^serie$|^fabricante$/i;
+const PENDING_VALUE = /\b(?:EN\s?\d|DIN\s?\d|AWWA|ASTM|WRAS|ISO\s?\d{4}|NTP|SEDAPAL|OTASS)|por confirmar/i;
+// La calidad del material se publica sin la referencia a la norma que la acompaña entre paréntesis.
+const plainValue = (value: string) => value.replace(/\s*\((?:ASTM|ISO|AWWA)[^)]*\)/g, "");
+
+/** Filas de la tabla técnica visible, como pares nombre y valor. */
+function specProperties(slug: string) {
+  const rows = W06_SPECS[slug] ?? findCatalogSheet(slug)?.specs.es ?? [];
+  return rows
+    .map(([name, value]) => [name, plainValue(value)] as const)
+    .filter(([label, value]) => !PENDING_LABEL.test(label) && !PENDING_VALUE.test(value))
+    .map(([name, value]) => ({ "@type": "PropertyValue", name, value }));
+}
+
 /**
- * Product solo con datos publicados en la ficha (nombre, descripción, foto, código y marca impresa).
+ * Product solo con datos publicados en la ficha (nombre, descripción, foto, código, marca impresa y tabla técnica).
  * Sin `offers`, `review` ni `aggregateRating`: no hay precios públicos ni reseñas, y no se inventan.
  */
 function productJsonLd(product: ProductEntry, categoryName: string, url: string) {
+  const properties = specProperties(product.slug);
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -50,6 +72,7 @@ function productJsonLd(product: ProductEntry, categoryName: string, url: string)
     ...(product.image ? { image: `${SITE.url}${product.image}` } : {}),
     ...(product.sku ? { sku: product.sku } : {}),
     ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
+    ...(properties.length > 0 ? { additionalProperty: properties } : {}),
   };
 }
 

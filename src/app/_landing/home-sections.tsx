@@ -15,7 +15,7 @@ const FAMILIES = [
   { href: "/productos/valvulas", image: "/media/home-v2/card-valvulas-hd.webp", focus: "78% 50%" },
   { href: "/productos/marcos-y-tapas", image: "/media/home-v3/card-marcos.webp", focus: "50% 50%" },
   { href: "/cotizar", image: "/media/home-v3/card-grifos.webp", focus: "58% 50%" },
-  { href: "/productos?q=acople", image: "/media/home-v3/card-acoples.webp", focus: "50% 50%" },
+  { href: "/productos/conexiones-y-fittings", image: "/media/home-v3/card-acoples.webp", focus: "50% 50%" },
   { href: "/productos/tuberias", image: "/media/home-v3/card-tuberias.webp", focus: "50% 50%" },
 ] as const;
 
@@ -23,6 +23,18 @@ const SECTORS = [
   { href: "/industrias/saneamiento", image: "/media/home-v3/sector-saneamiento.webp" },
   { href: "/industrias/agricultura", image: "/media/home-v3/sector-agricultura.webp" },
   { href: "/industrias/mineria", image: "/media/home-v3/sector-mineria.webp" },
+] as const;
+
+// Mismo orden que PAGE[lang].families.index.items.
+const SHEET_HREFS = [
+  "/productos/valvulas/valvula-compuerta",
+  "/productos/valvulas/valvula-compuerta-fundigsac",
+  "/productos/valvulas/valvula-compuerta-acerrojada",
+  "/productos/valvulas/valvula-check-swing",
+  "/productos/valvulas/valvula-reductora-de-presion",
+  "/productos/valvulas/valvula-flotadora-bridada",
+  "/productos/tuberias/tuberia-hierro-ductil-c40-k9-k7-thd",
+  "/productos/marcos-y-tapas/marco-y-tapa-pesada-2seg",
 ] as const;
 
 const BACKING_LINKS = ["/industrias", "/contacto?motivo=documentacion", "/contacto"] as const;
@@ -46,8 +58,7 @@ export function FamiliesSection() {
             <li key={item.href}>
               <IntentLink href={item.href} className="lp-card">
                 <span className="lp-card__media">
-                  {/* El nombre ya está en el enlace: la foto no lo repite al lector de pantalla. */}
-                  <Image src={item.image} alt="" width={1000} height={617} quality={70} style={{ objectPosition: item.focus }} sizes="(max-width: 1023px) 50vw, 272px" />
+                  <Image src={item.image} alt={t.items[i].alt} width={1000} height={617} quality={70} style={{ objectPosition: item.focus }} sizes="(max-width: 1023px) 50vw, 272px" />
                 </span>
                 <span className="ho-cell__name">{t.items[i].title}</span>
                 <span className="ho-cell__note">{page.notes[i]}</span>
@@ -55,6 +66,19 @@ export function FamiliesSection() {
             </li>
           ))}
         </ul>
+        <div className="ho-index" data-reveal="up">
+          <h3>{page.index.title}</h3>
+          <ul className="ho-rows ho-index__list">
+            {page.index.items.map((label, i) => (
+              <li key={SHEET_HREFS[i]}>
+                <IntentLink href={SHEET_HREFS[i]}>
+                  <span><strong>{label}</strong></span>
+                  <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
+                </IntentLink>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

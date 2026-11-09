@@ -14,6 +14,10 @@ export const PAGE = {
     families: {
       all: "Ver catálogo completo",
       notes: ["Compuerta, mariposa, retención, regulación y aire.", "Tapas circulares, marcos y rejillas.", "Se piden por cotización.", "Acoples, adaptadores, uniones y juntas.", "Hierro dúctil, acero SCH-40 y HDPE."],
+      index: {
+        title: "Ir directo a una ficha técnica",
+        items: ["Válvula de compuerta bridada", "Válvula de compuerta FUNDIGSAC", "Válvula compuerta acerrojada para HDPE", "Válvula check swing", "Válvula reductora de presión", "Válvula flotadora bridada", "Tubería de hierro dúctil C40, K9 y K7", "Marco y tapa de buzón con dos seguros"],
+      },
     },
   },
   en: {
@@ -30,6 +34,10 @@ export const PAGE = {
     families: {
       all: "View full catalog",
       notes: ["Gate, butterfly, check, regulating and air valves.", "Round covers, frames and grates.", "Available through a quote.", "Couplings, adapters and joints.", "Ductile iron, SCH-40 steel and HDPE."],
+      index: {
+        title: "Go straight to a data sheet",
+        items: ["Flanged gate valve", "FUNDIGSAC gate valve", "Restrained gate valve for HDPE pipe", "Swing check valve", "Pressure-reducing valve", "Flanged float valve", "C40, K9 and K7 ductile iron pipe", "Manhole frame and cover with two locks"],
+      },
     },
   },
 } as const;

@@ -121,7 +121,7 @@ export function FamilyView({ family, cells, compare, documents }: { family: Cata
 
           {visible.length ? (
             <div className={`celdas ${styles.grid}`}>
-              {visible.map((cell, index) => <ProductCell key={cell.slug} cell={cell} lang={lang} index={index} filtered={filtered} isNew={fresh.has(cell.slug)} />)}
+              {visible.map((cell, index) => <ProductCell key={cell.slug} cell={cell} lang={lang} index={index} filtered={filtered} isNew={fresh.has(cell.slug)} heading="h2" />)}
             </div>
           ) : (
             <div className={styles.empty} role="status">

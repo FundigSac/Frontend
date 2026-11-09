@@ -30,6 +30,7 @@ import { featuredBySlug } from "@/modules/cart/cart-products";
 import { requestDocumentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { useDialogFocus } from "@/shared/ui/use-dialog-focus";
+import { SectorLinks } from "@/app/productos/_catalog/sector-links";
 
 const BASE = "/media/valvula-ficha/";
 const Viewer3D = dynamic(() => import("@/components/product-3d-viewer"), {
@@ -321,7 +322,7 @@ export function W06Ficha(props: { variant?: Variant }) {
                 <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={view.model3dAlt} className={styles.viewer} onFail={() => setSpin(false)} />
               ) : (
                 <>
-                  {photo("(min-width: 1024px) 50vw, 88vw", true)}
+                  {photo("(min-width: 1024px) 50vw, (min-width: 481px) 88vw, 56vw", true)}
                   {/* La anterior va después en el DOM y debajo por z-index: la primera imagen sigue siendo la foto vigente. */}
                   {previous !== null && previous !== active && (
                     <Image key={`prev-${THUMBS[previous].src}`} src={THUMBS[previous].dir + THUMBS[previous].src} alt="" aria-hidden="true" fill sizes="(min-width: 1024px) 50vw, 88vw" />
@@ -622,13 +623,14 @@ export function W06Ficha(props: { variant?: Variant }) {
               const [title, text] = r[lang];
               return (
                 <Link key={r.src} href={r.href} className="celda" aria-label={`${t.seeSheet}: ${title}`}>
-                  <span className={`celda__media ${styles.relMedia}`}><Image src={BASE + r.src} alt="" width={640} height={640} sizes="(min-width: 1261px) 25vw, (min-width: 860px) 33vw, 50vw" /></span>
+                  <span className={`celda__media ${styles.relMedia}`}><Image src={BASE + r.src} alt={title} width={640} height={640} sizes="(min-width: 1261px) 25vw, (min-width: 860px) 33vw, 50vw" /></span>
                   <span className={`celda__nombre ${styles.relName}`}>{title}</span>
                   <span className="celda__nota">{text}</span>
                 </Link>
               );
             })}
           </div>
+          <SectorLinks slug={CART_SLUG[variantKey]} />
         </section>
       </div>
 

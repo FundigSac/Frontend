@@ -84,8 +84,8 @@ export const FAMILIES: readonly CatalogFamily[] = [
       { id: "reduccion", label: { es: "Regulación", en: "Regulating" } },
       { id: "aire", label: { es: "Aire", en: "Air" } },
     ],
-    metaTitle: "Válvulas industriales de hierro dúctil en Perú",
-    metaDescription: "Válvulas de compuerta bridadas, mariposa, check swing, check flex, reductoras de presión y de aire en hierro dúctil para redes de agua y saneamiento en Perú.",
+    metaTitle: "Válvulas de hierro dúctil en Perú",
+    metaDescription: "Válvulas de compuerta, check, reductoras, de alivio y flotadoras de hierro dúctil. Consulta DN, PN y materiales en cada ficha y solicita tu cotización.",
   },
   {
     slug: "tuberias",
@@ -102,8 +102,8 @@ export const FAMILIES: readonly CatalogFamily[] = [
       { id: "acero", label: { es: "Acero SCH-40", en: "SCH-40 steel" } },
       { id: "hdpe", label: { es: "HDPE", en: "HDPE" } },
     ],
-    metaTitle: "Tuberías HDPE y de hierro dúctil en Perú",
-    metaDescription: "Tuberías con unión junta, unión mecánica, bridas o revestimiento de mortero de cemento y tubería HDPE para redes de agua, alcantarillado e infraestructura.",
+    metaTitle: "Tuberías de hierro dúctil C40, K9 y K7",
+    metaDescription: "Tubería de hierro dúctil clases C40, K9 y K7 para redes de agua potable y alcantarillado. Consulta diámetros disponibles y solicita tu cotización.",
   },
   {
     slug: "marcos-y-tapas",
@@ -122,8 +122,8 @@ export const FAMILIES: readonly CatalogFamily[] = [
       { id: "rejillas", label: { es: "Rejillas", en: "Grates" } },
       { id: "peatonal", label: { es: "Peatonal", en: "Pedestrian" } },
     ],
-    metaTitle: "Marcos y tapas de hierro dúctil",
-    metaDescription: "Marcos y tapas de hierro dúctil para redes de agua y alcantarillado: tapas circulares, marcos rectangulares, rejillas pluviales y tapas de registro.",
+    metaTitle: "Marcos y tapas de buzón D400 en Perú",
+    metaDescription: "Marcos y tapas de buzón clase D400 de 600 mm con uno o dos seguros, para vías y redes de alcantarillado. Compara modelos y solicita tu cotización.",
   },
   {
     slug: "accesorios-hdpe",
@@ -460,12 +460,22 @@ export function findCatalogSheet(slug: string): CatalogSheet | undefined {
 }
 
 /** Fichas genéricas para el registro de rutas (nombre, descripción y datos estructurados). */
+/** Meta descripción de una ficha de la lista de precios: nombre, medidas y uso, sin añadir datos que la ficha no tenga. */
+function routeDescription(cell: CatalogCell) {
+  const head = [cell.name.es, cell.range].filter(Boolean).join(", ");
+  const note = cell.note.es.trim().replace(/\.?$/, ".");
+  const text = `${head}. ${note}`;
+  const closings = [" Consulta medidas y solicita tu cotización a FUNDIGSAC en Lima.", " Solicita tu cotización a FUNDIGSAC en Lima.", " Cotiza en Lima."];
+  const closing = closings.find((c) => text.length + c.length <= 158);
+  return closing ? text + closing : text.slice(0, 157).replace(/\s+\S*$/, "") + "…";
+}
+
 export const CATALOG_ROUTES = [
   ...PENDING.map((p) => ({ family: p.family, slug: p.slug, name: p.name.es, description: p.note.es, image: p.image, indexable: false as const, sku: undefined })),
   ...PRICE_LIST_VISIBLE.flatMap((p) => {
     const cell = priceCell(p);
     if (!cell) return [];
-    return [{ family: cell.family, slug: cell.slug, name: cell.name.es, description: cell.note.es, image: cell.image, indexable: LEGACY_VALVES.has(p.slug) ? (false as const) : undefined, sku: cell.code }];
+    return [{ family: cell.family, slug: cell.slug, name: cell.name.es, description: routeDescription(cell), image: cell.image, indexable: LEGACY_VALVES.has(p.slug) ? (false as const) : undefined, sku: cell.code }];
   }),
 ];
 

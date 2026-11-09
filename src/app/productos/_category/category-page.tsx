@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import { CATEGORIES, type CategorySlug } from "@/modules/catalog/registry";
 import { cellsOfFamily, compareTable, familyDocuments, findFamily } from "@/modules/catalog/public-catalog";
 import { SITE } from "@/shared/config/site";
 import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
+import { pageMetadata } from "@/shared/seo/page-metadata";
 import { FamilyView } from "../_catalog/family-view";
 
 /*
@@ -11,9 +11,9 @@ import { FamilyView } from "../_catalog/family-view";
 
 const categoryOf = (slug: CategorySlug) => CATEGORIES.find((c) => c.slug === slug)!;
 
-export function categoryMetadata(slug: CategorySlug): Metadata {
+export function categoryMetadata(slug: CategorySlug) {
   const category = categoryOf(slug);
-  return { title: category.title ?? category.name, description: category.description, alternates: { canonical: `/productos/${category.slug}` } };
+  return pageMetadata({ title: category.title ?? category.name, description: category.description, path: `/productos/${category.slug}` });
 }
 
 export function CategoryPage({ slug }: { slug: CategorySlug }) {

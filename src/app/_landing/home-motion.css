@@ -691,6 +691,32 @@ html:has(main.lp) {
   display: none;
 }
 
+/* ----- Índice de fichas, bajo las familias ----- */
+.ho-index {
+  margin-top: var(--sp-7);
+}
+
+.ho-index h3 {
+  margin-bottom: var(--sp-4);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+@media (min-width: 860px) {
+  .ho-index__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--sp-5);
+  }
+}
+
+@media (min-width: 1261px) {
+  .ho-index__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .ho-docs__plate {
   display: block;
   aspect-ratio: 1186 / 784;

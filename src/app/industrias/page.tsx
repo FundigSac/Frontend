@@ -1,24 +1,26 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/shared/seo/page-metadata";
 import { FloatingActions } from "@/app/_landing/floating-actions";
 import { productsBySlug } from "@/lib/site-info";
+import { SITE } from "@/shared/config/site";
+import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
 import "@/app/landing.css";
 import "./_sector/sector.css";
 import "./industrias.css";
 import { IndustriesView, type SectorData } from "./industries-view";
 
-export const metadata: Metadata = {
-  title: "Saneamiento, minería, agricultura e industria",
-  description: "Componentes FUNDIGSAC para saneamiento, minería, agricultura e industria: válvulas, hierro dúctil, tubería HDPE, acoples y medición.",
-  alternates: { canonical: "/industrias" },
-};
+export const metadata = pageMetadata({
+  title: "Válvulas y hierro dúctil por sector en Perú",
+  description: "Componentes FUNDIGSAC para saneamiento, minería y agricultura en Perú: válvulas, tubería de hierro dúctil, acoples y soluciones para cada aplicación.",
+  path: "/industrias",
+});
 
 /** Familia del catálogo a la que lleva cada celda. */
 const FAMILY_HREF: Record<string, string> = {
   valvulas: "/productos/valvulas",
   "hierro-ductil": "/productos/tuberias",
-  hdpe: "/productos?familia=accesorios-hdpe",
-  equipos: "/productos?familia=accesorios-hdpe",
-  acoples: "/productos?familia=conexiones-y-fittings",
+  hdpe: "/productos/accesorios-hdpe",
+  equipos: "/productos/equipos-termofusion",
+  acoples: "/productos/conexiones-y-fittings",
 };
 
 /** Nombre en inglés de los productos que catalog-en.ts aún no traduce. */
@@ -29,7 +31,7 @@ const SECTORS = [
   { id: "saneamiento", href: "/industrias/saneamiento", slugs: ["tuberia-hierro-ductil-c40-k9-k7-thd", "valvula-compuerta-bridada-vbbh", "marco-y-tapa-pesada-2seg"] },
   { id: "mineria", href: "/industrias/mineria", slugs: ["codo-hdpe-termofusion-90-sdr11", "acople-gran-rango-agr", "maquina-termofusion-serie-hdc"] },
   { id: "agricultura", href: "/industrias/agricultura", slugs: ["valvula-de-aire-3-funciones-premium-vdap", "filtro-tipo-y-bridado-fyb", "tee-hdpe-termofusion-sdr11"] },
-  { id: "industria", href: "/productos?familia=conexiones-y-fittings", slugs: ["brida-iso-2351-pn16-biso", "junta-flexible-din-jfdin", "valvula-mariposa-wafer-timon-vmtwt"] },
+  { id: "industria", href: "/productos/conexiones-y-fittings", slugs: ["brida-iso-2351-pn16-biso", "junta-flexible-din-jfdin", "valvula-mariposa-wafer-timon-vmtwt"] },
 ] as const;
 
 export default function Industries() {
@@ -47,6 +49,7 @@ export default function Industries() {
   }));
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Industrias", path: "/industrias" }], SITE.url)} />
       <IndustriesView sectors={sectors} />
       <FloatingActions />
     </>

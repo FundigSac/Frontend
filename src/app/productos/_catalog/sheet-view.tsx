@@ -11,6 +11,7 @@ import { requestDocumentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { UI } from "./copy";
 import { ProductCell } from "./product-cell";
+import { SectorLinks } from "./sector-links";
 import styles from "./catalog.module.css";
 
 /** Ficha de producto del catálogo: datos en public-catalog.ts. El HTML del servidor sale en español. */
@@ -56,7 +57,7 @@ export function SheetView({ sheet }: { sheet: CatalogSheet }) {
           </header>
 
           <figure className={styles.sheetPhoto} data-lcp>
-            <Image src={sheet.image} alt={sheet.alt[lang]} width={768} height={768} loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 50vw, 88vw" />
+            <Image src={sheet.image} alt={sheet.alt[lang]} width={768} height={768} loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 50vw, (min-width: 481px) 88vw, 56vw" />
             {pending && <figcaption className={styles.photoNote}>{t.referencePhoto}</figcaption>}
           </figure>
 
@@ -134,6 +135,7 @@ export function SheetView({ sheet }: { sheet: CatalogSheet }) {
                 <strong>{t.sourceTitle}</strong>
                 <p>{sheet.sourceNote[lang]}</p>
               </div>
+              <SectorLinks slug={sheet.slug} />
             </section>
           </div>
         </div>

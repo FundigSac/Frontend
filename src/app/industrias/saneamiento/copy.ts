@@ -41,7 +41,7 @@ export const SANEA: Record<"es" | "en", {
             { name: "Válvula de compuerta FUNDIGSAC", use: "Aísla y corta el flujo en la red.", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
             { name: "Válvula reductora de presión", use: "Mantiene estable la presión aguas abajo.", href: "/productos/valvulas/valvula-reductora-de-presion" },
             { name: "Válvula flotadora bridada", use: "Evita que el tanque rebose o se vacíe.", href: "/productos/valvulas/valvula-flotadora-bridada" },
-            { name: "Tubería de hierro dúctil", use: "Clases C40, K9 y K7.", href: "/productos/tuberias" },
+            { name: "Tubería de hierro dúctil", use: "Clases C40, K9 y K7.", href: "/productos/tuberias/tuberia-hierro-ductil-c40-k9-k7-thd" },
           ],
         },
         {
@@ -49,10 +49,10 @@ export const SANEA: Record<"es" | "en", {
           text: "Conducción de aguas residuales y acceso a buzones.",
           alt: "Canal de aguas residuales en una planta de tratamiento",
           pieces: [
-            { name: "Marco y tapa pesada 2SEG", use: "Para buzones, con dos seguros.", href: "/productos/marcos-y-tapas" },
-            { name: "Marco y tapa liviana 1SEG", use: "Para buzones, con un seguro.", href: "/productos/marcos-y-tapas" },
+            { name: "Marco y tapa pesada 2SEG", use: "Para buzones, con dos seguros.", href: "/productos/marcos-y-tapas/marco-y-tapa-pesada-2seg" },
+            { name: "Marco y tapa liviana 1SEG", use: "Para buzones, con un seguro.", href: "/productos/marcos-y-tapas/marco-y-tapa-liviana-1seg" },
             { name: "Válvula de embone tipo Luflex", use: "Se une a la tubería sin bridas ni pernos.", href: "/productos/valvulas/valvula-embone-tipo-luflex" },
-            { name: "Acoples y uniones", use: "Para empalmar y reparar tramos.", href: "/productos?q=acople" },
+            { name: "Acoples y uniones", use: "Para empalmar y reparar tramos.", href: "/productos/conexiones-y-fittings" },
           ],
         },
         {
@@ -62,7 +62,7 @@ export const SANEA: Record<"es" | "en", {
           pieces: [
             { name: "Válvula check swing", use: "Cierra sola cuando el flujo se invierte.", href: "/productos/valvulas/valvula-check-swing" },
             { name: "Válvula check flex", use: "Un disco de caucho corta el retorno del agua.", href: "/productos/valvulas/valvula-check-flex" },
-            { name: "Medidor electromagnético", use: "Mide el caudal, con transmisor y cable de señal.", href: "/cotizar" },
+            { name: "Medidor electromagnético", use: "Mide el caudal, con transmisor y cable de señal.", href: "/productos/medidores/medidor-electromagnetico-melec" },
           ],
         },
       ],
@@ -111,7 +111,7 @@ export const SANEA: Record<"es" | "en", {
             { name: "FUNDIGSAC gate valve", use: "Isolates and shuts off flow in the network.", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
             { name: "Pressure-reducing valve", use: "Keeps downstream pressure steady.", href: "/productos/valvulas/valvula-reductora-de-presion" },
             { name: "Flanged float valve", use: "Stops the tank from overflowing or running dry.", href: "/productos/valvulas/valvula-flotadora-bridada" },
-            { name: "Ductile iron pipe", use: "Classes C40, K9 and K7.", href: "/productos/tuberias" },
+            { name: "Ductile iron pipe", use: "Classes C40, K9 and K7.", href: "/productos/tuberias/tuberia-hierro-ductil-c40-k9-k7-thd" },
           ],
         },
         {
@@ -119,10 +119,10 @@ export const SANEA: Record<"es" | "en", {
           text: "Wastewater conveyance and manhole access.",
           alt: "Wastewater channel in a treatment plant",
           pieces: [
-            { name: "Heavy-duty frame and cover 2SEG", use: "For manholes, with two locks.", href: "/productos/marcos-y-tapas" },
-            { name: "Light-duty frame and cover 1SEG", use: "For manholes, with one lock.", href: "/productos/marcos-y-tapas" },
+            { name: "Heavy-duty frame and cover 2SEG", use: "For manholes, with two locks.", href: "/productos/marcos-y-tapas/marco-y-tapa-pesada-2seg" },
+            { name: "Light-duty frame and cover 1SEG", use: "For manholes, with one lock.", href: "/productos/marcos-y-tapas/marco-y-tapa-liviana-1seg" },
             { name: "Luflex push-on gate valve", use: "Joins the pipe with no flanges or bolts.", href: "/productos/valvulas/valvula-embone-tipo-luflex" },
-            { name: "Couplings and joints", use: "To connect and repair sections.", href: "/productos?q=acople" },
+            { name: "Couplings and joints", use: "To connect and repair sections.", href: "/productos/conexiones-y-fittings" },
           ],
         },
         {
@@ -132,7 +132,7 @@ export const SANEA: Record<"es" | "en", {
           pieces: [
             { name: "Swing check valve", use: "Closes by itself when the flow reverses.", href: "/productos/valvulas/valvula-check-swing" },
             { name: "Flex check valve", use: "A rubber disc stops backflow.", href: "/productos/valvulas/valvula-check-flex" },
-            { name: "Electromagnetic meter", use: "Measures flow, with transmitter and signal cable.", href: "/cotizar" },
+            { name: "Electromagnetic meter", use: "Measures flow, with transmitter and signal cable.", href: "/productos/medidores/medidor-electromagnetico-melec" },
           ],
         },
       ],

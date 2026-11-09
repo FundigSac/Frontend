@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, ArrowUpDown, Check, Download, Mail, Search } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CatalogCell, FamilySlug, Localized } from "@/modules/catalog/public-catalog";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
@@ -36,20 +36,29 @@ function updateAddress(query: string, family: FamilyFilter) {
   window.history.replaceState(null, "", next);
 }
 
-export function CatalogView({ cells, families, initialQuery = "", initialFamily = "todas" }: { cells: readonly CatalogCell[]; families: readonly FamilyIndexEntry[]; initialQuery?: string; initialFamily?: FamilyFilter }) {
+/** Avisa cuando cambia ?q= o ?familia=. Va en su propio Suspense para que el listado siga saliendo en el HTML estático. */
+function AddressWatcher({ onChange }: { onChange: (key: string) => void }) {
+  const key = useSearchParams().toString();
+  useEffect(() => onChange(key), [key, onChange]);
+  return null;
+}
+
+export function CatalogView({ cells, families }: { cells: readonly CatalogCell[]; families: readonly FamilyIndexEntry[] }) {
   const [lang] = useLang();
   const t = UI[lang];
-  const [query, setQuery] = useState(initialQuery);
-  const [family, setFamily] = useState<FamilyFilter>(initialFamily);
+  const [query, setQuery] = useState("");
+  const [family, setFamily] = useState<FamilyFilter>("todas");
   const [sort, setSort] = useState<SortMode>("destacados");
   // Cambia al navegar con un enlace de la propia página: el componente sigue montado y el estado inicial no se vuelve a leer.
-  const addressKey = useSearchParams().toString();
+  const [addressKey, setAddressKey] = useState("");
   const seenAddressKey = useRef(addressKey);
   const latest = useRef({ query, family });
+  const addressRead = useRef(false);
 
   useEffect(() => {
     latest.current = { query, family };
-    updateAddress(query, family);
+    // En el primer efecto todavía no se ha leído la dirección: escribirla borraría ?q= y ?familia=.
+    if (addressRead.current) updateAddress(query, family);
   }, [query, family]);
 
   const readAddress = useCallback(() => {
@@ -59,6 +68,11 @@ export function CatalogView({ cells, families, initialQuery = "", initialFamily 
     const nextFamily = params.get("familia");
     setFamily(families.some((f) => f.slug === nextFamily) ? (nextFamily as FamilySlug) : "todas");
   }, [families]);
+
+  useEffect(() => {
+    addressRead.current = true;
+    queueMicrotask(readAddress);
+  }, [readAddress]);
 
   useEffect(() => {
     window.addEventListener("popstate", readAddress);
@@ -109,6 +123,7 @@ export function CatalogView({ cells, families, initialQuery = "", initialFamily 
 
   return (
     <main lang={lang} className={styles.page}>
+      <Suspense fallback={null}><AddressWatcher onChange={setAddressKey} /></Suspense>
       <header className={`${styles.shell} ${styles.head}`}>
         <nav aria-label={t.crumbs} className={styles.crumbs}>
           <Link href="/">{t.home}</Link><span aria-hidden="true">›</span><span aria-current="page">{t.products}</span>
@@ -165,7 +180,7 @@ export function CatalogView({ cells, families, initialQuery = "", initialFamily 
 
           {visible.length ? (
             <div className={`celdas ${styles.grid}`}>
-              {visible.map((cell, index) => <ProductCell key={cell.slug} cell={cell} lang={lang} index={index} filtered={filtered} isNew={fresh.has(cell.slug)} />)}
+              {visible.map((cell, index) => <ProductCell key={cell.slug} cell={cell} lang={lang} index={index} filtered={filtered} isNew={fresh.has(cell.slug)} heading="h2" />)}
             </div>
           ) : (
             <div className={styles.empty} role="status">

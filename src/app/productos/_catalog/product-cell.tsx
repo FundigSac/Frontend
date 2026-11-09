@@ -19,12 +19,14 @@ type Props = {
   filtered?: boolean;
   isNew?: boolean;
   sizes?: string;
+  /** Nivel del nombre: h2 en listados que van directo bajo el H1, h3 dentro de una sección con su propio H2. */
+  heading?: "h2" | "h3";
 };
 
 const GRID_SIZES = "(min-width: 1261px) 25vw, (min-width: 860px) 33vw, 50vw";
 
 /** Celda de producto: foto sobre superficie neutra, nombre, código y las dos acciones. */
-export function ProductCell({ cell, lang, index, filtered = false, isNew = false, sizes = GRID_SIZES }: Props) {
+export function ProductCell({ cell, lang, index, filtered = false, isNew = false, sizes = GRID_SIZES, heading: Heading = "h3" }: Props) {
   const t = UI[lang];
   const name = cell.name[lang];
   const [added, setAdded] = useState(false);
@@ -51,7 +53,7 @@ export function ProductCell({ cell, lang, index, filtered = false, isNew = false
         <Image src={cell.image} alt={cell.alt[lang]} width={640} height={640} sizes={sizes} loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 4 ? "low" : undefined} />
       </Link>
       <div className={styles.cellBody}>
-        <h3 className={styles.cellName}><Link href={cell.href}>{name}</Link></h3>
+        <Heading className={styles.cellName}><Link href={cell.href}>{name}</Link></Heading>
         {data && <span className={`dato ${styles.cellData}`}>{data}</span>}
         <span className={styles.cellNote}>{cell.note[lang]}</span>
         {cell.status === "por-confirmar" && (

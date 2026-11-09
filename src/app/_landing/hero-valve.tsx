@@ -31,9 +31,9 @@ export function HeroValve() {
   const pending = useRef<number | null>(null);
   const clearPrev = useRef(0);
 
-  // La segunda válvula no compite con el LCP: se monta tras el evento load o a la primera intención sobre el selector.
+  // La segunda válvula no compite con el LCP: se monta 2 s después del evento load o a la primera intención sobre el selector.
   useEffect(() => {
-    const mount = () => window.setTimeout(() => setMounted(true), 0);
+    const mount = () => window.setTimeout(() => setMounted(true), 2000);
     if (document.readyState === "complete") {
       const id = mount();
       return () => window.clearTimeout(id);
@@ -91,7 +91,7 @@ export function HeroValve() {
                 fetchPriority={i === 0 ? "high" : "low"}
                 onLoad={() => onLoaded(i)}
                 draggable={false}
-                sizes="(max-width: 1023px) 216px, 22vw"
+                sizes="(max-width: 1023px) 146px, 22vw"
               />
             </span>
           ))}

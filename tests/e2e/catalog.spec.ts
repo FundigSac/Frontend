@@ -40,7 +40,7 @@ test.describe("W01 inicio", () => {
     const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs.filter((h) => h === "#")).toEqual([]);
     // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
-    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/contacto?motivo=documentacion", "/contacto"]) {
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos/conexiones-y-fittings", "/productos/tuberias", "/industrias", "/contacto?motivo=documentacion", "/contacto"]) {
       expect(hrefs, `falta un enlace a ${href}`).toContain(href);
     }
     await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");

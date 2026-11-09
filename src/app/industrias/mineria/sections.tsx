@@ -11,10 +11,10 @@ import { MINING_IMAGES } from "./media-responsive";
 const USES = ["/media/mineria/agua-proceso.webp", "/media/mineria/recirculacion.webp"] as const;
 
 const ROWS = [
-  { href: "/productos?familia=accesorios-hdpe", image: "/media/catalog/hdpe-tee.webp" },
-  { href: "/productos?familia=accesorios-hdpe", image: "/media/catalog/maq-hdc.webp" },
-  { href: "/productos?q=acople", image: "/media/catalog/acople-gran-rango.webp" },
-  { href: "/productos/valvulas", image: "/media/catalog/compuerta-acerrojada.webp" },
+  { href: "/productos/accesorios-hdpe/tee-hdpe-termofusion-sdr11", image: "/media/catalog/hdpe-tee.webp" },
+  { href: "/productos/equipos-termofusion/maquina-termofusion-serie-hdc", image: "/media/catalog/maq-hdc.webp" },
+  { href: "/productos/conexiones-y-fittings/acople-gran-rango-agr", image: "/media/catalog/acople-gran-rango.webp" },
+  { href: "/productos/valvulas/valvula-compuerta-acerrojada", image: "/media/catalog/compuerta-acerrojada.webp" },
 ] as const;
 
 export function MiningSections() {

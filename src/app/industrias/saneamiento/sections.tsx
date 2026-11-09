@@ -12,7 +12,7 @@ const LINE = [
   { href: "/productos/tuberias", image: "/media/catalog/tuberia-hierro-ductil.webp" },
   { href: "/productos/valvulas", image: "/media/catalog/compuerta-bridada.webp" },
   { href: "/productos/marcos-y-tapas", image: "/media/catalog/marco-tapa-pesada.webp" },
-  { href: "/productos?q=acople", image: "/media/catalog/acople-gran-rango.webp" },
+  { href: "/productos/conexiones-y-fittings", image: "/media/catalog/acople-gran-rango.webp" },
 ] as const;
 
 export function SanitationSections() {
