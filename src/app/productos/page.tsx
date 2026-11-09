@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ScreenW02 } from "@/screens/w02";
+import { CATALOG_CELLS, FAMILIES, cellsOfFamily, type FamilySlug } from "@/modules/catalog/public-catalog";
+import { CatalogView, type FamilyFilter } from "./_catalog/catalog-view";
 
 export const metadata: Metadata = {
   title: "Catálogo de válvulas, tuberías HDPE y accesorios",
@@ -8,29 +9,18 @@ export const metadata: Metadata = {
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
-type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
 
 function firstValue(value: string | string[] | undefined) {
   return (Array.isArray(value) ? value[0] : value) ?? "";
 }
 
 function validFamily(value: string): FamilyFilter {
-  return value === "valvulas" || value === "tuberias" || value === "marcos-y-tapas" || value === "accesorios-hdpe" || value === "conexiones-y-fittings"
-    ? value
-    : "todas";
+  return FAMILIES.some((f) => f.slug === value) ? (value as FamilySlug) : "todas";
 }
+
+const FAMILY_INDEX = FAMILIES.map((f) => ({ slug: f.slug, href: f.href, name: f.name, blurb: f.blurb, count: cellsOfFamily(f.slug).length }));
 
 export default async function CatalogPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
-  const initialQuery = firstValue(params.q).slice(0, 120);
-  const initialFamily = validFamily(firstValue(params.familia));
-
-  return (
-    <>
-      {/* El hero es un fondo CSS: se precarga la variante del tamaño de pantalla para que sea el LCP temprano. */}
-      <link rel="preload" as="image" href="/media/productos-page/productos7-1600.webp" media="(min-width: 861px)" fetchPriority="high" />
-      <link rel="preload" as="image" href="/media/productos-page/productos7-1200.webp" media="(max-width: 860px)" fetchPriority="high" />
-      <ScreenW02 initialQuery={initialQuery} initialFamily={initialFamily} />
-    </>
-  );
+  return <CatalogView cells={CATALOG_CELLS} families={FAMILY_INDEX} initialQuery={firstValue(params.q).slice(0, 120)} initialFamily={validFamily(firstValue(params.familia))} />;
 }

@@ -19,8 +19,8 @@ test("ficha: el pedido rápido agrega la válvula con DN y PN al carrito y sincr
   await expect(page.getByRole("heading", { name: "Bridas · DN150" })).toBeAttached();
   await expect(page.getByRole("img", { name: /Plano de la válvula DN150: L 210 mm/ })).toBeAttached();
 
-  await order.getByRole("button", { name: "Agregar al carrito" }).click();
-  await expect(order.getByRole("button", { name: "Agregado al carrito" })).toBeVisible();
+  await order.getByRole("button", { name: "Agregar a cotización" }).click();
+  await expect(order.getByRole("button", { name: "Agregada a tu cotización" })).toBeVisible();
   const drawer = page.getByRole("dialog", { name: /Tu carrito/ });
   await expect(drawer).toBeVisible();
   await expect(drawer).toContainText("Válvula de compuerta FUNDIGSAC");
@@ -62,10 +62,13 @@ test("ficha con garantía extendida: dos flyers (volante y dado) con descarga, v
   await expect(flyers.getByRole("article", { name: "Con dado" }).getByRole("button", { name: "En tu pedido" })).toHaveAttribute("aria-pressed", "true");
   await expect(order.getByRole("link", { name: "Descargar ficha técnica" })).toHaveAttribute("href", /dado\.pdf$/);
 
-  await order.getByRole("button", { name: "Agregar al carrito" }).click();
+  await order.getByRole("button", { name: "Agregar a cotización" }).click();
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("fundigsac-quote") ?? "[]"));
   expect(stored).toEqual([expect.objectContaining({ slug: "valvula-compuerta-fundigsac-garantia-extendida", variant: "DN100 · PN16 · Dado" })]);
+  const drawer = page.getByRole("dialog", { name: /Tu carrito/ });
+  await expect(drawer).toBeVisible();
   await page.keyboard.press("Escape");
+  await expect(drawer).toBeHidden();
 
   // Vista en pantalla del flyer, una sola página y sin navegación entre páginas.
   await flyers.getByRole("button", { name: "Ver flyer con volante (timón) en pantalla" }).first().click();

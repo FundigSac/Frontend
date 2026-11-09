@@ -6,32 +6,22 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
-  ArrowUpRight,
-  Bolt,
-  Building2,
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Download,
-  Droplets,
   ExternalLink,
   Eye,
   FileText,
-  Layers,
   Maximize2,
   Rotate3d,
-  Ruler,
-  Scale,
-  Settings2,
   ShieldCheck,
   ShoppingCart,
-  Sprout,
-  Waves,
   X,
 } from "lucide-react";
 import styles from "./w06-ficha.module.css";
-import { DATASHEETS, type Datasheet, type Feature } from "./w06-ficha-data";
+import { DATASHEETS, type Datasheet } from "./w06-ficha-data";
 import { FICHA_COPY } from "./w06-ficha-copy";
 import { FICHA_EN } from "./w06-ficha-en";
 import { ValvePlan, type Cotas } from "./w06-plano";
@@ -77,50 +67,15 @@ const EXTENDED_THUMBS = [
 ];
 
 const RELATED = [
-  { src: "mariposa-cut.webp", es: ["Válvula mariposa", "Diseño compacto y de bajo torque para grandes diámetros."], en: ["Butterfly valve", "Compact, low-torque design for large diameters."], href: "/productos/valvulas/valvula-mariposa" },
-  { src: "check-cut.webp", es: ["Válvula check", "Evita el retorno de flujo en sistemas de conducción."], en: ["Check valve", "Prevents backflow in conveyance systems."], href: "/productos/valvulas" },
-  { src: "aire-cut.webp", es: ["Válvula de aire", "Elimina y admite aire en redes de agua, mejorando la eficiencia."], en: ["Air valve", "Releases and admits air in water networks for better efficiency."], href: "/productos/valvulas" },
-  { src: "reductora-cut.webp", es: ["Válvula reductora de presión", "Controla y estabiliza la presión en la red de distribución."], en: ["Pressure reducing valve", "Controls and stabilizes pressure in distribution networks."], href: "/productos/valvulas" },
+  { src: "mariposa-cut.webp", es: ["Válvula mariposa wafer con timón", "Tipo wafer con operador de timón."], en: ["Wafer butterfly valve with handwheel", "Wafer type with handwheel operator."], href: "/productos/valvulas/valvula-mariposa-wafer-timon-vmtwt" },
+  { src: "check-cut.webp", es: ["Válvula check swing", "Deja pasar el agua en un solo sentido y cierra sola cuando el flujo se invierte."], en: ["Swing check valve", "Lets water flow one way and closes by itself when the flow reverses."], href: "/productos/valvulas/valvula-check-swing" },
+  { src: "aire-cut.webp", es: ["Válvula de aire de 3 funciones", "Ventosa de tres funciones."], en: ["3-function air valve", "Three-function air valve."], href: "/productos/valvulas/valvula-de-aire-3-funciones-premium-vdap" },
+  { src: "reductora-cut.webp", es: ["Válvula reductora de presión", "Mantiene una presión estable aguas abajo."], en: ["Pressure-reducing valve", "Keeps downstream pressure steady."], href: "/productos/valvulas/valvula-reductora-de-presion" },
 ] as const;
 
 
 const PRESSURES = ["PN10", "PN16"] as const;
 const CART_SLUG = { base: "valvula-compuerta", fundigsac: "valvula-compuerta-fundigsac", extendida: "valvula-compuerta-fundigsac-garantia-extendida" } as const;
-
-const FEATURE_ICONS: Record<Feature["icon"], typeof ShieldCheck> = { shield: ShieldCheck, settings: Settings2, layers: Layers, nut: Bolt };
-const APP_ICONS = [Droplets, Sprout, Waves, Building2] as const;
-const CTA_ICONS = [Ruler, Scale, FileText] as const;
-
-/**
- * Ajusta el ancho de un título justificado al de su línea más larga: el navegador no encoge la caja a las líneas
- * que parte, así que sin esto el justificado estira cada línea hasta el borde y abre huecos entre palabras.
- */
-function useFitWidth(text: string) {
-  const ref = useRef<HTMLHeadingElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    const box = el?.parentElement;
-    if (!el || !box) return;
-    const fit = () => {
-      // Se mide alineado a la izquierda (el justificado estira las líneas) y luego se vuelve al estilo de la hoja.
-      el.style.width = "";
-      el.style.textAlign = "left";
-      el.style.textAlignLast = "left";
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      const widest = Math.max(0, ...Array.from(range.getClientRects(), (r) => r.width));
-      el.style.textAlign = "";
-      el.style.textAlignLast = "";
-      if (widest > 0) el.style.width = `${Math.ceil(widest) + 1}px`;
-    };
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(box);
-    document.fonts?.ready.then(fit).catch(() => {});
-    return () => ro.disconnect();
-  }, [text]);
-  return ref;
-}
 
 /** Parte un texto en párrafos de una o dos oraciones, para que la descripción no sea un solo bloque. */
 function paragraphs(text: string): string[] {
@@ -200,6 +155,8 @@ export function W06Ficha(props: { variant?: Variant }) {
   };
   const pageAlt = (i: number) => (en ? en.docPageAlt(i + 1, docPages.length) : docPages[i]?.alt ?? "");
   const [active, setActive] = useState(0);
+  // Foto anterior: queda debajo mientras la nueva aparece con opacidad (la primera carga no anima nada).
+  const [previous, setPrevious] = useState<number | null>(null);
   const [lightbox, setLightbox] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [docPage, setDocPage] = useState(0);
@@ -218,8 +175,6 @@ export function W06Ficha(props: { variant?: Variant }) {
   const orderRef = useRef<HTMLDivElement>(null);
   useDialogFocus(lightbox, lightboxRef);
   useDialogFocus(!!preview, docRef);
-  const titleRef = useFitWidth(productName);
-  const descTitleRef = useFitWidth(t.descLead);
   const total = THUMBS.length;
   const current = THUMBS[active];
   const brand = sheet.specs.find(([k]) => k === "Marca")?.[1];
@@ -257,8 +212,8 @@ export function W06Ficha(props: { variant?: Variant }) {
   };
 
   // Sin useCallback: el compilador de React ya memoriza estas funciones.
-  const pick = (i: number) => { setSpin(false); setActive(i); };
-  const step = (d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); };
+  const pick = (i: number) => { setSpin(false); setPrevious(active); setActive(i); };
+  const step = (d: number) => { setSpin(false); setPrevious(active); setActive((i) => (i + d + total) % total); };
 
   const docCount = preview?.pages.length ?? 0;
   const stepDoc = (d: number) => setDocPage((i) => (docCount ? (i + d + docCount) % docCount : 0));
@@ -289,7 +244,7 @@ export function W06Ficha(props: { variant?: Variant }) {
   useEffect(() => {
     if (!lightbox) return;
     const onKey = (e: KeyboardEvent) => {
-      const move = (d: number) => { setSpin(false); setActive((i) => (i + d + total) % total); };
+      const move = (d: number) => { setSpin(false); setPrevious(null); setActive((i) => (i + d + total) % total); };
       if (e.key === "Escape") setLightbox(false);
       if (e.key === "ArrowLeft") move(-1);
       if (e.key === "ArrowRight") move(1);
@@ -312,11 +267,10 @@ export function W06Ficha(props: { variant?: Variant }) {
       fetchPriority={priority ? "high" : undefined}
       unoptimized={broken[current.src]}
       onError={() => setBroken((s) => ({ ...s, [current.src]: true }))}
+      className={previous !== null ? styles.fadeIn : undefined}
     />
   );
 
-  // Qué contiene la ficha, tomado de los datos reales de esta válvula.
-  const docIncludes = [t.docSpecs, `${t.docDims} ${sheet.sizeRange}`, `${view.flangeTitle} PN10 / PN16`, ...(view.stem ? [view.stem.title] : []), t.docMaterials].slice(0, 4);
   const specGroups = groupSpecs(sheet.specs);
   // Los grupos se calculan con las claves en español; cada fila se muestra con su versión en el idioma activo.
   const specRowOf = new Map(sheet.specs.map((row, i) => [row, en?.specs[i] ?? row] as const));
@@ -340,19 +294,39 @@ export function W06Ficha(props: { variant?: Variant }) {
     <main className={styles.page}>
       <div className={styles.wrap}>
         <nav aria-label={t.crumbs.label} className={styles.crumbs}>
-          <Link href="/">{t.crumbs.home}</Link><ChevronRight size={14} aria-hidden="true" />
-          <Link href="/productos">{t.crumbs.products}</Link><ChevronRight size={14} aria-hidden="true" />
-          <Link href="/productos/valvulas">{t.crumbs.valves}</Link><ChevronRight size={14} aria-hidden="true" />
+          <Link href="/">{t.crumbs.home}</Link><span aria-hidden="true">›</span>
+          <Link href="/productos">{t.crumbs.products}</Link><span aria-hidden="true">›</span>
+          <Link href="/productos/valvulas">{t.crumbs.valves}</Link><span aria-hidden="true">›</span>
           <span aria-current="page">{productName}</span>
         </nav>
 
-        <section className={styles.top} aria-labelledby="ficha-title">
+        <div className={styles.sheet}>
+          <header className={styles.title}>
+            {/* Marca, rango y presión en una línea de catálogo. */}
+            <div className={styles.meta}>
+              {brand && <span className={styles.metaBrand}><span className={styles.srOnly}>{t.brand}: </span>{brand}{series ? ` ${series}` : ""}</span>}
+              <span>{sheet.sizeRange}</span>
+              <span>PN10 / PN16</span>
+            </div>
+            <h1 id="ficha-title">{productName}</h1>
+            {warrantyLabel && (
+              <p className={styles.warranty}><ShieldCheck size={17} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
+            )}
+            <p className={styles.lead}>{view.lead}</p>
+          </header>
+
           <div className={styles.gallery}>
-            <div className={styles.stage}>
+            <div className={styles.stage} data-lcp>
               {spin ? (
                 <Viewer3D src={sheet.model3d.src} poster={THUMBS[2].dir + THUMBS[2].src} alt={view.model3dAlt} className={styles.viewer} onFail={() => setSpin(false)} />
               ) : (
-                photo("(min-width: 1100px) 560px, 92vw", true)
+                <>
+                  {photo("(min-width: 1024px) 50vw, 92vw", true)}
+                  {/* La anterior va después en el DOM y debajo por z-index: la primera imagen sigue siendo la foto vigente. */}
+                  {previous !== null && previous !== active && (
+                    <Image key={`prev-${THUMBS[previous].src}`} src={THUMBS[previous].dir + THUMBS[previous].src} alt="" aria-hidden="true" fill sizes="(min-width: 1024px) 50vw, 92vw" />
+                  )}
+                </>
               )}
               {!spin && (
                 <>
@@ -363,12 +337,11 @@ export function W06Ficha(props: { variant?: Variant }) {
               )}
               <button type="button" className={styles.zoom} aria-label={t.zoom} title={t.zoom} onClick={() => setLightbox(true)}><Maximize2 size={17} aria-hidden="true" /></button>
             </div>
-            {/* En escritorio, riel vertical a la izquierda del escenario; en móvil, fila bajo la foto. */}
             <div className={styles.thumbs}>
               <div className={styles.thumbList} role="group" aria-label={t.photos}>
                 {THUMBS.map((p, i) => (
                   <button key={p.src} type="button" className={i === active && !spin ? styles.thumbActive : styles.thumb} onClick={() => pick(i)} aria-label={t.viewPhoto(en?.thumbAlts[i] ?? p.alt)} aria-pressed={i === active && !spin}>
-                    <Image src={p.dir + p.src} alt="" fill sizes="(max-width: 760px) 64px, 76px" fetchPriority="low" />
+                    <Image src={p.dir + p.src} alt="" fill sizes="(max-width: 760px) 64px, 96px" fetchPriority="low" />
                   </button>
                 ))}
               </div>
@@ -378,240 +351,119 @@ export function W06Ficha(props: { variant?: Variant }) {
             </div>
           </div>
 
-          <div className={styles.info}>
-            {/* Marca, rango y presión en una línea de catálogo: la marca pesa, el resto acompaña. */}
-            <p className={styles.meta}>
-              {brand && <span className={styles.metaBrand}><span className={styles.srOnly}>{t.brand}: </span>{brand}{series ? ` ${series}` : ""}</span>}
-              <span>{sheet.sizeRange}</span>
-              <span>PN10 / PN16</span>
-            </p>
-            <h1 id="ficha-title" ref={titleRef}>{productName}</h1>
-            {warrantyLabel && (
-              <p className={styles.warranty}><ShieldCheck size={17} aria-hidden="true" /><span><strong>{warrantyLabel}</strong> {t.warranty}</span></p>
-            )}
-            <p className={styles.lead}>{view.lead}</p>
-
+          <aside className={styles.panel} data-enter>
             {/* Pedido rápido: el DN es el mismo del plano y las tablas de dimensiones. */}
             <div className={styles.order} role="group" aria-label={t.order} ref={orderRef} data-flash={flash || undefined}>
-              <div className={view.actuations ? styles.orderFields3 : styles.orderFields}>
-                <label className={styles.field}>
-                  <span>{t.dnLabel}</span>
+              <label className={styles.field}>
+                <span>{t.dnLabel}</span>
+                <span className={styles.selectBox}>
                   <select value={size} onChange={(e) => setSize(e.target.value)}>
                     {sheet.sizes.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                   <ChevronDown size={16} aria-hidden="true" />
-                </label>
-                <div className={styles.field} role="group" aria-label={t.pnLabel}>
-                  <span aria-hidden="true">{t.pnLabel}</span>
+                </span>
+              </label>
+              <div className={styles.field} role="group" aria-label={t.pnLabel}>
+                <span aria-hidden="true">{t.pnLabel}</span>
+                <div className={styles.segment}>
+                  {PRESSURES.map((p) => (
+                    <button key={p} type="button" aria-pressed={pn === p} className={pn === p ? styles.segmentOn : undefined} onClick={() => setPn(p)}>{p}</button>
+                  ))}
+                </div>
+              </div>
+              {view.actuations && (
+                <div className={styles.field} role="group" aria-label={t.actLabel}>
+                  <span aria-hidden="true">{t.actLabel}</span>
                   <div className={styles.segment}>
-                    {PRESSURES.map((p) => (
-                      <button key={p} type="button" aria-pressed={pn === p} className={pn === p ? styles.segmentOn : undefined} onClick={() => setPn(p)}>{p}</button>
+                    {view.actuations.map((a, i) => (
+                      <button key={a} type="button" aria-pressed={actuation === i} className={actuation === i ? styles.segmentOn : undefined} onClick={() => setActuation(i)}>{a}</button>
                     ))}
                   </div>
                 </div>
-                {view.actuations && (
-                  <div className={styles.field} role="group" aria-label={t.actLabel}>
-                    <span aria-hidden="true">{t.actLabel}</span>
-                    <div className={styles.segment}>
-                      {view.actuations.map((a, i) => (
-                        <button key={a} type="button" aria-pressed={actuation === i} className={actuation === i ? styles.segmentOn : undefined} onClick={() => setActuation(i)}>{a}</button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              )}
               <div className={styles.ctas}>
-                <Link href="/cotizar" className={styles.primary}>{t.quote} <ArrowRight size={17} aria-hidden="true" /></Link>
-                {topDoc ? (
-                  <a href={topDoc} download className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.download}</a>
-                ) : (
-                  <Link href={requestDocumentHref(`Ficha técnica · ${base.productName}`)} className={styles.secondary}><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>
-                )}
-                <button type="button" className={styles.cartBtn} onClick={addCurrent} data-added={added || undefined} aria-label={added ? t.added : t.addCart} title={added ? t.added : t.addCart}>
-                  {added ? <Check size={19} strokeWidth={2.6} aria-hidden="true" /> : <ShoppingCart size={19} aria-hidden="true" />}
+                <button type="button" className="lp-btn lp-btn--solid lp-btn--lg" onClick={addCurrent} data-added={added || undefined}>
+                  {added ? <Check key="ok" size={18} strokeWidth={2.6} aria-hidden="true" className="mo-check" /> : <ShoppingCart key="cart" size={18} aria-hidden="true" />}
+                  {added ? t.added : t.addCart}
                 </button>
+                {topDoc ? (
+                  <a href={topDoc} download className="lp-btn lp-btn--outline lp-btn--lg"><FileText size={17} aria-hidden="true" /> {t.download}</a>
+                ) : (
+                  <Link href={requestDocumentHref(`Ficha técnica · ${base.productName}`)} className="lp-btn lp-btn--outline lp-btn--lg"><FileText size={17} aria-hidden="true" /> {t.requestSheet}</Link>
+                )}
               </div>
+              <Link href="/cotizar" className={styles.quoteLink}>{t.quote} <ArrowRight size={15} aria-hidden="true" /></Link>
             </div>
-          </div>
-        </section>
+          </aside>
 
-        {/* Franja de datos a todo el ancho bajo la foto y el pedido: la columna de la foto ya no deja un hueco debajo. */}
-        <div className={styles.keyBand} data-reveal>
-          {/* Placa de datos: como la placa de una válvula, cuatro valores grandes bajo un filete fuerte. */}
-          <ul className={styles.facts} aria-label={t.facts}>
-            {view.facts.map(([k, v]) => (
-              <li key={k}>
-                <span className={styles.factLabel}>{k}</span>
-                <strong>{v}</strong>
-              </li>
-            ))}
-          </ul>
-
-          <ul className={styles.highlights} aria-label={t.highlights}>
-            {view.highlights.map(([title, detail]) => (
-              <li key={title}>
-                <strong>{title}</strong>
-                <span>{detail}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className={styles.body}>
-        <div className={styles.wrap}>
-          <section id="descripcion" className={styles.desc} aria-label={t.description}>
-            <div className={styles.descGrid}>
-              <div className={styles.descMain} data-reveal>
-                <h2 ref={descTitleRef}>{t.descLead}</h2>
-                {paragraphs(view.description ?? t.descFallback).map((p) => <p key={p.slice(0, 24)} className={styles.descText}>{p}</p>)}
-              </div>
-              {/* Foto de aplicaciones: el titular abajo y los usos como una regla de cuatro, sin cápsulas de vidrio. */}
-              <figure className={styles.descPhoto} data-reveal="media" style={{ ["--d" as string]: "120ms" }}>
-                <Image src="/media/home-ref-infrastructure.webp" alt="" fill sizes="(min-width: 1024px) 620px, 100vw" />
-                <figcaption>
-                  <span className={styles.srOnly}>{t.applications}: </span>
-                  <strong className={styles.appsHeadline}>{t.appsHeadline}</strong>
-                  <ul className={styles.apps} aria-label={t.applications}>
-                    {t.apps.map((label, i) => {
-                      const Icon = APP_ICONS[i % APP_ICONS.length];
-                      return <li key={label} style={{ ["--i" as string]: i }}><Icon size={16} strokeWidth={1.8} aria-hidden="true" />{label}</li>;
-                    })}
-                  </ul>
-                </figcaption>
-              </figure>
-            </div>
-            {/* Ventajas en una fila bajo la descripción y la foto: cada texto tiene ancho para justificarse sin huecos. */}
-            <h3 className={styles.srOnly}>{t.advantages}</h3>
-            <ul className={styles.features} data-reveal="stagger">
-              {view.features.map((f) => {
-                const Icon = FEATURE_ICONS[f.icon];
-                return (
-                  <li key={f.title}>
-                    <Icon className={styles.featIcon} size={22} strokeWidth={1.6} aria-hidden="true" />
-                    <span className={styles.featText}>
-                      <strong>{f.title}</strong>
-                      <span>{f.text}</span>
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-
-          <section id="especificaciones" className={styles.specs} aria-label={t.specs}>
-            <header className={styles.headRow} data-reveal>
-              <h2>{t.specs}</h2>
-              <p className={styles.headNote}>{view.specsNote} {t.specsPrevail}</p>
-            </header>
-            {/* Hoja técnica por grupos: el título del grupo a la izquierda y sus datos en una cuadrícula pareja a la derecha. */}
-            <div className={styles.specSheet} data-reveal="stagger">
-              {specCards.map((group) => (
-                <section key={group.id} className={styles.specGroup} aria-label={group.title}>
-                  <h3>{group.title}</h3>
-                  {/* Roles explícitos: la tabla se maqueta como cuadrícula y sigue leyéndose como tabla. */}
-                  <table className={styles.table} role="table" aria-label={group.title}>
-                    <tbody role="rowgroup">
-                      {group.rows.map(([k, v]) => <tr key={k} role="row"><th scope="row" role="rowheader">{k}</th><td role="cell">{v}</td></tr>)}
-                    </tbody>
-                  </table>
-                </section>
+          <div className={styles.detail}>
+            <ul className={styles.facts} aria-label={t.facts} data-reveal>
+              {view.facts.map(([k, v]) => (
+                <li key={k}>
+                  <span className={styles.factLabel}>{k}</span>
+                  <strong className="dato">{v}</strong>
+                </li>
               ))}
-            </div>
-          </section>
+            </ul>
 
-          {!flyerDocs && (
-          <section id="documentacion" className={styles.docStrip} aria-label={t.docs} data-reveal>
-            <h2 className={styles.srOnly}>{t.docs}</h2>
-            {doc ? (
-              <div className={styles.docRow}>
-                <div className={styles.docStack}>
-                  {docPages[1] && <span className={`${styles.docLeaf} ${styles.docLeafA}`} aria-hidden="true"><Image src={docPages[1].src} alt="" fill sizes="120px" /></span>}
-                  {docPages[2] && <span className={`${styles.docLeaf} ${styles.docLeafB}`} aria-hidden="true"><Image src={docPages[2].src} alt="" fill sizes="120px" /></span>}
-                  <button type="button" className={styles.docCover} onClick={openDoc} aria-label={t.previewLabel} title={t.previewLabel}>
-                    <Image src={doc.pages[0].src} alt={pageAlt(0)} fill sizes="120px" />
-                  </button>
-                </div>
-                <div className={styles.docInfo}>
-                  <p className={styles.docTitle}>{view.docTitle}</p>
-                  <p className={styles.docMeta}><span className={styles.docType}>PDF</span>{view.docMeta.replace(/^PDF · /, "")} · {docIncludes.join(" · ")}</p>
-                </div>
-                <div className={styles.docActions}>
-                  <a href={doc.href} download className={styles.docButton}><Download size={16} aria-hidden="true" /> {t.download}</a>
-                  <button type="button" className={styles.docGhost} onClick={openDoc}><Eye size={16} aria-hidden="true" /> {t.docView}</button>
-                </div>
+            <section id="descripcion" aria-label={t.description} data-reveal>
+              <h2 className={styles.detailTitle}>{t.description}</h2>
+              <div className={styles.prose}>
+                {paragraphs(view.description ?? t.descFallback).map((p) => <p key={p.slice(0, 24)}>{p}</p>)}
               </div>
-            ) : (
-              <div className={styles.docRow}>
-                <div className={styles.docRequest}><FileText size={28} aria-hidden="true" /></div>
-                <div className={styles.docInfo}>
-                  <p className={styles.docTitle}>{en ? "Datasheet" : "Ficha técnica"} · {productName}</p>
-                  <p className={styles.docMeta}>{t.docOnRequest}</p>
-                </div>
-                <div className={styles.docActions}>
-                  <Link href={requestDocumentHref(`Ficha técnica · ${base.productName}`)} className={styles.docButton}><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>
-                </div>
-              </div>
-            )}
-          </section>
-          )}
+              <ul className={styles.highlights} aria-label={t.highlights}>
+                {view.highlights.map(([title, detail]) => (
+                  <li key={title}>
+                    <strong>{title}</strong>
+                    <span>{detail}</span>
+                  </li>
+                ))}
+              </ul>
+              <h3 className={styles.srOnly}>{t.advantages}</h3>
+              <ul className={styles.features}>
+                {view.features.map((f) => (
+                  <li key={f.title}>
+                    <strong>{f.title}</strong>
+                    <span>{f.text}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className={styles.apps}><strong>{t.applications}:</strong> {t.apps.join(" · ")}</p>
+            </section>
 
-          {flyerDocs && (
-            <section id="documentacion" className={styles.flyers} aria-labelledby="flyers-title">
-              <header className={styles.headRow} data-reveal>
-                <h2 id="flyers-title">{t.flyers.title}</h2>
-                <p className={styles.headNote}>{t.flyers.lead}</p>
+            <section id="especificaciones" aria-label={t.specs}>
+              <header data-reveal>
+                <h2 className={styles.detailTitle}>{t.specs}</h2>
+                <p className={styles.note}>{view.specsNote} {t.specsPrevail}</p>
               </header>
-              <div className={styles.flyerGrid} data-reveal="stagger">
-                {view.flyers.map((f, i) => {
-                  const act = actIndexOf(f.id);
-                  const inUse = !!view.actuations && actuation === act;
-                  return (
-                    <article key={f.id} className={styles.flyerCard} data-active={inUse || undefined} aria-labelledby={`flyer-${f.id}`}>
-                      <button type="button" className={styles.flyerPreview} onClick={() => openFlyer(f)} aria-label={t.flyers.viewLabel(f.title)}>
-                        <Image src={f.preview} alt={f.alt} width={1250} height={1616} sizes="(min-width: 1100px) 250px, (min-width: 640px) 34vw, 82vw" />
-                        <span className={styles.flyerZoom} aria-hidden="true"><Maximize2 size={16} /></span>
-                      </button>
-                      <div className={styles.flyerBody}>
-                        <span className={styles.flyerOption}>{t.flyers.option(i + 1)}</span>
-                        <h3 id={`flyer-${f.id}`}>{f.title}</h3>
-                        <p className={styles.flyerSub}>{f.subtitle}</p>
-                        <ul className={styles.flyerPoints}>
-                          {f.points.map((p) => <li key={p}><Check size={15} strokeWidth={2.6} aria-hidden="true" />{p}</li>)}
-                        </ul>
-                        <p className={styles.flyerMeta}><FileText size={15} aria-hidden="true" />{f.meta}</p>
-                        <div className={styles.flyerActions}>
-                          <a href={f.href} download className={styles.docButton} aria-label={t.flyers.downloadLabel(f.title)}><Download size={16} aria-hidden="true" /> {t.flyers.download}</a>
-                          <button type="button" className={styles.docGhost} onClick={() => openFlyer(f)} aria-label={t.flyers.viewLabel(f.title)}><Eye size={16} aria-hidden="true" /> {t.flyers.view}</button>
-                        </div>
-                        {view.actuations && (
-                          <button type="button" className={styles.flyerUse} aria-pressed={inUse} onClick={() => chooseActuation(act)}>
-                            {inUse ? <Check size={15} strokeWidth={2.6} aria-hidden="true" /> : <ShoppingCart size={15} aria-hidden="true" />}
-                            {inUse ? t.flyers.inUse : t.flyers.use}
-                          </button>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
+              <div className={styles.specSheet} data-reveal="stagger">
+                {specCards.map((group) => (
+                  <section key={group.id} aria-label={group.title}>
+                    <h3>{group.title}</h3>
+                    {/* Roles explícitos: la tabla se maqueta como cuadrícula y sigue leyéndose como tabla. */}
+                    <table className={styles.table} role="table" aria-label={group.title}>
+                      <tbody role="rowgroup">
+                        {group.rows.map(([k, v]) => <tr key={k} role="row"><th scope="row" role="rowheader">{k}</th><td role="cell">{v}</td></tr>)}
+                      </tbody>
+                    </table>
+                  </section>
+                ))}
               </div>
             </section>
-          )}
 
-          <section id="dimensiones" className={styles.dimsSection} aria-label={t.tabs.dimensiones}>
-            <header className={styles.headRow} data-reveal>
-              <h2>{t.dims}</h2>
-              <p className={styles.headNote}>{view.dimsNote}</p>
-            </header>
+            <section id="dimensiones" aria-label={t.tabs.dimensiones}>
+              <header data-reveal>
+                <h2 className={styles.detailTitle}>{t.dims}</h2>
+                <p className={styles.note}>{view.dimsNote}</p>
+              </header>
 
-            <div className={styles.dimsTop}>
               <div className={styles.plan} data-reveal>
                 <div className={styles.planHead}>
                   <span>{t.plan}</span>
-                  <span className={styles.planRange}>{sheet.sizeRange}</span>
+                  <span className="dato">{sheet.sizeRange}</span>
                 </div>
                 <div className={styles.planDraw}>
-                  {/* Al cambiar de diámetro el plano se monta de nuevo y vuelve a dibujarse. */}
+                  {/* Al cambiar de diámetro el plano se monta de nuevo y aparece con opacidad. */}
                   <ValvePlan key={cotas.dn} cotas={cotas} label={t.plan} />
                 </div>
                 <fieldset className={styles.sizes}>
@@ -621,13 +473,13 @@ export function W06Ficha(props: { variant?: Variant }) {
                       <button key={s} type="button" aria-pressed={size === s} className={size === s ? styles.sizeActive : styles.size} onClick={() => setSize(s)}>{s}</button>
                     ))}
                   </div>
-                  <p className={styles.planHint}>{t.planHint}</p>
+                  <p className={styles.note}>{t.planHint}</p>
                 </fieldset>
               </div>
 
-              <div className={styles.dimsTable} data-reveal style={{ ["--d" as string]: "120ms" }}>
+              <div className={styles.dimBlock} data-reveal>
                 <h3>{t.table}</h3>
-                <div className={styles.tableWrap}>
+                <div className={styles.tableWrap} tabIndex={0} role="region" aria-label={t.table}>
                   <table className={styles.dims}>
                     <thead><tr>{view.dimsHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                     <tbody>
@@ -640,73 +492,139 @@ export function W06Ficha(props: { variant?: Variant }) {
                   </table>
                 </div>
               </div>
-            </div>
 
-            {/* Lo del diámetro elegido, en tarjetas parejas bajo el plano y la tabla. */}
-            <div className={styles.dimsCards} data-reveal="stagger">
-              {dimRow && (
-                <section className={styles.measureCard} aria-label={`${t.measures} · ${size}`} key={`m-${size}`}>
-                  <h3>{t.measures} · {size}</h3>
-                  <dl className={styles.measure}>
-                    {sheet.dims.head.slice(1).map((h, i) => (
-                      <div key={h}><dt>{view.dimsHead[i + 1]}</dt><dd>{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
-                    ))}
-                  </dl>
-                </section>
-              )}
-              <section className={styles.flangeCard} aria-label={`${view.flangeTitle} · ${size}`} key={`f-${size}`}>
-                <h3>{view.flangeTitle} · {size}</h3>
-                <p>{view.flangeNote}</p>
-                <div className={styles.tableWrap}>
-                  <table className={styles.flange}>
-                    <thead><tr>{view.flangeHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
-                    <tbody>
-                      {sheet.flange.rows(size).map(({ pn, cells }) => (
-                        <tr key={pn}><th scope="row"><span className={styles.pn}>{pn}</span></th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
+              <div className={styles.dimBlocks} data-reveal="stagger">
+                {dimRow && (
+                  <section className={styles.dimBlock} aria-label={`${t.measures} · ${size}`} key={`m-${size}`}>
+                    <h3>{t.measures} · {size}</h3>
+                    <dl className={styles.measure}>
+                      {sheet.dims.head.slice(1).map((h, i) => (
+                        <div key={h}><dt>{view.dimsHead[i + 1]}</dt><dd className="dato">{dimRow.cells[i] ?? "-"}{h === "Pulg." ? "\"" : ""}</dd></div>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
-
-              {view.stem && (
-                <section className={styles.flangeCard} aria-label={`${view.stem.title} · ${size}`} key={`s-${size}`}>
-                  <h3>{view.stem.title} · {size}</h3>
-                  <p>{view.stem.note}</p>
-                  <div className={styles.tableWrap}>
-                    <table className={styles.flange}>
-                      <thead><tr>{view.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                    </dl>
+                  </section>
+                )}
+                <section className={styles.dimBlock} aria-label={`${view.flangeTitle} · ${size}`} key={`f-${size}`}>
+                  <h3>{view.flangeTitle} · {size}</h3>
+                  <p className={styles.note}>{view.flangeNote}</p>
+                  <div className={styles.tableWrap} tabIndex={0} role="region" aria-label={view.flangeTitle}>
+                    <table className={styles.dims}>
+                      <thead><tr>{view.flangeHead.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
                       <tbody>
-                        {view.stem.rows(size).map(({ pn, cells }) => (
-                          <tr key={pn}>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
+                        {sheet.flange.rows(size).map(({ pn: rowPn, cells }) => (
+                          <tr key={rowPn}><th scope="row">{rowPn}</th>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 </section>
-              )}
-            </div>
-          </section>
-        </div>
-      </div>
 
-      <div className={styles.wrap}>
-        <section className={styles.related} aria-labelledby="related-title" data-reveal>
-          <div className={styles.relatedHead}>
-            <h2 id="related-title">{t.related}</h2>
-            <Link href="/productos" className={styles.allLink}>{t.allProducts} <ArrowRight size={15} aria-hidden="true" /></Link>
+                {view.stem && (
+                  <section className={styles.dimBlock} aria-label={`${view.stem.title} · ${size}`} key={`s-${size}`}>
+                    <h3>{view.stem.title} · {size}</h3>
+                    <p className={styles.note}>{view.stem.note}</p>
+                    <div className={styles.tableWrap} tabIndex={0} role="region" aria-label={view.stem.title}>
+                      <table className={styles.dims}>
+                        <thead><tr>{view.stem.head.map((h) => <th key={h} scope="col">{h}</th>)}</tr></thead>
+                        <tbody>
+                          {view.stem.rows(size).map(({ pn: rowPn, cells }) => (
+                            <tr key={rowPn}>{cells.map((c, i) => <td key={i}>{c ?? "-"}</td>)}</tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                )}
+              </div>
+            </section>
+
+            {!flyerDocs && (
+              <section id="documentacion" className={styles.docStrip} aria-label={t.docs} data-reveal>
+                <h2 className={styles.detailTitle}>{t.docs}</h2>
+                {doc ? (
+                  <div className={styles.docRow}>
+                    <button type="button" className={styles.docCover} onClick={openDoc} aria-label={t.previewLabel} title={t.previewLabel}>
+                      <Image src={doc.pages[0].src} alt={pageAlt(0)} fill sizes="88px" />
+                    </button>
+                    <div className={styles.docInfo}>
+                      <span className={styles.docTitle}>{view.docTitle}</span>
+                      <span className={styles.docMeta}>{view.docMeta}</span>
+                    </div>
+                    <div className={styles.docActions}>
+                      <a href={doc.href} download className="lp-btn lp-btn--outline"><Download size={16} aria-hidden="true" /> {t.download}</a>
+                      <button type="button" className={styles.docGhost} onClick={openDoc}><Eye size={16} aria-hidden="true" /> {t.docView}</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.docRow}>
+                    <div className={styles.docInfo}>
+                      <span className={styles.docTitle}>{en ? "Datasheet" : "Ficha técnica"} · {productName}</span>
+                      <span className={styles.docMeta}>{t.docOnRequest}</span>
+                    </div>
+                    <div className={styles.docActions}>
+                      <Link href={requestDocumentHref(`Ficha técnica · ${base.productName}`)} className="lp-btn lp-btn--outline"><FileText size={16} aria-hidden="true" /> {t.requestSheet}</Link>
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {flyerDocs && (
+              <section id="documentacion" aria-labelledby="flyers-title">
+                <header data-reveal>
+                  <h2 id="flyers-title" className={styles.detailTitle}>{t.flyers.title}</h2>
+                  <p className={styles.note}>{t.flyers.lead}</p>
+                </header>
+                <div className={styles.flyerGrid} data-reveal="stagger">
+                  {view.flyers.map((f, i) => {
+                    const act = actIndexOf(f.id);
+                    const inUse = !!view.actuations && actuation === act;
+                    return (
+                      <article key={f.id} className={styles.flyerCard} data-active={inUse || undefined} aria-labelledby={`flyer-${f.id}`}>
+                        <button type="button" className={styles.flyerPreview} onClick={() => openFlyer(f)} aria-label={t.flyers.viewLabel(f.title)}>
+                          <Image src={f.preview} alt={f.alt} width={1250} height={1616} sizes="(min-width: 1100px) 220px, (min-width: 640px) 34vw, 50vw" />
+                        </button>
+                        <div className={styles.flyerBody}>
+                          <span className={styles.note}>{t.flyers.option(i + 1)}</span>
+                          <h3 id={`flyer-${f.id}`}>{f.title}</h3>
+                          <span className={styles.note}>{f.subtitle}</span>
+                          <ul className={styles.flyerPoints}>
+                            {f.points.map((p) => <li key={p}>{p}</li>)}
+                          </ul>
+                          <span className={styles.note}>{f.meta}</span>
+                          <div className={styles.flyerActions}>
+                            <a href={f.href} download className="lp-btn lp-btn--outline" aria-label={t.flyers.downloadLabel(f.title)}><Download size={16} aria-hidden="true" /> {t.flyers.download}</a>
+                            <button type="button" className={styles.docGhost} onClick={() => openFlyer(f)} aria-label={t.flyers.viewLabel(f.title)}><Eye size={16} aria-hidden="true" /> {t.flyers.view}</button>
+                          </div>
+                          {view.actuations && (
+                            <button type="button" className={styles.flyerUse} aria-pressed={inUse} onClick={() => chooseActuation(act)}>
+                              {inUse ? <Check size={15} strokeWidth={2.6} aria-hidden="true" /> : <ShoppingCart size={15} aria-hidden="true" />}
+                              {inUse ? t.flyers.inUse : t.flyers.use}
+                            </button>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
           </div>
-          <div className={styles.relatedGrid}>
-            {RELATED.map((r, i) => {
+        </div>
+
+        <section className={styles.related} aria-labelledby="related-title">
+          <div className={`cota ${styles.relatedHead}`} data-reveal>
+            <h2 id="related-title">{t.related}</h2>
+            <Link href="/productos" className={styles.quoteLink}>{t.allProducts} <ArrowRight size={15} aria-hidden="true" /></Link>
+          </div>
+          <div className="celdas" data-reveal="stagger">
+            {RELATED.map((r) => {
               const [title, text] = r[lang];
               return (
-                <Link key={r.src} href={r.href} className={styles.relCard} style={{ ["--i" as string]: i }} aria-label={`${t.seeSheet}: ${title}`}>
-                  <span className={styles.relImage}><Image src={BASE + r.src} alt="" fill sizes="(min-width: 1024px) 22vw, 50vw" /></span>
-                  <span className={styles.relBody}>
-                    <strong>{title}</strong>
-                    <span>{text}</span>
-                  </span>
-                  <span className={styles.relArrow} aria-hidden="true"><ArrowUpRight size={18} /></span>
+                <Link key={r.src} href={r.href} className="celda" aria-label={`${t.seeSheet}: ${title}`}>
+                  <span className={`celda__media ${styles.relMedia}`}><Image src={BASE + r.src} alt="" width={640} height={640} sizes="(min-width: 1261px) 25vw, (min-width: 860px) 33vw, 50vw" /></span>
+                  <span className={`celda__nombre ${styles.relName}`}>{title}</span>
+                  <span className="celda__nota">{text}</span>
                 </Link>
               );
             })}
@@ -714,24 +632,10 @@ export function W06Ficha(props: { variant?: Variant }) {
         </section>
       </div>
 
-      <section className={styles.cta} aria-labelledby="ficha-cta-title" data-reveal>
-        <div className={styles.ctaInner}>
-          <div className={styles.ctaCopy}>
-            <h2 id="ficha-cta-title">{t.ctaTitle}</h2>
-            <p className={styles.ctaText}>{t.ctaText}</p>
-            <ul className={styles.ctaPoints}>
-              {t.ctaPoints.map((point, i) => {
-                const Icon = CTA_ICONS[i % CTA_ICONS.length];
-                return <li key={point}><Icon size={17} strokeWidth={1.9} aria-hidden="true" />{point}</li>;
-              })}
-            </ul>
-            <div className={styles.ctaActions}>
-              <Link href="/contacto" className={styles.ctaPrimary}>{t.ctaButton} <ArrowRight size={17} aria-hidden="true" /></Link>
-            </div>
-          </div>
-        </div>
-        <div className={styles.ctaVisual}>
-          <Image src="/media/valvulas-page/asesoria.webp" alt="" fill sizes="(min-width: 1024px) 840px, 100vw" />
+      <section className="banda-cierre on-dark" aria-labelledby="ficha-cta-title">
+        <div className={styles.wrap}>
+          <h2 id="ficha-cta-title" data-reveal>{t.ctaTitle}</h2>
+          <Link href="/contacto" className="lp-btn lp-btn--solid">{t.ctaButton} <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
 
@@ -766,7 +670,7 @@ export function W06Ficha(props: { variant?: Variant }) {
             <div className={styles.docBody}>
               {docCount > 1 && <button type="button" className={styles.docNavPrev} aria-label={t.prevPage} onClick={() => stepDoc(-1)}><ChevronLeft size={22} aria-hidden="true" /></button>}
               <div className={styles.docScroll} key={`${preview.href}-${docPage}`}>
-                <Image src={preview.pages[docPage].src} alt={preview.pages[docPage].alt} width={preview.pages[docPage].width} height={preview.pages[docPage].height} sizes="(min-width: 1024px) 860px, 100vw" priority className={styles.docPage} />
+                <Image src={preview.pages[docPage].src} alt={preview.pages[docPage].alt} width={preview.pages[docPage].width} height={preview.pages[docPage].height} sizes="(min-width: 1024px) 860px, 100vw" loading="eager" className={styles.docPage} />
               </div>
               {docCount > 1 && <button type="button" className={styles.docNavNext} aria-label={t.nextPage} onClick={() => stepDoc(1)}><ChevronRight size={22} aria-hidden="true" /></button>}
             </div>

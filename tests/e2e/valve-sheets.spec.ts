@@ -32,7 +32,7 @@ test.describe("fichas de válvulas con datos de la lista de precios", () => {
 
       const whatsapp = page.getByRole("link", { name: "Cotizar por WhatsApp" });
       await expect(whatsapp).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
-      await page.getByRole("button", { name: "Agregar a cotización" }).click();
+      await page.getByRole("button", { name: "Agregar a cotización", exact: true }).click();
       const stored = await page.evaluate(() => localStorage.getItem("fundigsac-quote"));
       expect(stored).toContain(sheet.slug);
     });

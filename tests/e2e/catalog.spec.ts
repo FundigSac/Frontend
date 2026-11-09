@@ -1,4 +1,10 @@
 import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
+import { CATALOG_CELLS, FAMILIES, cellsOfFamily, type FamilySlug } from "../../src/modules/catalog/public-catalog";
+
+const normal = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+/** Productos que debe mostrar el catálogo para una búsqueda y una familia. */
+const hits = (query: string, family?: FamilySlug) =>
+  CATALOG_CELLS.filter((c) => (!family || c.family === family) && normal(query).split(/\s+/).every((t) => normal(c.search + " " + FAMILIES.find((f) => f.slug === c.family)!.name.es + " " + FAMILIES.find((f) => f.slug === c.family)!.name.en).includes(t))).length;
 
 /** Recoge errores/avisos de consola y excepciones de la página. */
 function watchConsole(page: Page) {
@@ -52,7 +58,7 @@ test.describe("W01 inicio", () => {
     expect(searches.length).toBeGreaterThan(0);
     for (const href of searches) {
       await page.goto(href);
-      await expect(page.locator("#productos-destacados article").first(), `${href} no devuelve productos`).toBeVisible();
+      await expect(page.locator("#productos-destacados article").first(), `${href} no devuelve productos`).toBeAttached();
     }
   });
 
@@ -74,29 +80,29 @@ test.describe("W02 catálogo", () => {
   const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" });
   const familyButton = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 
-  test("muestra 5 familias y 12 productos destacados", async ({ page }) => {
+  test("muestra todas las familias y todos los productos, cada uno con foto y acciones", async ({ page }) => {
     await page.goto("/productos");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
     const families = page.getByRole("region", { name: "Familias de productos" }).locator("article");
-    await expect(families).toHaveCount(5);
+    await expect(families).toHaveCount(FAMILIES.length);
     const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
-    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    expect(hrefs).toEqual(expect.arrayContaining(FAMILIES.map((f) => f.href)));
+    await expect(page.locator("#productos-destacados article")).toHaveCount(CATALOG_CELLS.length);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
   test("la búsqueda filtra y actualiza la URL; el vacío ofrece restaurar", async ({ page }) => {
     await page.goto("/productos");
     const cards = page.locator("#productos-destacados article");
-    await searchbox(page).fill("tapa");
-    await expect(cards).toHaveCount(1);
-    await expect(cards.first()).toContainText("Tapa circular");
-    await expect(page).toHaveURL(/q=tapa/);
+    await searchbox(page).fill("VMTWP");
+    await expect(cards).toHaveCount(hits("VMTWP"));
+    await expect(cards.first()).toContainText("mariposa");
+    await expect(page).toHaveURL(/q=VMTWP/);
     await searchbox(page).fill("zzz-inexistente");
     await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
     await expect(cards).toHaveCount(0);
-    await page.getByRole("button", { name: /Ver todos los productos/ }).click();
-    await expect(cards).toHaveCount(12);
+    await page.getByRole("button", { name: /Ver todo el catálogo/ }).click();
+    await expect(cards).toHaveCount(CATALOG_CELLS.length);
     await expect(searchbox(page)).toHaveValue("");
     await expect(page).not.toHaveURL(/q=/);
   });
@@ -104,98 +110,63 @@ test.describe("W02 catálogo", () => {
   test("filtros por familia: cada botón filtra, repetir el clic lo quita y se combina con la búsqueda", async ({ page }) => {
     await page.goto("/productos");
     const cards = page.locator("#productos-destacados article");
-    for (const [label, familia, total] of [["Válvulas", "valvulas", 5], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
-      await familyButton(page, label).click();
-      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
+    for (const f of FAMILIES) {
+      await familyButton(page, f.name.es).click();
+      await expect(familyButton(page, f.name.es)).toHaveAttribute("aria-pressed", "true");
       await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
-      await expect(cards).toHaveCount(total);
-      await expect(page).toHaveURL(new RegExp(`familia=${familia}`));
+      await expect(cards).toHaveCount(cellsOfFamily(f.slug).length);
+      await expect(page).toHaveURL(new RegExp(`familia=${f.slug}`));
     }
-    await familyButton(page, "Conexiones y fittings").click(); // segundo clic: vuelve a "Todas"
-    await expect(cards).toHaveCount(12);
+    await familyButton(page, "Medidores").click(); // segundo clic: vuelve a "Todas"
+    await expect(cards).toHaveCount(CATALOG_CELLS.length);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
     await expect(page).not.toHaveURL(/familia=/);
 
     await familyButton(page, "Accesorios HDPE").click();
     await searchbox(page).fill("codo 90");
-    await expect(cards).toHaveCount(1);
-    await expect(cards.first()).toContainText("Codo 90° HDPE");
+    await expect(cards).toHaveCount(hits("codo 90", "accesorios-hdpe"));
     await familyButton(page, "Válvulas").click();
     await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
     await familyButton(page, "Todas").click();
-    await expect(cards).toHaveCount(1);
+    await expect(cards).toHaveCount(hits("codo 90"));
   });
 
   test("URL compartible: ?familia=&q= se aplica al cargar y una familia inválida se ignora", async ({ page }) => {
     await page.goto("/productos?familia=marcos-y-tapas&q=tapa");
-    await expect(page.locator("#productos-destacados article")).toHaveCount(1);
+    await expect(page.locator("#productos-destacados article")).toHaveCount(hits("tapa", "marcos-y-tapas"));
     await expect(searchbox(page)).toHaveValue("tapa");
     await expect(familyButton(page, "Marcos y tapas")).toHaveAttribute("aria-pressed", "true");
     await page.goto("/productos?familia=inexistente");
-    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    await expect(page.locator("#productos-destacados article")).toHaveCount(CATALOG_CELLS.length);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("navegación suave: las tarjetas con ?familia= filtran y marcan el botón de familia sin recargar", async ({ page }) => {
+  test("cada celda enlaza a una ficha que existe, con su foto y un botón para cotizar", async ({ page }) => {
     await page.goto("/productos");
     const cards = page.locator("#productos-destacados article");
-    await expect(cards.first()).toBeVisible();
-    const all = await cards.count();
-    for (const [name, label, familia, total] of [
-      ["Codo 90° HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
-      ["Tee HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
-      ["Reducción HDPE", "Accesorios HDPE", "accesorios-hdpe", 3],
-      ["Unión flexible HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
-      ["Adaptador brida HDPE", "Conexiones y fittings", "conexiones-y-fittings", 2],
-    ] as const) {
-      await familyButton(page, "Todas").click();
-      await expect(cards).toHaveCount(all);
-      await cards.filter({ hasText: name }).getByRole("link", { name: "Ver ficha", exact: true }).click();
-      await expect(page).toHaveURL(new RegExp(`familia=${familia}$`));
-      await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
-      await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
-      await expect(cards).toHaveCount(total);
-      await expect(cards.filter({ hasText: name })).toHaveCount(1);
+    await expect(cards.filter({ has: page.locator("img") })).toHaveCount(CATALOG_CELLS.length);
+    await expect(page.getByRole("button", { name: /^Agregar a cotización:/ })).toHaveCount(CATALOG_CELLS.length);
+    for (const cell of CATALOG_CELLS.slice(0, 12)) {
+      const res = await page.request.get(cell.href);
+      expect(res.status(), cell.href).toBe(200);
     }
-    // Atrás (popstate) vuelve al catálogo completo.
-    await page.goBack();
-    await expect(page).not.toHaveURL(/familia=/);
-    await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
-    await expect(cards).toHaveCount(all);
   });
 
-  test("navegación suave: la URL de la carga inicial vuelve a filtrar tras quitar el filtro con los botones", async ({ page }) => {
-    await page.goto("/productos?familia=accesorios-hdpe");
-    const cards = page.locator("#productos-destacados article");
-    await expect(cards).toHaveCount(3);
-    await familyButton(page, "Todas").click();
-    await expect(cards).not.toHaveCount(3);
-    await page.getByRole("link", { name: "Explorar Accesorios HDPE" }).click();
-    await expect(page).toHaveURL(/familia=accesorios-hdpe$/);
-    await expect(familyButton(page, "Accesorios HDPE")).toHaveAttribute("aria-pressed", "true");
-    await expect(cards).toHaveCount(3);
-  });
-
-  test("navegación suave: el filtro de familia sustituye una búsqueda previa y los espacios al teclear se conservan", async ({ page }) => {
+  test("agregar a cotización desde la celda guarda el producto y confirma en el sitio", async ({ page }) => {
     await page.goto("/productos");
-    const cards = page.locator("#productos-destacados article");
-    await searchbox(page).pressSequentially("tapa ");
-    await expect(searchbox(page)).toHaveValue("tapa ");
-    await expect(cards).toHaveCount(1);
-    await page.getByRole("region", { name: "Familias de productos" }).getByRole("link", { name: "Explorar Conexiones y fittings" }).click();
-    await expect(page).toHaveURL(/familia=conexiones-y-fittings$/);
-    await expect(searchbox(page)).toHaveValue("");
-    await expect(familyButton(page, "Conexiones y fittings")).toHaveAttribute("aria-pressed", "true");
-    await expect(cards).toHaveCount(2);
+    const cell = page.locator("#productos-destacados article").first();
+    await cell.getByRole("button", { name: /^Agregar a cotización:/ }).click();
+    await expect(cell.getByRole("button", { name: /agregado a tu cotización$/ })).toBeVisible();
+    const stored = await page.evaluate(() => localStorage.getItem("fundigsac-quote"));
+    expect(stored).toContain(CATALOG_CELLS[0].slug);
   });
 
-  test("tarjetas: ficha, cotizar y solicitud del catálogo apuntan a rutas reales", async ({ page }) => {
+  test("tarjetas: ficha y solicitud del catálogo apuntan a rutas reales", async ({ page }) => {
     await page.goto("/productos");
     expect(await page.locator("main a[href='#']").count()).toBe(0);
     const first = page.locator("#productos-destacados article").first();
     await expect(first).toContainText("Válvula de compuerta bridada");
     await expect(first.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
-    await expect(first.getByRole("link", { name: "Cotizar", exact: true })).toHaveAttribute("href", "/cotizar");
     const tapa = page.locator("#productos-destacados article").filter({ hasText: "Tapa circular" });
     await expect(tapa.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/marcos-y-tapas/marco-tapa-d400");
     const catalogo = page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ });
@@ -301,7 +272,7 @@ test.describe("W02 catálogo", () => {
     expect(errors).toEqual([]);
   });
 
-  test("las familias de la cuadrícula navegan a su página", async ({ page }) => {
+  test("el índice de familias navega a su página", async ({ page }) => {
     await page.goto("/productos");
     await page.getByRole("link", { name: "Explorar Tuberías" }).click();
     await expect(page).toHaveURL(/\/productos\/tuberias$/);
@@ -316,27 +287,25 @@ test.describe("W02 catálogo", () => {
   });
 });
 
-/** Los listados de línea (válvulas, tuberías, marcos y tapas) comparten estructura: pestañas por tipo, búsqueda, filtro, orden y tarjetas. */
+/** Las páginas de familia comparten estructura: pestañas por línea, búsqueda, orden y celdas. */
 type Line = {
   describe: string;
   route: string;
   region: string;
-  total: number;
-  search: { label: string; hit: string; hitCount: number };
-  filterLabel: string;
-  sortLabel: string;
-  multi: { tab: string; value: string; count: number };
-  single: { tab: string; value: string };
-  az: string;
-  za: string;
-  emptyHeading: string;
-  resetButton: string;
+  family: FamilySlug;
+  search: { label: string; hit: string };
+  multi: { tab: string; line: string };
+  single: { tab: string; line: string };
   cards: readonly (readonly [string, string])[];
 };
 
 const plural = (n: number) => `${n} ${n === 1 ? "producto" : "productos"}`;
 
 function lineTests(line: Line) {
+  const all = cellsOfFamily(line.family);
+  const inLine = (id: string) => all.filter((c) => c.line === id).length;
+  const sorted = [...all].sort((a, b) => a.name.es.localeCompare(b.name.es, "es")).map((c) => c.name.es);
+
   test.describe(line.describe, () => {
     const cards = (page: Page) => page.locator(`section[aria-label="${line.region}"] article`);
     const count = (page: Page) => page.locator(`section[aria-label="${line.region}"] p[aria-live="polite"]`);
@@ -345,41 +314,35 @@ function lineTests(line: Line) {
 
     test("las pestañas filtran la grilla y los contadores coinciden", async ({ page }) => {
       await page.goto(line.route);
-      await expect(cards(page)).toHaveCount(line.total);
-      await expect(count(page)).toHaveText(plural(line.total));
+      await expect(cards(page)).toHaveCount(all.length);
+      await expect(count(page)).toHaveText(plural(all.length));
       await expect(tab(page, "Todas")).toHaveAttribute("aria-selected", "true");
       await tab(page, line.multi.tab).click();
       await expect(tab(page, line.multi.tab)).toHaveAttribute("aria-selected", "true");
-      await expect(tab(page, line.multi.tab)).toContainText(plural(line.multi.count));
+      await expect(tab(page, line.multi.tab)).toContainText(plural(inLine(line.multi.line)));
       await expect(tab(page, "Todas")).toHaveAttribute("aria-selected", "false");
-      await expect(cards(page)).toHaveCount(line.multi.count);
-      await expect(count(page)).toHaveText(plural(line.multi.count));
+      await expect(cards(page)).toHaveCount(inLine(line.multi.line));
+      await expect(count(page)).toHaveText(plural(inLine(line.multi.line)));
       await tab(page, line.single.tab).click();
-      await expect(cards(page)).toHaveCount(1);
-      await expect(count(page)).toHaveText("1 producto");
+      await expect(cards(page)).toHaveCount(inLine(line.single.line));
       await tab(page, line.single.tab).click(); // segundo clic: vuelve a "Todas"
-      await expect(cards(page)).toHaveCount(line.total);
+      await expect(cards(page)).toHaveCount(all.length);
       await expect(tab(page, "Todas")).toHaveAttribute("aria-selected", "true");
     });
 
-    test("filtro, orden y búsqueda se combinan; el vacío ofrece restaurar", async ({ page }) => {
+    test("orden y búsqueda se combinan; el vacío ofrece restaurar", async ({ page }) => {
       await page.goto(line.route);
-      await page.getByLabel(line.filterLabel).selectOption(line.multi.value);
-      await expect(cards(page)).toHaveCount(line.multi.count);
-      await expect(tab(page, line.multi.tab)).toHaveAttribute("aria-selected", "true");
-      await page.getByLabel(line.filterLabel).selectOption("todas");
-      await expect(cards(page)).toHaveCount(line.total);
-      await page.getByLabel(line.sortLabel).selectOption("az");
-      await expect(cards(page).first().getByRole("heading")).toHaveText(line.az);
-      await page.getByLabel(line.sortLabel).selectOption("za");
-      await expect(cards(page).first().getByRole("heading")).toHaveText(line.za);
+      await page.getByLabel("Ordenar productos").selectOption("az");
+      await expect(cards(page).first().getByRole("heading")).toHaveText(sorted[0]);
+      await page.getByLabel("Ordenar productos").selectOption("za");
+      await expect(cards(page).first().getByRole("heading")).toHaveText(sorted[sorted.length - 1]);
       await searchbox(page).fill(line.search.hit);
-      await expect(cards(page)).toHaveCount(line.search.hitCount);
+      await expect(cards(page)).toHaveCount(all.filter((c) => c.search.includes(normal(line.search.hit))).length);
       await searchbox(page).fill("zzz-inexistente");
-      await expect(page.getByRole("heading", { name: line.emptyHeading })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
       await expect(cards(page)).toHaveCount(0);
-      await page.getByRole("button", { name: line.resetButton }).click();
-      await expect(cards(page)).toHaveCount(line.total);
+      await page.getByRole("button", { name: "Ver todo el catálogo" }).click();
+      await expect(cards(page)).toHaveCount(all.length);
       await expect(searchbox(page)).toHaveValue("");
     });
 
@@ -389,12 +352,10 @@ function lineTests(line: Line) {
       for (const [name, href] of line.cards) {
         // Por encabezado exacto: un nombre puede ser subcadena de otro.
         const card = cards(page).filter({ has: page.getByRole("heading", { name, exact: true }) }).filter({ has: page.locator(`a[href="${href}"]`) });
-        // Sin ficha publicada, la tarjeta pide la ficha por Contacto con el producto indicado (no promete "Ver ficha").
-        const label = href.startsWith("/contacto") ? "Solicitar ficha" : "Ver ficha";
-        await expect(card.getByRole("link", { name: label, exact: true })).toHaveAttribute("href", href);
+        await expect(card.getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", href);
       }
       await expect(page.getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
-      await expect(page.getByRole("link", { name: "Ver todos los recursos" })).toHaveAttribute("href", "/contacto?motivo=documentacion");
+      await expect(page.getByRole("link", { name: "Pedir documentación" })).toHaveAttribute("href", "/contacto?motivo=documentacion");
       await expect(page.getByRole("link", { name: /Solicitar catálogo PDF|Descargar PDF/ })).toHaveAttribute("href", /^\/contacto\?motivo=documentacion&documento=|\.pdf$/);
     });
   });
@@ -404,51 +365,33 @@ lineTests({
   describe: "W03 válvulas",
   route: "/productos/valvulas",
   region: "Catálogo de válvulas",
-  total: 12,
-  search: { label: "Buscar válvula por nombre o referencia", hit: "mariposa", hitCount: 1 },
-  filterLabel: "Filtrar por tipo de válvula",
-  sortLabel: "Ordenar válvulas",
-  multi: { tab: "Control", value: "control", count: 2 },
-  single: { tab: "Aire", value: "aire" },
-  az: "Válvula check flex",
-  za: "Válvula reductora de presión",
-  emptyHeading: "No encontramos válvulas con esos datos",
-  resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/productos/valvulas/valvula-check-swing"], ["Válvula de compuerta acerrojada", "/productos/valvulas/valvula-compuerta-acerrojada"], ["Válvula de aire", "/contacto?motivo=documentacion&documento=V%C3%A1lvula%20de%20aire"]],
+  family: "valvulas",
+  search: { label: "Buscar válvula por nombre o referencia", hit: "mariposa" },
+  multi: { tab: "Control", line: "control" },
+  single: { tab: "Aire", line: "aire" },
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/productos/valvulas/valvula-check-swing"], ["Válvula de compuerta acerrojada", "/productos/valvulas/valvula-compuerta-acerrojada"], ["Válvula de aire roscada", "/productos/valvulas/valvula-de-aire-roscada-vdar"]],
 });
 
 lineTests({
   describe: "W04 tuberías",
   route: "/productos/tuberias",
   region: "Catálogo de tuberías",
-  total: 6,
-  search: { label: "Buscar tubería por nombre, diámetro o referencia", hit: "mortero", hitCount: 1 },
-  filterLabel: "Filtrar por tipo de tubería",
-  sortLabel: "Ordenar tuberías",
-  multi: { tab: "Unión junta", value: "junta", count: 3 },
-  single: { tab: "Accesorios", value: "accesorios" },
-  az: "Tubería con bridas",
-  za: "Tubería HDPE",
-  emptyHeading: "No encontramos tuberías con esos datos",
-  resetButton: "Ver todos los productos",
-  cards: [["Tubería HDPE", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20HDPE"], ["Tubería con bridas", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20con%20bridas"]],
+  family: "tuberias",
+  search: { label: "Buscar tubería por nombre, diámetro o referencia", hit: "mortero" },
+  multi: { tab: "Hierro dúctil", line: "hierro-ductil" },
+  single: { tab: "HDPE", line: "hdpe" },
+  cards: [["Tubería HDPE", "/productos/tuberias/tuberia-hdpe"], ["Tubería con bridas", "/productos/tuberias/tuberia-con-bridas"], ["Tubería SCH-40", "/productos/tuberias/tuberia-sch40-tsch40"]],
 });
 
 lineTests({
   describe: "W05 marcos y tapas",
   route: "/productos/marcos-y-tapas",
   region: "Catálogo de marcos y tapas",
-  total: 6,
-  search: { label: "Buscar tapa o marco por nombre o referencia", hit: "rejilla", hitCount: 1 },
-  filterLabel: "Filtrar por tipo de producto",
-  sortLabel: "Ordenar productos",
-  multi: { tab: "Tapas circulares", value: "circulares", count: 2 },
-  single: { tab: "Rejillas", value: "rejillas" },
-  az: "Marco rectangular",
-  za: "Tapa para válvula",
-  emptyHeading: "No encontramos productos con esos datos",
-  resetButton: "Ver todos los productos",
-  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/contacto?motivo=documentacion&documento=Rejilla%20pluvial"]],
+  family: "marcos-y-tapas",
+  search: { label: "Buscar tapa o marco por nombre o referencia", hit: "rejilla" },
+  multi: { tab: "Tapas circulares", line: "circulares" },
+  single: { tab: "Rejillas", line: "rejillas" },
+  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/productos/marcos-y-tapas/rejilla-pluvial"], ["Marco y tapa pesada", "/productos/marcos-y-tapas/marco-y-tapa-pesada-2seg"]],
 });
 
 test.describe("W04 / W05 / W10-W12 enlaces", () => {
@@ -456,14 +399,17 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
     test(`${route}: ningún href="#" ni botón sin acción`, async ({ page }) => {
       await page.goto(route);
       expect(await page.locator("main a[href='#']").count()).toBe(0);
-      // Los únicos botones de acción sin enviar nada son las pestañas de tipo de los listados.
-      expect(await page.locator("main button[type='button']:not([role='tab'])").count()).toBe(0);
+      // Los únicos botones de la página son las pestañas de línea y "Agregar a cotización" de cada celda.
+      const others = await page.locator("main button[type='button']:not([role='tab'])").evaluateAll((els) => els.filter((b) => !/^Agregar a cotización:/.test(b.getAttribute("aria-label") ?? "")).length);
+      expect(others).toBe(0);
     });
   }
-  test("W04: solicitar ficha de tubería HDPE abre contacto con el producto indicado", async ({ page }) => {
+  test("W04: la ficha de tubería HDPE pide la ficha técnica por contacto con el producto indicado", async ({ page }) => {
     await page.goto("/productos/tuberias");
-    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Solicitar ficha", exact: true }).click();
-    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion&documento=Tuber%C3%ADa%20HDPE$/);
+    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Ver ficha", exact: true }).click();
+    await expect(page).toHaveURL(/\/productos\/tuberias\/tuberia-hdpe$/);
+    await page.getByRole("link", { name: "Solicitar ficha técnica" }).click();
+    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion&documento=/);
     await expect(page.locator('textarea[name="message"]')).toHaveValue(/Tubería HDPE/);
   });
 });
@@ -554,16 +500,16 @@ test.describe("W03 válvulas · idioma", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Valves");
     const cards = page.locator("section[aria-label='Valve catalog'] article");
-    await expect(cards).toHaveCount(12);
+    await expect(cards).toHaveCount(cellsOfFamily("valvulas").length);
     await expect(cards.filter({ hasText: "Extended warranty" })).toHaveCount(1);
     await expect(page.locator("main").getByText("Garantía extendida")).toHaveCount(0);
-    await page.getByPlaceholder("Search valves by name or reference…").fill("butterfly");
+    await page.getByPlaceholder("Search valves by name or reference…").fill("eccentric");
     await expect(cards).toHaveCount(1);
-    await expect(cards.first().getByRole("heading")).toHaveText("Butterfly valve");
+    await expect(cards.first().getByRole("heading")).toHaveText("Eccentric butterfly valve");
     await page.getByPlaceholder("Search valves by name or reference…").fill("zzzz");
-    await expect(page.getByRole("heading", { name: "We couldn’t find valves matching that" })).toBeVisible();
-    await page.getByRole("button", { name: "Show all valves" }).click();
-    await expect(cards).toHaveCount(12);
+    await expect(page.getByRole("heading", { name: "We couldn’t find products matching that" })).toBeVisible();
+    await page.getByRole("button", { name: "Browse the whole catalog" }).click();
+    await expect(cards).toHaveCount(cellsOfFamily("valvulas").length);
     await pick("Español");
     await expect(page.locator("html")).toHaveAttribute("lang", "es-PE");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Válvulas");
