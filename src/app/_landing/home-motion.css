@@ -682,6 +682,7 @@ html:has(main.lp) {
 
 .ho-docs__plate {
   display: block;
+  aspect-ratio: 1186 / 784;
   padding: var(--sp-4);
   border: 1px solid var(--c-border);
   border-radius: var(--r-media);
@@ -691,7 +692,8 @@ html:has(main.lp) {
 .ho-docs__plate img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   transition: transform var(--mo-base) var(--mo-ease);
 }
 
@@ -781,4 +783,13 @@ html:has(main.lp) {
   .ho-split--map .lp-location__map {
     min-height: 480px;
   }
+}
+
+/* Las fotos bajo el pliegue no se descargan antes del primer pintado: sin esto, "lazy" las pedía todas igual en móvil
+   (el navegador adelanta hasta 2500 px) y competían con el LCP. Cada contenedor ya reserva su alto con aspect-ratio. */
+.ho-cells .lp-card__media,
+.ho-strip__img,
+.ho-split .lp-backing__media,
+.ho-docs__plate {
+  content-visibility: auto;
 }
