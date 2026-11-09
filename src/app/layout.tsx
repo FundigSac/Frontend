@@ -17,7 +17,8 @@ import { ToastProvider } from "@/shared/ui/toast";
 import "./globals.css";
 
 // Una sola familia variable con eje de ancho: los títulos usan font-stretch 85 %. La monoespaciada es solo para códigos y medidas.
-const plex = IBM_Plex_Sans({ subsets: ["latin"], axes: ["wdth"], variable: "--font-sans", display: "swap" });
+// Sin precarga: Chrome retrasa el primer pintado hasta que llega una fuente precargada, y eso dejaba el título detrás del JavaScript.
+const plex = IBM_Plex_Sans({ subsets: ["latin"], axes: ["wdth"], variable: "--font-sans", display: "swap", preload: false });
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: "400", variable: "--font-mono", display: "swap", preload: false });
 
 export const metadata: Metadata = {
