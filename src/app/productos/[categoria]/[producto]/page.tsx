@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
+import { findCatalogSheet } from "@/modules/catalog/public-catalog";
 import { CATEGORIES, PRODUCTS, findProduct, type ProductEntry } from "@/modules/catalog/registry";
 import { findValveSheet } from "@/modules/catalog/valve-sheets";
+import { CatalogSheetView } from "@/screens/islands/catalog-sheet";
 import { ValveSheetView } from "@/screens/islands/valve-sheet";
 import { W06Ficha } from "@/screens/islands/w06-ficha";
 import { DATASHEETS } from "@/screens/islands/w06-ficha-data";
@@ -55,7 +57,7 @@ const plainValue = (value: string) => value.replace(/\s*\((?:ASTM|ISO|AWWA)[^)]*
 
 /** Filas de la tabla técnica visible, como pares nombre y valor. */
 function specProperties(slug: string) {
-  const rows = W06_SPECS[slug] ?? findValveSheet(slug)?.es.specs ?? [];
+  const rows = W06_SPECS[slug] ?? findCatalogSheet(slug)?.specs.es ?? [];
   return rows
     .map(([name, value]) => [name, plainValue(value)] as const)
     .filter(([label, value]) => !PENDING_LABEL.test(label) && !PENDING_VALUE.test(value))
@@ -85,9 +87,11 @@ function productJsonLd(product: ProductEntry, categoryName: string, url: string)
 export default async function ProductPage({ params }: Props) {
   const { categoria, producto } = await params;
   const product = findProduct(categoria, producto);
+  // Fichas de válvula con pantalla propia, luego las pantallas W06/W07–W09 y, para el resto del catálogo, la ficha genérica.
   const sheet = product ? findValveSheet(product.slug) : undefined;
+  const generic = product && !sheet ? findCatalogSheet(product.slug) : undefined;
   const view = product && SCREENS[product.slug];
-  if (!product || (!view && !sheet)) notFound();
+  if (!product || (!view && !sheet && !generic)) notFound();
   const category = CATEGORIES.find((c) => c.slug === product.category);
   const path = `/productos/${product.category}/${product.slug}`;
   const url = `${SITE.url}${path}`;
@@ -105,7 +109,7 @@ export default async function ProductPage({ params }: Props) {
             : productJsonLd(product, category?.name ?? product.category, url),
         ]}
       />
-      {sheet ? <ValveSheetView slug={sheet.slug} /> : view && <view.Screen />}
+      {sheet ? <ValveSheetView slug={sheet.slug} /> : view ? <view.Screen /> : generic && <CatalogSheetView sheet={generic} />}
     </>
   );
 }

@@ -1,12 +1,13 @@
 import type { ComponentType } from "react";
 import { ScreenW23 } from "@/screens/w23";
+import { CATALOG_ROUTES, FAMILIES, type FamilySlug } from "./public-catalog";
 import { VALVE_SHEETS } from "./valve-sheets";
 
-export type CategorySlug = "valvulas" | "tuberias" | "marcos-y-tapas";
+export type CategorySlug = FamilySlug;
 
 /**
- * Solo datos (y pantallas de servidor sin CSS propio). Las pantallas del catálogo con CSS module (válvulas, tuberías,
- * marcos, fichas) las importa cada ruta: si estuvieran aquí, todas las páginas que usan el registro cargarían ese CSS.
+ * Solo datos (y pantallas de servidor sin CSS propio). Las pantallas del catálogo con CSS module las importa cada ruta:
+ * si estuvieran aquí, todas las páginas que usan el registro cargarían ese CSS.
  */
 /** `title`: título para buscadores (si falta se usa `name`); `description`: meta description, solo con datos de la página. */
 export type CategoryEntry = { slug: CategorySlug; name: string; title?: string; description: string };
@@ -17,7 +18,7 @@ export type ProductEntry = {
   /** Título completo para buscadores (sin la plantilla "| FUNDIGSAC"), cuando `name` se repite en otra ficha. */
   title?: string;
   description: string;
-  /** false: pantalla de referencia con datos pendientes de validación; nunca se indexa ni entra al sitemap. */
+  /** false: ficha con datos pendientes de validación; nunca se indexa ni entra al sitemap. */
   indexable?: false;
   /** W23: visor 3D del producto (solo existe diseño para la válvula de compuerta). */
   Viewer3D?: ComponentType;
@@ -29,11 +30,7 @@ export type ProductEntry = {
   sku?: string;
 };
 
-export const CATEGORIES: readonly CategoryEntry[] = [
-  { slug: "valvulas", name: "Válvulas", title: "Válvulas de hierro dúctil en Perú", description: "Válvulas de compuerta, check, reductoras, de alivio y flotadoras de hierro dúctil. Consulta DN, PN y materiales en cada ficha y solicita tu cotización." },
-  { slug: "tuberias", name: "Tuberías", title: "Tuberías de hierro dúctil C40, K9 y K7", description: "Tubería de hierro dúctil clases C40, K9 y K7 para redes de agua potable y alcantarillado. Consulta diámetros disponibles y solicita tu cotización." },
-  { slug: "marcos-y-tapas", name: "Marcos y tapas", title: "Marcos y tapas de buzón D400 en Perú", description: "Marcos y tapas de buzón clase D400 de 600 mm con uno o dos seguros, para vías y redes de alcantarillado. Compara modelos y solicita tu cotización." },
-];
+export const CATEGORIES: readonly CategoryEntry[] = FAMILIES.map((f) => ({ slug: f.slug, name: f.name.es, title: f.metaTitle, description: f.metaDescription }));
 
 export const PRODUCTS: readonly ProductEntry[] = [
   { category: "valvulas", slug: "valvula-compuerta", name: "Válvula de compuerta bridada", title: "Válvula de compuerta bridada DN40 a DN600 | FUNDIGSAC", description: "Válvula de compuerta de cierre elástico con extremos bridados, DN40 a DN600 y PN10/PN16. Revisa la ficha técnica y cotiza con FUNDIGSAC en Lima.", Viewer3D: ScreenW23, image: "/media/valvula-hd/v-01.webp", brand: "H-ITALY" },
@@ -41,9 +38,16 @@ export const PRODUCTS: readonly ProductEntry[] = [
   { category: "valvulas", slug: "valvula-compuerta-fundigsac-garantia-extendida", name: "Válvula de compuerta bridada FUNDIGSAC", title: "Válvula de compuerta FUNDIGSAC con garantía extendida", description: "Válvula de compuerta FUNDIGSAC con garantía extendida: cierre elástico, extremos bridados, DN40 a DN600 y PN10/PN16 en hierro dúctil. Cotiza desde Lima.", image: "/media/valvula-fundigsac-cuadrante/g-01.webp", brand: "FUNDIGSAC" },
   // Fichas con datos de la lista de precios y de fundigsac.com (src/modules/catalog/valve-sheets.ts).
   ...VALVE_SHEETS.map((s): ProductEntry => ({ category: "valvulas", slug: s.slug, name: s.es.name, title: `${s.title} | FUNDIGSAC`, description: s.description, image: s.image, sku: s.code })),
-  { category: "valvulas", slug: "valvula-mariposa", name: "Referencia visual de válvula", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
-  { category: "tuberias", slug: "tuberia-tyton", name: "Referencia visual de tubería", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
-  { category: "marcos-y-tapas", slug: "marco-tapa-d400", name: "Referencia visual de marco y tapa", indexable: false, description: "Pantalla de referencia. La denominación comercial, variantes y especificaciones están pendientes de validación." },
+  // Lista de precios y productos con la ficha por confirmar (src/modules/catalog/public-catalog.ts).
+  ...CATALOG_ROUTES.map((r): ProductEntry => ({
+    category: r.family,
+    slug: r.slug,
+    name: r.name,
+    description: r.description,
+    image: r.image,
+    ...(r.sku ? { sku: r.sku } : {}),
+    ...(r.indexable === false ? { indexable: false as const } : {}),
+  })),
 ];
 
 export const findCategory = (slug: string) => CATEGORIES.find((c) => c.slug === slug);

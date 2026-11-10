@@ -1,0 +1,90 @@
+/* Piezas de la ficha genérica que la ficha de válvula no tiene: medida, aviso de ficha por confirmar y sectores.
+   Usa los tonos definidos en .page de valve-sheet.module.css. */
+.photoNote {
+  margin-top: 8px;
+  color: var(--ink-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.pending {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 560px;
+  margin-top: 20px;
+  padding: 12px 14px;
+  border: 1px dashed #c9a46a;
+  border-radius: 10px;
+  background: #fff8ec;
+  color: #5a4016;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.pending svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  max-width: 340px;
+  margin-top: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.selectBox {
+  position: relative;
+  display: block;
+}
+
+.selectBox select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 40px 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  appearance: none;
+}
+
+.selectBox svg {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+
+.sectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  margin-top: 18px;
+  font-size: 14px;
+}
+
+.sectors span {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.sectors a {
+  color: var(--link);
+  font-weight: 600;
+}
+
+html[data-lp-theme="dark"] .pending {
+  border-color: #8a6a37;
+  background: rgb(255 200 120 / 8%);
+  color: #f1dcb6;
+}
