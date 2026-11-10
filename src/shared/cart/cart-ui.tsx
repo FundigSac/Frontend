@@ -17,10 +17,20 @@ export function CartThumb({ item, size = 72 }: { item: Pick<CartItem, "slug" | "
   );
 }
 
+/**
+ * Selector de cantidad accesible (X7-3): botones − / + con el nombre del producto en su etiqueta, mínimo 1 y máximo
+ * MAX_QTY. Mientras se escribe se permite el campo vacío; al salir del campo, un valor vacío o menor que 1 vuelve a 1.
+ * El nuevo total del carrito lo anuncia la cabecera (CartCountAnnouncer).
+ */
 export function QtyStepper({ item, t }: { item: CartItem; t: CartCopy }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = (raw: string) => {
+    setDraft(null);
+    setQuantity(item, Number(raw) || 1);
+  };
   return (
     <div className="ct-qty" role="group" aria-label={`${t.quantity}: ${item.name}`}>
-      <button type="button" onClick={() => setQuantity(item, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={t.decrease}>
+      <button type="button" onClick={() => setQuantity(item, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={`${t.decrease}: ${item.name}`}>
         <Minus aria-hidden="true" size={14} strokeWidth={2.4} />
       </button>
       <input
@@ -28,11 +38,18 @@ export function QtyStepper({ item, t }: { item: CartItem; t: CartCopy }) {
         inputMode="numeric"
         min={1}
         max={MAX_QTY}
-        value={item.quantity}
-        aria-label={t.quantity}
-        onChange={(e) => setQuantity(item, Number(e.target.value))}
+        step={1}
+        value={draft ?? item.quantity}
+        aria-label={`${t.quantity}: ${item.name}`}
+        onChange={(e) => {
+          const raw = e.target.value;
+          if (raw === "" || Number(raw) < 1) setDraft(raw);
+          else commit(raw);
+        }}
+        onBlur={(e) => draft !== null && commit(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && draft !== null && commit(e.currentTarget.value)}
       />
-      <button type="button" onClick={() => setQuantity(item, item.quantity + 1)} disabled={item.quantity >= MAX_QTY} aria-label={t.increase}>
+      <button type="button" onClick={() => setQuantity(item, item.quantity + 1)} disabled={item.quantity >= MAX_QTY} aria-label={`${t.increase}: ${item.name}`}>
         <Plus aria-hidden="true" size={14} strokeWidth={2.4} />
       </button>
     </div>

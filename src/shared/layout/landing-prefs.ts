@@ -130,7 +130,7 @@ export const COPY = {
 } as const;
 
 /** Cantidad total de productos en la cotización (localStorage "fundigsac-quote"). */
-function readQuoteCount(): number {
+export function readQuoteCount(): number {
   try {
     const items = JSON.parse(window.localStorage.getItem("fundigsac-quote") || "[]") as { quantity?: number }[];
     return items.reduce((sum, i) => sum + (Number(i.quantity) || 1), 0);

@@ -11,7 +11,7 @@ import { SITE } from "@/shared/config/site";
 import { openCookiePreferences } from "./cookie-events";
 import { isHeroOverlayHeader, isProductPath } from "./landing-paths";
 import { useHome } from "./home-copy";
-import { COPY, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
+import { COPY, readQuoteCount, useLang, useQuoteCount, useTheme, type Lang } from "./landing-prefs";
 import "../../app/landing.css";
 // Capa de movimiento de la portada: va en la misma hoja que landing.css para no sumar una petición que bloquee el
 // primer pintado (+150 ms medidos en móvil); sus reglas solo tocan clases de la portada.
@@ -52,6 +52,27 @@ function IntentLink({ onMouseEnter, onFocus, onTouchStart, ...props }: React.Com
       onTouchStart={(e) => { setIntent(true); onTouchStart?.(e); }}
     />
   );
+}
+
+/**
+ * Anuncia a lectores de pantalla el nuevo total de la cotización cuando la persona agrega, quita o cambia cantidades
+ * (X7-3). Solo reacciona al evento del carrito: al cargar la página no se anuncia nada.
+ */
+function CartCountAnnouncer({ lang }: { lang: Lang }) {
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    const onChange = () => {
+      const n = readQuoteCount();
+      setMessage(
+        lang === "en"
+          ? n ? `My quote: ${n} ${n === 1 ? "unit" : "units"}` : "My quote is empty"
+          : n ? `Mi cotización: ${n} ${n === 1 ? "unidad" : "unidades"}` : "Tu cotización está vacía",
+      );
+    };
+    window.addEventListener("quote-updated", onChange);
+    return () => window.removeEventListener("quote-updated", onChange);
+  }, [lang]);
+  return <span className="sr-only" role="status" aria-live="polite" aria-atomic="true" data-cart-announcer>{message}</span>;
 }
 
 function Avatar({ user }: { user: AuthUser }) {
@@ -332,6 +353,7 @@ export function LandingHeader() {
             <ShoppingCart aria-hidden="true" size={19} strokeWidth={1.8} />
             {quoteCount > 0 && <span className="lp-cart__badge" aria-hidden="true">{quoteCount > 99 ? "99+" : quoteCount}</span>}
           </button>
+          <CartCountAnnouncer lang={lang} />
           <Link href="/cotizar" className="lp-btn lp-btn--solid lp-header__quote">
             <span className="lp-header__quote-label">{t.quote}</span> <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
           </Link>
