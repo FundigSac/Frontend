@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { AssistantLauncher } from "@/shared/assistant/assistant-launcher";
 import { GoogleAnalytics } from "@/shared/analytics/google-analytics";
 import { CartHost } from "@/shared/cart/cart-host";
@@ -16,15 +16,14 @@ import { SourceGuard } from "@/shared/security/source-guard";
 import { ToastProvider } from "@/shared/ui/toast";
 import "./globals.css";
 
-// Una sola familia variable con eje de ancho: los títulos usan font-stretch 85 %. La monoespaciada es solo para códigos y medidas.
-// Sin precarga: Chrome retrasa el primer pintado hasta que llega una fuente precargada, y eso dejaba el título detrás del JavaScript.
-const plex = IBM_Plex_Sans({ subsets: ["latin"], axes: ["wdth"], variable: "--font-sans", display: "swap", preload: false });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: "400", variable: "--font-mono", display: "swap", preload: false });
+// Pesos 400/600/700, igual que el export de Stitch (font-medium cae a 400 como en el diseño original).
+const inter = Inter({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-inter", display: "swap", adjustFontFallback: false });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Válvulas y tuberías de hierro dúctil en Perú | FUNDIGSAC", template: "%s | FUNDIGSAC" },
-  description: "Válvulas, tubería de hierro dúctil, marcos y tapas para agua y saneamiento. Revisa cada ficha técnica y solicita tu cotización a FUNDIGSAC desde Lima.",
+  title: { default: "Válvulas industriales y tuberías HDPE en Perú | FUNDIGSAC", template: "%s | FUNDIGSAC" },
+  description: "Válvulas de compuerta bridadas, check y mariposa, tuberías HDPE y de hierro dúctil, marcos, tapas y accesorios para agua y saneamiento en Perú.",
   robots: { index: SITE_INDEXABLE, follow: SITE_INDEXABLE },
   // Sin `url`: cada página que comparta este bloque heredaría la URL de inicio. La imagen sale de opengraph-image.jpg.
   openGraph: { type: "website", locale: "es_PE", siteName: SITE.name },
@@ -41,7 +40,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-PE" data-scroll-behavior="smooth" className={`${plex.variable} ${plexMono.variable}`} suppressHydrationWarning>
+    <html lang="es-PE" data-scroll-behavior="smooth" className={`${inter.variable} ${jakarta.variable}`} suppressHydrationWarning>
       <body className="bg-background font-body-default text-body-default text-on-surface antialiased">
         <SourceGuard />
         <ToastProvider>

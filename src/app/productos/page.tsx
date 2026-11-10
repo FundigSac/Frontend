@@ -1,23 +1,36 @@
-import { CATALOG_CELLS, FAMILIES, cellsOfFamily } from "@/modules/catalog/public-catalog";
-import { SITE } from "@/shared/config/site";
-import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
-import { pageMetadata } from "@/shared/seo/page-metadata";
-import { CatalogView } from "./_catalog/catalog-view";
+import type { Metadata } from "next";
+import { ScreenW02 } from "@/screens/w02";
 
-export const metadata = pageMetadata({
-  title: "Catálogo de válvulas, tuberías y tapas",
-  description: "Catálogo FUNDIGSAC de válvulas, tubería de hierro dúctil, marcos y tapas para redes de agua y alcantarillado. Consulta medidas y pide tu cotización.",
-  path: "/productos",
-});
+export const metadata: Metadata = {
+  title: "Catálogo de válvulas, tuberías HDPE y accesorios",
+  description: "Catálogo FUNDIGSAC de válvulas, tuberías, marcos y tapas de hierro dúctil, accesorios HDPE y conexiones para redes de agua, alcantarillado e infraestructura.",
+  alternates: { canonical: "/productos" },
+};
 
-const FAMILY_INDEX = FAMILIES.map((f) => ({ slug: f.slug, href: f.href, name: f.name, blurb: f.blurb, count: cellsOfFamily(f.slug).length }));
+type SearchParams = Record<string, string | string[] | undefined>;
+type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
 
-// Sin leer searchParams la página es estática y sale del CDN. ?q= y ?familia= los aplica CatalogView en el navegador.
-export default function CatalogPage() {
+function firstValue(value: string | string[] | undefined) {
+  return (Array.isArray(value) ? value[0] : value) ?? "";
+}
+
+function validFamily(value: string): FamilyFilter {
+  return value === "valvulas" || value === "tuberias" || value === "marcos-y-tapas" || value === "accesorios-hdpe" || value === "conexiones-y-fittings"
+    ? value
+    : "todas";
+}
+
+export default async function CatalogPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const params = await searchParams;
+  const initialQuery = firstValue(params.q).slice(0, 120);
+  const initialFamily = validFamily(firstValue(params.familia));
+
   return (
     <>
-      <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }], SITE.url)} />
-      <CatalogView cells={CATALOG_CELLS} families={FAMILY_INDEX} />
+      {/* El hero es un fondo CSS: se precarga la variante del tamaño de pantalla para que sea el LCP temprano. */}
+      <link rel="preload" as="image" href="/media/productos-page/productos7-1600.webp" media="(min-width: 861px)" fetchPriority="high" />
+      <link rel="preload" as="image" href="/media/productos-page/productos7-1200.webp" media="(max-width: 860px)" fetchPriority="high" />
+      <ScreenW02 initialQuery={initialQuery} initialFamily={initialFamily} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { ArrowRight, BarChart3, Lock, MapPinned, ShieldCheck } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { expiresAt } from "@/modules/consent/consent";
 import { isGpcEnabled, saveConsent, useConsent } from "@/modules/consent/store";
@@ -11,6 +11,7 @@ import { useCopy } from "./use-copy";
 type StatusKey = "" | "all" | "necessary" | "saved";
 
 const CARD_KEYS = ["necessary", "thirdParty", "analytics"] as const;
+const CARD_ICONS = [ShieldCheck, MapPinned, BarChart3] as const;
 
 function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange?: (next: boolean) => void; label: string; disabled?: boolean }) {
   return (
@@ -52,31 +53,34 @@ export function CookiePrefs() {
   const dateFmt = new Intl.DateTimeFormat(lang === "en" ? "en-US" : "es-PE", { day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <section className="ls-section ls-section--first lg-prefs" id="preferencias" aria-labelledby={`${uid}-title`}>
-      <h2 id={`${uid}-title`}>{t.title}</h2>
-      <p>{t.text}</p>
+    <section className="lg-prefs" aria-labelledby={`${uid}-title`}>
+      <div className="lg-prefs__head">
+        <p className="lg-eyebrow">{t.eyebrow}</p>
+        <h2 id={`${uid}-title`}>{t.title}</h2>
+        <p>{t.text}</p>
+      </div>
 
-      <ul className="lg-cookies">
+      <ul className="lg-cookie-grid lg-cookie-grid--3">
         {t.cards.map((card, i) => {
           const key = CARD_KEYS[i];
+          const Icon = CARD_ICONS[i];
           const locked = key === "necessary";
           const on = key === "necessary" ? true : values[key];
           return (
             <li className="lg-cookie" key={key}>
-              <div>
-                <h3>{card.title}</h3>
-                <p>{card.text}</p>
-              </div>
+              <span className="lg-cookie__icon" aria-hidden="true"><Icon size={28} strokeWidth={1.5} /></span>
+              <h3>{card.title}</h3>
+              <p>{card.text}</p>
               <div className="lg-switch-row">
-                {locked ? (
-                  <span className="lg-chip"><Lock aria-hidden="true" size={14} /> {t.always}</span>
-                ) : (
-                  <span className={`lg-chip${on ? " lg-chip--on" : ""}`}>{on ? t.on : t.off}</span>
-                )}
                 {key === "necessary" ? (
                   <Switch checked={on} label={card.title} disabled />
                 ) : (
                   <Switch checked={on} label={card.title} onChange={(next) => { setters[key](next); setStatus(""); }} />
+                )}
+                {locked ? (
+                  <span className="lg-chip"><Lock aria-hidden="true" size={13} /> {t.always}</span>
+                ) : (
+                  <span className={`lg-chip${on ? " lg-chip--on" : ""}`}>{on ? t.on : t.off}</span>
                 )}
               </div>
             </li>
@@ -85,24 +89,24 @@ export function CookiePrefs() {
       </ul>
 
       <div className="lg-prefs__actions">
-        <button type="button" className="lp-btn lp-btn--solid" onClick={() => decide({ thirdParty, analytics }, "saved")}>
-          {t.save}
-        </button>
-        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide({ thirdParty: true, analytics: true }, "all")}>
-          {t.acceptAll}
+        <button type="button" className="lp-btn lp-btn--solid" onClick={() => decide({ thirdParty: true, analytics: true }, "all")}>
+          {t.acceptAll} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} />
         </button>
         <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide({ thirdParty: false, analytics: false }, "necessary")}>
           {t.rejectOptional}
         </button>
+        <button type="button" className="lp-btn lp-btn--outline" onClick={() => decide({ thirdParty, analytics }, "saved")}>
+          {t.save}
+        </button>
       </div>
-      <span className="lg-prefs__status" role="status" aria-live="polite">{statusText}</span>
-      {gpc && <span className="lg-prefs__note">{t.gpc}</span>}
+      <p className="lg-prefs__status" role="status" aria-live="polite" style={{ marginTop: 14 }}>{statusText}</p>
+      {gpc && <p className="lg-prefs__note lg-prefs__note--gpc">{t.gpc}</p>}
       {consent && (
-        <span className="lg-prefs__note">
+        <p className="lg-prefs__note lg-prefs__note--saved">
           {t.saved} {dateFmt.format(new Date(consent.savedAt))}. {t.until} {dateFmt.format(expiresAt(consent))}.
-        </span>
+        </p>
       )}
-      <span className="lg-prefs__note">{t.note}</span>
+      <p className="lg-prefs__note">{t.note}</p>
     </section>
   );
 }

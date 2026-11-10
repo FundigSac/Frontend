@@ -95,12 +95,14 @@ test("cotización real: el folio lo asigna la API y la confirmación lo verifica
   await form.locator("[name=razonSocial]").fill("Constructora Andina SAC");
   await form.locator("[name=rucEmpresa]").fill("20131312955");
   await form.locator("[name=tipoProyecto]").selectOption("saneamiento");
-  await form.locator("[name=departamentoDestino]").selectOption("Arequipa");
+  await form.locator("[name=departamentoDestino]").fill("Arequipa");
   await form.locator("[name=nombreSolicitante]").fill("Prueba Automatizada");
   await form.locator("[name=cargoSolicitante]").fill("Compras");
   await form.locator("[name=correoCorporativo]").fill("compras.qa@andina.pe");
   await form.locator("[name=celularContacto]").fill("+51 987 654 321");
-  // Con productos en el carrito, familia, medidas y cantidad salen de la lista: no se vuelven a pedir.
+  await form.locator("[name=familiaPrincipal]").selectOption("valvulas");
+  await form.locator("[name=diametrosNominales]").fill("DN100");
+  await form.locator("[name=cantidadMetrado]").fill("8 unidades");
   await form.locator("[name=consentimiento]").check({ force: true });
   await form.locator("button[type=submit]").click();
 

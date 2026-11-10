@@ -1,27 +1,37 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Copy, Mail, MessageCircle, RotateCcw } from "lucide-react";
+import { ArrowRight, CheckCircle2, Copy, Mail, MessageCircle, MessageSquareWarning, Megaphone, RotateCcw } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { newIdempotencyKey, submitForm } from "@/modules/backend/client";
 import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
+import { LeadSubmit, useLeadState } from "@/modules/leads/lead-form";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { SITE } from "@/shared/config/site";
 import { buildClaimMessage, mailtoUrl, whatsappUrl } from "./claim-message";
 import { complaintBody, formatDueDate } from "./claim-request";
 import { CLAIMS } from "./copy";
-import { CheckField, ErrorSummary, ErrorsProvider, Field, SubmitButton, useFormErrors } from "./form-kit";
-import { SHEET_UI } from "./sheet-copy";
 import { useCopy } from "./use-copy";
-import "./forms.css";
 
 type Kind = "RECLAMO" | "QUEJA";
-type Contact = { email: string; whatsappNumber: string };
+type Contact = { email: string; phone?: string; whatsappNumber: string };
+
+function Field({ id, label, required, full, children }: { id: string; label: string; required?: boolean; full?: boolean; children: React.ReactNode }) {
+  return (
+    <div className={`lg-field${full ? " lg-field--full" : ""}`}>
+      <label htmlFor={id}>
+        {label} {required && <em aria-hidden="true">*</em>}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 function CountedArea({ id, name, label, placeholder, minLength }: { id: string; name: string; label: string; placeholder: string; minLength?: number }) {
   const [length, setLength] = useState(0);
   return (
-    <Field id={id} label={label} required full counter={<span className="ls-count" aria-hidden="true">{length} / 1000</span>}>
-      <textarea id={id} name={name} required minLength={minLength} maxLength={1000} rows={5} placeholder={placeholder} onChange={(e) => setLength(e.target.value.length)} />
+    <Field id={id} label={label} required full>
+      <textarea id={id} name={name} required minLength={minLength} maxLength={1000} rows={4} placeholder={placeholder} onChange={(e) => setLength(e.target.value.length)} onReset={() => setLength(0)} />
+      <span className="lg-count" aria-hidden="true">{length} / 1000</span>
     </Field>
   );
 }
@@ -34,10 +44,11 @@ const DOC_RULES: Record<string, { pattern: string; max: number; mode: "numeric" 
   PASAPORTE: { pattern: "[A-Za-z0-9]{6,12}", max: 12, mode: "text" },
 };
 
-function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind: Kind) => void; onMedium: (medium: string) => void; forget: (ids: readonly string[]) => void }) {
+function Fields() {
   const t = useCopy(CLAIMS);
-  const ui = useCopy(SHEET_UI);
+  const { status, reference, message } = useLeadState();
   const uid = useId();
+  const [kind, setKind] = useState<Kind>("RECLAMO");
   const [docType, setDocType] = useState("");
   const [minor, setMinor] = useState(false);
   const [maxDate, setMaxDate] = useState<string | undefined>();
@@ -55,10 +66,26 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
     return () => window.cancelAnimationFrame(id);
   }, []);
 
+  if (status === "success") {
+    return (
+      <div className="lg-success" role="status">
+        <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
+        <h2>{t.success.title.replace("{kind}", noun)}</h2>
+        <p className="lg-text">{t.success.text}</p>
+        {reference && <code>{reference}</code>}
+        <button type="button" className="lp-btn lp-btn--outline" onClick={() => window.location.reload()}>
+          {t.success.again}
+        </button>
+      </div>
+    );
+  }
+
+  const submitLabel = isClaim ? t.submit.reclamo : t.submit.queja;
+
   return (
     <>
       <div className="lg-provider" role="group" aria-label={t.provider.title}>
-        <strong className="lg-provider__title">{t.provider.title}</strong>
+        <p className="lg-provider__title">{t.provider.title}</p>
         <dl>
           <div><dt>{t.provider.name}</dt><dd>{SITE.registeredName}</dd></div>
           <div><dt>{t.provider.ruc}</dt><dd>{SITE.ruc}</dd></div>
@@ -67,26 +94,30 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
         </dl>
       </div>
 
-      <fieldset className="ls-fieldset">
+      <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">1</span> {t.legends[0]}</legend>
-        <div className="ls-kind">
+        <div className="lg-kind">
           <label>
-            <input type="radio" name="tipoReclamacion" value="RECLAMO" checked={isClaim} onChange={() => onKind("RECLAMO")} />
+            <input type="radio" name="tipoReclamacion" value="RECLAMO" checked={isClaim} onChange={() => setKind("RECLAMO")} />
+            <Megaphone className="lg-kind__icon" aria-hidden="true" size={36} strokeWidth={1.5} />
             <strong>{t.kinds.reclamo.title}</strong>
             <small>{t.kinds.reclamo.text}</small>
+            <span className="lg-kind__dot" aria-hidden="true" />
           </label>
           <label>
-            <input type="radio" name="tipoReclamacion" value="QUEJA" checked={!isClaim} onChange={() => onKind("QUEJA")} />
+            <input type="radio" name="tipoReclamacion" value="QUEJA" checked={!isClaim} onChange={() => setKind("QUEJA")} />
+            <MessageSquareWarning className="lg-kind__icon" aria-hidden="true" size={36} strokeWidth={1.5} />
             <strong>{t.kinds.queja.title}</strong>
             <small>{t.kinds.queja.text}</small>
+            <span className="lg-kind__dot" aria-hidden="true" />
           </label>
         </div>
       </fieldset>
 
-      <fieldset className="ls-fieldset">
+      <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">2</span> {t.legends[1]}</legend>
-        <div className="ls-grid2">
-          <Field id={`${uid}-n`} label={f.name[0]} required full>
+        <div className="lg-grid2">
+          <Field id={`${uid}-n`} label={f.name[0]} required>
             <input id={`${uid}-n`} name="nombresYApellidosRazon" required autoComplete="name" placeholder={f.name[1]} />
           </Field>
           <Field id={`${uid}-td`} label={f.docType} required>
@@ -109,33 +140,23 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
               placeholder={f.docNumber[1]}
             />
           </Field>
-          <Field id={`${uid}-d`} label={f.address[0]} required full>
+          <Field id={`${uid}-d`} label={f.address[0]} required>
             <input id={`${uid}-d`} name="domicilioLegalOHabitual" required autoComplete="street-address" placeholder={f.address[1]} />
           </Field>
           <Field id={`${uid}-t`} label={f.phone[0]} required>
-            <input id={`${uid}-t`} name="telefonoDeContacto" type="tel" required pattern="[0-9+\s\(\)\-]{7,20}" title={ui.errors.phone} autoComplete="tel" placeholder={f.phone[1]} />
+            <input id={`${uid}-t`} name="telefonoDeContacto" type="tel" required pattern="[0-9+\s\(\)\-]{7,20}" autoComplete="tel" placeholder={f.phone[1]} />
           </Field>
           <Field id={`${uid}-c`} label={f.email[0]} required>
             <input id={`${uid}-c`} name="correoElectronico" type="email" required autoComplete="email" spellCheck={false} placeholder={f.email[1]} />
           </Field>
         </div>
-        <label className="ls-check ls-minor">
-          <input
-            type="checkbox"
-            name="esMenorDeEdad"
-            value="Sí"
-            checked={minor}
-            onChange={(e) => {
-              setMinor(e.target.checked);
-              if (!e.target.checked) forget([`${uid}-rn`, `${uid}-rd`]);
-            }}
-          />{" "}
-          {f.minor}
+        <label className="lg-check lg-minor">
+          <input type="checkbox" name="esMenorDeEdad" value="Sí" checked={minor} onChange={(e) => setMinor(e.target.checked)} /> {f.minor}
         </label>
         {minor && (
-          <div className="ls-minor__fields mo-pop" role="group" aria-label={f.minorHint}>
-            <p>{f.minorHint}</p>
-            <div className="ls-grid2">
+          <div className="lg-minor__fields" role="group" aria-label={f.minorHint}>
+            <p className="lg-text" style={{ fontSize: 14.5 }}>{f.minorHint}</p>
+            <div className="lg-grid2">
               <Field id={`${uid}-rn`} label={f.repName[0]} required>
                 <input id={`${uid}-rn`} name="representanteNombre" required autoComplete="off" placeholder={f.repName[1]} />
               </Field>
@@ -147,19 +168,19 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
         )}
       </fieldset>
 
-      <fieldset className="ls-fieldset">
+      <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">3</span> {isClaim ? t.goodLegend.reclamo : t.goodLegend.queja}</legend>
         {isClaim ? (
           <>
-            <div className="ls-field ls-field--inline" role="radiogroup" aria-label={f.goodType}>
-              <span className="ls-label">{f.goodType} <span aria-hidden="true">*</span></span>
-              <div className="ls-channels">
+            <div className="lg-field lg-field--full lg-field--inline" role="radiogroup" aria-label={f.goodType}>
+              <span className="lg-label">{f.goodType} <em aria-hidden="true">*</em></span>
+              <div className="lg-channels">
                 {f.goodTypes.map((g, i) => (
-                  <label className="ls-check" key={g.value}><input type="radio" name="tipoDeBien" value={g.value} defaultChecked={i === 0} required /> {g.label}</label>
+                  <label className="lg-check" key={g.value}><input type="radio" name="tipoDeBien" value={g.value} defaultChecked={i === 0} required /> {g.label}</label>
                 ))}
               </div>
             </div>
-            <div className="ls-grid2">
+            <div className="lg-grid2">
               <Field id={`${uid}-p`} label={f.product} required>
                 <select id={`${uid}-p`} name="descripcionDelProductoO" required defaultValue="">
                   <option value="" disabled>{f.productSelect}</option>
@@ -169,8 +190,8 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
               <Field id={`${uid}-f`} label={f.date} required>
                 <input id={`${uid}-f`} name="fechaDelSuceso" type="date" required max={maxDate} />
               </Field>
-              <Field id={`${uid}-m`} label={f.amount[0]} hint={f.amountHint}>
-                <input id={`${uid}-m`} name="montoReclamado" inputMode="decimal" pattern="[0-9]{1,9}([.,][0-9]{1,2})?" title={ui.errors.amount} autoComplete="off" placeholder={f.amount[1]} />
+              <Field id={`${uid}-m`} label={f.amount[0]}>
+                <input id={`${uid}-m`} name="montoReclamado" inputMode="decimal" pattern="[0-9]{1,9}([.,][0-9]{1,2})?" title={f.amountHint} autoComplete="off" placeholder={f.amount[1]} />
               </Field>
               <Field id={`${uid}-mo`} label={f.currency}>
                 <select id={`${uid}-mo`} name="moneda" defaultValue="PEN">
@@ -181,9 +202,10 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
                 <input id={`${uid}-o`} name="nDeCotizacionO" autoComplete="off" spellCheck={false} placeholder={f.order[1]} />
               </Field>
             </div>
+            <p className="lg-text lg-hint">{f.amountHint}</p>
           </>
         ) : (
-          <div className="ls-grid2">
+          <div className="lg-grid2">
             <Field id={`${uid}-l`} label={f.place} required>
               <select id={`${uid}-l`} name="lugarDeAtencion" required defaultValue="">
                 <option value="" disabled>{f.placeSelect}</option>
@@ -200,30 +222,33 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
         )}
       </fieldset>
 
-      <fieldset className="ls-fieldset">
+      <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">4</span> {isClaim ? t.detailLegend.reclamo : t.detailLegend.queja}</legend>
         <CountedArea id={`${uid}-h`} name="detalleDeLosHechos" label={f.facts[0]} placeholder={isClaim ? f.facts[1] : f.facts[2]} minLength={20} />
       </fieldset>
 
-      <fieldset className="ls-fieldset">
+      <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">5</span> {t.legends[4]}</legend>
         <CountedArea id={`${uid}-s`} name="pedidoConcretoOPretension" label={f.request[0]} placeholder={f.request[1]} minLength={5} />
       </fieldset>
 
-      <fieldset className="ls-fieldset">
+      <fieldset className="lg-fieldset">
         <legend><span aria-hidden="true">6</span> {t.legends[5]}</legend>
-        <span className="ls-hint">{f.mediumHint}</span>
-        <div className="ls-channels" role="radiogroup" aria-label={t.legends[5]}>
+        <p className="lg-text" style={{ fontSize: 14.5 }}>{f.mediumHint}</p>
+        <div className="lg-channels" role="radiogroup" aria-label={t.legends[5]}>
           {f.mediums.map((c, i) => (
-            <label className="ls-check" key={c.value}><input type="radio" name="medioDeRespuesta" value={c.value} defaultChecked={i === 0} required onChange={() => onMedium(c.value)} /> {c.label}</label>
+            <label className="lg-check" key={c.value}><input type="radio" name="medioDeRespuesta" value={c.value} defaultChecked={i === 0} required /> {c.label}</label>
           ))}
         </div>
       </fieldset>
 
-      <CheckField id={`${uid}-consent`} name="consentimientoLeyN29733" value="Sí" errorLabel={ui.errors.consent}>
-        {t.consent.pre.replace("{kind}", noun)}
-        <a className="ls-link" href="/privacidad" target="_blank" rel="noopener noreferrer">{t.consent.link}</a>.
-      </CheckField>
+      <label className="lg-consent">
+        <input type="checkbox" name="consentimientoLeyN29733" value="Sí" required />
+        <span>
+          {t.consent.pre.replace("{kind}", noun)}
+          <a className="lg-link-inline" href="/privacidad" target="_blank" rel="noopener noreferrer">{t.consent.link}</a>.
+        </span>
+      </label>
 
       <ul className="lg-notices">
         <li>{t.notices.deadline}</li>
@@ -231,52 +256,50 @@ function Fields({ kind, onKind, onMedium, forget }: { kind: Kind; onKind: (kind:
         <li>{t.notices.filing}</li>
         <li>{t.notices.indecopi}</li>
       </ul>
+
+      {status === "error" && <p className="lg-alert" role="alert">{message}</p>}
+
+      <div className="lg-form-actions">
+        <button type="reset" className="lp-btn lp-btn--outline" onClick={() => { setKind("RECLAMO"); setDocType(""); setMinor(false); }}>
+          {t.clear} <RotateCcw aria-hidden="true" size={16} strokeWidth={2} />
+        </button>
+        <LeadSubmit
+          className="lp-btn lp-btn--solid lp-btn--lg"
+          idle={<>{submitLabel} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} /></>}
+          pending={t.sending}
+        />
+      </div>
     </>
   );
 }
 
 /**
- * Hoja de reclamación: registra en el Backend con número correlativo y plazo legal; sin Backend prepara el texto para
- * enviarlo por correo o WhatsApp. Nunca se inventa un número de hoja.
+ * Modo sin registro en línea (sin Backend configurado): el formulario se ve y valida igual, y al enviar
+ * prepara el texto del reclamo para mandarlo por correo o WhatsApp. No se inventa ningún folio.
  */
-export function ClaimForm({ email, whatsappNumber, summary }: Contact & { summary: (state: { kind: Kind; medium: string }) => React.ReactNode }) {
+function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
   const t = useCopy(CLAIMS);
-  const ui = useCopy(SHEET_UI);
   const o = t.offline;
   const [lang] = useLang();
-  const firstMedium = t.fields.mediums[0].value;
-  const [kind, setKind] = useState<Kind>("RECLAMO");
-  const [medium, setMedium] = useState(firstMedium);
-  const [resetKey, setResetKey] = useState(0);
   const [prepared, setPrepared] = useState<{ subject: string; body: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState<{ folio: string; kind: string; responseDueOn: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [sending, setSending] = useState(false);
-  const busy = useRef(false);
+  const sending = useRef(false);
   const idempotencyKey = useRef(newIdempotencyKey());
-  const fx = useFormErrors(ui.errors);
-
-  const reveal = (id: string) => {
-    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    window.requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ block: "center", behavior }));
-  };
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (busy.current) return;
-    const form = event.currentTarget;
-    if (!fx.validate(form)) return;
-    const data = new FormData(form);
+    if (sending.current) return;
+    const data = new FormData(event.currentTarget);
     setError(null);
-    busy.current = true;
-    setSending(true);
+    // Con Backend, la hoja se registra con número correlativo y plazo legal; sin él se prepara el envío como antes.
+    sending.current = true;
     const outcome = await submitForm<{ folio: string; kind: string; responseDueOn: string }>("complaint", complaintBody(data, PRIVACY_NOTICE_VERSION), idempotencyKey.current);
-    busy.current = false;
-    setSending(false);
+    sending.current = false;
     if (outcome.kind === "saved") {
       setSaved(outcome.data);
-      reveal("reclamo-registrado");
+      window.requestAnimationFrame(() => document.getElementById("reclamo-registrado")?.scrollIntoView({ block: "center", behavior: "smooth" }));
       return;
     }
     if (outcome.kind === "invalid" || outcome.kind === "limited") {
@@ -310,7 +333,7 @@ export function ClaimForm({ email, whatsappNumber, summary }: Contact & { summar
       }),
     );
     setCopied(false);
-    reveal("reclamo-listo");
+    window.requestAnimationFrame(() => document.getElementById("reclamo-listo")?.scrollIntoView({ block: "center", behavior: "smooth" }));
   };
 
   const copy = async () => {
@@ -323,81 +346,65 @@ export function ClaimForm({ email, whatsappNumber, summary }: Contact & { summar
     }
   };
 
-  const changeKind = (next: Kind) => {
-    setKind(next);
-    fx.clear();
-  };
-
-  const onReset = () => {
-    setKind("RECLAMO");
-    setMedium(firstMedium);
-    setError(null);
-    fx.clear();
-    setResetKey((k) => k + 1);
-  };
-
-  const submitLabel = kind === "RECLAMO" ? t.submit.reclamo : t.submit.queja;
-
   return (
-    <div className="ls-claim">
-      <div className="ls-claim__main">
-        <form className="ls-form" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} onBlur={fx.onBlur} onInput={fx.onInput} onReset={onReset} noValidate hidden={prepared !== null || saved !== null}>
-          <h2>{t.formTitle}</h2>
-          <p>{t.formIntro}</p>
-          <ErrorSummary problems={fx.problems} copy={ui.errors} summaryRef={fx.summaryRef} />
-          <ErrorsProvider errors={fx.errors}>
-            <Fields key={resetKey} kind={kind} onKind={changeKind} onMedium={setMedium} forget={fx.forget} />
-          </ErrorsProvider>
-          {error && <p className="ls-alert" role="alert">{error}</p>}
-          <div className="ls-form__actions">
-            <SubmitButton sending={sending} pending={t.sending} idle={<>{submitLabel} <ArrowRight aria-hidden="true" size={18} strokeWidth={2} /></>} />
-            <button type="reset" className="lp-btn lp-btn--outline">
-              <RotateCcw aria-hidden="true" size={16} strokeWidth={2} /> {t.clear}
+    <>
+      <form className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} hidden={prepared !== null || saved !== null}>
+        <h2>{t.formTitle}</h2>
+        <p>{t.formIntro}</p>
+        <div style={{ marginTop: 22 }}>
+          <Fields />
+        </div>
+        {error && (
+          <p className="lg-alert" role="alert">
+            {error}
+          </p>
+        )}
+      </form>
+
+      {saved && (
+        <section className="lg-form-card lg-success" id="reclamo-registrado" role="status" aria-labelledby="reclamo-registrado-title">
+          <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
+          <h2 id="reclamo-registrado-title">{t.success.title.replace("{kind}", (saved.kind === "CLAIM" ? t.kinds.reclamo.title : t.kinds.queja.title).toLowerCase())}</h2>
+          <p className="lg-text">{t.success.sheet}</p>
+          <code>{saved.folio}</code>
+          <p className="lg-text">{t.success.due.replace("{date}", formatDueDate(saved.responseDueOn, lang))}</p>
+          <button type="button" className="lp-btn lp-btn--outline" onClick={() => window.location.reload()}>
+            {t.success.again}
+          </button>
+        </section>
+      )}
+
+      {prepared && (
+        <section className="lg-form-card lg-offline" id="reclamo-listo" aria-labelledby="reclamo-listo-title">
+          <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
+          <h2 id="reclamo-listo-title">{o.title}</h2>
+          <p className="lg-text">{o.text}</p>
+          <div className="lg-offline__actions">
+            <a className="lp-btn lp-btn--solid" href={mailtoUrl(email, prepared.subject, prepared.body)}>
+              <Mail aria-hidden="true" size={18} strokeWidth={1.8} /> {o.mail}
+            </a>
+            <a className="lp-btn lp-btn--outline" href={whatsappUrl(whatsappNumber, prepared.body)} target="_blank" rel="noopener noreferrer">
+              <MessageCircle aria-hidden="true" size={18} strokeWidth={1.8} /> {o.whatsapp}
+            </a>
+            <button type="button" className="lp-btn lp-btn--outline" onClick={copy}>
+              <Copy aria-hidden="true" size={18} strokeWidth={1.8} /> {copied ? o.copied : o.copy}
             </button>
           </div>
-        </form>
-
-        {saved && (
-          <section className="ls-result lg-success" id="reclamo-registrado" role="status" aria-labelledby="reclamo-registrado-title">
-            <CheckCircle2 className="mo-check" aria-hidden="true" size={40} strokeWidth={1.75} />
-            <h2 id="reclamo-registrado-title">{t.success.title.replace("{kind}", (saved.kind === "CLAIM" ? t.kinds.reclamo.title : t.kinds.queja.title).toLowerCase())}</h2>
-            <p>{t.success.sheet}</p>
-            <code>{saved.folio}</code>
-            <p>{t.success.due.replace("{date}", formatDueDate(saved.responseDueOn, lang))}</p>
-            <button type="button" className="lp-btn lp-btn--outline" onClick={() => window.location.reload()}>
-              {t.success.again}
-            </button>
-          </section>
-        )}
-
-        {prepared && (
-          <section className="ls-result mo-pop" id="reclamo-listo" aria-labelledby="reclamo-listo-title">
-            <CheckCircle2 className="mo-check" aria-hidden="true" size={40} strokeWidth={1.75} />
-            <h2 id="reclamo-listo-title">{o.title}</h2>
-            <p>{o.text}</p>
-            <div className="ls-result__actions">
-              <a className="lp-btn lp-btn--solid" href={mailtoUrl(email, prepared.subject, prepared.body)}>
-                <Mail aria-hidden="true" size={18} strokeWidth={1.8} /> {o.mail}
-              </a>
-              <a className="lp-btn lp-btn--outline" href={whatsappUrl(whatsappNumber, prepared.body)} target="_blank" rel="noopener noreferrer">
-                <MessageCircle aria-hidden="true" size={18} strokeWidth={1.8} /> {o.whatsapp}
-              </a>
-              <button type="button" className="lp-btn lp-btn--outline" onClick={copy}>
-                <Copy aria-hidden="true" size={18} strokeWidth={1.8} /> {copied ? o.copied : o.copy}
-              </button>
-            </div>
-            <details className="ls-preview">
-              <summary>{o.preview}</summary>
-              <pre>{prepared.body}</pre>
-            </details>
-            <span className="ls-hint">{o.note.replace("{email}", email)}</span>
-            <button type="button" className="ls-link-btn" onClick={() => setPrepared(null)}>
-              {o.edit}
-            </button>
-          </section>
-        )}
-      </div>
-      {summary({ kind, medium })}
-    </div>
+          <details className="lg-offline__preview">
+            <summary>{o.preview}</summary>
+            <pre>{prepared.body}</pre>
+          </details>
+          <p className="lg-offline__note">{o.note.replace("{email}", email)}</p>
+          <button type="button" className="lg-link-btn" onClick={() => setPrepared(null)}>
+            {o.edit}
+          </button>
+        </section>
+      )}
+    </>
   );
+}
+
+/** Formulario del libro de reclamaciones: registra la hoja en el Backend o, sin él, prepara el envío por correo/WhatsApp. */
+export function ClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
+  return <OfflineClaimForm email={email} whatsappNumber={whatsappNumber} />;
 }

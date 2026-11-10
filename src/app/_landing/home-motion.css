@@ -1,20 +1,207 @@
-/* ===== Portada "Lámina técnica" =====
-   Va en la misma hoja que landing.css (una petición menos antes del primer pintado), por eso se importa desde
-   landing-chrome. Solo se animan transform y opacity. Títulos, válvula y entradilla del héroe no se animan: son el LCP. */
+/* ===== Portada: capa de movimiento =====
+   Se sirve en la misma hoja que landing.css (una petición menos antes del primer pintado), pero sus reglas solo tocan
+   clases de la portada; la línea bajo el nombre de .lp-card aplica también a las tarjetas de /industrias.
+   Coreografía por sección en lugar del mismo fundido en todo: los títulos entran palabra por palabra, las fotos se
+   descubren como una cortina, las franjas de sectores se ensanchan al apuntarlas y el hero se aleja al bajar.
+   Solo transform, opacity, clip-path y máscaras. Con "reducir movimiento" la regla general de landing.css apaga
+   animaciones y transiciones, y lo ligado al scroll vive dentro de `no-preference`: la página queda en su estado final. */
 
-/* ----- Superficies del navegador ----- */
-.lp ::selection,
-.lp-header ::selection,
-.lp-footer ::selection {
-  background: var(--c-sky);
-  color: #00303f;
+/* ----- Palabras y letras (componente Words) ----- */
+.lp-w {
+  display: inline-block;
 }
 
-html:has(main.lp) {
-  scrollbar-color: var(--c-outline) transparent;
+@keyframes lp-word-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    filter: blur(8px);
+  }
+
+  60% {
+    filter: blur(0);
+  }
 }
 
-/* Tarjetas de /industrias: subrayado bajo el nombre al apuntar. */
+/* El título del hero es el LCP: arranca casi invisible (no en 0) para que el navegador lo cuente al instante. */
+@keyframes lp-word-in-lcp {
+  from {
+    opacity: 0.01;
+    transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    filter: blur(8px);
+  }
+
+  60% {
+    filter: blur(0);
+  }
+}
+
+@keyframes lp-char-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 70%, 0);
+    filter: blur(6px);
+  }
+}
+
+/* Títulos de sección dentro de un bloque en cascada: entra cada palabra, no el renglón entero. */
+[data-reveal="stagger"][data-in="late"] > .lp-words {
+  animation: none;
+}
+
+[data-reveal="stagger"][data-in="late"] > .lp-words .lp-w {
+  transform-origin: 0 100%;
+  animation: lp-word-in 820ms var(--mo-ease-out) calc(min(var(--i, 0), 6) * var(--mo-step) + var(--w) * 40ms) backwards;
+}
+
+/* ----- Cabecera ----- */
+/* En la portada se aparta al bajar y vuelve al subir (clase is-tucked, la pone LandingHeader). */
+html .lp-header {
+  transition: translate 460ms var(--mo-ease-out);
+}
+
+html .lp-header.is-tucked:not(:focus-within) {
+  translate: 0 -100%;
+}
+
+/* Los submenús abren con sus enlaces en cascada corta. */
+.lp-nav__item.is-open .lp-nav__menu li {
+  animation: lp-menu-item 320ms var(--mo-ease-out) backwards;
+}
+
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(2) { animation-delay: 30ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(3) { animation-delay: 60ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(4) { animation-delay: 90ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(5) { animation-delay: 120ms; }
+.lp-nav__item.is-open .lp-nav__menu li:nth-child(n + 6) { animation-delay: 150ms; }
+
+@keyframes lp-menu-item {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
+/* ----- Hero ----- */
+.lp-hero__copy > h1.lp-words {
+  animation: none;
+}
+
+.lp-hero h1 .lp-w {
+  transform-origin: 0 100%;
+  animation: lp-word-in-lcp 900ms var(--mo-ease-out) calc(140ms + var(--w) * 45ms) backwards;
+}
+
+/* La válvula se inclina apenas hacia el puntero (--tx/--ty de -1 a 1, los escribe HeroCarousel). */
+.lp-hero__tilt {
+  position: absolute;
+  inset: 0;
+  transform: perspective(1400px) rotateY(calc(var(--tx, 0) * 7deg)) rotateX(calc(var(--ty, 0) * -5deg)) translate3d(calc(var(--tx, 0) * 10px), calc(var(--ty, 0) * 6px), 0);
+  transition: transform 900ms var(--mo-ease-out);
+}
+
+/* Al bajar, el hero se aleja: la foto se hunde, la válvula sube un poco más rápido, el texto se va y todo se funde
+   hacia el color de la sección siguiente. Ligado al desplazamiento de la página (de 0 a una pantalla), sin JavaScript. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-hero::after {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background: #f6f8fb;
+      content: "";
+      opacity: 0;
+      pointer-events: none;
+      animation: lp-hero-dim linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .lp-hero__copy {
+      animation: lp-hero-lift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80vh;
+    }
+
+    .lp-hero__photo {
+      animation: lp-hero-photo-in 1600ms cubic-bezier(0.16, 1, 0.3, 1) both, lp-kenburns 26s ease-in-out 1600ms infinite alternate, lp-hero-sink linear both;
+      animation-timeline: auto, auto, scroll(root);
+      animation-range: normal, normal, 0 100vh;
+    }
+
+    .lp-hero__stage {
+      animation: lp-stage-in 1100ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both, lp-float 7s ease-in-out 1320ms infinite, lp-hero-rise linear both;
+      animation-timeline: auto, auto, scroll(root);
+      animation-range: normal, normal, 0 100vh;
+    }
+
+    .lp-hero__controls-row {
+      animation: lp-hero-in 700ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both, lp-hero-fade linear both;
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0 40vh;
+    }
+
+    html[data-lp-theme="dark"] .lp-hero::after {
+      background: #171716;
+    }
+  }
+}
+
+@keyframes lp-hero-dim {
+  to {
+    opacity: 0.6;
+  }
+}
+
+@keyframes lp-hero-lift {
+  to {
+    opacity: 0;
+    translate: 0 -10vh;
+  }
+}
+
+@keyframes lp-hero-sink {
+  to {
+    translate: 0 12%;
+  }
+}
+
+@keyframes lp-hero-rise {
+  to {
+    translate: 0 -12%;
+    scale: 0.94;
+  }
+}
+
+@keyframes lp-hero-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ----- Componentes ----- */
+/* Cada foto se descubre de abajo arriba y se asienta, en la misma cascada que su tarjeta. */
+.lp-components__track[data-in="late"] > li .lp-card__media {
+  animation: lp-shutter 1000ms var(--mo-ease-in-out) calc(min(var(--i, 0), 6) * var(--mo-step) + 120ms) backwards;
+}
+
+.lp-components__track[data-in="late"] > li .lp-card__media img {
+  animation: lp-settle 1400ms var(--mo-ease-out) calc(min(var(--i, 0), 6) * var(--mo-step) + 120ms) backwards;
+}
+
+@keyframes lp-shutter {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+}
+
+@keyframes lp-settle {
+  from {
+    scale: 1.18;
+  }
+}
+
+/* Al apuntar una tarjeta, una línea naranja se dibuja bajo su nombre. */
 .lp-card__label {
   position: relative;
 }
@@ -25,11 +212,12 @@ html:has(main.lp) {
   bottom: 0;
   left: 20px;
   height: 2px;
+  border-radius: 2px;
   background: var(--lp-orange);
   content: "";
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform var(--mo-base) var(--mo-ease-out);
+  transition: transform 460ms var(--mo-ease-out);
 }
 
 .lp-card:focus-visible .lp-card__label::after {
@@ -40,793 +228,654 @@ html:has(main.lp) {
   .lp-card:hover .lp-card__label::after {
     transform: scaleX(1);
   }
-}
 
-/* ----- Héroe ----- */
-.lp-hero h1 {
-  max-width: 17em;
-}
-
-/* En móvil el título manda: es el LCP y se pinta sin esperar a la foto. */
-@media (max-width: 1023px) {
-  .lp-hero h1 {
-    font-size: clamp(2.5rem, 2rem + 2.2vw, 3rem);
-  }
-
-  .ho-stage {
-    margin-top: var(--sp-5);
+  /* Con ratón el carrusel se agarra y se arrastra. */
+  .lp-components__track {
+    cursor: grab;
   }
 }
 
-.lp-hero__lead {
-  max-width: 34em;
+.lp-components__track.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+  scroll-snap-type: none;
+  user-select: none;
 }
 
-.lp-hero .lp-link {
-  color: #ffffff;
-}
-
-.ho-stage {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: var(--sp-4);
-}
-
-.ho-stage__area {
-  display: grid;
-  place-items: center;
-}
-
-.ho-valve {
-  position: relative;
-  height: min(46svh, 360px);
-  aspect-ratio: 578 / 1030;
-}
-
-/* Eje del vástago, como en un plano. La válvula pasa por delante. */
-.ho-valve__axis {
-  position: absolute;
-  top: -16px;
-  left: 53.8%;
-  height: calc(100% + 32px);
-  color: rgb(155 206 231 / 55%);
+.lp-components__track.is-dragging .lp-card {
   pointer-events: none;
 }
 
-.ho-valve__leader {
-  display: none;
-}
-
-/* La capa sobra 28 px por abajo: ahí vive el borde suave del barrido, fuera de la válvula en reposo. */
-.ho-valve__layer {
-  position: absolute;
-  inset: 0 0 -28px;
-  z-index: 1;
-  display: block;
+/* Barra de avance del carrusel: su largo es la parte visible y se desliza con él (--size y --at, de 0 a 1). */
+.lp-components__progress {
+  position: relative;
+  height: 3px;
   overflow: hidden;
+  margin-top: 4px;
+  border-radius: 3px;
+  background: rgb(11 34 68 / 10%);
+}
+
+.lp-components__progress span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--size, 0.3) * 100%);
+  border-radius: inherit;
+  background: var(--lp-orange);
+  transform: translateX(calc(var(--at, 0) * (1 / var(--size, 0.3) - 1) * 100%));
+  transition: transform 160ms linear, width 240ms ease;
+}
+
+html[data-lp-theme="dark"] .lp-components__progress {
+  background: rgb(255 255 255 / 10%);
+}
+
+/* ----- Sectores ----- */
+/* Geometría de las tres franjas en números (porcentaje del ancho): arriba (t) y abajo (b) de cada línea blanca.
+   Registradas para que el navegador pueda interpolarlas: al cambiar `data-open` las líneas se deslizan. */
+@property --s1t {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 39.3;
+}
+
+@property --s1b {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 31;
+}
+
+@property --s2t {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 72.3;
+}
+
+@property --s2b {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 61.6;
+}
+
+.lp-sectors__seam {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: rgb(255 255 255 / 85%);
   pointer-events: none;
 }
 
-.ho-valve__layer.is-active {
-  z-index: 2;
+.lp-sectors__seam--1 {
+  clip-path: polygon(calc(var(--s1t) * 1% - 0.8px) 0, calc(var(--s1t) * 1% + 0.8px) 0, calc(var(--s1b) * 1% + 0.8px) 100%, calc(var(--s1b) * 1% - 0.8px) 100%);
 }
 
-.ho-valve .lp-hero__valve {
-  inset: 0 auto auto 0;
-  height: calc(100% - 28px);
+.lp-sectors__seam--2 {
+  clip-path: polygon(calc(var(--s2t) * 1% - 0.8px) 0, calc(var(--s2t) * 1% + 0.8px) 0, calc(var(--s2b) * 1% + 0.8px) 100%, calc(var(--s2b) * 1% - 0.8px) 100%);
 }
 
-.ho-valve__layer.is-prev .lp-hero__valve {
-  opacity: 1;
-}
-
-/* Selector de accionamiento: dos botones con estado de texto, no un carrusel. */
-.ho-selector {
-  display: grid;
-  width: min(100%, 320px);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-2);
-}
-
-.ho-selector__label {
-  grid-column: 1 / -1;
-  color: rgb(255 255 255 / 82%);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: var(--lh-label);
-  text-align: center;
-}
-
-.ho-selector .lp-hero__ctrl {
-  width: auto;
-  min-height: 44px;
-  height: auto;
-  padding: 4px 12px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 18px;
-}
-
-.ho-selector .lp-hero__ctrl[aria-pressed="true"],
-.ho-selector .lp-hero__ctrl[aria-pressed="true"]:hover {
-  border-color: var(--c-action);
-  background: var(--c-action);
-  color: var(--c-on-action);
-}
-
-.ho-stage__caption {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  gap: 8px;
-  color: #ffffff;
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-  text-decoration: none;
-}
-
-.ho-stage__caption span {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-/* Momento focal: el accionamiento nuevo baja por el vástago. El cuerpo es idéntico al píxel y no se percibe.
-   La máscara es estática: solo suaviza el borde del barrido. */
-@media (prefers-reduced-motion: no-preference) {
-  .ho-valve[data-run] .ho-valve__layer.is-active {
-    --ho-from: -100%;
-    --ho-to: 0;
-    -webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
-    mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
-  }
-
-  .ho-valve[data-run] .ho-valve__layer.is-active .lp-hero__valve {
-    --ho-from: calc(100% + 28px);
-    --ho-to: 0;
-  }
-
-  .ho-valve[data-run] .ho-valve__layer.is-prev {
-    --ho-from: -28px;
-    --ho-to: calc(100% - 28px);
-  }
-
-  .ho-valve[data-run] .ho-valve__layer.is-prev .lp-hero__valve {
-    --ho-from: 28px;
-    --ho-to: -100%;
-  }
-
-  .ho-valve[data-run="a"] :is(.ho-valve__layer.is-active, .ho-valve__layer.is-active .lp-hero__valve, .ho-valve__layer.is-prev, .ho-valve__layer.is-prev .lp-hero__valve) {
-    animation: ho-gate-a var(--mo-focal) var(--mo-ease-in-out) both;
-  }
-
-  .ho-valve[data-run="b"] :is(.ho-valve__layer.is-active, .ho-valve__layer.is-active .lp-hero__valve, .ho-valve__layer.is-prev, .ho-valve__layer.is-prev .lp-hero__valve) {
-    animation: ho-gate-b var(--mo-focal) var(--mo-ease-in-out) both;
-  }
-}
-
-/* Dos nombres iguales: alternarlos reinicia la animación cuando se pulsa a mitad de recorrido. */
-@keyframes ho-gate-a {
-  from {
-    transform: translate3d(0, var(--ho-from), 0);
-  }
-
-  to {
-    transform: translate3d(0, var(--ho-to), 0);
-  }
-}
-
-@keyframes ho-gate-b {
-  from {
-    transform: translate3d(0, var(--ho-from), 0);
-  }
-
-  to {
-    transform: translate3d(0, var(--ho-to), 0);
-  }
-}
-
-/* Cartela: la misma tabla que cierra un plano. Qué se vende, para qué obras y cómo se cotiza. */
-.ho-sheet {
-  margin: var(--sp-5) 0 0;
-  border-top: 1px solid var(--c-border);
-}
-
-.ho-sheet dd {
-  margin: 0;
-}
-
-.ho-sheet__cell {
-  padding-block: var(--sp-4);
-  border-bottom: 1px solid var(--c-border);
-}
-
-.ho-sheet__cell:last-child {
-  border-bottom: 0;
-}
-
-.ho-sheet dt {
-  margin-bottom: var(--sp-1);
-  color: var(--c-sky);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: var(--lh-label);
-}
-
-.ho-sheet ul,
-.ho-sheet ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ho-sheet ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--sp-5);
-}
-
-.ho-sheet a {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 20px;
-  text-decoration: underline;
-  text-decoration-color: rgb(255 255 255 / 45%);
-  text-underline-offset: 4px;
-}
-
-.ho-sheet a:hover {
-  text-decoration-color: currentColor;
-}
-
-.ho-sheet ol {
-  counter-reset: paso;
-}
-
-.ho-sheet ol li {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  padding-block: 3px;
-  color: rgb(255 255 255 / 88%);
-  counter-increment: paso;
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-.ho-sheet ol li::before {
-  color: var(--c-sky);
-  content: counter(paso);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-}
-
-@media (min-width: 1024px) {
-  .lp-hero__copy {
-    padding-block: var(--sp-6);
-  }
-
-  /* El área deja columna al selector; la línea va del eje del vástago hasta su rótulo. */
-  .ho-stage {
-    --ho-rail: clamp(124px, 12vw, 168px);
-    grid-column: 8 / -1;
-    display: block;
-    min-height: 0;
-  }
-
-  .ho-stage__area {
-    position: absolute;
-    inset: 28px calc(var(--ho-rail) + var(--sp-4)) 20px 0;
-    overflow: clip;
-    overflow-clip-margin: 16px;
-  }
-
-  .ho-valve {
-    height: 100%;
-    max-width: 100%;
-  }
-
-  .ho-valve__axis {
-    top: 0;
-    height: 100%;
-  }
-
-  .ho-valve__leader {
-    position: absolute;
-    top: 5%;
-    left: 53.8%;
-    display: block;
-    width: 120%;
-    border-top: 1px solid rgb(155 206 231 / 55%);
-  }
-
-  .ho-selector {
-    position: absolute;
-    top: calc(28px + (100% - 48px) * 0.05 - 9px);
-    right: 0;
-    width: var(--ho-rail);
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ho-selector__label {
-    text-align: left;
-  }
-
-  .ho-stage__caption {
-    position: absolute;
-    right: 0;
-    bottom: var(--sp-5);
-    width: var(--ho-rail);
-    align-items: flex-end;
-  }
-
-  .ho-sheet {
-    display: grid;
-    grid-template-columns: 5fr 3fr 4fr;
-    margin-top: 0;
-  }
-
-  .ho-sheet__cell {
-    padding: var(--sp-4) var(--sp-5) var(--sp-5);
-    border-bottom: 0;
-    border-left: 1px solid var(--c-border);
-  }
-
-  .ho-sheet__cell:first-child {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .ho-sheet__cell:last-child {
-    padding-right: 0;
-  }
-
-  .ho-sheet ul {
-    gap: 0 var(--sp-4);
-  }
-
-  .ho-sheet a {
-    min-height: 32px;
-  }
-}
-
-/* ----- Cabeceras de sección ----- */
-/* El reinicio de márgenes de landing.css va fuera de capa y le gana a la receta .cota. */
-.lp .cota p {
-  margin-top: var(--sp-3);
-}
-
-.ho-head {
+.lp-sector__body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--sp-3);
 }
 
-@media (min-width: 860px) {
-  .ho-head {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-  }
-}
-
-.ho-head .lp-link {
-  flex: 0 0 auto;
-}
-
-/* ----- Familias ----- */
-.ho-cells {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--c-border);
-  border-left: 1px solid var(--c-border);
-}
-
-.ho-cells > li {
-  border-right: 1px solid var(--c-border);
-  border-bottom: 1px solid var(--c-border);
-}
-
-.ho-cells > li:nth-child(5) {
-  grid-column: 1 / -1;
-}
-
-.ho-cells > li:nth-child(5) .lp-card__media {
-  aspect-ratio: 2 / 1;
-}
-
-.ho-cell__name {
-  display: block;
-  padding: var(--sp-4) var(--sp-4) 0;
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.ho-cell__note {
-  display: block;
-  padding: var(--sp-1) var(--sp-4) var(--sp-4);
-  color: var(--c-text-secondary);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-@media (min-width: 1024px) {
-  .ho-cells {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
-  .ho-cells > li:nth-child(5) {
-    grid-column: auto;
-  }
-
-  .ho-cells > li:nth-child(5) .lp-card__media {
-    aspect-ratio: 1;
-  }
-}
-
-/* ----- Sectores: franjas con corte diagonal fijo, foto viva y banda de texto plana ----- */
-.ho-sectors {
-  padding-top: var(--sp-8);
-}
-
-.ho-strips {
-  display: grid;
-  gap: 1px;
-  background: var(--c-border);
-}
-
-.ho-strip {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  background: var(--c-primary-deep);
-}
-
-.ho-strip__img {
-  position: absolute;
-  inset: 0;
-}
-
-.ho-strip__img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.ho-strip__band {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 122px;
-  background: rgb(0 43 58 / 86%);
-}
-
-.ho-strip a {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: var(--sp-3) clamp(20px, 5vw, 64px);
-  color: #ffffff;
-  text-decoration: none;
-}
-
-.ho-strip a::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: rgb(155 206 231 / 16%);
-  content: "";
-  opacity: 0;
-  transition: opacity var(--mo-fast) linear;
-}
-
-.ho-strip__body {
-  display: block;
-}
-
-.ho-strip__body strong {
-  display: block;
-  font-size: clamp(24px, 2.25vw, 32px);
-  font-stretch: 85%;
-  font-weight: 600;
-  line-height: 1.1;
-}
-
-.ho-strip__text {
-  display: block;
-  margin-top: 2px;
-  color: rgb(255 255 255 / 90%);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-.ho-strip__cta {
+.lp-sector__cta {
   display: inline-flex;
-  min-height: 32px;
   align-items: center;
-  gap: 8px;
-  color: var(--c-sky);
+  gap: 12px;
+  margin-top: 18px;
   font-size: 15px;
   font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
-.ho-strip__cta svg {
-  transition: transform var(--mo-fast) var(--mo-ease);
-}
-
-@media (hover: hover) {
-  .ho-strip a:hover::after {
-    opacity: 1;
-  }
-
-  .ho-strip a:hover .ho-strip__cta svg {
-    transform: translate3d(4px, 0, 0);
-  }
-}
-
-.ho-strip a:focus-visible {
-  outline-offset: -4px;
-}
-
-@media (min-width: 1024px) {
-  .ho-sectors {
-    padding-top: var(--sp-9);
-  }
-
-  .ho-strips {
-    position: relative;
-    display: block;
-    height: clamp(440px, 36vw, 560px);
-    background: none;
-  }
-
-  .ho-strip {
-    position: absolute;
-    inset: 0;
-    aspect-ratio: auto;
-    background: none;
-  }
-
-  .ho-strip:nth-child(1) { clip-path: polygon(0 0, 39.3% 0, 31% 100%, 0 100%); }
-  .ho-strip:nth-child(2) { clip-path: polygon(calc(39.3% + 1px) 0, 72.3% 0, 61.6% 100%, calc(31% + 1px) 100%); }
-  .ho-strip:nth-child(3) { clip-path: polygon(calc(72.3% + 1px) 0, 100% 0, 100% 100%, calc(61.6% + 1px) 100%); }
-
-  .ho-strip:nth-child(1) .ho-strip__img { right: auto; width: 42%; }
-  .ho-strip:nth-child(2) .ho-strip__img { right: auto; left: 28%; width: 46%; }
-  .ho-strip:nth-child(3) .ho-strip__img { left: 59%; }
-
-  .ho-strip__band {
-    height: 34%;
-  }
-
-  .ho-strip a {
-    padding: 0 0 var(--sp-5);
-  }
-
-  .ho-strip:nth-child(1) a { padding-left: var(--lp-gutter); }
-  .ho-strip:nth-child(2) a { padding-left: 36.5%; }
-  .ho-strip:nth-child(3) a { padding-left: 68%; }
-
-  .ho-strip__text {
-    font-size: 16px;
-    line-height: 24px;
-  }
-}
-
-/* ----- Bloques partidos: Respaldo, Documentación, Ubicación ----- */
-.ho-split {
-  display: grid;
-  gap: var(--sp-6);
-}
-
-.ho-split .cota {
-  margin-bottom: var(--sp-5);
-}
-
-.ho-split .lp-backing__media img {
-  border-radius: var(--r-media);
-}
-
-.ho-rows {
-  border-top: 1px solid var(--c-border);
-}
-
-.ho-rows a {
-  position: relative;
-  display: flex;
-  min-height: 56px;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-4);
-  padding-block: var(--sp-3);
-  border-bottom: 1px solid var(--c-border);
-  color: var(--c-on-surface);
-  text-decoration: none;
-}
-
-.ho-rows strong {
-  display: block;
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 24px;
-}
-
-.ho-rows small {
-  display: block;
-  margin-top: 2px;
-  color: var(--c-text-secondary);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-.ho-rows svg {
-  flex: 0 0 auto;
-  color: var(--c-link);
-  transition: transform var(--mo-fast) var(--mo-ease);
-}
-
-.ho-rows a:hover strong {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-@media (hover: hover) {
-  .ho-rows a:hover svg {
-    transform: translate3d(4px, 0, 0);
-  }
-}
-
-.ho-rows--desktop {
+.lp-sectors__dots {
   display: none;
 }
 
-/* ----- Índice de fichas, bajo las familias ----- */
-.ho-index {
-  margin-top: var(--sp-7);
+@media (min-width: 861px) {
+  .lp-sectors {
+    --s1t: 39.3;
+    --s1b: 31;
+    --s2t: 72.3;
+    --s2b: 61.6;
+    transition: --s1t 1100ms var(--mo-ease-out), --s1b 1100ms var(--mo-ease-out), --s2t 1100ms var(--mo-ease-out), --s2b 1100ms var(--mo-ease-out);
+  }
+
+  /* La franja abierta pasa a ocupar cerca del 42 % y las otras dos se reparten el resto; las líneas no cambian de
+     inclinación, solo se corren. La primera nunca baja del 37 % arriba: así no pasa por detrás del título. */
+  .lp-sectors[data-open="0"] {
+    --s1t: 48;
+    --s1b: 39.7;
+    --s2t: 76;
+    --s2b: 65.3;
+  }
+
+  .lp-sectors[data-open="1"] {
+    --s1t: 37;
+    --s1b: 28.7;
+    --s2t: 78;
+    --s2b: 67.3;
+  }
+
+  .lp-sectors[data-open="2"] {
+    --s1t: 37;
+    --s1b: 28.7;
+    --s2t: 63;
+    --s2b: 52.3;
+  }
+
+  .lp-sectors .lp-sector--1 {
+    clip-path: polygon(0 0, calc(var(--s1t) * 1%) 0, calc(var(--s1b) * 1%) 100%, 0 100%);
+  }
+
+  .lp-sectors .lp-sector--2 {
+    clip-path: polygon(calc(var(--s1t) * 1%) 0, calc(var(--s2t) * 1%) 0, calc(var(--s2b) * 1%) 100%, calc(var(--s1b) * 1%) 100%);
+  }
+
+  .lp-sectors .lp-sector--3 {
+    clip-path: polygon(calc(var(--s2t) * 1%) 0, 100% 0, 100% 100%, calc(var(--s2b) * 1%) 100%);
+  }
+
+  /* Cada foto cubre el mayor ancho que puede llegar a tener su franja. */
+  .lp-sectors .lp-sector--1 .lp-sector__img {
+    left: 0;
+    width: 52%;
+  }
+
+  .lp-sectors .lp-sector--2 .lp-sector__img {
+    left: 21%;
+    width: 60%;
+  }
+
+  .lp-sectors .lp-sector--3 .lp-sector__img {
+    left: 48%;
+    width: 52%;
+  }
+
+  /* El texto acompaña a su línea. */
+  .lp-sectors .lp-sector--2 a {
+    padding-left: calc(var(--s1b) * 1% + 7%);
+  }
+
+  .lp-sectors .lp-sector--3 a {
+    padding-left: calc(var(--s2b) * 1% + 8%);
+  }
+
+  .lp-sector__img img {
+    scale: 1.06;
+    transition: scale 1400ms var(--mo-ease-out), filter 700ms ease;
+  }
+
+  .lp-sector.is-open .lp-sector__img img {
+    scale: 1;
+  }
+
+  .lp-sector.is-folded .lp-sector__img img {
+    filter: saturate(0.7) brightness(0.82);
+  }
+
+  .lp-sector__title {
+    transform-origin: 0 100%;
+    transition: scale 700ms var(--mo-ease-out);
+  }
+
+  .lp-sector.is-folded .lp-sector__title {
+    scale: 0.82;
+  }
+
+  .lp-sector__text,
+  .lp-sector__cta {
+    transition: opacity 420ms ease, translate 600ms var(--mo-ease-out);
+  }
+
+  .lp-sector.is-folded .lp-sector__text,
+  .lp-sector.is-folded .lp-sector__cta {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  /* "Ver soluciones" aparece junto a la flecha en la franja abierta. */
+  .lp-sector__cta > span {
+    opacity: 0;
+    translate: -10px 0;
+    transition: opacity 300ms ease, translate 500ms var(--mo-ease-out);
+  }
+
+  .lp-sector.is-open .lp-sector__cta > span,
+  .lp-sector a:focus-visible .lp-sector__cta > span {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
-.ho-index h3 {
-  margin-bottom: var(--sp-4);
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.25;
+/* Entrada: las líneas blancas se dibujan de arriba abajo y cada foto sube como una cortina; luego el número, el nombre
+   letra por letra, el texto y la flecha, franja tras franja. */
+html[data-motion] .lp-sectors:has(.lp-sectors__list:not([data-in])) .lp-sectors__seam {
+  opacity: 0;
 }
 
-@media (min-width: 860px) {
-  .ho-index__list {
+.lp-sectors:has(.lp-sectors__list[data-in="late"]) .lp-sectors__seam {
+  -webkit-mask: linear-gradient(#000 0 0) top / 100% 100% no-repeat;
+  mask: linear-gradient(#000 0 0) top / 100% 100% no-repeat;
+  animation: lp-seam-draw 1100ms var(--mo-ease-in-out) backwards;
+}
+
+.lp-sectors:has(.lp-sectors__list[data-in="late"]) .lp-sectors__seam--2 {
+  animation-delay: 180ms;
+}
+
+.lp-sectors__list[data-in="late"] {
+  animation: none;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__img {
+  -webkit-mask: linear-gradient(#000 0 0) bottom / 100% 100% no-repeat;
+  mask: linear-gradient(#000 0 0) bottom / 100% 100% no-repeat;
+  animation: lp-curtain 1300ms var(--mo-ease-in-out) calc(var(--i, 0) * 150ms + 120ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__img img {
+  animation: lp-settle-lg 1800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 120ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__num {
+  animation: mo-left 800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 520ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__title .lp-w {
+  animation: lp-char-in 760ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 600ms + var(--w) * 26ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__text {
+  animation: mo-up 800ms var(--mo-ease) calc(var(--i, 0) * 150ms + 860ms) backwards;
+}
+
+.lp-sectors__list[data-in="late"] .lp-sector__cta {
+  animation: mo-left 700ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 1000ms) backwards;
+}
+
+@keyframes lp-seam-draw {
+  from {
+    -webkit-mask-size: 100% 0%;
+    mask-size: 100% 0%;
+  }
+}
+
+@keyframes lp-curtain {
+  from {
+    -webkit-mask-size: 100% 0%;
+    mask-size: 100% 0%;
+  }
+}
+
+@keyframes lp-settle-lg {
+  from {
+    scale: 1.24;
+  }
+}
+
+/* Profundidad al pasar: en escritorio las fotos se deslizan apenas dentro de su franja. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 861px) {
+    .lp-sectors {
+      view-timeline: --lp-sectors block;
+    }
+
+    .lp-sectors .lp-sector__img img {
+      animation: lp-sector-drift linear both;
+      animation-timeline: --lp-sectors;
+      animation-range: cover 0% cover 100%;
+    }
+
+    .lp-sectors__list[data-in="late"] .lp-sector__img img {
+      animation: lp-settle-lg 1800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 120ms) backwards, lp-sector-drift linear both;
+      animation-timeline: auto, --lp-sectors;
+      animation-range: normal, cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes lp-sector-drift {
+  from {
+    translate: 0 -3%;
+  }
+
+  to {
+    translate: 0 3%;
+  }
+}
+
+/* Móvil: carrusel de tarjetas centradas; la del centro se agranda y las vecinas se apagan, y la foto de cada una se
+   corre al pasar (ligado al desplazamiento del carrusel). Los puntos marcan la tarjeta actual. */
+@media (max-width: 860px) {
+  .lp-sectors__seam {
+    display: none;
+  }
+
+  .lp-sectors__list {
+    padding-inline: max(clamp(20px, 5vw, 80px), calc((100% - min(80vw, 340px)) / 2));
+    scroll-padding-inline: 0;
+  }
+
+  .lp-sector {
+    overflow: clip;
+    scroll-snap-align: center;
+  }
+
+  .lp-sector__img img {
+    scale: 1.12;
+  }
+
+  .lp-sectors__dots {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    padding-top: 14px;
+  }
+
+  .lp-sectors__dots button {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--sp-5);
-  }
-}
-
-@media (min-width: 1261px) {
-  .ho-index__list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-.ho-docs__plate {
-  display: block;
-  aspect-ratio: 1186 / 784;
-  padding: var(--sp-4);
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-media);
-  background: var(--c-surface);
-}
-
-.ho-docs__plate img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform var(--mo-base) var(--mo-ease);
-}
-
-@media (hover: hover) {
-  .ho-docs__plate:hover img {
-    transform: scale(1.02);
-  }
-}
-
-.ho-data {
-  margin: 0 0 var(--sp-5);
-  border-top: 1px solid var(--c-border);
-}
-
-.ho-data > div {
-  display: grid;
-  gap: 2px;
-  padding-block: var(--sp-3);
-  border-bottom: 1px solid var(--c-border);
-}
-
-.ho-data dt {
-  color: var(--c-text-secondary);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: var(--lh-label);
-}
-
-.ho-data dd {
-  margin: 0;
-  color: var(--c-on-surface);
-  font-size: var(--fs-body);
-  line-height: 24px;
-}
-
-.ho-data a {
-  display: inline-flex;
-  min-height: 32px;
-  align-items: center;
-  color: var(--c-link);
-  overflow-wrap: anywhere;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-@media (min-width: 480px) {
-  .ho-data > div {
-    grid-template-columns: 160px minmax(0, 1fr);
-    gap: var(--sp-4);
-  }
-}
-
-@media (min-width: 1024px) {
-  .ho-split {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: center;
-    gap: 0 24px;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
   }
 
-  .ho-split__wide {
-    grid-column: span 7;
-  }
-
-  .ho-split__narrow {
-    grid-column: span 5;
-  }
-
-  .ho-backing .ho-split__narrow {
-    padding-left: var(--sp-6);
-  }
-
-  .ho-docs .ho-split__narrow,
-  .ho-location .ho-split__narrow {
-    padding-right: var(--sp-6);
-  }
-
-  .ho-rows--desktop {
+  .lp-sectors__dots button span {
     display: block;
-    margin-bottom: var(--sp-5);
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 42%);
+    transition: width 420ms var(--mo-ease-out), background 240ms ease;
   }
 
-  .ho-split--map {
-    align-items: stretch;
+  .lp-sectors__dots button[aria-current="true"] span {
+    width: 24px;
+    background: var(--lp-orange);
   }
 
-  .ho-split--map .lp-location__map {
-    min-height: 480px;
+  .lp-sectors__dots button:focus-visible {
+    border-radius: 999px;
+    outline: 2px solid var(--lp-orange);
+    outline-offset: -4px;
   }
 }
 
-/* Las fotos bajo el pliegue no se descargan antes del primer pintado: sin esto, "lazy" las pedía todas igual en móvil
-   (el navegador adelanta hasta 2500 px) y competían con el LCP. Cada contenedor ya reserva su alto con aspect-ratio. */
-.ho-cells .lp-card__media,
-.ho-strip__img,
-.ho-split .lp-backing__media,
-.ho-docs__plate {
-  content-visibility: auto;
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (max-width: 860px) {
+    .lp-sector {
+      animation: lp-card-focus linear both;
+      animation-timeline: view(inline);
+      animation-range: cover 0% cover 100%;
+    }
+
+    .lp-sector__img img {
+      animation: lp-card-drift linear both;
+      animation-timeline: view(inline);
+      animation-range: cover 0% cover 100%;
+    }
+
+    .lp-sectors__list[data-in="late"] .lp-sector__img img {
+      animation: lp-settle-lg 1800ms var(--mo-ease-out) calc(var(--i, 0) * 150ms + 120ms) backwards, lp-card-drift linear both;
+      animation-timeline: auto, view(inline);
+      animation-range: normal, cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes lp-card-focus {
+  0%,
+  100% {
+    opacity: 0.55;
+    scale: 0.9;
+  }
+
+  50% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes lp-card-drift {
+  from {
+    translate: 6% 0;
+  }
+
+  to {
+    translate: -6% 0;
+  }
+}
+
+/* ----- Respaldo ----- */
+/* La foto se desliza dentro de su marco al pasar y los tres puntos entran uno tras otro. */
+.lp-backing__media {
+  overflow: clip;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-backing {
+      view-timeline: --lp-backing block;
+    }
+
+    .lp-backing__media img {
+      scale: 1.12;
+      animation: lp-drift-y linear both;
+      animation-timeline: --lp-backing;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes lp-drift-y {
+  from {
+    translate: 0 -5%;
+  }
+
+  to {
+    translate: 0 5%;
+  }
+}
+
+.lp-backing__copy[data-in="late"] > .lp-backing__list {
+  animation: none;
+}
+
+.lp-backing__copy[data-in="late"] > .lp-backing__list > li {
+  animation: mo-up 760ms var(--mo-ease) 380ms backwards;
+}
+
+.lp-backing__copy[data-in="late"] > .lp-backing__list > li:nth-child(2) { animation-delay: 470ms; }
+.lp-backing__copy[data-in="late"] > .lp-backing__list > li:nth-child(3) { animation-delay: 560ms; }
+
+/* Al apuntar un punto, una línea naranja recorre su filete de izquierda a derecha. */
+.lp-backing__list a {
+  position: relative;
+}
+
+.lp-backing__list a::before {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: var(--lp-orange);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 600ms var(--mo-ease-out);
+}
+
+.lp-backing__list a:hover::before,
+.lp-backing__list a:focus-visible::before {
+  transform: scaleX(1);
+}
+
+/* ----- Documentación ----- */
+/* Las fichas se inclinan hacia el puntero (--tx/--ty, los escribe DocsSection). */
+.lp-docs .lp-docs__media img {
+  transform: perspective(1200px) rotateY(calc(var(--tx, 0) * 6deg)) rotateX(calc(var(--ty, 0) * -5deg)) scale(var(--zoom, 1));
+  transition: transform 900ms var(--mo-ease-out);
+}
+
+.lp-docs .lp-docs__media:hover img {
+  --zoom: 1.025;
+}
+
+.lp-docs__campaigns-icon {
+  transition: transform 420ms var(--mo-ease-out), background 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.lp-docs__campaigns:hover .lp-docs__campaigns-icon,
+.lp-docs__campaigns:focus-visible .lp-docs__campaigns-icon {
+  border-color: var(--lp-orange);
+  background: var(--lp-orange);
+  color: #fff;
+  transform: rotate(-8deg) scale(1.08);
+}
+
+/* ----- Ubicación ----- */
+/* Los datos entran uno tras otro con su ícono, y la tarjeta del mapa cae en su lugar después de la foto. */
+.lp-location__copy[data-in="late"] > .lp-location__list {
+  animation: none;
+}
+
+.lp-location__copy[data-in="late"] > .lp-location__list > li {
+  animation: mo-up 720ms var(--mo-ease) 300ms backwards;
+}
+
+.lp-location__copy[data-in="late"] > .lp-location__list > li:nth-child(2) { animation-delay: 380ms; }
+.lp-location__copy[data-in="late"] > .lp-location__list > li:nth-child(3) { animation-delay: 460ms; }
+.lp-location__copy[data-in="late"] > .lp-location__list > li:nth-child(4) { animation-delay: 540ms; }
+
+.lp-location__copy[data-in="late"] .lp-location__icon {
+  animation: lp-pop 600ms var(--mo-ease-out) 420ms backwards;
+}
+
+.lp-location__copy[data-in="late"] li:nth-child(2) .lp-location__icon { animation-delay: 500ms; }
+.lp-location__copy[data-in="late"] li:nth-child(3) .lp-location__icon { animation-delay: 580ms; }
+.lp-location__copy[data-in="late"] li:nth-child(4) .lp-location__icon { animation-delay: 660ms; }
+
+.lp-location__map[data-in="late"] .lp-location__pin {
+  animation: lp-pin-in 700ms var(--mo-ease-out) 700ms backwards;
+}
+
+.lp-location__list li:hover .lp-location__icon {
+  background: var(--lp-orange);
+  color: #fff;
+  transform: scale(1.06);
+}
+
+.lp-location__icon {
+  transition: background 200ms ease, color 200ms ease, transform 300ms var(--mo-ease-out);
+}
+
+@keyframes lp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes lp-pin-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0) scale(0.94);
+  }
+}
+
+/* ----- Superficies del navegador ----- */
+/* La selección de texto y la barra de desplazamiento toman los colores de la marca en lugar de los del sistema. */
+.lp ::selection,
+.lp-header ::selection,
+.lp-footer ::selection {
+  background: rgb(242 106 27 / 30%);
+  color: inherit;
+}
+
+html:has(main.lp) {
+  scrollbar-color: rgb(120 128 140 / 55%) transparent;
+}
+
+html[data-lp-theme="dark"]:has(main.lp) {
+  scrollbar-color: rgb(255 255 255 / 22%) #121211;
+}
+
+/* ----- Lenis (desplazamiento suave de la portada) ----- */
+/* Las reglas de lenis/dist/lenis.css, aquí y no importadas: importarlas sumaba otra hoja que bloqueaba el pintado. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-behavior: allow-discrete;
+  transition-duration: 1ms;
+  transition-property: overflow;
+}
+
+/* Móvil: sin desenfoque en la entrada de palabras y letras. Animar `filter: blur` en decenas de fragmentos a la vez
+   obliga a rasterizar cada uno en cada cuadro; solo con opacidad y desplazamiento la entrada se ve igual y no traba. */
+@media (max-width: 860px) {
+  @keyframes lp-word-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    }
+  }
+
+  @keyframes lp-word-in-lcp {
+    from {
+      opacity: 0.01;
+      transform: translate3d(0, 0.55em, 0) rotate(2.5deg);
+    }
+  }
+
+  @keyframes lp-char-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 70%, 0);
+    }
+  }
+}
+
+/* Móvil: sin animaciones ligadas al scroll sobre las fotos grandes. Las tarjetas de sector (escala, opacidad y deriva de
+   la foto en cada cuadro), el "asentado" de la foto al entrar y la deriva de la foto de respaldo obligaban a repintar
+   imágenes enormes mientras se desliza el dedo: ahí estaba el tirón y el aspecto raro al cargar. Las fotos quedan
+   quietas, nítidas y a tamaño completo. */
+@media (max-width: 860px) {
+  .lp-sector,
+  .lp-sectors .lp-sector__img img,
+  .lp-sectors__list[data-in="late"] .lp-sector__img img,
+  .lp-backing__media img {
+    animation: none !important;
+    opacity: 1;
+    scale: 1;
+    translate: none;
+  }
+
+  .lp-backing__media img {
+    scale: 1.04;
+  }
 }

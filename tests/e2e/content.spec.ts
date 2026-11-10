@@ -106,7 +106,7 @@ async function fillQuoteGeneral(page: Page) {
   await page.locator("#razonSocial").fill("Consorcio Prueba E2E S.A.C.");
   await page.locator("#rucEmpresa").fill("20100070970");
   await page.locator("#tipoProyecto").selectOption("saneamiento");
-  await page.locator("#departamentoDestino").selectOption("Lima");
+  await page.locator("#departamentoDestino").fill("Lima");
   await page.locator("#nombreSolicitante").fill("Ing. Prueba");
   await page.locator("#cargoSolicitante").fill("Jefe de Compras");
   await page.locator("#correoCorporativo").fill("compras@prueba.com.pe");
@@ -203,11 +203,11 @@ test.describe("W18 Libro de Reclamaciones", () => {
     await expect(form.getByText("Malestar o descontento respecto a la atención al público.")).toBeVisible();
     await form.getByRole("radio", { name: /Queja/ }).check();
     await expect(form.getByRole("radio", { name: /Reclamo/ })).not.toBeChecked();
-    await expect(form.getByRole("button", { name: /Registrar queja/ })).toBeVisible();
+    await expect(form.getByRole("button", { name: /Enviar queja/ })).toBeVisible();
     await form.getByRole("radio", { name: /Reclamo/ }).check();
 
     // validación nativa: campos obligatorios vacíos
-    await form.getByRole("button", { name: /Registrar reclamo/ }).click();
+    await form.getByRole("button", { name: /Enviar reclamo/ }).click();
     await expect(page.locator(".lg-success")).toHaveCount(0);
     expect(await form.locator('input[name="nombresYApellidosRazon"]').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
 
@@ -228,10 +228,10 @@ test.describe("W18 Libro de Reclamaciones", () => {
     await form.locator('textarea[name="pedidoConcretoOPretension"]').fill("Respuesta técnica formal.");
 
     // la declaración y el consentimiento son obligatorios
-    await form.getByRole("button", { name: /Registrar reclamo/ }).click();
+    await form.getByRole("button", { name: /Enviar reclamo/ }).click();
     expect(await form.locator('input[name="consentimientoLeyN29733"]').evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true);
     await form.locator('input[name="consentimientoLeyN29733"]').check();
-    await form.getByRole("button", { name: /Registrar reclamo/ }).click();
+    await form.getByRole("button", { name: /Enviar reclamo/ }).click();
 
     // Con base de datos: folio REC real. Sin ella: solicitud lista para enviar por correo o WhatsApp (nunca un folio inventado).
     const success = page.locator(".lg-success");
@@ -391,14 +391,13 @@ test.describe("Términos y condiciones", () => {
     await expect(page.locator(".lg-term").getByRole("link", { name: "Política de Privacidad" })).toHaveAttribute("href", "/privacidad");
   });
 
-  test("texto justificado con partición silábica y tipografía de lectura", async ({ page }) => {
+  test("texto justificado sin cortar palabras con guiones y tipografía de lectura", async ({ page }) => {
     await go(page, "/terminos", ".lg-toc a");
     const body = page.locator(".lg-term p").first();
-    // Justificado en todos los anchos (regla global de globals.css para `main p`). Con lang es-PE el navegador parte
-    // las palabras largas con guion para que la justificación no abra huecos en 320–390 px.
+    // Justificado en todos los anchos (regla global de globals.css para `main p` en móvil), sin guiones.
     await expect(body).toHaveCSS("text-align", "justify");
-    await expect(body).toHaveCSS("hyphens", "auto");
-    await expect(body).toHaveCSS("font-family", /Plex/i);
+    await expect(body).toHaveCSS("hyphens", "none");
+    await expect(body).toHaveCSS("font-family", /Inter/);
   });
 
   test("las páginas legales y la 404 muestran el botón de WhatsApp y la flecha de volver arriba", async ({ page }) => {
@@ -425,7 +424,7 @@ test.describe("Términos y condiciones", () => {
       await go(page, route);
       await expect(page.getByRole("heading", { level: 1 })).toContainText(h1);
       await expect(page.locator("html")).toHaveAttribute("data-lp-theme", "dark");
-      await expect(page.locator("main.lg")).toHaveCSS("background-color", "rgb(17, 24, 28)");
+      await expect(page.locator("main.lg")).toHaveCSS("background-color", "rgb(20, 20, 19)");
     }
     await page.goto("/ruta-que-no-existe");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Oops, this page can’t be found.");

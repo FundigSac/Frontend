@@ -113,7 +113,7 @@ export const DELETION: Pair<DeletionCopy> = {
   es: {
     crumb: "Eliminar cuenta",
     title: "Eliminar tu cuenta y tus datos",
-    lead: "Pide aquí que borremos tu cuenta y tus datos. El trámite es gratuito y te respondemos en un máximo de 10 días hábiles (Ley N.° 29733).",
+    lead: "Te explicamos cómo solicitar la eliminación de tu cuenta de FUNDIGSAC, qué datos se borran y cómo gestionamos tu solicitud, conforme a la Ley N.° 29733 de Protección de Datos Personales.",
     heroAlt: "Persona usando una laptop en una oficina",
     status: {
       label: "Seguimiento de la solicitud",
@@ -280,7 +280,7 @@ export const DELETION: Pair<DeletionCopy> = {
   en: {
     crumb: "Delete account",
     title: "Delete your account and your data",
-    lead: "Ask us here to delete your account and your data. The process is free and we reply within 10 business days at most (Law No. 29733).",
+    lead: "Here is how to request the deletion of your FUNDIGSAC account, which data is erased and how we handle your request, under Peru's Personal Data Protection Law No. 29733.",
     heroAlt: "Person using a laptop in an office",
     status: {
       label: "Request tracking",

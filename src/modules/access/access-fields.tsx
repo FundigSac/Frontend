@@ -1,35 +1,37 @@
 "use client";
 
-import { AlertCircle, Check, Eye, EyeOff, Info } from "lucide-react";
+import { AlertCircle, Check, Eye, EyeOff, Info, type LucideIcon } from "lucide-react";
 import { useEffect, useId, useState, useSyncExternalStore, type InputHTMLAttributes, type ReactNode } from "react";
 import type { AccessCopy } from "./access-copy";
 
 type FieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
   label: string;
+  icon: LucideIcon;
   error?: string;
   hint?: ReactNode;
   optional?: string;
   trailing?: ReactNode;
 };
 
-export function Field({ label, error, hint, optional, trailing, ...input }: FieldProps) {
+export function Field({ label, icon: Icon, error, hint, optional, trailing, ...input }: FieldProps) {
   const id = useId();
   const msg = `${id}-msg`;
   return (
-    <div className={`campo ac-field${error ? " has-error" : ""}`}>
+    <div className={`ac-field${error ? " has-error" : ""}`}>
       <label htmlFor={id}>
         {label}
         {optional && <span className="ac-optional"> ({optional})</span>}
       </label>
       <div className="ac-control">
+        <Icon className="ac-control__icon" aria-hidden="true" size={18} strokeWidth={1.8} />
         <input id={id} aria-invalid={error ? true : undefined} aria-describedby={error || hint ? msg : undefined} {...input} />
         {trailing}
       </div>
       {error ? (
-        <div className="campo__error ac-error" id={msg} role="alert">
-          <AlertCircle aria-hidden="true" size={16} />
-          <span>{error}</span>
-        </div>
+        <p className="ac-error" id={msg} role="alert">
+          <AlertCircle aria-hidden="true" size={14} />
+          {error}
+        </p>
       ) : (
         hint && (
           <div className="ac-hint" id={msg}>
@@ -50,7 +52,7 @@ export function PasswordField(props: Omit<FieldProps, "type" | "trailing"> & { t
       type={visible ? "text" : "password"}
       trailing={
         <button type="button" className="ac-eye" onClick={() => setVisible((v) => !v)} aria-label={visible ? t.hide : t.show} aria-pressed={visible}>
-          {visible ? <EyeOff aria-hidden="true" size={20} strokeWidth={1.8} /> : <Eye aria-hidden="true" size={20} strokeWidth={1.8} />}
+          {visible ? <EyeOff aria-hidden="true" size={18} strokeWidth={1.8} /> : <Eye aria-hidden="true" size={18} strokeWidth={1.8} />}
         </button>
       }
     />
@@ -91,7 +93,7 @@ export function StrengthMeter({ value, t, rules = false }: { value: string; t: A
         <ul className="ac-rules">
           {(Object.keys(t.rules) as (keyof typeof t.rules)[]).map((k) => (
             <li key={k} className={checks[k] ? "is-ok" : undefined}>
-              <span aria-hidden="true">{checks[k] ? <Check size={12} strokeWidth={3} /> : null}</span>
+              <span aria-hidden="true">{checks[k] ? <Check size={11} strokeWidth={3} /> : null}</span>
               {t.rules[k]}
             </li>
           ))}
@@ -145,14 +147,22 @@ function GoogleLink({ label, busyLabel, from, lang }: { label: string; busyLabel
   }, []);
   const qs = new URLSearchParams({ from, hl: lang, ...(next ? { next } : {}) });
   return (
-    <a href={`/api/auth/google?${qs}`} className="lp-btn lp-btn--outline ac-google" aria-busy={busy || undefined} onClick={() => setBusy(true)}>
+    <a href={`/api/auth/google?${qs}`} className="ac-social__btn" aria-busy={busy || undefined} onClick={() => setBusy(true)}>
       <GoogleIcon />
       <span>{busy ? busyLabel : label}</span>
     </a>
   );
 }
 
-export function SocialButtons({ labels, from, lang }: { labels: { google: string; connecting: string }; from: "login" | "registro"; lang: string }) {
+export function SocialButtons({
+  labels,
+  from,
+  lang,
+}: {
+  labels: { google: string; connecting: string };
+  from: "login" | "registro";
+  lang: string;
+}) {
   return (
     <div className="ac-social">
       <GoogleLink label={labels.google} busyLabel={labels.connecting} from={from} lang={lang} />

@@ -109,12 +109,10 @@ test.describe("movimiento", () => {
 
   test("al filtrar el catálogo las tarjetas nuevas entran con animación", async ({ page }) => {
     await page.goto("/productos/tuberias", { waitUntil: "load" });
-    const entering = page.locator("main .mo-pop");
-    await expect(entering).toHaveCount(0);
-    // Solo se animan las celdas que llegan: se pasa a una línea y se vuelve a otra para traer celdas nuevas.
-    await page.getByRole("tab").nth(2).click();
+    const grid = page.locator("[data-results]");
+    await expect(grid).not.toHaveAttribute("data-filtered", "");
     await page.getByRole("tab").nth(1).click();
-    await expect(entering.first()).toBeAttached();
+    await expect(grid).toHaveAttribute("data-filtered", "");
   });
 });
 
@@ -136,7 +134,7 @@ test("las fotos siguen apareciendo si el IntersectionObserver no avisa (Safari e
   await page.waitForTimeout(1200);
   expect(await media.evaluate((el) => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.95);
   await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
-  const block = page.locator("#dimensiones [data-reveal]").first();
-  await block.scrollIntoViewIfNeeded();
-  await expect(block).toHaveAttribute("data-in", /now|late/);
+  const photo = page.locator("figure[data-reveal='media']");
+  await photo.scrollIntoViewIfNeeded();
+  await expect(photo).toHaveAttribute("data-in", /now|late/);
 });

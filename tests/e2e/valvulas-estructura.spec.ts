@@ -1,60 +1,59 @@
 import { expect, test, type Page } from "@playwright/test";
-import { cellsOfFamily } from "../../src/modules/catalog/public-catalog";
-
-const all = cellsOfFamily("valvulas");
 
 /** Evita que el aviso de cookies tape los controles que se prueban. */
 async function dismissCookies(page: Page) {
   await page.getByRole("button", { name: "Rechazar todas" }).click({ timeout: 2500 }).catch(() => {});
 }
 
-/** Celdas de válvula del listado. */
-const valveCards = (page: Page) => page.locator("main article").filter({ has: page.getByRole("link", { name: "Ver ficha", exact: true }) });
+/** Tarjetas de válvula del listado (excluye la tarjeta de descarga del catálogo). */
+const valveCards = (page: Page) => page.locator("main article").filter({ has: page.getByRole("link", { name: /^(Ver|Solicitar) ficha$/ }) });
 
 const NO_OVERFLOW = () => document.documentElement.scrollWidth <= window.innerWidth + 1;
 
 test.describe("listado de válvulas: estructura", () => {
-  test("título, pestañas, celdas con rango, documentos y banda de cierre", async ({ page }) => {
+  test("hero con eyebrow, franja de 4 características, tarjetas con rango y beneficios", async ({ page }) => {
     await page.goto("/productos/valvulas");
     await dismissCookies(page);
     await expect(page.getByRole("heading", { level: 1, name: "Válvulas" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Pedir documentación" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Todas/ })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByText("Nuestras soluciones", { exact: true })).toBeVisible();
+    for (const label of ["Alta resistencia", "Cumplimiento", "Variedad de", "Soporte técnico"]) await expect(page.getByText(label).first()).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Catálogo de válvulas" })).toBeVisible();
 
-    // Las celdas con datos publicados muestran el rango de diámetros.
+    // Las tarjetas con ficha publicada muestran el rango de diámetros (la mariposa y la válvula de aire, no).
     const cards = valveCards(page);
-    await expect(cards).toHaveCount(all.length);
-    await expect(cards.filter({ hasText: "DN40 – DN600" })).toHaveCount(all.filter((c) => c.range === "DN40 – DN600").length);
+    await expect(cards).toHaveCount(12);
+    await expect(cards.filter({ hasText: "DN40 – DN600" })).toHaveCount(2);
+    await expect(cards.filter({ hasText: "DN50 – DN600" })).toHaveCount(1);
     await expect(cards.first().getByRole("link", { name: "Ver ficha", exact: true })).toHaveAttribute("href", "/productos/valvulas/valvula-compuerta");
 
-    // Documentos reales, banda de cierre con un botón y tres filas de cómo se trabaja.
-    await expect(page.getByRole("link", { name: "Descargar" }).first()).toHaveAttribute("href", /\.pdf$/);
+    // Banda de asesoría: dos botones a Contacto; franja de beneficios.
     await expect(page.getByRole("link", { name: "Solicitar asesoría" })).toHaveAttribute("href", "/contacto");
-    for (const label of ["Asesoría técnica", "Datos con origen", "Precio y disponibilidad al cotizar"]) await expect(page.getByText(label).first()).toBeAttached();
+    await expect(page.getByRole("link", { name: "Contáctanos" })).toHaveAttribute("href", "/contacto");
+    for (const label of ["Asesoría técnica", "Productos certificados", "Stock disponible", "Soluciones a medida"]) await expect(page.getByText(label).first()).toBeAttached();
     expect(await page.evaluate(NO_OVERFLOW)).toBe(true);
   });
 
-  test("filtrar por familia y buscar siguen funcionando con las celdas", async ({ page }) => {
+  test("filtrar por familia y buscar siguen funcionando con las tarjetas nuevas", async ({ page }) => {
     await page.goto("/productos/valvulas");
     await dismissCookies(page);
     await page.getByRole("tab", { name: /Compuerta/ }).click();
-    await expect(valveCards(page)).toHaveCount(all.filter((c) => c.line === "compuerta").length);
+    await expect(valveCards(page)).toHaveCount(5);
     await page.getByRole("tab", { name: /Compuerta/ }).click();
-    await expect(valveCards(page)).toHaveCount(all.length);
+    await expect(valveCards(page)).toHaveCount(12);
     await page.getByPlaceholder(/Buscar válvula/).fill("mariposa");
-    await expect(valveCards(page)).toHaveCount(all.filter((c) => c.search.includes("mariposa")).length);
+    await expect(valveCards(page)).toHaveCount(1);
     await page.getByPlaceholder(/Buscar válvula/).fill("zzz");
     await expect(page.getByRole("status").filter({ hasText: "No encontramos" })).toBeVisible();
   });
 
-  test("en inglés se traducen título, pestañas y botones", async ({ page }) => {
+  test("en inglés se traducen eyebrow, características y botones", async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem("fundigsac-lang", "en"));
     await page.goto("/productos/valvulas");
     await dismissCookies(page);
-    await expect(page.getByRole("heading", { level: 1, name: "Valves" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Gate/ })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Request documents" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Request advice" })).toBeVisible();
+    await expect(page.getByText("Our solutions", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Valve catalog" })).toBeVisible();
+    await expect(page.getByText("Standards").first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Contact us" })).toBeVisible();
   });
 });
 

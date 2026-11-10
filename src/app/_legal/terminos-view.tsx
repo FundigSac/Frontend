@@ -1,46 +1,52 @@
 "use client";
 
-import Link from "next/link";
 import { FloatingActions } from "../_landing/floating-actions";
+import { LegalMotion } from "./motion";
+import Link from "next/link";
 import { COMMON, TERMS, UPDATED } from "./copy";
-import { SheetEnd, SheetHead, useSheetRows } from "./sheet";
+import { LegalCta, LegalHero } from "./legal-parts";
 import { LegalToc } from "./toc";
 import { useCopy } from "./use-copy";
 
-export function TermsView() {
+export function TermsView({ hero, closing }: { hero: string; closing: string }) {
   const t = useCopy(TERMS);
   const home = useCopy(COMMON.home);
+  const updated = useCopy(COMMON.updatedLabel);
   const date = useCopy(UPDATED);
-  const rows = useSheetRows(t.title, date);
-  const toc = t.sections.map((s, i) => ({ id: s.id, number: String(i + 1), label: s.label }));
+  const toc = t.sections.map((s, i) => ({ id: s.id, number: String(i + 1).padStart(2, "0"), label: s.label }));
 
   return (
-    <main className="lp lg ls">
-      <SheetHead home={home} crumb={t.crumb} title={t.title} lead={t.lead} rows={rows} />
+    <main className="lp lg">
+      <LegalHero home={home} crumb={t.crumb} title={t.title} lead={t.lead} image={hero} alt="" />
 
-      <div className="lp-shell ls-doc">
-        <LegalToc items={toc} label={t.tocLabel} />
-        <div className="ls-doc__body">
-          <ol className="lg-terms">
-            {t.sections.map((s, i) => (
-              <li className="lg-term" id={s.id} key={s.id}>
-                <span className="lg-term__n" aria-hidden="true">{i + 1}</span>
-                <div>
-                  <h2>{s.label}</h2>
-                  {s.text ? (
-                    <p>{s.text}</p>
-                  ) : (
-                    <p>
-                      {t.privacy.pre}<Link className="ls-link" href="/privacidad">{t.privacy.link}</Link>{t.privacy.post}
-                    </p>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ol>
-          <SheetEnd title={t.cta.eyebrow} text={t.cta.text} cta={t.cta.cta} href="/contacto" />
+      <div className="lp-shell lg-body">
+        <div className="lg-doc">
+          <LegalToc items={toc} label={t.tocLabel} />
+          <div>
+            <ol className="lg-terms">
+              {t.sections.map((s, i) => (
+                <li className="lg-term" id={s.id} key={s.id} data-reveal="">
+                  <span className="lg-term__n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="lg-term__body">
+                    <h2>{s.label}</h2>
+                    {s.text ? (
+                      <p>{s.text}</p>
+                    ) : (
+                      <p>
+                        {t.privacy.pre}<Link className="lg-link-inline" href="/privacidad">{t.privacy.link}</Link>{t.privacy.post}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="lg-updated">{updated} {date}</p>
+          </div>
         </div>
       </div>
+
+      <LegalCta {...t.cta} href="/contacto" image={closing} />
+      <LegalMotion />
       <FloatingActions />
     </main>
   );

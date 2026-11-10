@@ -1,816 +1,583 @@
-/* Plantilla "Industria" (brief §3.6): héroe con foto y velo plano, destacado, sección propia del sector, línea, documentos
-   y banda de cierre. También la usan /industrias y /nosotros. Solo se animan transform y opacity. */
+/* Sector saneamiento: reutiliza el sistema visual de agricultura (ag-*) y añade sus piezas propias (sa-*). */
 
-/* ===== Héroe ===== */
-.in-hero {
+/* Misma cabecera que inicio/agricultura: transparente sobre el hero y vidrio al desplazarse. */
+.lp-header.lp-header--sector:not(.is-solid) {
+  background: transparent;
+}
+
+@media (max-width: 900px) {
+  .sa--sa .sa-hero__photo {
+    object-position: 20% 50%;
+    animation: none;
+    will-change: auto;
+  }
+
+  .sa--sa .sa-hero__veil {
+    background: linear-gradient(180deg, rgb(248 251 254 / 94%) 0%, rgb(248 251 254 / 84%) 52%, rgb(248 251 254 / 40%) 100%);
+  }
+}
+
+/* ===== Hero: deriva lenta anclada en la válvula y un barrido de luz ===== */
+.sa-hero__photo {
+  object-position: 70% 50%;
+  transform-origin: 74% 62%;
+  animation: sa-drift 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.sa-hero__veil {
+  background:
+    linear-gradient(90deg, rgb(248 251 254 / 94%) 0%, rgb(248 251 254 / 82%) 28%, rgb(248 251 254 / 34%) 48%, rgb(248 251 254 / 0%) 62%),
+    linear-gradient(180deg, rgb(255 255 255 / 34%) 0%, rgb(255 255 255 / 0%) 18%, rgb(255 255 255 / 0%) 82%, rgb(255 255 255 / 45%) 100%);
+}
+
+.sa-hero__glint {
+  position: absolute;
+  z-index: -2;
+  inset: -10% -30%;
+  background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0%) 42%, rgb(255 255 255 / 26%) 50%, rgb(255 255 255 / 0%) 58%, transparent 62%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  transform: translateX(-70%);
+  animation: sa-glint 11s cubic-bezier(0.45, 0, 0.25, 1) 2.2s infinite;
+}
+
+@keyframes sa-drift {
+  from { transform: scale(1.02) translate3d(0, 0, 0); }
+  to { transform: scale(1.09) translate3d(-1.2%, -0.6%, 0); }
+}
+
+@keyframes sa-glint {
+  0% { transform: translateX(-70%); opacity: 0; }
+  8% { opacity: 1; }
+  42% { transform: translateX(70%); opacity: 1; }
+  50%, 100% { transform: translateX(70%); opacity: 0; }
+}
+
+/* Botón principal con un destello periódico, discreto. */
+.sa-btn-sheen {
   position: relative;
-  display: flex;
-  min-height: min(640px, 80svh);
-  align-items: flex-end;
   overflow: hidden;
-  padding-block: calc(var(--header-h) + var(--sp-6)) var(--sp-7);
   isolation: isolate;
 }
 
-.in-hero__photo,
-.in-hero__video {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.in-hero__video {
-  opacity: 0;
-  transition: opacity var(--mo-media) linear;
-}
-
-.in-hero__video[data-ready] {
-  opacity: 1;
-}
-
-/* Pausa del vídeo de fondo: solo existe mientras se reproduce. */
-.in-hero__pausa {
-  position: absolute;
-  right: var(--sp-4);
-  bottom: var(--sp-4);
-  display: inline-flex;
-  width: 44px;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgb(255 255 255 / 60%);
-  border-radius: var(--r-control);
-  background: rgb(0 43 58 / 68%);
-  color: #ffffff;
-  cursor: pointer;
-}
-
-.in-hero__veil {
+.sa-btn-sheen::after {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: rgb(0 43 58 / 68%);
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 38%) 50%, transparent 70%);
+  content: "";
+  transform: translateX(-120%);
+  animation: sa-sheen 6.5s ease-in-out 1.6s infinite;
 }
 
-.in-hero__inner {
+.sa-btn-sheen:hover::after {
+  animation-duration: 1.4s;
+  animation-delay: 0s;
+}
+
+@keyframes sa-sheen {
+  0% { transform: translateX(-120%); }
+  22%, 100% { transform: translateX(120%); }
+}
+
+/* ===== Producto destacado: tres atributos con título y apoyo ===== */
+.sa-featured .ag-featured__media img {
+  object-position: 48% 46%;
+}
+
+.sa-featured .ag-lead strong {
+  color: var(--lp-navy);
+  font-weight: 700;
+}
+
+.sa-features {
   display: grid;
-  justify-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 34px 0 36px !important;
+  padding-block: 22px;
+  border-top: 1px solid var(--lp-line);
+  border-bottom: 1px solid var(--lp-line);
 }
 
-.in-crumbs {
+.sa-features li {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 2px 18px;
+  border-left: 1px solid var(--lp-line);
+}
+
+.sa-features li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.sa-features svg {
+  margin-bottom: 8px;
+  color: var(--lp-orange);
+  transition: transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sa-features li:hover svg {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.sa-features strong {
+  color: var(--lp-navy);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.sa-features span {
+  color: var(--lp-text);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+/* ===== Aplicaciones: dos tarjetas grandes casi a sangre ===== */
+.sa-apps {
+  padding: clamp(40px, 4.6vw, 64px) 0 0;
+  background: linear-gradient(180deg, #f3f6fa, #fff 70%);
+}
+
+.sa-apps__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 20px clamp(32px, 5vw, 96px);
+  margin-bottom: clamp(26px, 3vw, 40px);
+}
+
+.sa-apps__lead {
+  max-width: 560px;
+  color: var(--lp-text);
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.6;
+}
+
+/* Texto justificado sin cortar palabras con guiones; en pantallas angostas queda alineado a la izquierda. */
+@media (min-width: 640px) {
+  .sa-apps__lead {
+    text-align: justify;
+    text-justify: inter-word;
+    -webkit-hyphens: none;
+    hyphens: none;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-wrap: pretty;
+  }
+}
+
+.sa-apps__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sa-app {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
+  min-height: clamp(320px, 30vw, 460px);
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+  color: #fff;
+  text-decoration: none;
+}
+
+.sa-app img {
+  z-index: -2;
+  object-fit: cover;
+  transform: scale(1.01);
+  transition: transform 1100ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 600ms ease;
+}
+
+.sa-app__veil {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgb(6 18 36 / 88%) 0%, rgb(6 18 36 / 52%) 38%, rgb(6 18 36 / 0%) 70%),
+    linear-gradient(90deg, rgb(6 18 36 / 40%) 0%, rgb(6 18 36 / 0%) 60%);
+  transition: opacity 500ms ease;
+}
+
+.sa-app__more {
+  position: relative;
+  justify-self: start; /* la franja mide lo que el texto, no el ancho de la tarjeta */
+  padding-bottom: 7px;
+}
+
+.sa-app__more::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--lp-orange);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sa-app__body {
+  display: grid;
+  max-width: 440px;
+  gap: 10px;
+  padding: clamp(24px, 3vw, 44px);
+}
+
+.sa-app__n {
+  display: flex;
   align-items: center;
-  gap: var(--sp-2);
-  margin-bottom: var(--sp-5);
-  color: rgb(255 255 255 / 80%);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-.in-crumbs a {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.in-crumbs [aria-current] {
-  color: #ffffff;
-}
-
-.in-hero h1 {
-  max-width: 21ch;
-  color: #ffffff;
-  font-size: var(--fs-h1);
+  gap: 12px;
+  color: rgb(255 255 255 / 82%);
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: -0.015em;
+  letter-spacing: 0.12em;
+}
+
+.sa-app__n i {
+  display: block;
+  width: 30px;
+  height: 2px;
+  background: currentColor;
+  transition: width 500ms cubic-bezier(0.2, 0.7, 0.2, 1), background 300ms ease;
+}
+
+.sa-app strong {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
-.in-hero__lead {
-  max-width: 60ch;
-  margin-top: var(--sp-4);
-  color: rgb(255 255 255 / 92%);
-  font-size: var(--fs-lead);
-  line-height: var(--lh-lead);
-}
-
-.in-hero__actions {
-  margin-top: var(--sp-6);
-}
-
-/* ===== Encabezados ===== */
-/* El reinicio de landing.css va fuera de capas y anula el margen de la receta .cota: se restituye aquí. */
-.in .cota p {
-  margin-top: var(--sp-3);
-}
-
-.in-head {
-  display: grid;
-  gap: var(--sp-4);
-}
-
-@media (min-width: 860px) {
-  .in-head {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
-}
-
-/* ===== Destacado ===== */
-.in-feat {
-  display: grid;
-  gap: var(--sp-6);
-}
-
-.in-feat__media {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--r-media);
-  background: var(--c-surface-container-low);
-}
-
-.in-feat__media img {
-  object-fit: cover;
-}
-
-.in-feat__copy h2 {
-  color: var(--c-on-surface);
-  font-size: var(--fs-h2);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
-}
-
-.in-feat__lead {
-  max-width: var(--measure);
-  margin-top: var(--sp-3);
-  color: var(--c-on-surface-variant);
-  font-size: var(--fs-lead);
-  line-height: var(--lh-lead);
-}
-
-.in-facts {
-  margin: var(--sp-5) 0 0;
-  border-top: 1px solid var(--c-border);
-}
-
-.in-facts > div {
-  display: flex;
-  min-height: 48px;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-4);
-  border-bottom: 1px solid var(--c-border);
-}
-
-.in-facts dt {
-  color: var(--c-text-secondary);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: var(--lh-label);
-}
-
-.in-facts dd {
-  margin: 0;
-  color: var(--c-on-surface);
-  font-size: var(--fs-data);
-  font-variant-numeric: tabular-nums;
-  line-height: var(--lh-data);
-  text-align: right;
-}
-
-.in-feat__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--sp-3) var(--sp-5);
-  margin-top: var(--sp-6);
-}
-
-@media (min-width: 1024px) {
-  .in-feat {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: center;
-    gap: var(--sp-5);
-  }
-
-  .in-feat__media {
-    grid-column: 1 / span 6;
-  }
-
-  .in-feat__copy {
-    grid-column: 8 / span 5;
-  }
-}
-
-/* ===== Celdas de producto ===== */
-.in-celdas li {
-  display: flex;
-}
-
-.in-celdas .celda {
-  width: 100%;
-}
-
-.in-celdas .celda__media {
-  background: #ffffff; /* las fotos de catálogo vienen sobre blanco: así no se ve el recuadro */
-}
-
-.in-celdas .celda__media img {
-  width: 100%;
-  height: 100%;
-}
-
-/* La tubería es una foto de patio, no un recorte: llena la celda como las demás. */
-.in-celdas .in-celda__media--foto img {
-  object-fit: cover;
-}
-
-.in-celda__texto {
-  display: block;
-}
-
-/* Tres celdas: en móvil son filas (foto y texto) para no dejar una celda huérfana. */
-.in-celdas--3 {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.in-celdas--3 .celda {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
-  align-items: center;
-}
-
-.in-celdas--3 .celda__nombre {
-  padding: var(--sp-3) var(--sp-4) 0;
-  font-size: var(--fs-body);
-  line-height: 22px;
-}
-
-.in-celdas--3 .celda__nota {
-  padding: var(--sp-1) var(--sp-4) var(--sp-3);
-}
-
-@media (min-width: 860px) {
-  .in-celdas--3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .in-celdas--3 .celda {
-    display: block;
-  }
-
-  .in-celdas--3 .celda__nombre {
-    padding: var(--sp-4) var(--sp-4) 0;
-    font-size: 18px;
-    line-height: 24px;
-  }
-
-  .in-celdas--3 .celda__nota {
-    padding: var(--sp-1) var(--sp-4) var(--sp-4);
-  }
-}
-
-/* Sin nota, el nombre conserva su aire inferior. */
-.in-celda__texto:not(:has(.celda__nota)) .celda__nombre {
-  padding-bottom: var(--sp-4);
-}
-
-/* ===== Documentos ===== */
-.in-docs .fila {
-  flex-wrap: wrap;
-}
-
-.in-docs__nombre {
-  flex: 1 1 260px;
-  color: var(--c-on-surface);
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 24px;
-}
-
-.in-docs__meta {
-  flex: 0 0 auto;
-  color: var(--c-text-secondary);
-}
-
-.in-docs .lp-link {
-  flex: 0 0 auto;
-}
-
-@media (min-width: 860px) {
-  .in-docs .fila {
-    flex-wrap: nowrap;
-  }
-
-  .in-docs__meta {
-    width: 120px;
-  }
-
-  .in-docs .lp-link {
-    min-width: 190px;
-  }
-}
-
-/* ===== Banda de cierre ===== */
-.in-cierre {
-  display: grid;
-  justify-items: start;
-  gap: var(--sp-5);
-}
-
-.in-cierre h2 {
-  margin-bottom: var(--sp-3);
-  color: #ffffff;
-}
-
-.in-cierre p {
-  max-width: 60ch;
+.sa-app__text {
   color: rgb(255 255 255 / 86%);
-  font-size: var(--fs-lead);
-  line-height: var(--lh-lead);
+  font-size: clamp(14px, 1vw, 15.5px);
+  line-height: 1.5;
 }
 
-@media (min-width: 860px) {
-  .in-cierre {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--sp-7);
-  }
-}
-
-/* ===== Saneamiento: qué va en cada frente de la red ===== */
-.sa-redes {
-  display: grid;
-  gap: var(--sp-7);
-}
-
-.sa-red__foto {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--r-media);
-  background: var(--c-surface-container-low);
-}
-
-.sa-red__foto img {
-  object-fit: cover;
-}
-
-.sa-red h3 {
-  margin-top: var(--sp-4);
-  color: var(--c-on-surface);
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.sa-red > p {
-  margin-top: var(--sp-1);
-  color: var(--c-text-secondary);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-}
-
-.sa-piezas {
-  margin-top: var(--sp-4);
-  border-top: 1px solid var(--c-border);
-}
-
-.sa-pieza {
-  display: grid;
-  min-height: 64px;
-  grid-template-columns: minmax(0, 1fr) 18px;
+.sa-app__more {
+  display: inline-flex;
   align-items: center;
-  gap: var(--sp-1) var(--sp-3);
-  padding-block: var(--sp-3);
-  border-bottom: 1px solid var(--c-border);
-  color: var(--c-on-surface);
-  text-decoration: none;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 14.5px;
+  font-weight: 700;
 }
 
-.sa-pieza strong {
-  display: block;
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 22px;
+.sa-app__more svg {
+  transition: transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.sa-pieza small {
-  display: block;
-  margin-top: 2px;
-  color: var(--c-text-secondary);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
+.sa-app:hover img,
+.sa-app:focus-visible img {
+  transform: scale(1.07);
 }
 
-.sa-pieza svg {
-  color: var(--c-link);
-  transition: transform var(--mo-fast) var(--mo-ease);
+.sa-app:hover .sa-app__more::after,
+.sa-app:focus-visible .sa-app__more::after {
+  transform: scaleX(1);
 }
 
-@media (hover: hover) {
-  .sa-pieza:hover strong {
-    color: var(--c-link);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .sa-pieza:hover svg {
-    transform: translate3d(3px, 0, 0);
-  }
+.sa-app:hover .sa-app__n i {
+  width: 52px;
+  background: var(--lp-orange);
 }
 
-@media (min-width: 1024px) {
-  .sa-redes {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--sp-7);
-  }
-
-  .sa-red {
-    position: relative;
-  }
-
-  .sa-red + .sa-red::before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: calc(var(--sp-7) / -2);
-    width: 1px;
-    background: var(--c-border);
-    content: "";
-  }
+.sa-app:hover .sa-app__more svg {
+  transform: translateX(5px);
 }
 
-/* ===== Minería: dónde se usa y tabla por necesidad ===== */
-.mi-usos {
-  display: grid;
-  gap: var(--sp-7);
+.sa-app:focus-visible {
+  outline: 3px solid var(--lp-orange);
+  outline-offset: -3px;
 }
 
-.mi-uso {
-  display: grid;
-  align-content: start;
-  gap: var(--sp-4);
+/* La línea de productos sigue a las aplicaciones sin un corte de color brusco. */
+.sa .ag-line {
+  background: linear-gradient(180deg, #fff, #eef2f6);
 }
 
-.mi-uso__foto {
+/* ===== Documentación: collage recortado que flota y se monta sobre el cierre =====
+   Sección más compacta y collage más arriba, con la misma estructura (texto a la izquierda, collage a la derecha). */
+.sa-docs .ag-docs__inner {
+  min-height: 340px;
+  padding-block: 28px;
+}
+
+.sa-docs__media {
   position: relative;
-  overflow: hidden;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--r-media);
-  background: var(--c-surface-container-low);
+  display: block;
+  width: min(100%, 610px);
+  margin: -28px 0 -88px auto;
+  filter: drop-shadow(0 30px 34px rgb(11 34 68 / 24%)) drop-shadow(0 6px 10px rgb(11 34 68 / 12%));
+  transform: translateY(0);
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 600ms ease;
 }
 
-.mi-uso__foto img {
-  object-fit: cover;
-}
-
-.mi-uso h3 {
-  color: var(--c-on-surface);
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.mi-uso p {
-  max-width: 56ch;
-  margin-top: var(--sp-2);
-  color: var(--c-on-surface-variant);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-}
-
-@media (min-width: 1024px) {
-  .mi-usos {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--sp-7);
-  }
-}
-
-.mi-banda {
-  padding-block: var(--sp-8);
-}
-
-.mi-banda .cota h2 {
-  color: #ffffff;
-}
-
-.mi-tabla {
-  width: 100%;
-  border-collapse: collapse;
-  border-top: 1px solid var(--c-border);
-}
-
-.mi-tabla th,
-.mi-tabla td {
-  border-bottom: 1px solid var(--c-border);
-  text-align: left;
-  vertical-align: middle;
-}
-
-.mi-tabla thead th {
-  padding: var(--sp-3) var(--sp-4) var(--sp-3) 0;
-  color: rgb(255 255 255 / 76%);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: var(--lh-label);
-}
-
-.mi-tabla tbody th {
-  padding: var(--sp-4) var(--sp-4) var(--sp-4) 0;
-  color: #ffffff;
-  font-size: var(--fs-h3);
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.mi-tabla td {
-  padding: var(--sp-4) var(--sp-4) var(--sp-4) 0;
-  color: rgb(255 255 255 / 86%);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
-}
-
-.mi-tabla__pieza {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-}
-
-.mi-tabla__foto {
-  flex: 0 0 72px;
-  overflow: hidden;
-  width: 72px;
-  height: 72px;
-  border-radius: var(--r-cell);
-  background: #ffffff;
-}
-
-.mi-tabla__foto img {
+.sa-docs__media img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
+  animation: sa-float 7s ease-in-out infinite;
 }
 
-.mi-tabla .lp-link {
-  white-space: nowrap;
+.sa-docs__media:hover {
+  filter: drop-shadow(0 40px 40px rgb(11 34 68 / 28%)) drop-shadow(0 8px 12px rgb(11 34 68 / 14%));
+  transform: translateY(-10px) rotate(-0.6deg);
 }
 
-@media (max-width: 859px) {
-  .mi-tabla thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
+@keyframes sa-float {
+  50% { transform: translateY(-8px); }
+}
+
+/* ===== Cierre ===== */
+.sa-cta__photo {
+  object-position: 50% 58%;
+}
+
+.sa-cta__veil {
+  background: linear-gradient(90deg, rgb(8 20 38 / 84%) 0%, rgb(8 20 38 / 60%) 52%, rgb(8 20 38 / 22%) 100%);
+}
+
+.sa-cta__eyebrow {
+  margin-bottom: 12px;
+  color: rgb(255 255 255 / 82%);
+}
+
+.sa-cta h2 {
+  max-width: 620px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  .sa-hero__photo {
+    object-position: 74% 50%;
   }
 
-  .mi-tabla,
-  .mi-tabla tbody,
-  .mi-tabla tr,
-  .mi-tabla th,
-  .mi-tabla td {
-    display: block;
+  .sa-hero__veil {
+    background: linear-gradient(180deg, rgb(248 251 254 / 95%) 0%, rgb(248 251 254 / 86%) 50%, rgb(248 251 254 / 40%) 100%);
   }
 
-  .mi-tabla tr {
-    padding-block: var(--sp-5);
-    border-bottom: 1px solid var(--c-border);
+  .sa-features {
+    margin: 26px 0 !important;
   }
 
-  .mi-tabla tbody th,
-  .mi-tabla td {
+  .sa-features li {
+    padding-inline: 10px;
+  }
+
+  .sa-apps__head {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-apps__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sa-app {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .sa-docs__media {
+    width: min(100%, 560px);
+    margin: 8px auto -64px;
+    transform: none;
+  }
+
+  .sa-docs__media:hover {
+    transform: translateY(-6px);
+  }
+}
+
+@media (max-width: 520px) {
+  .sa-features {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .sa-features li {
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
     padding: 0;
-    border: 0;
+    border-left: 0;
   }
 
-  .mi-tabla td {
-    margin-top: var(--sp-3);
-  }
-}
-
-@media (min-width: 860px) {
-  .mi-banda {
-    padding-block: var(--sp-9);
+  .sa-features svg {
+    grid-row: span 2;
+    margin: 2px 0 0;
   }
 
-  .mi-tabla tbody th {
-    width: 38%;
-  }
-
-  .mi-tabla td:last-child {
-    width: 220px;
-    padding-right: 0;
+  .sa-app {
+    aspect-ratio: 5 / 6;
   }
 }
 
-/* ===== Agricultura: la línea de riego con sus piezas ===== */
-.ag-linea {
-  position: relative;
-  display: grid;
-  gap: var(--sp-5);
-  padding-left: 28px;
+/* ===== Modo oscuro ===== */
+html[data-lp-theme="dark"] .sa-hero__veil {
+  background:
+    linear-gradient(90deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 80%) 30%, rgb(18 18 17 / 34%) 50%, rgb(18 18 17 / 0%) 66%),
+    linear-gradient(180deg, rgb(18 18 17 / 40%) 0%, rgb(18 18 17 / 0%) 18%, rgb(18 18 17 / 0%) 78%, rgb(20 20 19 / 80%) 100%);
 }
 
-/* Tubería vertical en móvil: dos líneas de 1 px y relleno plano. */
-.ag-linea::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 6px;
-  width: 10px;
-  border-inline: 1px solid var(--c-primary-container);
-  background: var(--c-sky-soft);
-  content: "";
+html[data-lp-theme="dark"] .sa-featured .ag-lead strong,
+html[data-lp-theme="dark"] .sa-features strong {
+  color: #fff;
 }
 
-html[data-lp-theme="dark"] .ag-linea::before {
-  background: var(--c-surface-container-high);
+html[data-lp-theme="dark"] .sa-apps {
+  background: linear-gradient(180deg, #191918, #141413 70%);
 }
 
-.ag-est {
-  position: relative;
+html[data-lp-theme="dark"] .sa .ag-line {
+  background: linear-gradient(180deg, #141413, #191918);
 }
 
-/* Brida de cada pieza sobre la tubería. */
-.ag-est::before {
-  position: absolute;
-  top: 38px;
-  left: -28px;
-  width: 22px;
-  height: 4px;
-  background: var(--c-action);
-  content: "";
+html[data-lp-theme="dark"] .sa-docs__media {
+  filter: drop-shadow(0 30px 36px rgb(0 0 0 / 60%));
 }
 
-.ag-est a {
-  display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  gap: var(--sp-1) var(--sp-4);
-  color: var(--c-on-surface);
-  text-decoration: none;
-}
-
-.ag-est__foto {
-  grid-row: 1 / span 3;
-  display: block;
-  overflow: hidden;
-  width: 80px;
-  height: 80px;
-  border: 1px solid var(--c-border);
-  border-radius: var(--r-cell);
-  background: #ffffff;
-}
-
-.ag-est__foto img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform var(--mo-base) var(--mo-ease);
-}
-
-.ag-est__fn {
-  color: var(--c-link);
-  font-size: var(--fs-label);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: var(--lh-label);
-}
-
-.ag-est strong {
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 22px;
-}
-
-.ag-est small {
-  color: var(--c-text-secondary);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-.ag-tubo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-2) var(--sp-5);
-  margin-top: var(--sp-6);
-  padding-block: var(--sp-3);
-  border-block: 1px solid var(--c-border);
-}
-
-.ag-tubo strong {
-  color: var(--c-on-surface);
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 24px;
-}
-
-.ag-nota {
-  max-width: var(--measure);
-  margin-top: var(--sp-4);
-  color: var(--c-text-secondary);
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-}
-
-@media (hover: hover) {
-  .ag-est a:hover strong {
-    color: var(--c-link);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+@media (max-width: 860px) {
+  html[data-lp-theme="dark"] .sa-hero__veil {
+    background: linear-gradient(180deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 82%) 50%, rgb(18 18 17 / 45%) 100%);
   }
-
-  .ag-est a:hover img {
-    transform: scale(1.02);
-  }
-}
-
-@media (min-width: 1024px) {
-  .ag-linea {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: var(--sp-5);
-    padding: 0;
-  }
-
-  /* Desde 1024 px la tubería corre en horizontal bajo las fotos. */
-  .ag-linea::before {
-    top: 188px;
-    right: 0;
-    bottom: auto;
-    left: 0;
-    width: auto;
-    height: 10px;
-    border-inline: 0;
-    border-block: 1px solid var(--c-primary-container);
-  }
-
-  .ag-est::before {
-    top: 180px;
-    left: 22px;
-    width: 4px;
-    height: 26px;
-  }
-
-  .ag-est a {
-    display: block;
-  }
-
-  .ag-est__foto {
-    width: 100%;
-    max-width: 168px;
-    height: 168px;
-    margin-bottom: var(--sp-8);
-  }
-
-  .ag-est__fn,
-  .ag-est strong,
-  .ag-est small {
-    display: block;
-  }
-
-  .ag-est strong {
-    margin-top: var(--sp-1);
-  }
-
-  .ag-est small {
-    margin-top: var(--sp-1);
-  }
-}
-
-/* Sin esto, "lazy" las pide igual en móvil (el navegador adelanta hasta 2500 px) y compiten con el LCP. Cada contenedor ya
-   reserva su alto con aspect-ratio o medidas fijas. */
-.in-feat__media,
-/* Las secciones bajo el héroe no entran en el primer pintado. */
-.in > .sec {
-  content-visibility: auto;
-  contain-intrinsic-block-size: auto 720px;
-}
-
-.in-bloque__foto,
-.sa-red__foto,
-.mi-uso__foto,
-.in-celdas .celda__media,
-.mi-tabla__foto,
-.ag-est__foto {
-  content-visibility: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .in-hero__video,
-  .sa-pieza svg,
-  .ag-est__foto img {
+  .sa-hero__photo,
+  .sa-hero__glint,
+  .sa-btn-sheen::after,
+  .sa-docs__media img {
+    animation: none;
+  }
+
+  .sa-hero__glint {
+    display: none;
+  }
+
+  .sa-app img,
+  .sa-app__more::after,
+  .sa-docs__media {
+    transition: none;
+  }
+}
+
+/* ===== Documentación como lámina (catálogo con fondo propio, sin recorte) ===== */
+.sa-docs__media--sheet {
+  width: min(100%, 560px);
+  overflow: hidden;
+  border-radius: 14px;
+  filter: none;
+  box-shadow: 0 34px 60px -30px rgb(11 34 68 / 50%), 0 8px 18px -10px rgb(11 34 68 / 22%);
+  transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 600ms ease;
+}
+
+.sa-docs__media--sheet img {
+  animation: none;
+  transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sa-docs__media--sheet:hover {
+  filter: none;
+  box-shadow: 0 44px 70px -30px rgb(11 34 68 / 55%), 0 10px 20px -10px rgb(11 34 68 / 24%);
+}
+
+.sa-docs__media--sheet:hover img {
+  transform: scale(1.04);
+}
+
+/* Enlace secundario de campañas bajo el botón de recursos. */
+.sa-docs__campaigns {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  color: var(--lp-navy);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sa-docs__campaigns > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--lp-line);
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 200ms ease, color 200ms ease;
+}
+
+.sa-docs__campaigns svg:last-child {
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sa-docs__campaigns:hover {
+  color: var(--lp-orange-dark);
+}
+
+.sa-docs__campaigns:hover > span {
+  border-color: var(--lp-orange);
+  color: var(--lp-orange);
+}
+
+.sa-docs__campaigns:hover svg:last-child {
+  transform: translateX(4px);
+}
+
+.ag-docs__copy .sa-docs__campaigns {
+  display: flex;
+  width: fit-content;
+}
+
+/* Minería: el hero es muy panorámico; se ancla en la válvula (derecha) y en móvil se centra en ella. */
+.sa--mi .sa-hero__photo {
+  object-position: 82% 50%;
+  transform-origin: 66% 55%;
+}
+
+.sa--mi .sa-featured .ag-featured__media img {
+  object-position: 55% 50%;
+}
+
+.sa--mi .ag-line .lp-card__media img {
+  object-fit: contain;
+  background: #fff;
+}
+
+@media (max-width: 860px) {
+  .sa--mi .sa-hero__photo {
+    object-position: 74% 50%;
+  }
+
+  .sa-docs__media--sheet {
+    margin-bottom: -40px;
+  }
+}
+
+html[data-lp-theme="dark"] .sa-docs__campaigns {
+  color: #f0f0ef;
+}
+
+html[data-lp-theme="dark"] .sa-docs__campaigns > span {
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 6%);
+}
+
+html[data-lp-theme="dark"] .sa--mi .ag-line .lp-card__media img {
+  background: #f7f7f6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-docs__media--sheet,
+  .sa-docs__media--sheet img {
     transition: none;
   }
 }

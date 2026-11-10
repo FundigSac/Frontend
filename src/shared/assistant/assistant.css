@@ -1,27 +1,33 @@
 /* Asistente con IA de FUNDIGSAC: botón flotante, aviso y mascota (en todas las páginas). El panel de conversación va en assistant-panel.css. */
 
-/* Los nombres --ai-* se conservan, pero apuntan a los tokens del sitio: petróleo como único color de acción, la
-   misma tipografía y los mismos fondos en claro y en oscuro (brief §3.1 y §3.2). */
 .ai {
-  --ai-navy: var(--c-primary-deep);
-  --ai-navy-2: var(--c-primary);
-  --ai-orange: var(--c-action);
-  --ai-orange-dark: var(--c-link);
-  --ai-ink: var(--c-on-surface);
-  --ai-text: var(--c-on-surface-variant);
-  --ai-muted: var(--c-text-muted);
-  --ai-line: var(--c-border);
-  --ai-soft: var(--c-surface-container-low);
-  --ai-bg: var(--c-surface);
-  --ai-bubble: var(--c-surface-container-low);
-  --ai-user: var(--c-primary);
-  --ai-link: var(--c-link);
-  --ai-display: var(--font-sans), system-ui, sans-serif;
-  --ai-font: var(--font-sans), system-ui, sans-serif;
+  --ai-navy: #0b2244;
+  --ai-navy-2: #17457f;
+  --ai-orange: #f26a1b;
+  --ai-orange-dark: #b84508;
+  --ai-ink: #13233d;
+  --ai-text: #3f4b5c;
+  --ai-muted: #667386;
+  --ai-line: #e3e8ef;
+  --ai-soft: #f4f6f9;
+  --ai-bg: #ffffff;
+  --ai-bubble: #f1f4f8;
+  --ai-user: #0b2244;
+  --ai-link: #b84508;
+  --ai-display: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  --ai-font: var(--font-inter), system-ui, sans-serif;
 }
 
 html[data-lp-theme="dark"] .ai {
-  --ai-user: var(--c-primary-container);
+  --ai-ink: #f5f4f3;
+  --ai-text: #d8d6d3;
+  --ai-muted: #aeaaa3;
+  --ai-line: rgb(255 255 255 / 11%);
+  --ai-soft: #272625;
+  --ai-bg: #1a1a19;
+  --ai-bubble: #292826;
+  --ai-user: #1d4f8f;
+  --ai-link: #ffa066;
 }
 
 .ai *,
@@ -55,10 +61,20 @@ html[data-lp-theme="dark"] .ai {
   background: transparent;
   box-shadow: 0 16px 30px -14px rgb(18 63 151 / 70%);
   cursor: pointer;
-  transition: transform var(--mo-base) var(--mo-ease);
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Halo que late para invitar a conversar. */
+.ai-launch::before {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  /* Tres pulsos y quieto (WCAG 2.2.2). */
+  animation: ai-halo 3.2s ease-out 3;
+}
 
 .ai-launch:hover {
   box-shadow: 0 22px 38px -14px rgb(18 63 151 / 80%);
@@ -66,7 +82,7 @@ html[data-lp-theme="dark"] .ai {
 }
 
 .ai-launch:focus-visible {
-  outline: 2px solid var(--c-focus);
+  outline: 3px solid var(--ai-orange);
   outline-offset: 4px;
 }
 
@@ -86,7 +102,7 @@ html[data-lp-theme="dark"] .ai {
 }
 
 .ai-launch__glyph--close {
-  background: var(--c-primary-deep);
+  background: radial-gradient(circle at 32% 24%, #2a5c9e 0%, var(--ai-navy-2) 40%, var(--ai-navy) 100%);
   color: #fff;
   opacity: 0;
   transform: rotate(-90deg) scale(0.6);
@@ -102,6 +118,9 @@ html[data-lp-theme="dark"] .ai {
   transform: none;
 }
 
+.ai-launch[data-open="true"]::before {
+  animation: none;
+}
 
 /* Con el chat abierto la mascota del botón no se ve: sus animaciones se pausan. */
 .ai-launch[data-open="true"] .m * {
@@ -290,16 +309,24 @@ html[data-lp-theme="dark"] .ai {
   animation: none;
 }
 
-/* Al pasar el cursor por el botón la mascota abre los ojos, sin bucles. */
-@media (hover: hover) {
-  .ai-launch:hover .m .m-happy {
-    opacity: 0;
-  }
+/* Al pasar el cursor por el botón: abre los ojos y da un saltito. */
+.ai-launch:hover .m .m-happy {
+  opacity: 0;
+  animation: none;
+}
 
-  .ai-launch:hover .m .m-open {
-    opacity: 1;
-    transform: none;
-  }
+.ai-launch:hover .m .m-open {
+  opacity: 1;
+  transform: none;
+  animation: m-blink 2.8s ease-in-out infinite;
+}
+
+.ai-launch:hover .m .m-pupils {
+  animation: m-scan 2.4s ease-in-out infinite;
+}
+
+.ai-launch:hover .m .m-bot {
+  animation: m-hop 900ms cubic-bezier(0.3, 0.7, 0.3, 1) both;
 }
 
 /* El WhatsApp sube para dejar un espacio claro sobre el asistente (≈ 30 px) y se oculta mientras el chat está abierto. */
@@ -416,8 +443,8 @@ body:has(.ck) .ai-teaser {
   padding: 0 5px;
   border: 2px solid #fff;
   border-radius: 999px;
-  background: var(--c-action);
-  color: var(--c-on-action);
+  background: var(--ai-orange);
+  color: #fff;
   font: 800 11px/1 var(--ai-display);
   animation: ai-pop 420ms cubic-bezier(0.2, 0.9, 0.2, 1.15) both;
 }

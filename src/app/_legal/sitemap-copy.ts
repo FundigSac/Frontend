@@ -13,7 +13,7 @@ export const SITEMAP: Pair<{
   es: {
     crumb: "Mapa del sitio",
     title: "Mapa del sitio",
-    lead: "Todas las páginas de FUNDIGSAC en un solo lugar, agrupadas por tema. Elige una y entra directo.",
+    lead: "Encuentra rápidamente cada sección de FUNDIGSAC: productos, sectores, recursos técnicos, atención y documentos legales.",
     groups: [
       {
         title: "Productos",
@@ -23,7 +23,7 @@ export const SITEMAP: Pair<{
           { href: "/productos/valvulas", label: "Válvulas" },
           { href: "/productos/marcos-y-tapas", label: "Marcos y tapas" },
           { href: "/cotizar", label: "Grifos" },
-          { href: "/productos/conexiones-y-fittings", label: "Acoples" },
+          { href: "/productos?q=acople", label: "Acoples" },
           { href: "/productos/tuberias", label: "Tuberías" },
         ],
       },
@@ -54,7 +54,7 @@ export const SITEMAP: Pair<{
           { href: "/privacidad", label: "Política de privacidad" },
           { href: "/cookies", label: "Política de cookies" },
           { href: "/eliminar-cuenta", label: "Eliminar cuenta y datos" },
-          { href: "/reclamaciones", label: "Libro de Reclamaciones" },
+          { href: "/reclamaciones", label: "Libro de reclamaciones" },
         ],
       },
     ],
@@ -63,7 +63,7 @@ export const SITEMAP: Pair<{
   en: {
     crumb: "Sitemap",
     title: "Sitemap",
-    lead: "Every FUNDIGSAC page in one place, grouped by topic. Pick one and go straight there.",
+    lead: "Quickly find every section of FUNDIGSAC: products, industries, technical resources, customer service and legal documents.",
     groups: [
       {
         title: "Products",
@@ -73,7 +73,7 @@ export const SITEMAP: Pair<{
           { href: "/productos/valvulas", label: "Valves" },
           { href: "/productos/marcos-y-tapas", label: "Frames and covers" },
           { href: "/cotizar", label: "Hydrants" },
-          { href: "/productos/conexiones-y-fittings", label: "Couplings" },
+          { href: "/productos?q=acople", label: "Couplings" },
           { href: "/productos/tuberias", label: "Pipes" },
         ],
       },
@@ -104,7 +104,7 @@ export const SITEMAP: Pair<{
           { href: "/privacidad", label: "Privacy policy" },
           { href: "/cookies", label: "Cookie policy" },
           { href: "/eliminar-cuenta", label: "Delete account and data" },
-          { href: "/reclamaciones", label: "Libro de Reclamaciones" },
+          { href: "/reclamaciones", label: "Complaints book" },
         ],
       },
     ],

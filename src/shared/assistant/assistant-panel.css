@@ -76,8 +76,22 @@ html[data-lp-theme="dark"] .ai-panel {
   gap: 10px;
   padding: 14px 12px 14px 16px;
   overflow: hidden;
-  background: var(--c-primary-deep);
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgb(242 106 27 / 38%) 0%, transparent 52%),
+    radial-gradient(90% 120% at 0% 100%, rgb(93 143 208 / 30%) 0%, transparent 60%),
+    linear-gradient(135deg, var(--ai-navy) 0%, #12386a 100%);
   color: #fff;
+}
+
+.ai-head::after {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgb(255 255 255 / 9%) 1px, transparent 1px);
+  background-size: 14px 14px;
+  content: "";
+  pointer-events: none;
+  -webkit-mask: linear-gradient(90deg, transparent 30%, #000);
+  mask: linear-gradient(90deg, transparent 30%, #000);
 }
 
 .ai-head__id {
@@ -134,7 +148,7 @@ html[data-lp-theme="dark"] .ai-panel {
   border-radius: 50%;
   background: #34d399;
   content: "";
-  animation: none;
+  animation: ai-ping 2s ease-out infinite;
 }
 
 .ai-avatar {
@@ -173,7 +187,7 @@ html[data-lp-theme="dark"] .ai-panel {
 }
 
 .ai-icon-btn:focus-visible {
-  outline: 2px solid var(--c-focus);
+  outline: 2px solid #ffb27a;
   outline-offset: 2px;
 }
 .ai-body {
@@ -183,13 +197,15 @@ html[data-lp-theme="dark"] .ai-panel {
   padding: 18px 16px 10px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--ai-bg);
+  background:
+    radial-gradient(100% 50% at 50% 0%, rgb(242 106 27 / 5%) 0%, transparent 70%),
+    var(--ai-bg);
   scrollbar-color: var(--ai-line) transparent;
   scrollbar-width: thin;
 }
 
 .ai-body:focus-visible {
-  outline: 2px solid var(--c-focus);
+  outline: 2px solid var(--ai-orange);
   outline-offset: -2px;
 }
 
@@ -251,7 +267,7 @@ html[data-lp-theme="dark"] .ai-panel {
 }
 
 .ai-card:hover {
-  border-color: color-mix(in srgb, var(--c-action) 55%, transparent);
+  border-color: rgb(242 106 27 / 55%);
   box-shadow: 0 14px 26px -18px rgb(11 34 68 / 50%);
   transform: translateY(-2px);
 }
@@ -263,13 +279,13 @@ html[data-lp-theme="dark"] .ai-panel {
   place-items: center;
   margin-bottom: 4px;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--c-action) 11%, transparent);
+  background: rgb(242 106 27 / 11%);
   color: var(--ai-orange-dark);
 }
 
 html[data-lp-theme="dark"] .ai-card__icon {
-  background: color-mix(in srgb, var(--c-action) 18%, transparent);
-  color: var(--c-sky);
+  background: rgb(242 106 27 / 18%);
+  color: #ffa066;
 }
 
 .ai-card strong {
@@ -302,12 +318,12 @@ html[data-lp-theme="dark"] .ai-card__icon {
 
 .ai-chip:hover {
   border-color: var(--ai-orange);
-  background: color-mix(in srgb, var(--c-action) 8%, transparent);
+  background: rgb(242 106 27 / 8%);
   color: var(--ai-orange-dark);
 }
 
 html[data-lp-theme="dark"] .ai-chip:hover {
-  color: var(--c-sky);
+  color: #ffb27a;
 }
 
 .ai-msgs {
@@ -330,7 +346,7 @@ html[data-lp-theme="dark"] .ai-chip:hover {
   max-width: 86%;
   padding: 10px 14px;
   border-radius: 18px 18px 5px;
-  background: var(--ai-user);
+  background: linear-gradient(135deg, var(--ai-user), #a63f06);
   color: #fff;
   font-size: 14.5px;
   line-height: 1.5;
@@ -338,6 +354,9 @@ html[data-lp-theme="dark"] .ai-chip:hover {
   white-space: pre-wrap;
 }
 
+html[data-lp-theme="dark"] .ai-msg--user .ai-bubble {
+  background: linear-gradient(135deg, #c94f0a, #a63f06);
+}
 
 .ai-msg__avatar {
   display: block;
@@ -570,16 +589,16 @@ html[data-lp-theme="dark"] .ai-md code {
 .ai-notice {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid color-mix(in srgb, var(--c-action) 30%, transparent);
+  border: 1px solid rgb(242 106 27 / 30%);
   border-radius: 14px;
-  background: color-mix(in srgb, var(--c-action) 6%, transparent);
+  background: rgb(242 106 27 / 6%);
   color: var(--ai-ink);
   font-size: 13.5px;
   line-height: 1.5;
 }
 
 html[data-lp-theme="dark"] .ai-notice {
-  background: color-mix(in srgb, var(--c-action) 10%, transparent);
+  background: rgb(242 106 27 / 10%);
 }
 
 .ai-notice p {
@@ -651,7 +670,7 @@ html[data-lp-theme="dark"] .ai-btn--quote {
 .ai-field:focus-within {
   border-color: var(--ai-orange);
   background: var(--ai-bg);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-action) 13%, transparent);
+  box-shadow: 0 0 0 4px rgb(242 106 27 / 13%);
 }
 
 .ai-field textarea {
@@ -680,8 +699,9 @@ html[data-lp-theme="dark"] .ai-btn--quote {
   padding: 0;
   border: 0;
   border-radius: 13px;
-  background: var(--c-action);
-  color: var(--c-on-action);
+  background: linear-gradient(145deg, #ff8a3d, var(--ai-orange));
+  box-shadow: 0 8px 16px -8px rgb(242 106 27 / 90%);
+  color: #fff;
   cursor: pointer;
   transition: transform 160ms ease, opacity 160ms ease, filter 160ms ease;
 }
@@ -738,7 +758,7 @@ html[data-lp-theme="dark"] .ai-send--stop {
 
 .ai-live.is-busy,
 .ai-live.is-busy::after {
-  background: var(--c-sky);
+  background: #ffb27a;
 }
 
 .ai-tools {
@@ -756,7 +776,7 @@ html[data-lp-theme="dark"] .ai-send--stop {
 }
 
 .ai-tool.is-on.is-down {
-  background: color-mix(in srgb, var(--c-action) 12%, transparent);
+  background: rgb(242 106 27 / 12%);
   color: var(--ai-orange-dark);
 }
 
@@ -766,8 +786,8 @@ html[data-lp-theme="dark"] .ai-tool.is-on {
 }
 
 html[data-lp-theme="dark"] .ai-tool.is-on.is-down {
-  background: color-mix(in srgb, var(--c-action) 18%, transparent);
-  color: var(--c-sky);
+  background: rgb(242 106 27 / 18%);
+  color: #ffb27a;
 }
 
 .ai-tool.is-on svg {
@@ -829,13 +849,13 @@ html[data-lp-theme="dark"] .ai-tool.is-on.is-down {
 }
 
 html[data-lp-theme="dark"] .ai-chip--follow {
-  border-color: color-mix(in srgb, var(--c-sky) 30%, transparent);
+  border-color: rgb(255 178 122 / 30%);
   background: rgb(93 143 208 / 12%);
   color: #b9d3f5;
 }
 
 html[data-lp-theme="dark"] .ai-chip--follow:hover {
-  border-color: var(--c-sky);
+  border-color: #ffb27a;
   color: #fff;
 }
 
@@ -877,7 +897,7 @@ html[data-lp-theme="dark"] .ai-chip--follow:hover {
 
 .ai-quick__item:hover:not(:disabled) {
   border-color: var(--ai-orange);
-  background: color-mix(in srgb, var(--c-action) 7%, transparent);
+  background: rgb(242 106 27 / 7%);
 }
 
 .ai-quick__item:disabled {
@@ -886,7 +906,7 @@ html[data-lp-theme="dark"] .ai-chip--follow:hover {
 }
 
 .ai-quick__item:focus-visible {
-  outline: 2px solid var(--c-focus);
+  outline: 2px solid var(--ai-orange);
   outline-offset: 1px;
 }
 
@@ -1030,12 +1050,19 @@ html[data-lp-theme="dark"] .ai-chip--follow:hover {
 
 html[data-lp-theme="dark"] .ai-panel {
   border-color: rgb(255 255 255 / 9%);
-  background: var(--c-surface);
+  background: #161615;
 }
 
 .ai-head {
   padding: 16px 14px 16px 18px;
-  background: var(--c-primary-deep);
+  background:
+    radial-gradient(70% 140% at 100% 0%, rgb(242 106 27 / 26%) 0%, transparent 58%),
+    linear-gradient(135deg, #0b2244 0%, #123a6c 100%);
+  box-shadow: inset 0 -1px 0 rgb(255 255 255 / 8%);
+}
+
+.ai-head::after {
+  display: none;
 }
 
 .ai-avatar {
@@ -1056,7 +1083,7 @@ html[data-lp-theme="dark"] .ai-panel {
 }
 
 html[data-lp-theme="dark"] .ai-body {
-  background: var(--c-surface);
+  background: #161615;
 }
 
 .ai-body {
@@ -1110,7 +1137,7 @@ html[data-lp-theme="dark"] .ai-msg--bot .ai-bubble {
 }
 
 html[data-lp-theme="dark"] .ai-compose {
-  background: var(--c-surface);
+  background: #161615;
   box-shadow: 0 -14px 24px -22px rgb(0 0 0 / 90%);
 }
 
@@ -1140,7 +1167,7 @@ html[data-lp-theme="dark"] .ai-compose {
 }
 
 .ai-attach-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--c-action) 10%, transparent);
+  background: rgb(242 106 27 / 10%);
   color: var(--ai-orange);
 }
 
@@ -1150,7 +1177,7 @@ html[data-lp-theme="dark"] .ai-compose {
 }
 
 .ai-attach-btn:focus-visible {
-  outline: 2px solid var(--c-focus);
+  outline: 2px solid var(--ai-orange);
   outline-offset: 1px;
 }
 
@@ -1253,7 +1280,7 @@ html[data-lp-theme="dark"] .ai-compose {
 }
 
 html[data-lp-theme="dark"] .ai-attach__error {
-  color: var(--c-sky);
+  color: #ffb27a;
 }
 
 /* Tarjeta de descarga para los PDF que entrega el asistente */
@@ -1278,17 +1305,17 @@ html[data-lp-theme="dark"] .ai-attach__error {
 }
 
 html[data-lp-theme="dark"] .ai-file {
-  background: var(--c-surface-elevated);
+  background: #1d1c1b;
 }
 
 .ai-file:hover {
-  border-color: color-mix(in srgb, var(--c-action) 55%, transparent);
+  border-color: rgb(242 106 27 / 55%);
   box-shadow: 0 14px 26px -18px rgb(11 34 68 / 50%);
   transform: translateY(-2px);
 }
 
 .ai-file:focus-visible {
-  outline: 2px solid var(--c-focus);
+  outline: 2px solid var(--ai-orange);
   outline-offset: 2px;
 }
 
@@ -1298,7 +1325,7 @@ html[data-lp-theme="dark"] .ai-file {
   height: 42px;
   place-items: center;
   border-radius: 12px;
-  background: color-mix(in srgb, var(--c-action) 12%, transparent);
+  background: rgb(242 106 27 / 12%);
   color: var(--ai-orange);
 }
 
@@ -1353,19 +1380,19 @@ html[data-lp-theme="dark"] .ai-file__cta {
 
 /* ===== Tarjeta estilo mensajería: azul marino en oscuro, hora y doble check, botón de WhatsApp y fichas con vista previa ===== */
 html[data-lp-theme="dark"] .ai {
-  --ai-bg: var(--c-background);
-  --ai-bubble: var(--c-surface-container);
+  --ai-bg: #121211;
+  --ai-bubble: #242322;
   --ai-soft: #1b1a19;
   --ai-line: rgb(255 255 255 / 10%);
   --ai-user: #c94f0a;
   --ai-muted: #9db0c9;
-  --ai-link: var(--c-sky);
+  --ai-link: #ffb27a;
 }
 
 html[data-lp-theme="dark"] .ai-panel,
 html[data-lp-theme="dark"] .ai-body,
 html[data-lp-theme="dark"] .ai-compose {
-  background: var(--c-background);
+  background: #121211;
 }
 
 html[data-lp-theme="dark"] .ai-panel {
@@ -1569,11 +1596,11 @@ html[data-lp-theme="dark"] .ai-field {
 }
 
 html[data-lp-theme="dark"] .ai-foot a {
-  color: var(--c-sky);
+  color: #ffb27a;
 }
 
 html[data-lp-theme="dark"] .ai-md a {
-  color: var(--c-sky);
+  color: #ffb27a;
 }
 
 .ai-icon-btn {
@@ -1657,8 +1684,8 @@ html[data-lp-theme="dark"] .ai-attach-btn {
 }
 
 html[data-lp-theme="dark"] .ai-attach-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--c-sky) 20%, transparent);
-  color: var(--c-sky);
+  background: rgb(255 178 122 / 20%);
+  color: #ffb27a;
 }
 
 .ai-send {
@@ -1710,11 +1737,20 @@ html[data-lp-theme="dark"] .ai-field:focus-within {
 }
 
 /* ===== Modo oscuro en grafito, sin azul marino: el mismo negro cálido del resto del sitio ===== */
+html[data-lp-theme="dark"] .ai {
+  --ai-navy: #242322;
+}
+
+html[data-lp-theme="dark"] .ai-head {
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgb(242 106 27 / 26%) 0%, transparent 56%),
+    linear-gradient(135deg, #1d1c1b 0%, #121211 100%);
+}
 
 html[data-lp-theme="dark"] .ai-panel,
 html[data-lp-theme="dark"] .ai-body,
 html[data-lp-theme="dark"] .ai-compose {
-  background: var(--c-background);
+  background: #121211;
 }
 
 html[data-lp-theme="dark"] .ai-panel {
@@ -1736,7 +1772,7 @@ html[data-lp-theme="dark"] .ai {
 }
 
 html[data-lp-theme="dark"] .ai-panel .lucide-check-check {
-  color: var(--c-sky);
+  color: #ffb27a;
 }
 
 html[data-lp-theme="dark"] .ai-chip--follow {
@@ -1746,18 +1782,119 @@ html[data-lp-theme="dark"] .ai-chip--follow {
 }
 
 html[data-lp-theme="dark"] .ai-chip--follow:hover {
-  border-color: color-mix(in srgb, var(--c-sky) 55%, transparent);
-  background: color-mix(in srgb, var(--c-sky) 12%, transparent);
+  border-color: rgb(255 178 122 / 55%);
+  background: rgb(255 178 122 / 12%);
   color: #fff;
 }
 
 html[data-lp-theme="dark"] .ai-quick__item:not(.ai-quick__item--wa) svg,
 html[data-lp-theme="dark"] .ai-card svg {
-  color: var(--c-sky);
+  color: #ffb27a;
 }
 
 html[data-lp-theme="dark"] .ai-quick__item--wa svg {
   color: #3ddc84;
 }
 
-/* Sin fondo vivo: la conversación va sobre una superficie plana (brief §2 y §4.2, sin aurora, partículas ni bucles). */
+/* ===== Fondo vivo: aurora naranja y partículas de luz que se desplazan despacio detrás de la conversación =====
+   Solo se animan transform y opacidad en capas propias (GPU), sin desenfoques ni repintados: corre fluido en el
+   teléfono. Los mensajes y la barra de escritura van por encima. */
+.ai-panel::before,
+.ai-panel::after {
+  position: absolute;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+}
+
+/* Aurora: tres focos de luz que derivan y respiran. */
+.ai-panel::before {
+  inset: -35%;
+  background:
+    radial-gradient(38% 30% at 22% 28%, rgb(242 106 27 / 30%) 0%, transparent 70%),
+    radial-gradient(34% 28% at 78% 62%, rgb(255 154 82 / 20%) 0%, transparent 70%),
+    radial-gradient(40% 30% at 46% 92%, rgb(150 150 165 / 16%) 0%, transparent 72%);
+  will-change: transform;
+  animation: ai-aurora 22s ease-in-out infinite alternate;
+}
+
+/* Partículas de luz: motas de distinto tamaño y brillo que suben despacio. Todas las baldosas miden 240 px de alto
+   para que el bucle no tenga costura. */
+.ai-panel::after {
+  inset: 0 0 -240px;
+  background-image:
+    radial-gradient(1.6px 1.6px at 22px 40px, rgb(255 190 140 / 90%), transparent 100%),
+    radial-gradient(1.2px 1.2px at 118px 150px, rgb(255 154 82 / 80%), transparent 100%),
+    radial-gradient(2px 2px at 190px 88px, rgb(255 210 170 / 70%), transparent 100%),
+    radial-gradient(1px 1px at 64px 214px, rgb(255 255 255 / 70%), transparent 100%),
+    radial-gradient(1.4px 1.4px at 46px 120px, rgb(255 154 82 / 55%), transparent 100%),
+    radial-gradient(1px 1px at 150px 20px, rgb(255 255 255 / 45%), transparent 100%),
+    radial-gradient(1.6px 1.6px at 250px 190px, rgb(255 190 140 / 50%), transparent 100%);
+  background-size: 210px 240px, 210px 240px, 210px 240px, 210px 240px, 290px 240px, 290px 240px, 290px 240px;
+  will-change: transform;
+  animation: ai-motes 26s linear infinite;
+}
+
+.ai-head,
+.ai-body,
+.ai-compose {
+  position: relative;
+  z-index: 1;
+}
+
+/* Las capas de fondo se ven a través de la zona de mensajes y de la barra. */
+html[data-lp-theme="dark"] .ai-body {
+  background: transparent;
+}
+
+html[data-lp-theme="dark"] .ai-compose {
+  background: rgb(18 18 17 / 72%);
+}
+
+.ai-body {
+  background: transparent;
+}
+
+.ai-compose {
+  background: rgb(255 255 255 / 76%);
+}
+
+/* En claro el fondo es apenas un tinte. */
+html:not([data-lp-theme="dark"]) .ai-panel::before {
+  opacity: 0.55;
+}
+
+html:not([data-lp-theme="dark"]) .ai-panel::after {
+  opacity: 0.4;
+}
+
+@keyframes ai-aurora {
+  from {
+    transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate3d(5%, 3%, 0) rotate(8deg) scale(1.08);
+  }
+
+  to {
+    transform: translate3d(8%, -5%, 0) rotate(-6deg) scale(1.02);
+  }
+}
+
+@keyframes ai-motes {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, -240px, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-panel::before,
+  .ai-panel::after {
+    animation: none;
+  }
+}

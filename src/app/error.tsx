@@ -3,31 +3,33 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
-/** Error de ejecución en una ruta. Usa solo estilos ya globales: este archivo se empaqueta con el layout raíz. */
+/** Error de ejecución en una ruta: mismo lenguaje visual que W21 (sin exponer detalles técnicos). */
 export default function RouteError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
     console.error("[route-error]", error.digest ?? error.name);
   }, [error]);
 
   return (
-    <main className="lp">
-      <section className="on-dark pb-16" style={{ paddingTop: "calc(var(--header-h) + 48px)", minHeight: "60svh" }}>
-        <div className="lp-shell">
-          <h1 style={{ fontSize: "var(--fs-h1)", fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.015em", color: "#ffffff" }}>No pudimos cargar esta página</h1>
-          <p className="mt-4" style={{ maxWidth: "60ch", fontSize: "var(--fs-lead)", lineHeight: "28px", color: "rgb(255 255 255 / 86%)" }}>
-            Ocurrió un problema temporal. Puedes reintentar o volver al inicio. Si sigue fallando, escríbenos e indica la hora aproximada del error.
-          </p>
-          {error.digest ? <span className="mt-2 block" style={{ fontSize: "var(--fs-small)", color: "rgb(255 255 255 / 72%)" }}>Código de referencia: {error.digest}</span> : null}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button type="button" onClick={reset} className="lp-btn lp-btn--solid lp-btn--lg">
-              Reintentar
-            </button>
-            <Link href="/" className="lp-btn lp-btn--outline lp-btn--lg">
-              Ir al inicio
-            </Link>
-          </div>
+    <main className="w-full bg-background min-h-screen">
+      <div className="max-w-[1200px] mx-auto px-6 py-16 lg:py-24 flex flex-col items-center text-center gap-6">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-surface-container text-primary font-ui-label text-ui-label tracking-wider uppercase shadow-sm">
+          <span aria-hidden="true" className="w-2 h-2 rounded-full bg-danger" />
+          <span>Error inesperado</span>
         </div>
-      </section>
+        <h1 className="font-headline-section text-headline-section text-on-surface tracking-tight font-bold">No pudimos cargar esta página</h1>
+        <p className="font-body-default text-body-default text-text-secondary max-w-xl">
+          Ocurrió un problema temporal. Puede reintentar o volver al inicio. Si persiste, contáctenos e indique la hora aproximada del error.
+          {error.digest ? <span className="block mt-2 font-ui-label text-ui-label text-text-muted">Código de referencia: {error.digest}</span> : null}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <button type="button" onClick={reset} className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-primary-container text-brand-on font-button-text text-button-text hover:bg-primary transition-[background-color,box-shadow] shadow-sm">
+            Reintentar
+          </button>
+          <Link href="/" className="inline-flex items-center justify-center h-12 px-6 rounded-lg bg-surface-container-lowest text-on-surface border border-border font-button-text text-button-text hover:bg-surface-container transition-[background-color,box-shadow] shadow-sm">
+            Ir al inicio
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { legalClosingImage, legalHeroImage } from "../_legal/images";
 import { TermsView } from "../_legal/terminos-view";
 
 export const metadata: Metadata = {
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
-  return <TermsView />;
+  return <TermsView hero={legalHeroImage()} closing={legalClosingImage()} />;
 }

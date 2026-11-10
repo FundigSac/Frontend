@@ -1,25 +1,29 @@
-import { pageMetadata } from "@/shared/seo/page-metadata";
+import type { Metadata } from "next";
+import { ComponentsCarousel } from "./_landing/components-carousel";
+import { HeroCarousel } from "./_landing/hero-carousel";
+import { BackingSection, DocsSection, LocationSection } from "./_landing/home-sections";
 import { FloatingActions } from "./_landing/floating-actions";
-import { HomeHero } from "./_landing/hero";
-import { BackingSection, DocsSection, FamiliesSection, LocationSection, SectorsSection } from "./_landing/home-sections";
+import { SectorsBand } from "./_landing/sectors-band";
+import { SmoothScroll } from "./_landing/smooth-scroll";
 import "./landing.css";
 
-export const metadata = pageMetadata({
-  title: "Válvulas y tuberías de hierro dúctil en Perú",
-  description: "Válvulas, tubería de hierro dúctil, marcos y tapas para agua y saneamiento. Revisa cada ficha técnica y solicita tu cotización a FUNDIGSAC desde Lima.",
-  path: "/",
-});
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function HomePage() {
   return (
     <main className="lp">
-      <HomeHero />
-      <FamiliesSection />
-      <SectorsSection />
+      <HeroCarousel />
+
+      <section className="lp-components" aria-labelledby="lp-components-title">
+        <ComponentsCarousel />
+      </section>
+
+      <SectorsBand />
       <BackingSection />
       <DocsSection />
       <LocationSection />
       <FloatingActions />
+      <SmoothScroll />
     </main>
   );
 }

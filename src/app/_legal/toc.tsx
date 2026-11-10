@@ -1,18 +1,12 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { useEffect, useId, useState } from "react";
-import { SHEET_UI } from "./sheet-copy";
-import { useCopy } from "./use-copy";
+import { useEffect, useState } from "react";
 
 export type TocItem = { id: string; number: string; label: string };
 
-/** Índice de la lámina: fijo desde 1024 px y plegable en móvil. Resalta al instante la sección visible. */
+/** Índice lateral que resalta la sección visible (IntersectionObserver) y desplaza con suavidad. */
 export function LegalToc({ items, label }: { items: readonly TocItem[]; label: string }) {
-  const ui = useCopy(SHEET_UI);
-  const listId = useId();
   const [active, setActive] = useState(items[0]?.id ?? "");
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const nodes = items.map((i) => document.getElementById(i.id)).filter((n): n is HTMLElement => Boolean(n));
@@ -32,26 +26,19 @@ export function LegalToc({ items, label }: { items: readonly TocItem[]; label: s
     const el = document.getElementById(id);
     if (!el) return;
     event.preventDefault();
-    setOpen(false);
-    setActive(id);
-    history.replaceState(null, "", `#${id}`);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // El índice se pliega antes de desplazar: así el destino no queda descolocado.
-    window.requestAnimationFrame(() => el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }));
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    history.replaceState(null, "", `#${id}`);
+    setActive(id);
   };
 
   return (
-    <nav className="lg-toc" aria-label={label} data-open={open ? "" : undefined}>
-      <span className="lg-toc__label">{ui.onThisPage}</span>
-      <button type="button" className="lg-toc__toggle" aria-expanded={open} aria-controls={listId} onClick={() => setOpen((v) => !v)}>
-        {ui.onThisPage}
-        <ChevronDown aria-hidden="true" size={20} strokeWidth={2} />
-      </button>
-      <ol id={listId}>
+    <nav className="lg-toc" aria-label={label}>
+      <ol>
         {items.map((item) => (
           <li key={item.id}>
             <a href={`#${item.id}`} aria-current={active === item.id ? "true" : undefined} onClick={(e) => go(e, item.id)}>
-              <span aria-hidden="true">{item.number}</span>
+              <span>{item.number}</span>
               {item.label}
             </a>
           </li>

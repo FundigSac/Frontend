@@ -72,7 +72,6 @@ const EN: Record<string, string> = {
   "En revisión de Ventas": "Under review by Sales",
   "Conserva el código de seguimiento y revisa tu correo: ahí llegarán la constancia y la propuesta.":
     "Keep the tracking code and check your email: the confirmation and the proposal will arrive there.",
-  "Revisa tu correo: ahí llegarán la constancia y la propuesta.": "Check your email: the confirmation and the proposal will arrive there.",
   "Sin folio": "No reference",
   "No se generó un folio para seguimiento.": "No reference was generated for follow-up.",
   "Guarda el folio para identificar el registro.": "Keep the reference to identify the record.",

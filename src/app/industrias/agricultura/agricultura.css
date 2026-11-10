@@ -1,0 +1,1000 @@
+/* Sector agricultura: misma identidad que la portada (hero con foto, vidrio, animaciones suaves). */
+.ag {
+  margin-top: -84px;
+  overflow-x: clip;
+  background: #fff;
+}
+
+.ag-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #4b5563;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.ag-eyebrow span {
+  display: block;
+  width: 34px;
+  height: 3px;
+  flex: 0 0 auto;
+  border-radius: 2px;
+  background: var(--lp-orange);
+}
+
+.ag-lead {
+  max-width: 520px;
+  margin-top: 14px !important;
+  color: var(--lp-text);
+  font-size: clamp(16px, 1.2vw, 19px);
+  line-height: 1.5;
+}
+
+/* ===== Hero ===== */
+.ag-hero {
+  position: relative;
+  display: flex;
+  min-height: clamp(560px, 84svh, 760px);
+  align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 120px 0 72px;
+  background: #dfeaf5;
+}
+
+.ag-hero__photo {
+  z-index: -3;
+  object-fit: cover;
+  object-position: 60% 80%;
+  animation: lp-kenburns 28s ease-in-out infinite alternate;
+}
+
+.ag-hero__veil {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(248 251 254 / 92%) 0%, rgb(248 251 254 / 78%) 30%, rgb(248 251 254 / 28%) 52%, rgb(248 251 254 / 0%) 68%),
+    linear-gradient(180deg, rgb(255 255 255 / 30%) 0%, rgb(255 255 255 / 0%) 16%, rgb(255 255 255 / 0%) 80%, rgb(255 255 255 / 40%) 100%);
+}
+
+.ag-hero__inner {
+  max-width: 1560px;
+}
+
+.ag-hero__inner > * {
+  max-width: 660px;
+  animation: lp-rise 720ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.ag-hero__inner > :nth-child(2) { animation-delay: 80ms; }
+.ag-hero__inner > :nth-child(3) { animation-delay: 160ms; }
+.ag-hero__inner > :nth-child(4) { animation-delay: 240ms; }
+.ag-hero__inner > :nth-child(5) { animation-delay: 330ms; }
+
+.ag-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 26px;
+  color: #5b6779;
+  font-size: 13px;
+}
+
+.ag-crumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ag-crumbs a:hover {
+  color: var(--lp-orange-dark);
+}
+
+.ag-crumbs [aria-current] {
+  color: var(--lp-ink);
+  font-weight: 600;
+}
+
+.ag-hero h1 {
+  margin-top: 16px;
+  color: var(--lp-navy);
+  font-size: clamp(38px, 4.7vw, 68px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.ag-hero__lead {
+  max-width: 520px;
+  margin-top: 20px !important;
+  color: #3f4b5c;
+  font-size: clamp(17px, 1.35vw, 21px);
+  line-height: 1.5;
+}
+
+.ag-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.ag-hero__actions .lp-btn {
+  min-height: 56px;
+  padding: 0 28px;
+  font-size: 16px;
+}
+
+.ag-btn-glass {
+  border-color: rgb(242 106 27 / 70%);
+  background: rgb(255 255 255 / 62%);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  backdrop-filter: blur(14px) saturate(1.6);
+}
+
+/* ===== Producto destacado ===== */
+.ag-featured {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  align-items: stretch;
+  background: #fff;
+}
+
+.ag-featured__media {
+  position: relative;
+  min-height: 460px;
+  overflow: hidden;
+}
+
+.ag-featured__media img {
+  object-fit: cover;
+  object-position: 45% 50%;
+  transition: transform 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ag-featured:hover .ag-featured__media img {
+  transform: scale(1.04);
+}
+
+.ag-featured__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(36px, 4.5vw, 72px) var(--lp-gutter) clamp(36px, 4.5vw, 72px) clamp(28px, 5vw, 80px);
+}
+
+.ag h2 {
+  margin: 14px 0 0;
+  color: var(--lp-navy);
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.ag-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 30px 0 32px !important;
+}
+
+.ag-features li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 14px;
+  border-left: 1px solid var(--lp-line);
+  color: var(--lp-text);
+  font-size: 14px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.ag-features li:first-child {
+  border-left: 0;
+}
+
+.ag-features svg {
+  color: var(--lp-navy);
+  transition: transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1), color 200ms ease;
+}
+
+.ag-features li:hover svg {
+  color: var(--lp-orange);
+  transform: translateY(-3px) scale(1.08);
+}
+
+.ag-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ag-actions .lp-btn {
+  min-height: 48px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+
+/* Producto destacado: los botones bajan hacia el hueco libre de la columna (la mitad del espacio sobrante), sin agrandar la sección. */
+.ag-featured__copy > .ag-actions {
+  margin-block: auto;
+}
+
+/* ===== Línea para agricultura ===== */
+.ag-line {
+  padding: clamp(34px, 4vw, 56px) 0 clamp(40px, 4.5vw, 64px);
+  background: linear-gradient(180deg, #f6f8fb, #eef2f6);
+}
+
+.ag-line__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 26px;
+}
+
+.ag-line__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* ===== Documentación ===== */
+.ag-docs {
+  overflow: hidden;
+  background: #fff;
+}
+
+.ag-docs__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 64px);
+  min-height: 400px;
+  padding-block: 40px;
+}
+
+.ag-docs__copy .lp-btn {
+  margin-top: 28px;
+}
+
+.ag-docs__media {
+  position: relative;
+  display: block;
+  min-height: 340px;
+}
+
+.ag-docs__plan,
+.ag-docs__book {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 30px 50px -24px rgb(11 34 68 / 55%);
+  transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ag-docs__plan {
+  top: 0;
+  right: 0;
+  width: 62%;
+  transform: rotate(3deg);
+}
+
+.ag-docs__book {
+  bottom: -6px;
+  left: 4%;
+  width: 56%;
+  transform: rotate(-4deg);
+}
+
+.ag-docs__media:hover .ag-docs__plan {
+  transform: rotate(5deg) translate(10px, -6px);
+}
+
+.ag-docs__media:hover .ag-docs__book {
+  transform: rotate(-6deg) translate(-8px, 4px) scale(1.03);
+}
+
+.ag-docs__plan img,
+.ag-docs__book img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ===== Cierre ===== */
+.ag-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: clamp(40px, 5vw, 64px) 0;
+  color: #fff;
+}
+
+.ag-cta__photo {
+  z-index: -2;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+
+.ag-cta__veil {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(8 20 38 / 82%) 0%, rgb(8 20 38 / 58%) 55%, rgb(8 20 38 / 30%) 100%);
+}
+
+.ag-cta__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 32px;
+}
+
+.ag-cta h2 {
+  margin: 0;
+  max-width: 560px;
+  color: #fff;
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+.ag-cta p {
+  margin-top: 10px !important;
+  color: rgb(255 255 255 / 86%);
+  font-size: 17px;
+}
+
+.ag-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ag-wa {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  border-radius: 4px;
+  background: #25d366;
+  box-shadow: 0 12px 26px -12px rgb(18 140 70 / 80%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.ag-wa:hover {
+  background: #1fbd5b;
+  transform: translateY(-2px);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .ag-line__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .ag {
+    margin-top: -72px;
+  }
+
+  .ag-hero {
+    min-height: 0;
+    padding: 108px 0 48px;
+  }
+
+  .ag-hero__photo {
+    object-position: 68% 80%;
+  }
+
+  .ag-hero__veil {
+    background: linear-gradient(180deg, rgb(248 251 254 / 94%) 0%, rgb(248 251 254 / 84%) 52%, rgb(248 251 254 / 40%) 100%);
+  }
+
+  .ag-hero__actions .lp-btn {
+    flex: 1 1 100%;
+  }
+
+  .ag-featured,
+  .ag-docs__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .ag-featured__media {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .ag-featured__copy {
+    padding: 32px var(--lp-gutter) 40px;
+  }
+
+  .ag-features li {
+    padding-inline: 6px;
+    font-size: 13px;
+  }
+
+  .ag-actions .lp-btn {
+    flex: 1 1 100%;
+  }
+
+  .ag-docs__media {
+    min-height: 300px;
+  }
+
+  .ag-cta__actions,
+  .ag-cta__actions > * {
+    width: 100%;
+  }
+
+  .ag-cta__actions > * {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .ag-line__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Modo oscuro ===== */
+html[data-lp-theme="dark"] .ag {
+  background: #141413;
+}
+
+html[data-lp-theme="dark"] .ag-eyebrow {
+  color: #bfbbb6;
+}
+
+html[data-lp-theme="dark"] .ag-hero {
+  background: #141413;
+}
+
+html[data-lp-theme="dark"] .ag-hero__photo {
+  filter: brightness(0.55) saturate(0.95);
+}
+
+html[data-lp-theme="dark"] .ag-hero__veil {
+  background:
+    linear-gradient(90deg, rgb(18 18 17 / 94%) 0%, rgb(18 18 17 / 80%) 32%, rgb(18 18 17 / 34%) 54%, rgb(18 18 17 / 0%) 70%),
+    linear-gradient(180deg, rgb(18 18 17 / 40%) 0%, rgb(18 18 17 / 0%) 18%, rgb(18 18 17 / 0%) 78%, rgb(20 20 19 / 80%) 100%);
+}
+
+html[data-lp-theme="dark"] .ag-crumbs {
+  color: #b6b2ad;
+}
+
+html[data-lp-theme="dark"] .ag-hero h1 {
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .ag-hero__lead {
+  color: #cccac6;
+}
+
+html[data-lp-theme="dark"] .ag-btn-glass {
+  border-color: rgb(255 255 255 / 40%);
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+}
+
+html[data-lp-theme="dark"] .ag-btn-glass:hover {
+  border-color: var(--lp-orange);
+  background: var(--lp-orange);
+}
+
+html[data-lp-theme="dark"] .ag-featured,
+html[data-lp-theme="dark"] .ag-docs {
+  background: #141413;
+}
+
+html[data-lp-theme="dark"] .ag-featured__media img {
+  filter: brightness(0.88);
+}
+
+html[data-lp-theme="dark"] .ag-line {
+  background: linear-gradient(180deg, #191918, #141413);
+}
+
+html[data-lp-theme="dark"] .ag-docs {
+  background: #181716;
+}
+
+html[data-lp-theme="dark"] .ag-docs__plan,
+html[data-lp-theme="dark"] .ag-docs__book {
+  box-shadow: 0 30px 50px -22px rgb(0 0 0 / 80%);
+}
+
+html[data-lp-theme="dark"] .ag-docs__plan img,
+html[data-lp-theme="dark"] .ag-docs__book img {
+  filter: brightness(0.92);
+}
+
+html[data-lp-theme="dark"] .ag-cta__veil {
+  background: linear-gradient(90deg, rgb(14 14 13 / 90%) 0%, rgb(14 14 13 / 68%) 55%, rgb(14 14 13 / 40%) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-hero__photo,
+  .ag-hero__inner > * {
+    animation: none;
+  }
+
+  .ag-featured__media img,
+  .ag-docs__plan,
+  .ag-docs__book,
+  .ag-features svg {
+    transition: none;
+  }
+}
+
+/* ===== Documentación y cierre: collage grande sin fondo que se monta sobre la franja ===== */
+.ag-docs {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
+.ag-docs__inner {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  min-height: 400px;
+  padding-block: 56px 24px;
+}
+
+.ag-docs__media {
+  min-height: 420px;
+  margin-bottom: -84px;
+}
+
+.ag-docs__plan,
+.ag-docs__book {
+  border-radius: 0;
+  box-shadow: none;
+  mix-blend-mode: multiply;
+  overflow: visible;
+}
+
+.ag-docs__plan {
+  top: -4px;
+  right: -2%;
+  width: 58%;
+  transform: rotate(2deg);
+}
+
+.ag-docs__book {
+  bottom: 0;
+  left: 2%;
+  width: 60%;
+  transform: rotate(-1.5deg);
+}
+
+.ag-docs__media:hover .ag-docs__plan {
+  transform: rotate(3deg) translate(8px, -6px);
+}
+
+.ag-docs__media:hover .ag-docs__book {
+  transform: rotate(-2.5deg) translate(-6px, 4px) scale(1.02);
+}
+
+.ag-cta {
+  z-index: 1;
+  padding: clamp(56px, 6vw, 84px) 0 clamp(44px, 5vw, 64px);
+}
+
+.ag-cta__photo {
+  object-position: 50% 70%;
+}
+
+/* En oscuro el blend no sirve sobre fondo oscuro: se muestran como tarjetas claras. */
+html[data-lp-theme="dark"] .ag-docs__plan,
+html[data-lp-theme="dark"] .ag-docs__book {
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 30px 50px -22px rgb(0 0 0 / 80%);
+  mix-blend-mode: normal;
+}
+
+.ag-docs__copy .ag-eyebrow {
+  margin-bottom: 22px;
+}
+
+.ag-docs__media {
+  transform: translateY(-36px);
+}
+
+/* Recorte al contorno real del papel: sin el fondo gris de la foto, con sombra propia. */
+.ag-docs__plan,
+.ag-docs__book {
+  mix-blend-mode: normal;
+  filter: drop-shadow(0 26px 30px rgb(11 34 68 / 22%)) drop-shadow(0 4px 8px rgb(11 34 68 / 12%));
+}
+
+.ag-docs__plan img {
+  clip-path: polygon(11% 6.5%, 81% 1.5%, 94.5% 92.5%, 10.5% 99%);
+}
+
+.ag-docs__book img {
+  clip-path: polygon(14.8% 13.5%, 68% 4.5%, 90% 82.5%, 30.5% 99%);
+}
+
+.ag-docs__plan {
+  top: -18px;
+  right: -4%;
+  width: 66%;
+  transform: none;
+}
+
+.ag-docs__book {
+  bottom: -10px;
+  left: 0;
+  width: 68%;
+  transform: none;
+}
+
+.ag-docs__media:hover .ag-docs__plan {
+  transform: translate(8px, -6px);
+}
+
+.ag-docs__media:hover .ag-docs__book {
+  transform: translate(-6px, 4px) scale(1.02);
+}
+
+html[data-lp-theme="dark"] .ag-docs__plan,
+html[data-lp-theme="dark"] .ag-docs__book {
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 26px 34px rgb(0 0 0 / 60%));
+}
+
+@media (max-width: 860px) {
+  .ag-docs__inner {
+    grid-template-columns: 1fr;
+    padding-block: 40px 8px;
+  }
+
+  .ag-docs__media {
+    min-height: 330px;
+    margin-bottom: -40px;
+  }
+
+  .ag-docs__plan {
+    width: 64%;
+  }
+
+  .ag-docs__book {
+    width: 66%;
+  }
+
+  .ag-cta {
+    padding-top: 72px;
+  }
+}
+
+/* Válvula destacada: la proporción del contenedor sigue a la foto (4:3) para no cortar el volante. */
+.ag-featured__media {
+  min-height: clamp(460px, 40vw, 640px);
+}
+
+.ag-featured__media img {
+  object-position: 50% 30%;
+}
+
+.ag-featured:hover .ag-featured__media img {
+  transform: scale(1.02);
+}
+
+@media (max-width: 860px) {
+  .ag-featured__media {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .ag-featured__media img {
+    object-position: 50% 40%;
+  }
+}
+
+/* ===== Hero con movimiento: encuadre fijo, solo se anima el agua ===== */
+.ag-hero__photo {
+  animation: none;
+}
+
+.ag-hero__motion {
+  position: absolute;
+  z-index: -3;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1100ms ease;
+}
+
+.ag-hero__motion.is-live {
+  opacity: 1;
+}
+
+/* Dos copias apiladas: la segunda entra con un fundido al final de cada vuelta (ver hero-motion.tsx). */
+.ag-hero__motion video {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.ag-hero__motion video:nth-of-type(2) {
+  z-index: 0;
+  opacity: 0;
+}
+
+.ag-hero__motion canvas,
+.ag-hero__motion video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 80%;
+}
+
+.ag-motion-toggle {
+  position: absolute;
+  z-index: 3;
+  right: var(--lp-gutter);
+  bottom: 22px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 50%;
+  background: rgb(11 34 68 / 34%);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: background 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.ag-motion-toggle:hover,
+.ag-motion-toggle:focus-visible {
+  background: var(--lp-orange);
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+.ag-motion-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+html[data-lp-theme="dark"] .ag-hero__motion {
+  filter: brightness(0.55) saturate(0.95);
+}
+
+@media (max-width: 860px) {
+  .ag-hero__motion canvas,
+  .ag-hero__motion video {
+    object-position: 68% 80%;
+  }
+
+  .ag-motion-toggle {
+    bottom: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-hero__motion,
+  .ag-motion-toggle {
+    display: none;
+  }
+}
+
+/* Gotas: lienzo 2D encima del shader, mismo encuadre. */
+.ag-hero__motion .ag-hero__drops {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+}
+
+/* Móvil: la línea de productos en dos columnas (menos scroll); una sola columna en pantallas diminutas. */
+@media (max-width: 560px) {
+  .ag-line__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .ag-line .lp-card__label {
+    padding: 12px;
+    font-size: 13.5px;
+    line-height: 1.25;
+  }
+}
+
+@media (max-width: 340px) {
+  .ag-line__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tablet (561–860 px): botones lado a lado y foto de la válvula menos alta. */
+@media (min-width: 561px) and (max-width: 860px) {
+  .ag-hero__actions .lp-btn {
+    flex: 0 1 auto;
+  }
+
+  .ag-featured__media {
+    aspect-ratio: 3 / 2;
+  }
+
+  .ag-featured__media img {
+    object-position: 50% 24%;
+  }
+
+  .ag-actions .lp-btn {
+    flex: 1 1 auto;
+  }
+
+  .ag-docs__media {
+    min-height: 380px;
+    max-width: 560px;
+  }
+}
+
+/* Producto destacado: más aire entre elementos y el bloque sube hacia la parte alta de la sección. */
+.ag-featured__copy {
+  justify-content: flex-start;
+  padding-top: clamp(40px, 4.2vw, 64px);
+  padding-bottom: clamp(40px, 4.2vw, 64px);
+}
+
+.ag-featured__copy h2 {
+  margin-top: 20px;
+}
+
+.ag-featured__copy .ag-lead {
+  margin-top: 20px !important;
+  max-width: 540px;
+}
+
+.ag-features {
+  margin: 40px 0 40px !important;
+  padding-block: 26px;
+  border-top: 1px solid var(--lp-line);
+  border-bottom: 1px solid var(--lp-line);
+}
+
+.ag-features li {
+  gap: 14px;
+  padding-block: 4px;
+}
+
+.ag-actions {
+  gap: 14px;
+}
+
+@media (max-width: 860px) {
+  .ag-featured__copy {
+    padding-top: 32px;
+  }
+
+  .ag-featured__copy h2 {
+    margin-top: 16px;
+  }
+
+  .ag-featured__copy .ag-lead {
+    margin-top: 16px !important;
+  }
+
+  .ag-features {
+    margin: 30px 0 !important;
+    padding-block: 20px;
+  }
+}
+
+/* Producto destacado: los tres botones caben en una sola fila en pantallas anchas. */
+@media (min-width: 1200px) {
+  .ag-actions {
+    flex-wrap: nowrap;
+  }
+
+  .ag-actions .lp-btn {
+    gap: 8px;
+    padding: 0 15px;
+    font-size: 13.5px;
+    white-space: nowrap;
+  }
+}
+
+/* Hero: más separación entre migas, etiqueta, título, texto y botones. */
+.ag-crumbs {
+  margin-bottom: 44px;
+}
+
+.ag-hero h1 {
+  margin-top: 24px;
+}
+
+.ag-hero__lead {
+  margin-top: 30px !important;
+}
+
+.ag-hero__actions {
+  gap: 16px;
+  margin-top: 46px;
+}
+
+@media (max-width: 860px) {
+  .ag-crumbs {
+    margin-bottom: 30px;
+  }
+
+  .ag-hero h1 {
+    margin-top: 20px;
+  }
+
+  .ag-hero__lead {
+    margin-top: 22px !important;
+  }
+
+  .ag-hero__actions {
+    margin-top: 32px;
+  }
+}
+
+/* Producto destacado: los botones van centrados en la columna. */
+.ag-actions {
+  justify-content: center;
+}
+
+@media (min-width: 1200px) {
+  .ag-actions {
+    gap: 10px;
+  }
+
+  .ag-actions .lp-btn {
+    padding: 0 13px;
+  }
+}
+
+/* ===== Entrada del hero más fluida; el título (LCP) no arranca en opacidad 0. ===== */
+.ag-hero__inner > * {
+  animation-duration: 820ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ag-hero__inner > h1 {
+  animation-name: lp-hero-in-lcp;
+}
+
+@keyframes lp-hero-in-lcp {
+  from {
+    opacity: 0.01;
+    transform: translateY(22px);
+  }
+}
+
+/* Safari: un elemento de cuadrícula con aspect-ratio que se estira a una fila vacía mide 0 × 0 y la foto destacada no
+   aparecía en iPhone. Ancho explícito y sin estirarse: la altura sale de la proporción. */
+@media (max-width: 860px) {
+  .ag-featured__media {
+    width: 100%;
+    align-self: start;
+  }
+}

@@ -1,155 +1,124 @@
 "use client";
 
 import { useLang } from "@/shared/layout/landing-prefs";
-import type { FeaturedText } from "../_sector/sector-kit";
+import type { SectorCopy } from "../_sector/sector-page";
 
-type Piece = { name: string; use: string; href: string };
-
-export const SANEA: Record<"es" | "en", {
-  crumbs: { home: string; section: string; current: string };
-  hero: { title: string; lead: string; explore: string; alt: string };
-  featured: FeaturedText;
-  redes: { title: string; lead: string; items: readonly { title: string; text: string; alt: string; pieces: readonly Piece[] }[] };
-  line: { title: string; all: string; items: readonly { name: string; note: string; alt: string }[] };
-  cta: { title: string; text: string; quote: string };
-}> = {
+export const SANEA: Record<"es" | "en", SectorCopy> = {
   es: {
-    crumbs: { home: "Inicio", section: "Industrias", current: "Saneamiento" },
+    crumbs: { home: "Inicio", current: "Saneamiento" },
     hero: {
-      title: "Válvulas, tuberías y tapas para redes de agua y desagüe",
-      lead: "Componentes de hierro dúctil para agua potable, alcantarillado y plantas de tratamiento.",
-      explore: "Ver productos del sector",
+      eyebrow: "Sector saneamiento",
+      title: "Soluciones para agua y saneamiento que sostienen ciudades.",
+      lead: "Componentes en hierro dúctil para redes de agua potable, infraestructura sanitaria y plantas de tratamiento.",
+      explore: "Explorar productos",
+      quote: "Solicitar cotización",
       alt: "Válvula de compuerta FUNDIGSAC sobre el muro de una planta de tratamiento de agua",
     },
     featured: {
+      eyebrow: "Producto destacado",
       title: "Válvula de compuerta FUNDIGSAC",
-      lead: "De asiento resiliente y extremos bridados, para aislar y cortar el flujo en redes de agua potable.",
-      facts: [["Rango nominal", "DN50 a DN600"], ["Presión nominal", "PN10 / PN16"], ["Diseño", "DIN 3352 F4"], ["Cuerpo y tapa", "Hierro dúctil GGG50"]],
+      lead: ["Diseñada para un control de flujo confiable en redes de agua potable y sistemas de saneamiento. Fabricada en ", "hierro dúctil", " con alta resistencia y larga vida útil."],
+      features: [
+        { title: "Alta resistencia", text: "para operación continua." },
+        { title: "Confiabilidad en redes", text: "de agua y saneamiento." },
+        { title: "Larga vida útil", text: "en entornos exigentes." },
+      ],
+      datasheet: "Ver ficha técnica",
       product: "Ver producto",
-      datasheet: "Descargar ficha técnica",
+      quote: "Solicitar cotización",
       alt: "Válvula de compuerta bridada FUNDIGSAC instalada junto a tuberías de acero en una planta de tratamiento",
     },
-    redes: {
-      title: "Qué va en cada frente de la red",
-      lead: "Las piezas que suelen pedirse en cada caso. Cada fila abre su ficha o su familia del catálogo.",
+    apps: {
+      eyebrow: "Nuestras soluciones en saneamiento",
+      title: "Aplicaciones en infraestructura para ciudades más saludables.",
+      lead: "Nuestros componentes están presentes en redes de distribución de agua potable, sistemas de alcantarillado sanitario y plantas de tratamiento, contribuyendo a un servicio eficiente y seguro.",
+      more: "Ver soluciones",
       items: [
-        {
-          title: "Agua potable",
-          text: "Redes de distribución, tanques y reservorios.",
-          alt: "Reservorio de agua tratada en una planta potabilizadora",
-          pieces: [
-            { name: "Válvula de compuerta FUNDIGSAC", use: "Aísla y corta el flujo en la red.", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
-            { name: "Válvula reductora de presión", use: "Mantiene estable la presión aguas abajo.", href: "/productos/valvulas/valvula-reductora-de-presion" },
-            { name: "Válvula flotadora bridada", use: "Evita que el tanque rebose o se vacíe.", href: "/productos/valvulas/valvula-flotadora-bridada" },
-            { name: "Tubería de hierro dúctil", use: "Clases C40, K9 y K7.", href: "/productos/tuberias/tuberia-hierro-ductil-c40-k9-k7-thd" },
-          ],
-        },
-        {
-          title: "Alcantarillado sanitario",
-          text: "Conducción de aguas residuales y acceso a buzones.",
-          alt: "Canal de aguas residuales en una planta de tratamiento",
-          pieces: [
-            { name: "Marco y tapa pesada 2SEG", use: "Para buzones, con dos seguros.", href: "/productos/marcos-y-tapas/marco-y-tapa-pesada-2seg" },
-            { name: "Marco y tapa liviana 1SEG", use: "Para buzones, con un seguro.", href: "/productos/marcos-y-tapas/marco-y-tapa-liviana-1seg" },
-            { name: "Válvula de embone tipo Luflex", use: "Se une a la tubería sin bridas ni pernos.", href: "/productos/valvulas/valvula-embone-tipo-luflex" },
-            { name: "Acoples y uniones", use: "Para empalmar y reparar tramos.", href: "/productos/conexiones-y-fittings" },
-          ],
-        },
-        {
-          title: "Plantas de tratamiento",
-          text: "Líneas de bombeo y presión dentro de la planta.",
-          alt: "Válvula de compuerta azul junto a una línea de tuberías en una planta de tratamiento",
-          pieces: [
-            { name: "Válvula check swing", use: "Cierra sola cuando el flujo se invierte.", href: "/productos/valvulas/valvula-check-swing" },
-            { name: "Válvula check flex", use: "Un disco de caucho corta el retorno del agua.", href: "/productos/valvulas/valvula-check-flex" },
-            { name: "Medidor electromagnético", use: "Mide el caudal, con transmisor y cable de señal.", href: "/productos/medidores/medidor-electromagnetico-melec" },
-          ],
-        },
+        { title: "Agua potable", text: "Componentes para redes de distribución que garantizan un servicio confiable y de calidad para la población.", alt: "Reservorio de agua tratada en una planta potabilizadora" },
+        { title: "Alcantarillado sanitario", text: "Soluciones para la conducción de aguas residuales y sistemas de tratamiento.", alt: "Canal de aguas residuales en una planta de tratamiento" },
       ],
     },
     line: {
-      title: "Línea para saneamiento",
-      all: "Ver todo el catálogo",
+      eyebrow: "Nuestra línea para saneamiento",
+      title: "Componentes para redes que no se detienen.",
+      all: "Ver toda la línea",
       items: [
-        { name: "Tubería de hierro dúctil C40 · K9 · K7", note: "Para redes de agua.", alt: "Tubería de hierro dúctil THD" },
-        { name: "Válvula compuerta bridada VBBH", note: "Con extremos bridados.", alt: "Válvula compuerta bridada VBBH" },
-        { name: "Marco y tapa pesada 2SEG", note: "Para buzones, con dos seguros.", alt: "Marco y tapa de hierro para buzón" },
-        { name: "Acople gran rango AGR", note: "Para uniones de tuberías.", alt: "Acople gran rango AGR" },
+        { title: "Marcos y tapas", alt: "Marco y tapa circular de hierro dúctil instalada en adoquín" },
+        { title: "Tuberías", alt: "Tuberías azules apiladas en una planta de tratamiento" },
+        { title: "Acoples", alt: "Acople de hierro dúctil con pernos de acero inoxidable" },
+        { title: "Válvulas", alt: "Válvula de compuerta FUNDIGSAC en una planta de tratamiento" },
       ],
     },
+    docs: {
+      eyebrow: "Recursos técnicos",
+      title: "Documentación técnica para tus proyectos.",
+      lead: "Fichas técnicas, especificaciones, planos y catálogos en un solo lugar.",
+      cta: "Explorar recursos técnicos",
+      alt: "Catálogo FUNDIGSAC Válvulas para saneamiento junto a un plano técnico con tabla de dimensiones",
+    },
     cta: {
-      title: "¿Qué red vas a construir o renovar?",
-      text: "Envíanos tu lista de materiales y confirmamos contigo medidas, clase de presión y compatibilidad.",
+      eyebrow: "Trabajamos juntos",
+      title: "Impulsamos infraestructura para un mejor servicio de saneamiento.",
+      text: "Nuestro equipo te asesorará para encontrar la mejor solución para tu proyecto.",
       quote: "Solicitar cotización",
     },
   },
   en: {
-    crumbs: { home: "Home", section: "Industries", current: "Sanitation" },
+    crumbs: { home: "Home", current: "Sanitation" },
     hero: {
-      title: "Valves, pipes and covers for water and sewer networks",
-      lead: "Ductile iron components for drinking water, sewers and treatment plants.",
-      explore: "See products for this sector",
+      eyebrow: "Water & sanitation sector",
+      title: "Water and sanitation solutions that keep cities running.",
+      lead: "Ductile iron components for drinking water networks, sanitation infrastructure and treatment plants.",
+      explore: "Explore products",
+      quote: "Request a quote",
       alt: "FUNDIGSAC gate valve on the wall of a water treatment plant",
     },
     featured: {
+      eyebrow: "Featured product",
       title: "FUNDIGSAC gate valve",
-      lead: "Resilient seat and flanged ends, to isolate and shut off flow in drinking water networks.",
-      facts: [["Nominal range", "DN50 to DN600"], ["Nominal pressure", "PN10 / PN16"], ["Design", "DIN 3352 F4"], ["Body and bonnet", "Ductile iron GGG50"]],
+      lead: ["Designed for reliable flow control in drinking water networks and sanitation systems. Made of ", "ductile iron", " for high strength and a long service life."],
+      features: [
+        { title: "High strength", text: "for continuous operation." },
+        { title: "Network reliability", text: "for water and sanitation." },
+        { title: "Long service life", text: "in demanding environments." },
+      ],
+      datasheet: "View data sheet",
       product: "View product",
-      datasheet: "Download data sheet",
+      quote: "Request a quote",
       alt: "FUNDIGSAC flanged gate valve installed next to steel pipes in a treatment plant",
     },
-    redes: {
-      title: "What goes on each part of the network",
-      lead: "The parts usually requested in each case. Each row opens its data sheet or catalog family.",
+    apps: {
+      eyebrow: "Our sanitation solutions",
+      title: "Infrastructure applications for healthier cities.",
+      lead: "Our components are part of drinking water distribution networks, sanitary sewer systems and treatment plants, supporting an efficient and safe service.",
+      more: "View solutions",
       items: [
-        {
-          title: "Drinking water",
-          text: "Distribution networks, tanks and reservoirs.",
-          alt: "Treated water reservoir in a water treatment plant",
-          pieces: [
-            { name: "FUNDIGSAC gate valve", use: "Isolates and shuts off flow in the network.", href: "/productos/valvulas/valvula-compuerta-fundigsac" },
-            { name: "Pressure-reducing valve", use: "Keeps downstream pressure steady.", href: "/productos/valvulas/valvula-reductora-de-presion" },
-            { name: "Flanged float valve", use: "Stops the tank from overflowing or running dry.", href: "/productos/valvulas/valvula-flotadora-bridada" },
-            { name: "Ductile iron pipe", use: "Classes C40, K9 and K7.", href: "/productos/tuberias/tuberia-hierro-ductil-c40-k9-k7-thd" },
-          ],
-        },
-        {
-          title: "Sanitary sewer",
-          text: "Wastewater conveyance and manhole access.",
-          alt: "Wastewater channel in a treatment plant",
-          pieces: [
-            { name: "Heavy-duty frame and cover 2SEG", use: "For manholes, with two locks.", href: "/productos/marcos-y-tapas/marco-y-tapa-pesada-2seg" },
-            { name: "Light-duty frame and cover 1SEG", use: "For manholes, with one lock.", href: "/productos/marcos-y-tapas/marco-y-tapa-liviana-1seg" },
-            { name: "Luflex push-on gate valve", use: "Joins the pipe with no flanges or bolts.", href: "/productos/valvulas/valvula-embone-tipo-luflex" },
-            { name: "Couplings and joints", use: "To connect and repair sections.", href: "/productos/conexiones-y-fittings" },
-          ],
-        },
-        {
-          title: "Treatment plants",
-          text: "Pumping and pressure lines inside the plant.",
-          alt: "Blue gate valve next to a pipe line at a treatment plant",
-          pieces: [
-            { name: "Swing check valve", use: "Closes by itself when the flow reverses.", href: "/productos/valvulas/valvula-check-swing" },
-            { name: "Flex check valve", use: "A rubber disc stops backflow.", href: "/productos/valvulas/valvula-check-flex" },
-            { name: "Electromagnetic meter", use: "Measures flow, with transmitter and signal cable.", href: "/productos/medidores/medidor-electromagnetico-melec" },
-          ],
-        },
+        { title: "Drinking water", text: "Components for distribution networks that deliver a reliable, high-quality service.", alt: "Treated water reservoir in a water treatment plant" },
+        { title: "Sanitary sewer", text: "Solutions for wastewater conveyance and treatment systems.", alt: "Wastewater channel in a treatment plant" },
       ],
     },
     line: {
-      title: "Sanitation line",
-      all: "See the full catalog",
+      eyebrow: "Our sanitation line",
+      title: "Components for networks that never stop.",
+      all: "See the full line",
       items: [
-        { name: "Ductile iron pipe C40 · K9 · K7", note: "For water networks.", alt: "THD ductile iron pipe" },
-        { name: "Flanged gate valve VBBH", note: "With flanged ends.", alt: "VBBH flanged gate valve" },
-        { name: "Heavy-duty frame and cover 2SEG", note: "For manholes, with two locks.", alt: "Iron manhole frame and cover" },
-        { name: "Wide-range coupling AGR", note: "For pipe joints.", alt: "AGR wide-range coupling" },
+        { title: "Frames and covers", alt: "Round ductile iron manhole frame and cover set in paving" },
+        { title: "Pipes", alt: "Stacked blue pipes at a treatment plant" },
+        { title: "Couplings", alt: "Ductile iron coupling with stainless steel bolts" },
+        { title: "Valves", alt: "FUNDIGSAC gate valve at a treatment plant" },
       ],
     },
+    docs: {
+      eyebrow: "Technical resources",
+      title: "Technical documentation for your projects.",
+      lead: "Data sheets, specifications, drawings and catalogs in one place.",
+      cta: "Explore technical resources",
+      alt: "FUNDIGSAC catalog: Valves for sanitation next to a technical drawing with a dimensions table",
+    },
     cta: {
-      title: "Which network are you building or renewing?",
-      text: "Send us your bill of materials and we will confirm sizes, pressure class and compatibility with you.",
+      eyebrow: "Working together",
+      title: "Building infrastructure for a better sanitation service.",
+      text: "Our team will help you find the best solution for your project.",
       quote: "Request a quote",
     },
   },

@@ -1,35 +1,27 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { CATEGORIES, type CategorySlug } from "@/modules/catalog/registry";
-import { cellsOfFamily, compareTable, familyDocuments, findFamily } from "@/modules/catalog/public-catalog";
 import { SITE } from "@/shared/config/site";
 import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
-import { pageMetadata } from "@/shared/seo/page-metadata";
-import { FamilyView } from "../_catalog/family-view";
 
 /*
- * Cada familia tiene su propia ruta estática: el servidor le pasa solo sus productos, y la lista no viaja en el JavaScript.
+ * Cada familia (válvulas, tuberías, marcos y tapas) tiene su propia ruta estática que importa solo su pantalla.
+ * Con una única ruta /productos/[categoria] el CSS de las tres pantallas viajaba junto en cada página (~90 KB).
  */
 
 const categoryOf = (slug: CategorySlug) => CATEGORIES.find((c) => c.slug === slug)!;
 
-export function categoryMetadata(slug: CategorySlug) {
+export function categoryMetadata(slug: CategorySlug): Metadata {
   const category = categoryOf(slug);
-  return pageMetadata({ title: category.title ?? category.name, description: category.description, path: `/productos/${category.slug}` });
+  return { title: category.title ?? category.name, description: category.description, alternates: { canonical: `/productos/${category.slug}` } };
 }
 
-export function CategoryPage({ slug }: { slug: CategorySlug }) {
+export function CategoryPage({ slug, children }: { slug: CategorySlug; children: ReactNode }) {
   const category = categoryOf(slug);
-  const family = findFamily(slug);
-  const cells = cellsOfFamily(slug);
-  const itemList = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: category.name,
-    itemListElement: cells.map((cell, index) => ({ "@type": "ListItem", position: index + 1, url: `${SITE.url}${cell.href}`, name: cell.name.es })),
-  };
   return (
     <>
-      <JsonLd data={[breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }, { name: category.name, path: `/productos/${category.slug}` }], SITE.url), itemList]} />
-      <FamilyView family={family} cells={cells} compare={compareTable(slug)} documents={familyDocuments(slug)} />
+      <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }, { name: category.name, path: `/productos/${category.slug}` }], SITE.url)} />
+      {children}
     </>
   );
 }

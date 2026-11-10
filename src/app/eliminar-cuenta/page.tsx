@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { site } from "@/lib/site-info";
 import { SITE } from "@/shared/config/site";
 import { DeletionView } from "../_legal/deletion-view";
+import { deletionClosingImage, deletionHeroImage } from "../_legal/images";
 
 export const metadata: Metadata = {
   title: "Eliminar cuenta y datos personales",
@@ -10,5 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default function AccountDeletionPage() {
-  return <DeletionView email={SITE.email} phoneHref={site.phoneHref} whatsappNumber={site.whatsappNumber} />;
+  return (
+    <DeletionView
+      hero={deletionHeroImage()}
+      closing={deletionClosingImage()}
+      email={SITE.email}
+      phoneHref={site.phoneHref}
+      whatsappNumber={site.whatsappNumber}
+    />
+  );
 }

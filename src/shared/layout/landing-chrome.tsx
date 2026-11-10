@@ -8,7 +8,6 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useAuth, signOut, type AuthUser } from "@/modules/auth/use-auth";
 import { openCart } from "@/modules/cart/cart-store";
 import { SITE } from "@/shared/config/site";
-import { LibroReclamacionesIcon } from "@/shared/ui/libro-reclamaciones-icon";
 import { openCookiePreferences } from "./cookie-events";
 import { isHeroOverlayHeader, isProductPath } from "./landing-paths";
 import { useHome } from "./home-copy";
@@ -23,7 +22,7 @@ import "../../modules/auth/auth.css";
 type NavLink = { href: string; label: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
 
-const PRODUCT_HREFS = ["/productos", "/productos/valvulas", "/productos/marcos-y-tapas", "/cotizar", "/productos/conexiones-y-fittings", "/productos/tuberias"];
+const PRODUCT_HREFS = ["/productos", "/productos/valvulas", "/productos/marcos-y-tapas", "/cotizar", "/productos?q=acople", "/productos/tuberias"];
 const SECTOR_HREFS = ["/industrias/saneamiento", "/industrias/agricultura", "/industrias/mineria"];
 
 function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {
@@ -80,17 +79,17 @@ export function LandingHeader() {
   const NAV = buildNav(t);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const complaints = useHome().footer.complaints;
+  // En portátiles el campo abierto es corto: un texto breve evita que el marcador se corte.
+  const [shortHint, setShortHint] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const searchToggleRef = useRef<HTMLButtonElement>(null);
+  const searchCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const segment = useSelectedLayoutSegment();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const mobileId = useId();
-  const searchId = useId();
   // En la portada la cabecera se aparta al bajar y vuelve en cuanto se sube (deja más pantalla para leer).
   const [tucked, setTucked] = useState(false);
   const tuckable = pathname === "/" && !open && !mobileOpen && !searchOpen && !langOpen && !accountOpen;
@@ -100,7 +99,6 @@ export function LandingHeader() {
       if (e.key !== "Escape") return;
       // Al cerrar con Escape, el foco vuelve al botón que abrió el menú (no se pierde en el documento).
       if (document.querySelector(".lp-mobile.is-open")) toggleRef.current?.focus();
-      else if (document.activeElement?.closest?.(".lp-search")) searchToggleRef.current?.focus();
       else (document.activeElement as Element | null)?.closest?.(".lp-nav__item, .lp-lang, .lp-account")?.querySelector<HTMLElement>(":scope > button")?.focus();
       setOpen(null);
       setMobileOpen(false);
@@ -112,11 +110,8 @@ export function LandingHeader() {
       if (navRef.current && !navRef.current.contains(e.target as Node)) setOpen(null);
       if (!(e.target as Element).closest?.(".lp-lang")) setLangOpen(false);
       if (!(e.target as Element).closest?.(".lp-account")) setAccountOpen(false);
-      // composedPath: al abrir, React cambia el icono y `e.target` ya no está en el documento.
-      const inSearch = e.composedPath().some((n) => n instanceof Element && n.matches(".lp-search, .lp-header__search"));
-      if (!inSearch && !searchRef.current?.value) setSearchOpen(false);
     };
-    // Sobre un héroe oscuro la barra toma su color plano; al desplazarse pasa a la superficie sólida.
+    // Sobre el hero la cabecera es translúcida; al desplazarse pasa a blanco sólido.
     let lastY = window.scrollY;
     const onScroll = () => {
       const y = window.scrollY;
@@ -137,11 +132,6 @@ export function LandingHeader() {
     };
   }, []);
 
-  // Al abrir el buscador el cursor entra directo al campo.
-  useEffect(() => {
-    if (searchOpen) searchRef.current?.focus();
-  }, [searchOpen]);
-
   // Menú móvil abierto: la página de atrás queda inerte (Tab no sale del menú) y el menú se cierra si la ventana
   // pasa al ancho de escritorio, donde no se ve.
   useEffect(() => {
@@ -161,12 +151,11 @@ export function LandingHeader() {
     <header className={`lp-header${isHeroOverlayHeader(pathname, segment) ? " lp-header--sector" : ""}${isProductPath(pathname) ? " lp-header--catalog" : ""}${scrolled || mobileOpen ? " is-solid" : ""}${tucked && tuckable ? " is-tucked" : ""}`}>
       <div className="lp-shell lp-header__bar">
         <Link className="lp-header__brand" href="/" aria-label={t.a11y.home}>
-          <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" loading="eager" />
+          <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" priority />
         </Link>
 
         <nav className="lp-nav" aria-label={t.a11y.mainNav} ref={navRef}>
-          {/* El logotipo ya lleva a la portada: "Inicio" solo se conserva en el menú móvil. */}
-          {NAV.filter((item) => item.href !== "/").map((item) =>
+          {NAV.map((item) =>
             item.children ? (
               <div
                 key={item.label}
@@ -203,22 +192,72 @@ export function LandingHeader() {
         </nav>
 
         <div className="lp-header__actions">
-          <button
-            ref={searchToggleRef}
-            type="button"
-            className="lp-icon-btn lp-header__search"
-            aria-label={searchOpen ? t.searchClose : t.search}
-            aria-expanded={searchOpen}
-            aria-controls={searchId}
-            onClick={() => setSearchOpen((o) => !o)}
+          {/* La lupa se convierte en el campo, en su mismo lugar: la cápsula crece hacia la izquierda y el resto de la fila se
+              compacta con suavidad (botón de cotización, separaciones) en vez de taparse o desbordar. */}
+          <form
+            className={`lp-search${searchOpen ? " is-open" : ""}`}
+            role="search"
+            // Al pasar el mouse la barra se abre sola; al salir se cierra (con un respiro, para no parpadear) salvo que tenga texto o foco.
+            onMouseEnter={() => {
+              if (searchCloseTimer.current) clearTimeout(searchCloseTimer.current);
+              setShortHint(window.innerWidth < 1500 && window.innerWidth > 1260);
+              setSearchOpen(true);
+            }}
+            onMouseLeave={() => {
+              if (searchCloseTimer.current) clearTimeout(searchCloseTimer.current);
+              searchCloseTimer.current = setTimeout(() => {
+                if (!searchRef.current?.value && document.activeElement !== searchRef.current) setSearchOpen(false);
+              }, 260);
+            }}
+            onBlur={(e) => {
+              if (!query && !e.currentTarget.contains(e.relatedTarget as Node)) setSearchOpen(false);
+            }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = query.trim();
+              setSearchOpen(false);
+              setQuery("");
+              router.push(q ? `/productos?q=${encodeURIComponent(q)}` : "/productos");
+            }}
           >
-            {searchOpen ? <X aria-hidden="true" size={20} strokeWidth={2} /> : <Search aria-hidden="true" size={20} strokeWidth={2} />}
-          </button>
-          {/* Con nombre visible en escritorio ancho; en móvil y tableta, icono en la barra y fila con nombre en el menú. */}
-          <IntentLink href="/reclamaciones" className="lp-icon-btn lp-claims-btn" aria-label={complaints} title={complaints}>
-            <LibroReclamacionesIcon size={24} />
-            <span className="lp-claims-btn__label" aria-hidden="true">{complaints}</span>
-          </IntentLink>
+            <input
+              ref={searchRef}
+              type="search"
+              name="q"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={shortHint ? t.searchShort : t.searchPlaceholder}
+              aria-label={t.searchLabel}
+              autoComplete="off"
+              tabIndex={searchOpen ? 0 : -1}
+            />
+            <button
+              type="button"
+              className="lp-search__close"
+              aria-label={t.searchClose}
+              tabIndex={searchOpen ? 0 : -1}
+              onClick={() => {
+                setQuery("");
+                setSearchOpen(false);
+              }}
+            >
+              <X aria-hidden="true" size={16} strokeWidth={2.2} />
+            </button>
+            <button
+              type={searchOpen && query.trim() ? "submit" : "button"}
+              className="lp-header__search"
+              aria-label={t.search}
+              onClick={() => {
+                if (!searchOpen || !query.trim()) {
+                  setShortHint(window.innerWidth < 1500 && window.innerWidth > 1260);
+                  setSearchOpen(true);
+                  searchRef.current?.focus();
+                }
+              }}
+            >
+              <Search aria-hidden="true" size={20} strokeWidth={2} />
+            </button>
+          </form>
           <div className="lp-lang">
             <button
               type="button"
@@ -310,51 +349,6 @@ export function LandingHeader() {
         </div>
       </div>
 
-      {/* Buscador: panel propio bajo la barra. */}
-      <form
-        id={searchId}
-        className={`lp-search${searchOpen ? " is-open" : ""}`}
-        role="search"
-        onBlur={(e) => {
-          const next = e.relatedTarget as Node | null;
-          if (next && !query && !e.currentTarget.contains(next) && next !== searchToggleRef.current) setSearchOpen(false);
-        }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const q = query.trim();
-          setSearchOpen(false);
-          setQuery("");
-          router.push(q ? `/productos?q=${encodeURIComponent(q)}` : "/productos");
-        }}
-      >
-        <div className="lp-shell lp-search__row">
-          <Search aria-hidden="true" size={20} strokeWidth={2} />
-          <input
-            ref={searchRef}
-            type="search"
-            name="q"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t.searchPlaceholder}
-            aria-label={t.searchLabel}
-            autoComplete="off"
-          />
-          <button type="submit" className="lp-btn lp-btn--solid lp-search__go">{t.search}</button>
-          <button
-            type="button"
-            className="lp-search__close"
-            aria-label={t.searchClose}
-            onClick={() => {
-              setQuery("");
-              setSearchOpen(false);
-              searchToggleRef.current?.focus();
-            }}
-          >
-            <X aria-hidden="true" size={20} strokeWidth={2} />
-          </button>
-        </div>
-      </form>
-
       <div id={mobileId} className={`lp-mobile${mobileOpen ? " is-open" : ""}`}>
         <nav className="lp-shell" aria-label={t.a11y.mobileNav}>
           {NAV.map((item) => (
@@ -371,9 +365,6 @@ export function LandingHeader() {
               )}
             </div>
           ))}
-          <Link className="lp-mobile__claims" href="/reclamaciones" onClick={() => setMobileOpen(false)}>
-            <LibroReclamacionesIcon size={24} /> {complaints}
-          </Link>
           <div className="lp-mobile__prefs">
             {(["es", "en"] as const).map((code) => (
               <button key={code} type="button" className={lang === code ? "is-active" : ""} aria-pressed={lang === code} onClick={() => setLang(code)}>
@@ -423,20 +414,13 @@ export function LandingFooter() {
   const tn = COPY[lang];
   const [PRODUCTS, SECTORS, RESOURCES] = buildNav(COPY[lang]).filter((n) => n.children).map((n) => n.children!);
   return (
-    <footer className="lp-footer on-dark">
+    <footer className="lp-footer">
       <div className="lp-shell lp-footer__main">
         <div className="lp-footer__brand-column">
           <Link className="lp-footer__brand" href="/" aria-label={tn.a11y.home}>
             <Image src="/brand/fundigsac.svg" width={708} height={159} alt="FUNDIGSAC" />
           </Link>
           <p>{f.about}</p>
-          <IntentLink className="lp-claims" href="/reclamaciones">
-            <LibroReclamacionesIcon size={40} />
-            <span>
-              <strong>{f.complaints}</strong>
-              <small>{f.complaintsHint}</small>
-            </span>
-          </IntentLink>
         </div>
         <nav aria-labelledby="lp-f-productos">
           <h2 id="lp-f-productos">{f.products}</h2>
@@ -471,6 +455,7 @@ export function LandingFooter() {
           <Link href="/cookies" prefetch={false}>{f.cookies}</Link>
           <IntentLink href="/eliminar-cuenta">{f.deletion}</IntentLink>
           <button type="button" className="lp-footer__linkbtn" onClick={openCookiePreferences}>{f.cookiePrefs}</button>
+          <IntentLink href="/reclamaciones">{f.complaints}</IntentLink>
         </div>
       </div>
     </footer>

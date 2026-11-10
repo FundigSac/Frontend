@@ -24,7 +24,7 @@ test("acceso: inicio de sesión valida, muestra el aviso y enlaza registro y rec
   await prepare(page, baseURL);
   const errors = trackErrors(page);
   await page.goto("/login");
-  await expect(page.getByRole("heading", { level: 1, name: "Inicia sesión" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Inicia sesión" })).toBeVisible();
   await page.getByRole("button", { name: "Iniciar sesión" }).click();
   await expect(page.getByText("Ingresa tu correo electrónico.")).toBeVisible();
   await expect(page.getByText("Ingresa tu contraseña.")).toBeVisible();
@@ -87,10 +87,10 @@ test("carrito: agrega, cambia medida y cantidad, envía por WhatsApp y abre el p
   await prepare(page, baseURL);
   const errors = trackErrors(page);
   await page.goto("/carrito");
-  await expect(page.locator(".cq-empty").getByRole("heading", { name: "Tu carrito está vacío" })).toBeVisible();
-  await page.locator(".cq-sugeridos li", { hasText: "Válvula de compuerta FUNDIGSAC" }).first().getByRole("button", { name: "Agregar" }).click();
+  await expect(page.locator(".cp-empty").getByRole("heading", { name: "Tu carrito está vacío" })).toBeVisible();
+  await page.locator(".ct-suggest li", { hasText: "Válvula de compuerta FUNDIGSAC" }).first().getByRole("button", { name: "Agregar" }).click();
 
-  const item = page.locator(".cq-item").first();
+  const item = page.locator(".cp-item").first();
   await expect(item).toContainText("Válvula de compuerta FUNDIGSAC");
   await item.getByLabel("Diámetro").selectOption("DN150");
   await item.getByRole("button", { name: "Sumar una unidad" }).click();
@@ -110,6 +110,6 @@ test("carrito: agrega, cambia medida y cantidad, envía por WhatsApp y abre el p
   await expect(page.locator('.cd[data-state="closed"]')).toHaveCount(1);
 
   await item.getByRole("button", { name: /Quitar/ }).click();
-  await expect(page.locator(".cq-empty").getByRole("heading", { name: "Tu carrito está vacío" })).toBeVisible();
+  await expect(page.locator(".cp-empty").getByRole("heading", { name: "Tu carrito está vacío" })).toBeVisible();
   expect(errors).toEqual([]);
 });

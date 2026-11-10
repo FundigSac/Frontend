@@ -127,8 +127,7 @@ test.describe("diseño", () => {
   });
 
   test("las fotos hero llegan con miniatura difuminada (sin hueco blanco al navegar)", async ({ request }) => {
-    // Las páginas legales ya no llevan foto de cabecera: su LCP es el H1.
-    for (const path of ["/nosotros", "/contacto", "/productos/valvulas"]) {
+    for (const path of ["/terminos", "/privacidad", "/cookies", "/nosotros", "/contacto", "/productos/valvulas"]) {
       const html = await (await request.get(path)).text();
       const hero = html.match(/<img[^>]*class="(?:lg-hero__photo|[^"]*heroPhoto[^"]*)"[^>]*>/)?.[0] ?? "";
       expect(hero, path).toContain("background-image");
