@@ -116,6 +116,11 @@ test.describe("movimiento", () => {
   });
 });
 
+/** Lleva el bloque a media pantalla con un scroll de ventana, como lo haría la persona. WebKit no desplaza la página
+ *  con scrollIntoViewIfNeeded de Playwright mientras el bloque está en opacidad 0 (antes de revelarse). */
+const scrollToMiddle = (locator: ReturnType<Page["locator"]>) =>
+  locator.evaluate((el) => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2, behavior: "instant" }));
+
 test("las fotos siguen apareciendo si el IntersectionObserver no avisa (Safari en iPhone)", async ({ page }) => {
   // Simula un navegador cuyo observador nunca notifica: el barrido por scroll debe mostrar los bloques igualmente.
   await page.addInitScript(() => {
@@ -129,12 +134,12 @@ test("las fotos siguen apareciendo si el IntersectionObserver no avisa (Safari e
   await page.setViewportSize({ width: 402, height: 874 });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const media = page.locator(".lp-backing__media");
-  await media.scrollIntoViewIfNeeded();
+  await scrollToMiddle(media);
   await expect(media).toHaveAttribute("data-in", /now|late/);
   await page.waitForTimeout(1200);
   expect(await media.evaluate((el) => Number(getComputedStyle(el).opacity))).toBeGreaterThan(0.95);
   await page.goto("/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", { waitUntil: "domcontentloaded" });
   const photo = page.locator("figure[data-reveal='media']");
-  await photo.scrollIntoViewIfNeeded();
+  await scrollToMiddle(photo);
   await expect(photo).toHaveAttribute("data-in", /now|late/);
 });

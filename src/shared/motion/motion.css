@@ -36,35 +36,35 @@ html[data-motion] [data-reveal="media"]:not([data-in], main.lg *) {
   opacity: 0;
 }
 
-/* El inicio (main.lp) tiene coreografías propias que entran con opacidad (home-motion.css): ahí cada bloque sigue
+/* El inicio (main.lp; las páginas main.lg usan LegalMotion) tiene coreografías propias que entran con opacidad (home-motion.css): ahí cada bloque sigue
    esperando oculto, porque mostrarlo desplazado y luego fundirlo sería un parpadeo. */
-html[data-motion] main.lp [data-reveal]:not([data-in], [data-reveal="stagger"]),
-html[data-motion] main.lp [data-reveal="stagger"]:not([data-in]) > * {
+html[data-motion] main.lp:not(.lg) [data-reveal]:not([data-in], [data-reveal="stagger"]),
+html[data-motion] main.lp:not(.lg) [data-reveal="stagger"]:not([data-in]) > * {
   opacity: 0;
 }
 
-main.lp [data-reveal][data-in="late"],
-main.lp [data-reveal="stagger"][data-in="late"] > * {
+main.lp:not(.lg) [data-reveal][data-in="late"],
+main.lp:not(.lg) [data-reveal="stagger"][data-in="late"] > * {
   animation-name: mo-up;
 }
 
-main.lp [data-reveal="left"][data-in="late"] {
+main.lp:not(.lg) [data-reveal="left"][data-in="late"] {
   animation-name: mo-left;
 }
 
-main.lp [data-reveal="right"][data-in="late"] {
+main.lp:not(.lg) [data-reveal="right"][data-in="late"] {
   animation-name: mo-right;
 }
 
-main.lp [data-reveal="fade"][data-in="late"] {
+main.lp:not(.lg) [data-reveal="fade"][data-in="late"] {
   animation: mo-fade var(--mo-reveal) var(--mo-ease) var(--d, 0ms) backwards;
 }
 
-main.lp [data-reveal="media"][data-in="late"] {
+main.lp:not(.lg) [data-reveal="media"][data-in="late"] {
   animation-name: mo-media;
 }
 
-main.lp [data-reveal="stagger"][data-in="late"] {
+main.lp:not(.lg) [data-reveal="stagger"][data-in="late"] {
   animation: none;
 }
 
@@ -105,8 +105,8 @@ main.lp [data-reveal="stagger"][data-in="late"] {
     animation-name: mo-slide-up;
   }
 
-  main.lp [data-reveal="left"][data-in="late"],
-  main.lp [data-reveal="right"][data-in="late"] {
+  main.lp:not(.lg) [data-reveal="left"][data-in="late"],
+  main.lp:not(.lg) [data-reveal="right"][data-in="late"] {
     animation-name: mo-up;
   }
 }
