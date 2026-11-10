@@ -4,7 +4,8 @@
    - Revelado al hacer scroll: cualquier elemento con `data-reveal` (lo arma MotionRoot con un único
      IntersectionObserver). Sin JavaScript, o con "reducir movimiento", todo queda visible.
      Variantes: "" | "up" (sube), "left" / "right" (entra de lado; en móvil sube), "media" (foto que se
-     descubre de abajo arriba), "fade" (solo opacidad) y "stagger" (los hijos entran en cascada).
+     descubre de abajo arriba), "fade" (queda quieto) y "stagger" (los hijos entran en cascada). Los bloques con
+     texto se mueven pero nunca bajan de opacidad: el contraste se mantiene en todo momento (WCAG 1.4.3).
      `data-in="now"` = ya estaba en pantalla (no se anima, no parpadea); `data-in="late"` = entra al llegar.
    - Las animaciones usan `backwards`: al terminar no queda ningún transform pegado al elemento. */
 
@@ -22,26 +23,66 @@
   --mo-step: 70ms;
 }
 
-/* Las páginas legales (main.lg) usan su propio LegalMotion con el mismo atributo: quedan fuera de estas reglas. */
-html[data-motion] [data-reveal]:not([data-in], [data-reveal="stagger"], main.lg *),
+/* Las páginas legales (main.lg) usan su propio LegalMotion con el mismo atributo: quedan fuera de estas reglas.
+   Antes de entrar, los bloques con texto solo esperan desplazados (sin opacidad): si la página nunca se recorre
+   (auditorías de contraste, capturas, un navegador que no avisa) el texto se lee completo. Solo las fotos esperan
+   ocultas, porque su entrada es una lámina que se descubre. */
+html[data-motion] [data-reveal]:not([data-in], [data-reveal="stagger"], [data-reveal="media"], [data-reveal="fade"], main.lg *),
 html[data-motion] [data-reveal="stagger"]:not([data-in], main.lg *) > * {
+  transform: translate3d(0, var(--mo-rise), 0);
+}
+
+html[data-motion] [data-reveal="media"]:not([data-in], main.lg *) {
   opacity: 0;
 }
 
-[data-reveal][data-in="late"] {
-  animation: mo-up var(--mo-reveal) var(--mo-ease) var(--d, 0ms) backwards;
+/* El inicio (main.lp) tiene coreografías propias que entran con opacidad (home-motion.css): ahí cada bloque sigue
+   esperando oculto, porque mostrarlo desplazado y luego fundirlo sería un parpadeo. */
+html[data-motion] main.lp [data-reveal]:not([data-in], [data-reveal="stagger"]),
+html[data-motion] main.lp [data-reveal="stagger"]:not([data-in]) > * {
+  opacity: 0;
 }
 
-[data-reveal="left"][data-in="late"] {
+main.lp [data-reveal][data-in="late"],
+main.lp [data-reveal="stagger"][data-in="late"] > * {
+  animation-name: mo-up;
+}
+
+main.lp [data-reveal="left"][data-in="late"] {
   animation-name: mo-left;
 }
 
-[data-reveal="right"][data-in="late"] {
+main.lp [data-reveal="right"][data-in="late"] {
   animation-name: mo-right;
 }
 
+main.lp [data-reveal="fade"][data-in="late"] {
+  animation: mo-fade var(--mo-reveal) var(--mo-ease) var(--d, 0ms) backwards;
+}
+
+main.lp [data-reveal="media"][data-in="late"] {
+  animation-name: mo-media;
+}
+
+main.lp [data-reveal="stagger"][data-in="late"] {
+  animation: none;
+}
+
+[data-reveal][data-in="late"] {
+  animation: mo-slide-up var(--mo-reveal) var(--mo-ease) var(--d, 0ms) backwards;
+}
+
+[data-reveal="left"][data-in="late"] {
+  animation-name: mo-slide-left;
+}
+
+[data-reveal="right"][data-in="late"] {
+  animation-name: mo-slide-right;
+}
+
+/* "fade" (flechas de carrusel) ya no se oculta antes de entrar: queda quieto en su sitio. */
 [data-reveal="fade"][data-in="late"] {
-  animation-name: mo-fade;
+  animation: none;
 }
 
 /* La foto se descubre como una lámina que sube, con un leve acercamiento que se asienta. */
@@ -55,16 +96,41 @@ html[data-motion] [data-reveal="stagger"]:not([data-in], main.lg *) > * {
 
 /* Cascada con tope: a partir del 7.º hijo todos esperan lo mismo (la lista nunca se hace esperar). */
 [data-reveal="stagger"][data-in="late"] > * {
-  animation: mo-up var(--mo-reveal) var(--mo-ease) calc(min(var(--i, 0), 6) * var(--mo-step) + var(--d, 0ms)) backwards;
+  animation: mo-slide-up var(--mo-reveal) var(--mo-ease) calc(min(var(--i, 0), 6) * var(--mo-step) + var(--d, 0ms)) backwards;
 }
 
 @media (max-width: 860px) {
   [data-reveal="left"][data-in="late"],
   [data-reveal="right"][data-in="late"] {
+    animation-name: mo-slide-up;
+  }
+
+  main.lp [data-reveal="left"][data-in="late"],
+  main.lp [data-reveal="right"][data-in="late"] {
     animation-name: mo-up;
   }
 }
 
+/* Revelado al hacer scroll: solo recorrido, sin opacidad (ver arriba). */
+@keyframes mo-slide-up {
+  from {
+    transform: translate3d(0, var(--mo-rise), 0);
+  }
+}
+
+@keyframes mo-slide-left {
+  from {
+    transform: translate3d(calc(var(--mo-side) * -1), 0, 0);
+  }
+}
+
+@keyframes mo-slide-right {
+  from {
+    transform: translate3d(var(--mo-side), 0, 0);
+  }
+}
+
+/* Coreografías propias de algunas pantallas (inicio): entran con opacidad y recorrido. */
 @keyframes mo-up {
   from {
     opacity: 0;

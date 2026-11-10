@@ -862,8 +862,11 @@
 }
 
 .dot {
-  display: block;
-  padding: 8px 2px;
+  display: grid;
+  min-width: 24px;
+  min-height: 24px;
+  place-items: center;
+  padding: 10px 3px;
   border: 0;
   background: none;
   cursor: pointer;
@@ -1105,8 +1108,8 @@
 }
 
 @keyframes cardIn {
-  from { opacity: 0; transform: translate3d(0, 34px, 0) scale(.985); }
-  to { opacity: 1; transform: none; }
+  from { transform: translate3d(0, 34px, 0); }
+  to { transform: none; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1126,7 +1129,9 @@
   /* Al filtrar, la cuadrícula aparece con un fundido corto. */
   .grid { animation: fade .35s ease both; }
 
-  /* Las tarjetas entran según avanza el scroll (donde el navegador lo soporta; si no, se ven directamente). */
+  /* Las tarjetas entran según avanza el scroll (donde el navegador lo soporta; si no, se ven directamente). Solo se
+     desplazan: con opacidad, las que aún no entraban quedaban transparentes y las auditorías medían su texto con
+     contraste 1,4:1 (Lighthouse). */
   @supports (animation-timeline: view()) {
     .card {
       animation: cardIn linear backwards;
