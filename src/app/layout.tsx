@@ -22,8 +22,8 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Válvulas industriales y tuberías HDPE en Perú | FUNDIGSAC", template: "%s | FUNDIGSAC" },
-  description: "Válvulas de compuerta bridadas, check y mariposa, tuberías HDPE y de hierro dúctil, marcos, tapas y accesorios para agua y saneamiento en Perú.",
+  title: { default: "Válvulas y tuberías de hierro dúctil en Perú | FUNDIGSAC", template: "%s | FUNDIGSAC" },
+  description: "Válvulas, tubería de hierro dúctil, marcos y tapas para agua y saneamiento. Revisa cada ficha técnica y solicita tu cotización a FUNDIGSAC desde Lima.",
   robots: { index: SITE_INDEXABLE, follow: SITE_INDEXABLE },
   // Sin `url`: cada página que comparta este bloque heredaría la URL de inicio. La imagen sale de opengraph-image.jpg.
   openGraph: { type: "website", locale: "es_PE", siteName: SITE.name },

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { findQuoteProduct } from "@/modules/quote/products";
 import { ScreenW16 } from "@/screens/w16";
 import { ScreenW17 } from "@/screens/w17";
+import { SITE } from "@/shared/config/site";
+import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
+import { withBrand } from "@/shared/seo/page-metadata";
 
 type Props = { searchParams: Promise<{ producto?: string | string[] }> };
 
@@ -10,7 +13,7 @@ const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const product = findQuoteProduct(first((await searchParams).producto));
   return {
-    title: product ? `Cotizar ${product.shortName}` : "Solicitar cotización",
+    title: { absolute: withBrand(product ? `Cotizar ${product.shortName}` : "Solicitar cotización de válvulas y tuberías") },
     description: "Solicita una cotización técnica de válvulas, tuberías, marcos y tapas de hierro dúctil FUNDIGSAC: indica familia, medidas, cantidad y destino del proyecto.",
     // La variante con producto precargado es una vista del mismo trámite: la canónica es /cotizar.
     alternates: { canonical: "/cotizar" },
@@ -21,5 +24,10 @@ export default async function QuotePage({ searchParams }: Props) {
   const slug = first((await searchParams).producto);
   // Contrato tipado: sólo slugs del catálogo; cualquier otro valor se ignora y se muestra la cotización general.
   const product = findQuoteProduct(slug);
-  return product ? <ScreenW17 slug={product.slug} /> : <ScreenW16 />;
+  return (
+    <>
+      <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Cotizar", path: "/cotizar" }], SITE.url)} />
+      {product ? <ScreenW17 slug={product.slug} /> : <ScreenW16 />}
+    </>
+  );
 }

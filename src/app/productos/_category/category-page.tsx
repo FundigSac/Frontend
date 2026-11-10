@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { CATEGORIES, type CategorySlug } from "@/modules/catalog/registry";
 import { SITE } from "@/shared/config/site";
 import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
+import { pageMetadata } from "@/shared/seo/page-metadata";
 
 /*
  * Cada familia (válvulas, tuberías, marcos y tapas) tiene su propia ruta estática que importa solo su pantalla.
@@ -11,9 +11,9 @@ import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
 
 const categoryOf = (slug: CategorySlug) => CATEGORIES.find((c) => c.slug === slug)!;
 
-export function categoryMetadata(slug: CategorySlug): Metadata {
+export function categoryMetadata(slug: CategorySlug) {
   const category = categoryOf(slug);
-  return { title: category.title ?? category.name, description: category.description, alternates: { canonical: `/productos/${category.slug}` } };
+  return pageMetadata({ title: category.title ?? category.name, description: category.description, path: `/productos/${category.slug}` });
 }
 
 export function CategoryPage({ slug, children }: { slug: CategorySlug; children: ReactNode }) {

@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+import { SITE } from "@/shared/config/site";
+import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
+import { pageMetadata } from "@/shared/seo/page-metadata";
 import { ScreenW02 } from "@/screens/w02";
 
-export const metadata: Metadata = {
-  title: "Catálogo de válvulas, tuberías HDPE y accesorios",
-  description: "Catálogo FUNDIGSAC de válvulas, tuberías, marcos y tapas de hierro dúctil, accesorios HDPE y conexiones para redes de agua, alcantarillado e infraestructura.",
-  alternates: { canonical: "/productos" },
-};
+export const metadata = pageMetadata({
+  title: "Catálogo de válvulas, tuberías y tapas",
+  description: "Catálogo FUNDIGSAC de válvulas, tubería de hierro dúctil, marcos y tapas para redes de agua y alcantarillado. Consulta medidas y pide tu cotización.",
+  path: "/productos",
+});
 
 type SearchParams = Record<string, string | string[] | undefined>;
 type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
@@ -27,6 +29,7 @@ export default async function CatalogPage({ searchParams }: { searchParams: Prom
 
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Productos", path: "/productos" }], SITE.url)} />
       {/* El hero es un fondo CSS: se precarga la variante del tamaño de pantalla para que sea el LCP temprano. */}
       <link rel="preload" as="image" href="/media/productos-page/productos7-1600.webp" media="(min-width: 861px)" fetchPriority="high" />
       <link rel="preload" as="image" href="/media/productos-page/productos7-1200.webp" media="(max-width: 860px)" fetchPriority="high" />

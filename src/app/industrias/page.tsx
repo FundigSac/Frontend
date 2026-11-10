@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+import { SITE } from "@/shared/config/site";
+import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
+import { pageMetadata } from "@/shared/seo/page-metadata";
 import { productsBySlug } from "@/lib/site-info";
 import { IndustriesView, type SectorData } from "./industries-view";
 import "./industrias.css";
 
-export const metadata: Metadata = {
-  title: "Saneamiento, minería, agricultura e industria",
-  description: "Componentes FUNDIGSAC para saneamiento, minería, agricultura e industria: válvulas, hierro dúctil, tubería HDPE, acoples y medición.",
-  alternates: { canonical: "/industrias" },
-};
+export const metadata = pageMetadata({
+  title: "Válvulas y hierro dúctil por sector en Perú",
+  description: "Componentes FUNDIGSAC para saneamiento, minería y agricultura en Perú: válvulas, tubería de hierro dúctil, acoples y soluciones para cada aplicación.",
+  path: "/industrias",
+});
 
 /** Sectores y los productos de muestra de cada uno. Los textos (ES/EN) viven en ./copy.ts. */
 const SECTORS = [
@@ -19,5 +21,10 @@ const SECTORS = [
 
 export default function Industries() {
   const sectors: SectorData[] = SECTORS.map(({ id, href, slugs }) => ({ id, href, items: productsBySlug(...slugs) }));
-  return <IndustriesView sectors={sectors} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Industrias", path: "/industrias" }], SITE.url)} />
+      <IndustriesView sectors={sectors} />
+    </>
+  );
 }
