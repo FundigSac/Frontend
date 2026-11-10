@@ -14,8 +14,8 @@ const HERO_VIDEO: HeroVideo | undefined = {
 
 const FEATURE_ICONS = [ShieldCheck, Droplet, Settings] as const;
 const LINE_ITEMS = [
-  { href: "/productos?q=ventosa", image: "/media/agricultura/ventosa.webp" },
-  { href: "/productos?q=filtro", image: "/media/agricultura/filtro-y.webp" },
+  { href: "/productos/valvulas/valvula-de-aire-3-funciones-premium-vdap", image: "/media/agricultura/ventosa.webp" },
+  { href: "/productos/valvulas/filtro-tipo-y-bridado-fyb", image: "/media/agricultura/filtro-y.webp" },
   { href: "/productos/tuberias", image: "/media/agricultura/tuberia-hdpe.webp" },
   { href: "/productos/valvulas", image: "/media/agricultura/valvula-retencion.webp" },
 ] as const;

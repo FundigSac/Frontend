@@ -53,7 +53,7 @@ export function useTheme(): [Theme, (t: Theme) => void] {
 export const COPY = {
   es: {
     nav: { home: "Inicio", products: "Productos", sectors: "Sectores", about: "Nosotros", resources: "Recursos", contact: "Contacto" },
-    products: ["Catálogo general", "Válvulas", "Marcos y tapas", "Grifos", "Acoples", "Tuberías"],
+    products: ["Catálogo general", "Válvulas", "Marcos y tapas", "Grifos", "Acoples", "Tuberías", "Accesorios HDPE", "Equipos de termofusión", "Medidores"],
     sectors: ["Saneamiento", "Agricultura", "Minería"],
     resources: ["Fichas técnicas", "Documentación", "Catálogo digital", "Campañas y sobrestock"],
     quote: "Solicitar cotización",
@@ -91,7 +91,7 @@ export const COPY = {
   },
   en: {
     nav: { home: "Home", products: "Products", sectors: "Industries", about: "About us", resources: "Resources", contact: "Contact" },
-    products: ["Full catalog", "Valves", "Frames & covers", "Hydrants", "Couplings", "Pipes"],
+    products: ["Full catalog", "Valves", "Frames & covers", "Hydrants", "Couplings", "Pipes", "HDPE fittings", "Fusion equipment", "Meters"],
     sectors: ["Sanitation", "Agriculture", "Mining"],
     resources: ["Data sheets", "Documentation", "Digital catalog", "Campaigns & overstock"],
     quote: "Request a quote",

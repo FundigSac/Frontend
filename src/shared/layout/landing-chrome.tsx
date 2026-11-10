@@ -22,7 +22,7 @@ import "../../modules/auth/auth.css";
 type NavLink = { href: string; label: string };
 type NavEntry = NavLink & { children?: readonly NavLink[] };
 
-const PRODUCT_HREFS = ["/productos", "/productos/valvulas", "/productos/marcos-y-tapas", "/cotizar", "/productos?q=acople", "/productos/tuberias"];
+const PRODUCT_HREFS = ["/productos", "/productos/valvulas", "/productos/marcos-y-tapas", "/cotizar", "/productos/conexiones-y-fittings", "/productos/tuberias", "/productos/accesorios-hdpe", "/productos/equipos-termofusion", "/productos/medidores"];
 const SECTOR_HREFS = ["/industrias/saneamiento", "/industrias/agricultura", "/industrias/mineria"];
 
 function buildNav(t: (typeof COPY)[Lang]): readonly NavEntry[] {

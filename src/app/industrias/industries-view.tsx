@@ -15,9 +15,9 @@ const GATE_VALVE_HREF = "/productos/valvulas/valvula-compuerta";
 
 /** Cada familia mencionada en un sector lleva directo a su parte del catálogo (las claves son los textos en español). */
 const NEED_LINKS: Record<string, string> = {
-  "Ventosas y válvulas de aire": "/productos/valvulas",
-  "Filtros tipo Y y válvulas de control": "/productos/valvulas",
-  "Tubería y accesorios HDPE": "/productos?familia=accesorios-hdpe",
+  "Ventosas y válvulas de aire": "/productos/valvulas/valvula-de-aire-3-funciones-premium-vdap",
+  "Filtros tipo Y y válvulas de control": "/productos/valvulas/filtro-tipo-y-bridado-fyb",
+  "Tubería y accesorios HDPE": "/productos/accesorios-hdpe",
   "Válvulas de retención y compuerta": GATE_VALVE_HREF,
   "Válvulas de compuerta, mariposa y retención": "/productos/valvulas",
   "Tubería y accesorios de hierro dúctil": "/productos/tuberias",

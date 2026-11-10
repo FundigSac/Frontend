@@ -17,9 +17,9 @@ export function categoryName(slug: string) { return categories.find(c => c.slug 
 const FAMILY_HREF: Record<string, string> = {
   valvulas: "/productos/valvulas",
   "hierro-ductil": "/productos/tuberias",
-  hdpe: "/productos?familia=accesorios-hdpe",
-  equipos: "/productos?familia=accesorios-hdpe",
-  acoples: "/productos?familia=conexiones-y-fittings",
+  hdpe: "/productos/accesorios-hdpe",
+  equipos: "/productos/equipos-termofusion",
+  acoples: "/productos/conexiones-y-fittings",
   medidores: "/cotizar",
 };
 

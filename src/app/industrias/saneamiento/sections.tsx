@@ -16,7 +16,7 @@ const MEDIA: SectorMedia = {
   line: [
     { href: "/productos/marcos-y-tapas", image: "/media/saneamiento/marcos-tapas.webp" },
     { href: "/productos/tuberias", image: "/media/saneamiento/tuberias.webp", position: "50% 60%" },
-    { href: "/productos?q=acople", image: "/media/saneamiento/acoples.webp" },
+    { href: "/productos/conexiones-y-fittings", image: "/media/saneamiento/acoples.webp" },
     { href: "/productos/valvulas", image: "/media/saneamiento/hero.webp", position: "76% 55%" },
   ],
   docs: { image: "/media/saneamiento/catalogo-recorte.webp", width: 1448, height: 1086, cutout: true },

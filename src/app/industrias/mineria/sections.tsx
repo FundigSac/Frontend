@@ -19,7 +19,7 @@ const MEDIA: SectorMedia = {
   line: [
     { href: "/productos/valvulas", image: "/media/mineria/valvula-mina.webp" },
     { href: "/productos/tuberias", image: "/media/mineria/tuberias-hdpe.webp" },
-    { href: "/productos?q=acople", image: "/media/mineria/acople-bridado.webp" },
+    { href: "/productos/conexiones-y-fittings", image: "/media/mineria/acople-bridado.webp" },
     { href: "/productos?q=ventosa", image: "/media/mineria/valvula-proceso.webp" },
   ],
   docs: { image: "/media/mineria/catalogo-mineria.webp", width: 1448, height: 1086, cutout: false },
