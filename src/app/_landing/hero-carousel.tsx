@@ -173,7 +173,8 @@ export function HeroCarousel() {
                 fetchPriority={i === 0 ? "high" : "low"}
                 onLoad={i === 0 ? undefined : () => setRestLoaded(true)}
                 draggable={false}
-                sizes="(max-width: 860px) 78vw, 40vw"
+                // Medido: ~64 % del ancho en teléfonos y ~26 % en escritorio (la foto mide 578 px de ancho).
+                sizes="(max-width: 860px) 66vw, (max-width: 1280px) 32vw, 26vw"
               />
             ))}
           </div>
