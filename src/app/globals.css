@@ -10,6 +10,22 @@
  * en Tailwind v4 (ADR-001) para que las mismas clases rindan idéntico.
  */
 
+/*
+ * Naranja de marca (B18-1). El naranja vivo #f26a1b mide 3.06:1 con texto blanco: queda para acentos (barras,
+ * puntos, bordes, foco, iconos), nunca como fondo de un texto ni como color de texto normal.
+ * - cta / cta-hover: fondo de botones y contadores con texto blanco (4.56:1 y 5.75:1).
+ * - ink: texto y enlaces naranjas sobre fondos claros (5.39:1 en blanco, 4.95:1 en #fff3ea).
+ * - ink-dark: texto naranja sobre fondos oscuros (7.76:1 en #161615).
+ * tests/unit/content/brand-contrast.test.ts mide estos pares: si cambia un valor, la prueba lo detecta.
+ */
+:root {
+  --brand-orange: #f26a1b;
+  --brand-orange-cta: #c94f0a;
+  --brand-orange-cta-hover: #b04307;
+  --brand-orange-ink: #b84508;
+  --brand-orange-ink-dark: #ff8a4d;
+}
+
 /* Light tokens: valores exactos del tailwind.config exportado por Stitch (industrial_precision). */
 :root {
   color-scheme: light;

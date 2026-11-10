@@ -443,7 +443,7 @@ body:has(.ck) .ai-teaser {
   padding: 0 5px;
   border: 2px solid #fff;
   border-radius: 999px;
-  background: var(--ai-orange);
+  background: var(--brand-orange-cta);
   color: #fff;
   font: 800 11px/1 var(--ai-display);
   animation: ai-pop 420ms cubic-bezier(0.2, 0.9, 0.2, 1.15) both;

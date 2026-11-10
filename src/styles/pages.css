@@ -35,7 +35,7 @@ html[data-lp-theme="dark"] .x-page {
 .x-page .text-link:hover { color: var(--primary-hover); text-decoration: underline; text-underline-offset: 4px; }
 .x-page .text-link:hover svg { transform: translateX(3px); }
 /* Los botones usan .lp-btn (landing.css); sus tokens --lp-* solo existen en la portada. */
-.x-page .lp-btn { --lp-orange: #c94f0a; --lp-orange-dark: #b04307; min-height: 50px; }
+.x-page .lp-btn { --lp-orange: var(--brand-orange-cta); --lp-orange-dark: var(--brand-orange-cta-hover); min-height: 50px; }
 .x-pcard-action { white-space: nowrap; }
 
 /* ───────── Movimiento ───────── */

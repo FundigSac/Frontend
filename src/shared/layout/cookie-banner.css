@@ -96,7 +96,7 @@
 }
 
 .ck__btn--solid {
-  background: #c94f0a; /* AA con texto blanco (4.6:1) */
+  background: var(--brand-orange-cta); /* AA con texto blanco (4.56:1) */
   box-shadow: 0 10px 22px -12px rgb(242 106 27 / 80%);
   color: #fff;
 }
@@ -219,7 +219,7 @@ html[data-lp-theme="dark"] .ck__btn--outline:hover {
 
 /* Naranja de marca profundo (#c94f0a, 4.6:1 con blanco) como los demás botones principales; el vivo (3:1) no llegaba a AA. */
 .ck__btn--accept {
-  background: #c94f0a;
+  background: var(--brand-orange-cta);
   box-shadow: 0 10px 22px -12px rgb(242 106 27 / 80%);
   color: #fff;
 }

@@ -71,7 +71,7 @@
 }
 
 .ce__btn--solid {
-  background: #c94f0a; /* AA con texto blanco (4.6:1) */
+  background: var(--brand-orange-cta); /* AA con texto blanco (4.56:1) */
   color: #fff;
 }
 

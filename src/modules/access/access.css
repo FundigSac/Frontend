@@ -491,7 +491,7 @@ html[data-lp-theme="dark"] .ac-link {
   margin-top: 4px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ff7a2e, var(--ac-orange) 55%, #dc5a12);
+  background: linear-gradient(135deg, var(--brand-orange-cta), var(--brand-orange-cta-hover));
   box-shadow: 0 18px 30px -16px rgb(242 106 27 / 90%), inset 0 1px 0 rgb(255 255 255 / 25%);
   color: #fff;
   cursor: pointer;

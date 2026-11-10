@@ -106,7 +106,7 @@
 }
 
 .lp-btn--outline:hover {
-  background: var(--lp-orange);
+  background: var(--brand-orange-cta);
   color: #fff;
 }
 
@@ -1993,7 +1993,7 @@ html[data-lp-theme="dark"] .lp-btn--outline {
 }
 
 html[data-lp-theme="dark"] .lp-btn--outline:hover {
-  background: var(--lp-orange);
+  background: var(--brand-orange-cta);
   color: #fff;
 }
 
@@ -2575,7 +2575,7 @@ html[data-lp-theme="dark"] .lp-lang__menu {
   place-items: center;
   padding: 0 5px;
   border-radius: 999px;
-  background: var(--lp-orange);
+  background: var(--brand-orange-cta);
   color: #fff;
   font-size: 10.5px;
   font-weight: 700;
@@ -3064,12 +3064,12 @@ html[data-lp-theme="dark"] .lp-mobile__account a:first-child {
 /* Botones principales: naranja de marca algo más profundo (#c94f0a) para cumplir el contraste AA (4.5:1) con texto blanco; el naranja vivo queda para acentos. */
 .lp-btn--solid,
 .lp-header .lp-header__quote {
-  background: #c94f0a;
+  background: var(--brand-orange-cta);
 }
 
 .lp-btn--solid:hover,
 .lp-header .lp-header__quote:hover {
-  background: #b04307;
+  background: var(--brand-orange-cta-hover);
 }
 
 .lp-nav__link.is-active {

@@ -229,7 +229,7 @@
 }
 
 .lg-toc a[aria-current="true"] span {
-  color: var(--lp-orange);
+  color: var(--lp-orange-dark);
 }
 
 .lg-toc a[aria-current="true"]::before {
@@ -982,7 +982,7 @@
   height: 28px;
   place-items: center;
   border-radius: 50%;
-  background: var(--lp-orange);
+  background: var(--brand-orange-cta);
   color: #fff;
   font-size: 14px;
 }
