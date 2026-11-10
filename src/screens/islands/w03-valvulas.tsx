@@ -8,6 +8,7 @@ import { CardMedia } from "./w03-valve-media";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { findValveSheet } from "@/modules/catalog/valve-sheets";
+import { pressureOf, specLine } from "@/modules/catalog/spec-line";
 import { ActiveFilters, EmptySearch, FILTER_UI, ResultCount, type FilterChip } from "./catalog-filters";
 import { DATASHEETS } from "./w06-ficha-data";
 import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
@@ -62,6 +63,20 @@ const RANGES: Record<string, string> = {
   alivio: sheetRange("valvula-de-alivio-bridada"),
   flotadora: sheetRange("valvula-flotadora-bridada"),
 };
+/** Fichas de compuerta con datos aprobados (w06-ficha-data.ts): sus filas están en español. */
+const DATASHEET_OF: Partial<Record<string, keyof typeof DATASHEETS>> = { compuerta: "base", "compuerta-fundigsac": "fundigsac", "compuerta-garantia-extendida": "extendida" };
+
+/** Presión, material y unión de la ficha publicada (X1-2 / B8-3); en inglés, de las fichas en español solo la presión. */
+function cardSpecs(valve: (typeof VALVES)[number], lang: "es" | "en"): string[] {
+  const datasheet = DATASHEET_OF[valve.id];
+  if (datasheet) {
+    const rows = DATASHEETS[datasheet].specs;
+    return lang === "es" ? specLine(rows) : [pressureOf(rows)].filter((part): part is string => Boolean(part));
+  }
+  const sheet = valve.href.startsWith("/productos/valvulas/") ? findValveSheet(valve.href.split("/").pop() ?? "") : undefined;
+  return sheet ? specLine(sheet[lang].specs) : [];
+}
+
 const HERO_ICONS = [ShieldCheck, BadgeCheck, Layers, Headset] as const;
 const BENEFIT_ICONS = [Headset, ShieldCheck, PackageCheck, SlidersHorizontal] as const;
 
@@ -187,7 +202,7 @@ export function W03Valvulas() {
             <div className={styles.grid} key={group + sort}>
               {visible.map((valve, index) => {
                 const info = text[valve.id];
-                const range = RANGES[valve.id];
+                const meta = [RANGES[valve.id], ...cardSpecs(valve, lang)].filter(Boolean).join(" · ");
                 return (
                 <article key={valve.id} className={styles.card} style={{ ["--i" as string]: index % 3, ["--n" as string]: index }}>
                   <CardMedia
@@ -205,7 +220,7 @@ export function W03Valvulas() {
                   <div className={styles.cardBody}>
                     <h3>{info.name}</h3>
                     <p>{info.description}</p>
-                    {range && <p className={styles.cardMeta}>{range}</p>}
+                    {meta && <p className={styles.cardMeta} data-spec-line>{meta}</p>}
                     <Link href={sheetHref(valve.href, info.name)} className={styles.cardButton}>{valve.href === "/contacto" ? t.requestSheet : t.viewSheet} <ArrowRight size={15} aria-hidden="true" /></Link>
                   </div>
                 </article>

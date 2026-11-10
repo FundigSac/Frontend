@@ -30,3 +30,18 @@
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
+
+/* Línea técnica verificada (X1-2 / B8-3): presión, material y unión según la ficha; sin dato no se muestra. */
+.specs {
+  display: block;
+  margin: 0 0 8px;
+  color: #2f3d47;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .01em;
+}
+
+:global(html[data-lp-theme="dark"]) .specs {
+  color: #d3d1ce;
+}

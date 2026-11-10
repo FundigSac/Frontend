@@ -23,7 +23,10 @@ function normalize(value: string) {
  * línea, buscador, tarjetas con foto y asesoría. Los productos y sus textos salen de public-catalog.ts; aquí no se añade
  * ningún dato.
  */
-export function CatalogFamilyView({ family, cells }: { family: CatalogFamily; cells: readonly CatalogCell[] }) {
+/** Línea técnica por producto (presión, material, unión), calculada en el servidor desde la ficha publicada. */
+export type CellSpecs = Record<string, { es: readonly string[]; en: readonly string[] }>;
+
+export function CatalogFamilyView({ family, cells, specs = {} }: { family: CatalogFamily; cells: readonly CatalogCell[]; specs?: CellSpecs }) {
   const [lang] = useLang();
   const t = FAMILY_UI[lang];
   const [line, setLineState] = useState<string>("todas");
@@ -144,6 +147,7 @@ export function CatalogFamilyView({ family, cells }: { family: CatalogFamily; ce
                   <div className={styles.cardBody}>
                     <h3>{cell.name[lang]}</h3>
                     {(cell.code || cell.range) && <small className={extra.meta}>{[cell.code, cell.range].filter(Boolean).join(" · ")}</small>}
+                    {specs[cell.slug]?.[lang].length ? <p className={extra.specs} data-spec-line>{specs[cell.slug][lang].join(" · ")}</p> : null}
                     <p>{cell.note[lang]}</p>
                     <Link href={cell.href} className={styles.cardButton}>{t.viewSheet} <ArrowRight size={15} aria-hidden="true" /></Link>
                   </div>
