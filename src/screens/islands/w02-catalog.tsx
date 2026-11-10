@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { FAMILY_TEXT, PRODUCT_TEXT, UI, type FamilyId } from "./w02-catalog-copy";
+import { ActiveFilters, EmptySearch, FILTER_UI, ResultCount, type FilterChip } from "./catalog-filters";
 import styles from "./w02-catalog.module.css";
 
 type FamilyFilter = "todas" | FamilyId;
@@ -197,6 +198,13 @@ export function W02Catalog({
   }
 
   const catalogDocument = documentHref("Catálogo general de productos FUNDIGSAC");
+  const searchRef = useRef<HTMLInputElement>(null);
+  const f = FILTER_UI[lang];
+  const chips: FilterChip[] = [
+    ...(query.trim() ? [{ id: "q", label: f.search(query.trim()), onRemove: () => { setFiltered(true); setQuery(""); } }] : []),
+    ...(family !== "todas" ? [{ id: "familia", label: FAMILY_TEXT[lang][family].label, onRemove: () => { setFiltered(true); setFamily("todas"); } }] : []),
+  ];
+  const resetAll = () => { setQuery(""); setFamily("todas"); };
 
   return (
     <main lang={lang} className={styles.page}>
@@ -213,7 +221,7 @@ export function W02Catalog({
               <label className={styles.searchField}>
                 <span className="sr-only">{t.searchLabel}</span>
                 <span aria-hidden="true" className={styles.searchIcon}><Search size={19} strokeWidth={1.8} /></span>
-                <input type="search" name="q" value={query} onChange={(event) => { setFiltered(true); setQuery(event.target.value); }} placeholder={t.searchPlaceholder} autoComplete="off" />
+                <input ref={searchRef} type="search" name="q" value={query} onChange={(event) => { setFiltered(true); setQuery(event.target.value); }} placeholder={t.searchPlaceholder} autoComplete="off" />
               </label>
               <button type="submit" className={styles.searchButton}>{t.search}</button>
             </form>
@@ -254,18 +262,27 @@ export function W02Catalog({
       <section id="productos-destacados" className={styles.featuredSection} aria-labelledby="featured-title">
         <div className={styles.contentWidth}>
           <div className={styles.sectionHeading} data-reveal>
-            <div><h2 id="featured-title">{t.featuredTitle}</h2></div>
+            <div><h2 id="featured-title">{t.featuredTitle}</h2><ResultCount lang={lang} count={visibleProducts.length} className={styles.resultCount} /></div>
             <Link href="/productos" className={styles.textLink}>{t.viewAll} <ArrowRight size={16} /></Link>
           </div>
+          <ActiveFilters lang={lang} chips={chips} onReset={resetAll} focusFallback={() => searchRef.current?.focus()} />
           {visibleProducts.length ? (
             <div className={styles.productGrid} data-results data-filtered={filtered ? "" : undefined}>
               {visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}
             </div>
           ) : (
             <div className={styles.emptyState} role="status">
-              <h3>{t.emptyTitle}</h3>
-              <p>{t.emptyText}</p>
-              <button type="button" onClick={() => { setQuery(""); setFamily("todas"); }} className={styles.darkButton}>{t.viewAll} <ArrowRight size={14} /></button>
+              <EmptySearch
+                lang={lang}
+                title={t.emptyTitle}
+                query={query}
+                resetLabel={<>{t.viewAll} <ArrowRight size={14} aria-hidden="true" /></>}
+                onReset={resetAll}
+                primaryClassName={styles.darkButton}
+                secondaryClassName={styles.secondaryButton}
+              >
+                <p>{t.emptyText}</p>
+              </EmptySearch>
             </div>
           )}
         </div>

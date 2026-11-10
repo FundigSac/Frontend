@@ -41,10 +41,12 @@ export function generalQuote(data: FormData, cart: CartItem[], privacyNoticeVers
   const family = FAMILIES[get(data, "familiaPrincipal")] ?? get(data, "familiaPrincipal");
   const sizes = get(data, "diametrosNominales");
   const amount = get(data, "cantidadMetrado");
-  const summary = `Familia principal: ${family}. Diámetros nominales: ${sizes}. Cantidad o metrado: ${amount}.`;
+  // Texto que la persona buscó en el catálogo sin encontrarlo (/cotizar?consulta=…): Ventas lo ve tal cual.
+  const searched = get(data, "productoBuscado");
+  const summary = `${searched ? `Producto buscado en el catálogo: ${searched}. ` : ""}Familia principal: ${family}. Diámetros nominales: ${sizes}. Cantidad o metrado: ${amount}.`;
   const lines = cart.length
     ? cartLines(cart)
-    : [{ productName: cut(family || "Producto por definir", 200), variantLabel: optional(sizes, 120), quantity: quantity(amount), unit: "und", notes: optional(`Cantidad o metrado indicado: ${amount}`, 1000) }];
+    : [{ productName: cut(searched || family || "Producto por definir", 200), variantLabel: optional(sizes, 120), quantity: quantity(amount), unit: "und", notes: optional(`Cantidad o metrado indicado: ${amount}`, 1000) }];
   return {
     origin: "GENERAL_FORM",
     contact: {

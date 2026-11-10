@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, ChevronDown, Filter, MessageCircleMore, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CatalogCell, CatalogFamily } from "@/modules/catalog/public-catalog";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { FAMILY_UI } from "./catalog-family-copy";
+import { ActiveFilters, EmptySearch, FILTER_UI, ResultCount, type FilterChip } from "./catalog-filters";
 import extra from "./catalog-family.module.css";
 import styles from "./w04-tuberias.module.css";
 
@@ -50,6 +51,15 @@ export function CatalogFamilyView({ family, cells }: { family: CatalogFamily; ce
   }, [cells, line, query, sort, lang]);
 
   const name = family.name[lang];
+  const searchRef = useRef<HTMLInputElement>(null);
+  const f = FILTER_UI[lang];
+  const lineLabel = lines.find((entry) => entry.id === line)?.label[lang];
+  const chips: FilterChip[] = [
+    ...(query.trim() ? [{ id: "q", label: f.search(query.trim()), onRemove: () => setQuery("") }] : []),
+    ...(line !== "todas" && lineLabel ? [{ id: "line", label: lineLabel, onRemove: () => setLine("todas") }] : []),
+    ...(sort !== "destacados" ? [{ id: "sort", label: f.sort(t.sorts[sort]), onRemove: () => setSort("destacados") }] : []),
+  ];
+  const resetAll = () => { setQuery(""); setLine("todas"); setSort("destacados"); };
 
   return (
     <main lang={lang} className={styles.page}>
@@ -91,7 +101,7 @@ export function CatalogFamilyView({ family, cells }: { family: CatalogFamily; ce
             <label className={styles.search}>
               <span className="sr-only">{t.searchLabel}</span>
               <Search size={18} strokeWidth={1.8} aria-hidden="true" />
-              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
+              <input ref={searchRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
             </label>
             {lines.length > 1 && (
               <label className={styles.select}>
@@ -116,9 +126,11 @@ export function CatalogFamilyView({ family, cells }: { family: CatalogFamily; ce
             </label>
           </div>
 
+          <ActiveFilters lang={lang} chips={chips} onReset={resetAll} focusFallback={() => searchRef.current?.focus()} />
+
           <div className={styles.sectionHeading}>
             <h2>{t.explore(name)}</h2>
-            <p aria-live="polite">{visible.length} {visible.length === 1 ? t.one : t.many}</p>
+            <ResultCount lang={lang} count={visible.length} />
           </div>
 
           {visible.length ? (
@@ -140,9 +152,17 @@ export function CatalogFamilyView({ family, cells }: { family: CatalogFamily; ce
             </div>
           ) : (
             <div className={styles.empty} role="status">
-              <h3>{t.emptyTitle}</h3>
-              <p>{t.emptyText}</p>
-              <button type="button" className={styles.darkButton} onClick={() => { setQuery(""); setLine("todas"); }}>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></button>
+              <EmptySearch
+                lang={lang}
+                title={t.emptyTitle}
+                query={query}
+                resetLabel={<>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></>}
+                onReset={resetAll}
+                primaryClassName={styles.darkButton}
+                secondaryClassName={styles.cardButton}
+              >
+                <p>{t.emptyText}</p>
+              </EmptySearch>
             </div>
           )}
         </div>

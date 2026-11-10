@@ -591,6 +591,13 @@
   background: #263a42;
 }
 
+.resultCount {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
 .emptyState {
   display: flex;
   min-height: 260px;

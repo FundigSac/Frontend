@@ -10,7 +10,7 @@ export const QUOTE_UI: Pair<{
   projectType: string; selectOption: string; projectTypes: [string, string][];
   destination: string; destinationPh: string; contactName: string; jobTitle: string; email: string; phone: string;
   requestTitle: string; requestNote: string; family: string; selectFamily: string; families: [string, string][];
-  sizes: string; sizesPh: string; quantity: string; quantityPh: string;
+  sizes: string; sizesPh: string; quantity: string; quantityPh: string; searched: string; searchedHelp: string;
   consentRegion: string; consentBefore: string; privacy: string; submit: string; sending: string;
 }> = {
   es: {
@@ -44,6 +44,8 @@ export const QUOTE_UI: Pair<{
     family: "Familia de producto",
     selectFamily: "Selecciona una familia",
     families: [["valvulas", "Válvulas"], ["tuberias", "Tuberías"], ["marcos_tapas", "Marcos y tapas"], ["mixto", "Varias familias u otro producto"]],
+    searched: "Producto que buscas",
+    searchedHelp: "Lo escribiste en el buscador del catálogo; corrígelo o complétalo si hace falta.",
     sizes: "Diámetros o medidas requeridas",
     sizesPh: "Indica las medidas o escribe ‘por definir’",
     quantity: "Cantidad o metrado aproximado",
@@ -85,6 +87,8 @@ export const QUOTE_UI: Pair<{
     family: "Product family",
     selectFamily: "Select a family",
     families: [["valvulas", "Valves"], ["tuberias", "Pipes"], ["marcos_tapas", "Frames and covers"], ["mixto", "Several families or another product"]],
+    searched: "Product you are looking for",
+    searchedHelp: "You typed it in the catalog search; correct or complete it if needed.",
     sizes: "Required diameters or sizes",
     sizesPh: "Enter the sizes or write ‘to be defined’",
     quantity: "Approximate quantity or length",

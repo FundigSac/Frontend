@@ -10,7 +10,8 @@ const inputClass = "min-h-11 w-full rounded-lg border border-border bg-surface-e
 const labelClass = "mb-1.5 block font-ui-label text-ui-label font-semibold text-on-surface-variant";
 const requiredMark = <span aria-hidden="true" className="text-danger"> *</span>;
 
-export function ScreenW16() {
+/** `consulta`: texto buscado en el catálogo sin resultados (B30-3 / X5-7), ya escrito en «Producto que buscas». */
+export function ScreenW16({ consulta = "" }: { consulta?: string }) {
   const [lang] = useLang();
   const t = QUOTE_UI[lang];
   return (
@@ -122,6 +123,13 @@ export function ScreenW16() {
               </div>
 
               <div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">
+                {consulta && (
+                  <div className="sm:col-span-2">
+                    <label className={labelClass} htmlFor="productoBuscado">{t.searched}</label>
+                    <input className={inputClass} id="productoBuscado" name="productoBuscado" type="text" maxLength={120} defaultValue={consulta} aria-describedby="producto-buscado-help" />
+                    <p className="mt-1 text-xs leading-5 text-text-muted" id="producto-buscado-help">{t.searchedHelp}</p>
+                  </div>
+                )}
                 <div className="sm:col-span-2">
                   <label className={labelClass} htmlFor="familiaPrincipal">{t.family}{requiredMark}</label>
                   <select className={inputClass} id="familiaPrincipal" name="familiaPrincipal" defaultValue="" required>

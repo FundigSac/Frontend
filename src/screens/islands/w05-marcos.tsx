@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, ChevronDown, Download, Filter, Mail, MessageCircleMore, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { GROUP_LABELS, ITEM_TEXT, UI, type GroupId } from "./w05-marcos-copy";
+import { ActiveFilters, EmptySearch, FILTER_UI, ResultCount, type FilterChip } from "./catalog-filters";
 import styles from "./w05-marcos.module.css";
 
 /** Sin ficha publicada: la tarjeta pide la ficha por Contacto (con el producto ya indicado) en vez de prometer verla. */
@@ -48,6 +49,14 @@ export function W05Marcos() {
   const setGroup = (next: Group) => { setFiltered(true); setGroupState(next); };
   const setQuery = (next: string) => { setFiltered(true); setQueryState(next); };
   const setSort = (next: SortMode) => { setFiltered(true); setSortState(next); };
+  const searchRef = useRef<HTMLInputElement>(null);
+  const f = FILTER_UI[lang];
+  const chips: FilterChip[] = [
+    ...(query.trim() ? [{ id: "q", label: f.search(query.trim()), onRemove: () => setQuery("") }] : []),
+    ...(group !== "todas" ? [{ id: "group", label: GROUP_LABELS[lang][group], onRemove: () => setGroup("todas") }] : []),
+    ...(sort !== "destacados" ? [{ id: "sort", label: f.sort(t.sorts[sort]), onRemove: () => setSort("destacados") }] : []),
+  ];
+  const resetAll = () => { setQuery(""); setGroup("todas"); setSort("destacados"); };
 
   const visible = useMemo(() => {
     const terms = normalize(query).split(/\s+/).filter(Boolean);
@@ -107,7 +116,7 @@ export function W05Marcos() {
             <label className={styles.search}>
               <span className="sr-only">{t.searchLabel}</span>
               <Search size={18} strokeWidth={1.8} aria-hidden="true" />
-              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
+              <input ref={searchRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
             </label>
             <label className={styles.select}>
               <Filter size={17} strokeWidth={1.8} aria-hidden="true" />
@@ -130,9 +139,11 @@ export function W05Marcos() {
             </label>
           </div>
 
+          <ActiveFilters lang={lang} chips={chips} onReset={resetAll} focusFallback={() => searchRef.current?.focus()} />
+
           <div className={styles.sectionHeading}>
             <h2>{t.explore}</h2>
-            <p aria-live="polite">{visible.length} {visible.length === 1 ? t.one : t.many}</p>
+            <ResultCount lang={lang} count={visible.length} />
           </div>
 
           {visible.length ? (
@@ -152,9 +163,17 @@ export function W05Marcos() {
             </div>
           ) : (
             <div className={styles.empty} role="status">
-              <h3>{t.emptyTitle}</h3>
-              <p>{t.emptyText}</p>
-              <button type="button" className={styles.darkButton} onClick={() => { setQuery(""); setGroup("todas"); }}>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></button>
+              <EmptySearch
+                lang={lang}
+                title={t.emptyTitle}
+                query={query}
+                resetLabel={<>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></>}
+                onReset={resetAll}
+                primaryClassName={styles.darkButton}
+                secondaryClassName={styles.cardButton}
+              >
+                <p>{t.emptyText}</p>
+              </EmptySearch>
             </div>
           )}
         </div>

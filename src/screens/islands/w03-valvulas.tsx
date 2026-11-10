@@ -3,11 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, BadgeCheck, ChevronDown, Download, Filter, Headset, Layers, Mail, MessageCircleMore, PackageCheck, Search, ShieldCheck, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { CardMedia } from "./w03-valve-media";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { findValveSheet } from "@/modules/catalog/valve-sheets";
+import { ActiveFilters, EmptySearch, FILTER_UI, ResultCount, type FilterChip } from "./catalog-filters";
 import { DATASHEETS } from "./w06-ficha-data";
 import { GROUP_LABELS, UI, VALVE_TEXT, type GroupId } from "./w03-valvulas-copy";
 import { blurBackdrop } from "@/shared/media/blur-backdrop";
@@ -92,6 +93,14 @@ export function W03Valvulas() {
   const count = (id: GroupId) => VALVES.filter((valve) => valve.group === id).length;
   const catalogDocument = documentHref("Catálogo general de productos FUNDIGSAC");
   const unit = (n: number) => (n === 1 ? t.one : t.many);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const f = FILTER_UI[lang];
+  const chips: FilterChip[] = [
+    ...(query.trim() ? [{ id: "q", label: f.search(query.trim()), onRemove: () => setQuery("") }] : []),
+    ...(group !== "todas" ? [{ id: "group", label: groupLabel[group], onRemove: () => setGroup("todas") }] : []),
+    ...(sort !== "destacados" ? [{ id: "sort", label: f.sort(t.sorts[sort]), onRemove: () => setSort("destacados") }] : []),
+  ];
+  const resetAll = () => { setQuery(""); setGroup("todas"); setSort("destacados"); };
 
   return (
     <main className={styles.page}>
@@ -144,7 +153,7 @@ export function W03Valvulas() {
             <label className={styles.search}>
               <span className="sr-only">{t.searchLabel}</span>
               <Search size={18} strokeWidth={1.8} aria-hidden="true" />
-              <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
+              <input ref={searchRef} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.searchPlaceholder} autoComplete="off" />
             </label>
             <label className={styles.select}>
               <Filter size={17} strokeWidth={1.8} aria-hidden="true" />
@@ -167,9 +176,11 @@ export function W03Valvulas() {
             </label>
           </div>
 
+          <ActiveFilters lang={lang} chips={chips} onReset={resetAll} focusFallback={() => searchRef.current?.focus()} />
+
           <div className={styles.sectionHeading}>
             <h2>{t.explore}</h2>
-            <p aria-live="polite">{visible.length} {unit(visible.length)}</p>
+            <ResultCount lang={lang} count={visible.length} />
           </div>
 
           {visible.length ? (
@@ -203,9 +214,17 @@ export function W03Valvulas() {
             </div>
           ) : (
             <div className={styles.empty} role="status">
-              <h3>{t.emptyTitle}</h3>
-              <p>{t.emptyText}</p>
-              <button type="button" className={styles.darkButton} onClick={() => { setQuery(""); setGroup("todas"); }}>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></button>
+              <EmptySearch
+                lang={lang}
+                title={t.emptyTitle}
+                query={query}
+                resetLabel={<>{t.emptyAction} <ArrowRight size={15} aria-hidden="true" /></>}
+                onReset={resetAll}
+                primaryClassName={styles.darkButton}
+                secondaryClassName={styles.cardButton}
+              >
+                <p>{t.emptyText}</p>
+              </EmptySearch>
             </div>
           )}
         </div>

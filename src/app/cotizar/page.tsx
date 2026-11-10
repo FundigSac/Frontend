@@ -6,7 +6,7 @@ import { SITE } from "@/shared/config/site";
 import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
 import { withBrand } from "@/shared/seo/page-metadata";
 
-type Props = { searchParams: Promise<{ producto?: string | string[] }> };
+type Props = { searchParams: Promise<{ producto?: string | string[]; consulta?: string | string[] }> };
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
@@ -21,13 +21,16 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function QuotePage({ searchParams }: Props) {
-  const slug = first((await searchParams).producto);
+  const params = await searchParams;
+  const slug = first(params.producto);
+  // Texto libre buscado en el catálogo: solo se muestra como valor de un campo (React lo escapa), recortado.
+  const consulta = (first(params.consulta) ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, 120);
   // Contrato tipado: sólo slugs del catálogo; cualquier otro valor se ignora y se muestra la cotización general.
   const product = findQuoteProduct(slug);
   return (
     <>
       <JsonLd data={breadcrumbList([{ name: "Inicio", path: "/" }, { name: "Cotizar", path: "/cotizar" }], SITE.url)} />
-      {product ? <ScreenW17 slug={product.slug} /> : <ScreenW16 />}
+      {product ? <ScreenW17 slug={product.slug} /> : <ScreenW16 consulta={consulta} />}
     </>
   );
 }
