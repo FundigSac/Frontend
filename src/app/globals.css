@@ -314,14 +314,20 @@ html {
   scroll-padding-top: 96px;
 }
 
-/* Móvil: el texto corrido va justificado en todo el sitio (sin cortar palabras con guion), como en escritorio. Varias
-   pantallas lo dejaban a la izquierda en pantallas angostas. El aviso del mapa queda como está. */
-@media (max-width: 860px) {
-  main p:not(.ce__copy *) {
-    text-align: justify !important;
-    text-justify: inter-word;
-    hyphens: none;
-  }
+/* El texto corrido va justificado en todos los anchos. Títulos, botones, rótulos y columnas numéricas conservan su
+   alineación, y el aviso del mapa queda como está. Además de los párrafos de `main`, cuentan como texto corrido el
+   aviso de cookies, la columna de marca del pie y las notas largas que no son <p> (`.prosa-just`). Con `lang="es-PE"`
+   el navegador parte las palabras largas con guion: sin eso, en 320–390 px la justificación abría huecos grandes. */
+main p:not(.ce__copy *, .text-center, .text-center *, .text-right, .text-end, [style*="text-align"], button *, label *, summary *, th *, td *),
+.lp-footer__brand-column > p,
+.ck__body p,
+main :is(.lg-prefs__note, .lg-notices > li),
+.prosa-just {
+  text-align: justify !important;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 8 4 4;
 }
 
 /* Modo oscuro fuera del catálogo: el azul "primary" claro del tema (#004257) casi no se distingue sobre grafito, así que
