@@ -4,6 +4,9 @@ import type { Lang } from "@/shared/layout/landing-prefs";
 export const LEAD_UI = {
   es: {
     honeypot: "No completar este campo",
+    sent: "Enviado",
+    sendingStatus: "Enviando la solicitud…",
+    sentStatus: "Solicitud enviada. Abriendo la confirmación…",
     connectionError: "No pudimos procesar la solicitud. Revisa tu conexión e inténtalo de nuevo.",
     invalid: "El sistema no aceptó algunos datos. Revisa el RUC (11 dígitos), el correo y el celular, y vuelve a enviar.",
     limited: "Enviaste varias solicitudes seguidas. Espera unos minutos y vuelve a intentarlo.",
@@ -19,6 +22,9 @@ export const LEAD_UI = {
   },
   en: {
     honeypot: "Do not fill in this field",
+    sent: "Sent",
+    sendingStatus: "Sending the request…",
+    sentStatus: "Request sent. Opening the confirmation…",
     connectionError: "We couldn’t process the request. Check your connection and try again.",
     invalid: "The system didn’t accept some details. Check the RUC (11 digits), the email and the mobile number, and send it again.",
     limited: "You sent several requests in a row. Wait a few minutes and try again.",

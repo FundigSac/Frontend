@@ -8,6 +8,8 @@ import { useCopy } from "../_legal/use-copy";
 import { submitForm } from "@/modules/backend/client";
 import { track } from "@/shared/analytics/track";
 import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
+import { useLang } from "@/shared/layout/landing-prefs";
+import { FormErrorSummary, useFormErrorSummary } from "@/shared/ui/form-error-summary";
 import { buildContactMessage } from "./contact-message";
 import { CONTACT, type ReasonId } from "./copy";
 
@@ -38,6 +40,8 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
   const [saved, setSaved] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [lang] = useLang();
+  const summary = useFormErrorSummary(lang);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,6 +49,7 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
     const form = event.currentTarget;
     const data = new FormData(form);
     const text = (name: string) => String(data.get(name) ?? "").trim();
+    summary.clear();
     setError(null);
     // Con Backend: la consulta se registra con folio. Sin él (o si no responde), se prepara el mensaje como antes.
     setSending(true);
@@ -93,11 +98,12 @@ export function ContactForm({ email, whatsappNumber, prefill }: { email: string;
 
   return (
     <>
-      <form className="ct-form" id="contacto-form" aria-label={f.aria} onSubmit={onSubmit} hidden={prepared !== null || saved !== null} aria-busy={sending}>
+      <form className="ct-form" id="contacto-form" aria-label={f.aria} onSubmit={onSubmit} onInvalidCapture={summary.onInvalidCapture} hidden={prepared !== null || saved !== null} aria-busy={sending}>
         <p className="lg-eyebrow">{f.eyebrow}</p>
         <h2 className="ct-title">{f.title}</h2>
         <p className="ct-intro">{f.intro}</p>
         {prefill.reason && <p className="ct-reason"><strong>{f.reasonLabel}:</strong> {f.reasons[prefill.reason]}</p>}
+        <FormErrorSummary issues={summary.issues} lang={lang} summaryRef={summary.summaryRef} />
 
         <div className="ct-fields">
           <Field id={`${uid}-n`} label={f.name[0]} required full>

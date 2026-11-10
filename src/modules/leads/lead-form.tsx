@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Check, Copy, Mail, MessageCircle } from "lucide-react";
+import { Check, Copy, LoaderCircle, Mail, MessageCircle } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { mailtoUrl, whatsappUrl } from "@/app/_legal/claim-message";
 import { site } from "@/lib/site-info";
@@ -13,14 +13,19 @@ import { PENDING_QUOTE_REFERENCE } from "@/modules/quote/format";
 import { track } from "@/shared/analytics/track";
 import { SITE } from "@/shared/config/site";
 import { useLang } from "@/shared/layout/landing-prefs";
+import { FormErrorSummary, useFormErrorSummary } from "@/shared/ui/form-error-summary";
 import { submitLead } from "./actions";
 import { LEAD_FORMS, type LeadFormId } from "./forms";
 import { LEAD_UI, localizeLeadMessage } from "./lead-copy";
 import { buildLeadMessage, formEntries, type LeadMessage } from "./lead-message";
 import type { LeadResult } from "./types";
+import "./lead-submit.css";
 
-/** `offline`: datos válidos, pero aún no hay registro en línea; la solicitud queda lista para enviarse por correo o WhatsApp. */
-type Status = "idle" | "pending" | "success" | "error" | "offline";
+/**
+ * `offline`: datos válidos, pero aún no hay registro en línea; la solicitud queda lista para enviarse por correo o WhatsApp.
+ * `sent`: el sistema registró el envío y se está abriendo la confirmación (el botón muestra «Enviado»).
+ */
+type Status = "idle" | "pending" | "sent" | "success" | "error" | "offline";
 type LeadState = { status: Status; reference?: string; message?: string; prepared?: LeadMessage };
 const LeadContext = createContext<LeadState>({ status: "idle" });
 export const useLeadState = () => useContext(LeadContext);
@@ -45,12 +50,15 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
   const cart = useCart();
   // Misma clave en los reintentos del mismo envío: la API devuelve el mismo folio en lugar de duplicarlo.
   const idempotencyKey = useRef(newIdempotencyKey());
+  const summary = useFormErrorSummary(lang);
+  const clearSummary = summary.clear;
 
   const onSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const form = event.currentTarget;
-      if (state.status === "pending") return; // evita dobles envíos
+      if (state.status === "pending" || state.status === "sent") return; // evita dobles envíos
+      clearSummary(); // el navegador solo deja llegar aquí un formulario válido
       const data = new FormData(form);
       setState({ status: "pending" });
       startTransition(async () => {
@@ -64,11 +72,15 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
             track("contact_form_submit_success", { form_type: formId === "quote-product" ? "quote_product" : "quote_general" });
             if (formId === "quote-general" && cart.length) clearCart();
             idempotencyKey.current = newIdempotencyKey();
+            setState({ status: "sent", reference: saved.folio });
+            await showSent();
             router.push(`/cotizar/confirmacion?ref=${encodeURIComponent(saved.folio)}`);
             return;
           }
           if (saved.kind === "invalid" || saved.kind === "limited") {
-            setState({ status: "error", message: saved.kind === "limited" ? ui.limited : ui.invalid });
+            // El error real: el motivo general y, si la API lo detalla, qué datos rechazó.
+            const details = saved.kind === "invalid" ? saved.messages.slice(0, 3).join(" ") : "";
+            setState({ status: "error", message: saved.kind === "limited" ? ui.limited : [ui.invalid, details].filter(Boolean).join(" ") });
             return;
           }
         }
@@ -82,6 +94,8 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
           form.reset();
           const confirmation = LEAD_FORMS[formId].confirmation;
           if (confirmation) {
+            setState({ status: "sent", reference: result.reference });
+            await showSent();
             router.push(`${confirmation}?ref=${encodeURIComponent(result.reference)}`);
             return;
           }
@@ -100,13 +114,16 @@ export function LeadForm({ formId, id, children, ...rest }: LeadFormProps) {
         }
       });
     },
-    [cart, formId, router, state.status, lang, ui],
+    [cart, formId, router, state.status, lang, ui, clearSummary],
   );
 
   const value = useMemo(() => state, [state]);
   return (
     <LeadContext.Provider value={value}>
-      <form {...rest} id={id} ref={formRef} onSubmit={onSubmit} aria-busy={state.status === "pending"}>
+      <form {...rest} id={id} ref={formRef} onSubmit={onSubmit} onInvalidCapture={summary.onInvalidCapture} aria-busy={state.status === "pending"}>
+        <FormErrorSummary issues={summary.issues} lang={lang} summaryRef={summary.summaryRef} />
+        {/* Estado del envío para lectores de pantalla (B28-1); el error lo anuncia <LeadError> con role="alert". */}
+        <p className="sr-only" role="status" aria-live="polite">{state.status === "pending" ? ui.sendingStatus : state.status === "sent" ? ui.sentStatus : ""}</p>
         {/* Honeypot: invisible para personas, atractivo para bots */}
         <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
           <label>
@@ -130,17 +147,34 @@ type LeadSubmitProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type
   baseClassName?: string;
 };
 
+/**
+ * Botón de envío con tres estados que se funden entre sí (B28-1): reposo → enviando (indicador giratorio) → «Enviado» con
+ * check. Solo cambian opacidad y desplazamiento (~250 ms, sin rebote); con movimiento reducido el cambio es inmediato.
+ * Las tres capas ocupan la misma celda, así el botón no cambia de tamaño. El nombre accesible es el de la capa visible.
+ */
 export function LeadSubmit({ idle, pending, success, successClassName, baseClassName, className, ...rest }: LeadSubmitProps) {
   const { status } = useLeadState();
-  const ok = status === "success" && success;
+  const [lang] = useLang();
+  const done = status === "sent" || status === "success";
+  const phase = status === "pending" ? "pending" : done ? "done" : "idle";
+  const ok = done && success;
   return (
     <button
       {...rest}
       type="submit"
-      disabled={status === "pending"}
-      className={`${ok && successClassName ? successClassName : (baseClassName ?? className ?? "")}${status === "pending" ? " opacity-80 cursor-wait" : ""}`}
+      disabled={status === "pending" || status === "sent"}
+      data-submit-state={phase}
+      className={`${ok && successClassName ? successClassName : (baseClassName ?? className ?? "")}${status === "pending" ? " cursor-wait" : ""}`}
     >
-      {status === "pending" ? pending : ok ? success : idle}
+      <span className="lead-submit">
+        <span className="lead-submit__layer" aria-hidden={phase !== "idle"}>{idle}</span>
+        <span className="lead-submit__layer" aria-hidden={phase !== "pending"}>
+          <LoaderCircle className="lead-submit__spin" aria-hidden="true" size={18} strokeWidth={2.2} /> {pending}
+        </span>
+        <span className="lead-submit__layer" aria-hidden={phase !== "done"}>
+          <Check aria-hidden="true" size={18} strokeWidth={2.6} /> {success ?? LEAD_UI[lang].sent}
+        </span>
+      </span>
     </button>
   );
 }
@@ -226,7 +260,13 @@ function LeadOffline({ prepared }: { prepared: LeadMessage }) {
   );
 }
 
-type QuoteOutcome = { kind: "saved"; folio: string } | { kind: "offline" } | { kind: "invalid" } | { kind: "limited" };
+/** Deja ver «Enviado» un momento antes de abrir la confirmación (sin espera con movimiento reducido: el estado ya se anunció). */
+function showSent(): Promise<void> {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return new Promise((resolve) => window.setTimeout(resolve, reduce ? 0 : 600));
+}
+
+type QuoteOutcome = { kind: "saved"; folio: string } | { kind: "offline" } | { kind: "invalid"; messages: string[] } | { kind: "limited" };
 
 /**
  * Registra la cotización en el Backend. Si la API no reconoce un producto o medida del catálogo del sitio, se reenvía
@@ -239,5 +279,6 @@ async function registerQuote(formId: "quote-general" | "quote-product", data: Fo
     outcome = await submitForm<{ folio: string }>("quote", withoutCatalogLinks(body), `${key}-libre`);
   }
   if (outcome.kind === "saved") return { kind: "saved", folio: outcome.data.folio };
+  if (outcome.kind === "invalid") return { kind: "invalid", messages: outcome.errors.map((e) => e.message ?? "").filter(Boolean) };
   return { kind: outcome.kind };
 }

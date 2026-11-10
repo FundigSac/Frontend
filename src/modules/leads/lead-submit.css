@@ -1,0 +1,40 @@
+/* Botón de envío con morph reposo → enviando → «Enviado» (B28-1): solo opacidad y transform, 250 ms, sin rebote. */
+.lead-submit {
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+}
+
+.lead-submit__layer {
+  display: inline-flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  text-align: center;
+  transition: opacity 250ms cubic-bezier(0.2, 0, 0, 1), transform 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.lead-submit__layer[aria-hidden="true"] {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+}
+
+.lead-submit__spin {
+  animation: lead-submit-spin 900ms linear infinite;
+}
+
+@keyframes lead-submit-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-submit__layer {
+    transition: none;
+  }
+
+  .lead-submit__spin {
+    animation: none;
+  }
+}
