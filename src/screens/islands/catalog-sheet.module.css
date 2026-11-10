@@ -1,4 +1,4 @@
-/* Piezas de la ficha genérica que la ficha de válvula no tiene: medida, aviso de ficha por confirmar y sectores.
+/* Piezas de la ficha genérica que la ficha de válvula no tiene: aviso de ficha por confirmar y sectores.
    Usa los tonos definidos en .page de valve-sheet.module.css. */
 .photoNote {
   margin-top: 8px;
@@ -25,43 +25,6 @@
 .pending svg {
   flex: 0 0 auto;
   margin-top: 1px;
-}
-
-.field {
-  display: grid;
-  gap: 6px;
-  max-width: 340px;
-  margin-top: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-soft);
-}
-
-.selectBox {
-  position: relative;
-  display: block;
-}
-
-.selectBox select {
-  width: 100%;
-  min-height: 46px;
-  padding: 0 40px 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--card);
-  color: var(--ink);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 500;
-  appearance: none;
-}
-
-.selectBox svg {
-  position: absolute;
-  top: 50%;
-  right: 14px;
-  translate: 0 -50%;
-  pointer-events: none;
 }
 
 .sectors {

@@ -1,0 +1,57 @@
+/* Selector de cantidad (QuantityStepper): carrito y fichas. Fuera del carrito toma los tonos de la página. */
+
+.ct-qty {
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--ct-line, var(--line, #e3e8ef));
+  border-radius: 10px;
+  background: var(--ct-bg, var(--card, #fff));
+}
+
+.ct-qty button {
+  display: grid;
+  width: 32px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--ct-ink, var(--ink, #13233d));
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.ct-qty button:hover:not(:disabled) {
+  background: var(--ct-soft, var(--photo, #f4f6f9));
+  color: var(--ct-orange-dark, var(--orange-btn, #b84508));
+}
+
+.ct-qty button:disabled {
+  color: var(--ct-muted, var(--ink-muted, #6b7686));
+  cursor: default;
+  opacity: 0.45;
+}
+
+.ct-qty input {
+  width: 46px;
+  height: 34px;
+  border: 0;
+  border-inline: 1px solid var(--ct-line, var(--line, #e3e8ef));
+  background: transparent;
+  color: var(--ct-ink, var(--ink, #13233d));
+  font: 700 14px/1 var(--ct-font, var(--font-inter), system-ui, sans-serif);
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.ct-qty input::-webkit-inner-spin-button,
+.ct-qty input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.ct-qty input:focus-visible,
+.ct-qty button:focus-visible {
+  outline: 2px solid var(--ct-orange, var(--orange-btn, #f26a1b));
+  outline-offset: -2px;
+}

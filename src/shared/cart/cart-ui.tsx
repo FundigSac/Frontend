@@ -1,11 +1,12 @@
 "use client";
 
-import { Check, Minus, Package, Plus } from "lucide-react";
+import { Check, Package, Plus } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { addToCart, MAX_QTY, setQuantity, type CartItem } from "@/modules/cart/cart-store";
+import { addToCart, setQuantity, type CartItem } from "@/modules/cart/cart-store";
 import { FEATURED_PRODUCTS, productVisual } from "@/modules/cart/cart-products";
 import type { CartCopy } from "./cart-copy";
+import { QuantityStepper } from "./qty-stepper";
 
 /** Foto del producto sobre fondo claro; si no hay imagen, un ícono neutro. */
 export function CartThumb({ item, size = 72 }: { item: Pick<CartItem, "slug" | "image" | "name">; size?: number }) {
@@ -17,42 +18,17 @@ export function CartThumb({ item, size = 72 }: { item: Pick<CartItem, "slug" | "
   );
 }
 
-/**
- * Selector de cantidad accesible (X7-3): botones − / + con el nombre del producto en su etiqueta, mínimo 1 y máximo
- * MAX_QTY. Mientras se escribe se permite el campo vacío; al salir del campo, un valor vacío o menor que 1 vuelve a 1.
- * El nuevo total del carrito lo anuncia la cabecera (CartCountAnnouncer).
- */
+/** Cantidad de una línea del carrito: el selector compartido escribe directo en el carrito. El nuevo total lo anuncia
+ * la cabecera (CartCountAnnouncer). */
 export function QtyStepper({ item, t }: { item: CartItem; t: CartCopy }) {
-  const [draft, setDraft] = useState<string | null>(null);
-  const commit = (raw: string) => {
-    setDraft(null);
-    setQuantity(item, Number(raw) || 1);
-  };
   return (
-    <div className="ct-qty" role="group" aria-label={`${t.quantity}: ${item.name}`}>
-      <button type="button" onClick={() => setQuantity(item, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={`${t.decrease}: ${item.name}`}>
-        <Minus aria-hidden="true" size={14} strokeWidth={2.4} />
-      </button>
-      <input
-        type="number"
-        inputMode="numeric"
-        min={1}
-        max={MAX_QTY}
-        step={1}
-        value={draft ?? item.quantity}
-        aria-label={`${t.quantity}: ${item.name}`}
-        onChange={(e) => {
-          const raw = e.target.value;
-          if (raw === "" || Number(raw) < 1) setDraft(raw);
-          else commit(raw);
-        }}
-        onBlur={(e) => draft !== null && commit(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && draft !== null && commit(e.currentTarget.value)}
-      />
-      <button type="button" onClick={() => setQuantity(item, item.quantity + 1)} disabled={item.quantity >= MAX_QTY} aria-label={`${t.increase}: ${item.name}`}>
-        <Plus aria-hidden="true" size={14} strokeWidth={2.4} />
-      </button>
-    </div>
+    <QuantityStepper
+      value={item.quantity}
+      onChange={(quantity) => setQuantity(item, quantity)}
+      label={`${t.quantity}: ${item.name}`}
+      decreaseLabel={`${t.decrease}: ${item.name}`}
+      increaseLabel={`${t.increase}: ${item.name}`}
+    />
   );
 }
 

@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, MessageCircleMore, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, Check } from "lucide-react";
 import { whatsappLink } from "@/lib/site-info";
-import { addToCart, openCart } from "@/modules/cart/cart-store";
 import { findValveSheet, type ValveSheet } from "@/modules/catalog/valve-sheets";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { DATASHEETS } from "./w06-ficha-data";
+import { SheetOrder, VariantTable, useVariantParam } from "./sheet-order";
 import styles from "./valve-sheet.module.css";
 
 const UI = {
@@ -19,9 +18,7 @@ const UI = {
     valves: "Válvulas",
     code: "Código",
     sizes: "Medidas",
-    add: "Agregar a cotización",
     added: "Agregada a tu cotización",
-    whatsapp: "Cotizar por WhatsApp",
     advice: "Hablar con un asesor",
     noPrice: "Precio y disponibilidad se confirman al cotizar.",
     about: "Descripción",
@@ -43,9 +40,7 @@ const UI = {
     valves: "Valves",
     code: "Code",
     sizes: "Sizes",
-    add: "Add to quote",
     added: "Added to your quote",
-    whatsapp: "Quote on WhatsApp",
     advice: "Talk to an advisor",
     noPrice: "Price and availability are confirmed with your quote.",
     about: "Description",
@@ -64,9 +59,12 @@ const UI = {
 } as const;
 
 /** Ficha de válvula del catálogo (datos en src/modules/catalog/valve-sheets.ts). El HTML del servidor sale en español. */
-export function ValveSheetView({ slug }: { slug: string }) {
+type OrderOptions = { variants: { es: readonly string[]; en: readonly string[] }; pressure?: string };
+
+const NO_OPTIONS: OrderOptions = { variants: { es: [], en: [] } };
+
+export function ValveSheetView({ slug, options = NO_OPTIONS }: { slug: string; options?: OrderOptions }) {
   const [lang] = useLang();
-  const [added, setAdded] = useState(false);
   const sheet = findValveSheet(slug) as ValveSheet;
   const t = UI[lang];
   const text = sheet[lang];
@@ -75,12 +73,9 @@ export function ValveSheetView({ slug }: { slug: string }) {
   // Las compuertas de la casa tienen su propia ficha: se enlazan con su nombre y su foto de catálogo.
   const relatedGates = sheet.related.filter((s) => !findValveSheet(s));
 
-  const add = () => {
-    addToCart({ slug: sheet.slug, name: sheet.es.name, variant: undefined, image: sheet.image, href: path });
-    openCart();
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 2200);
-  };
+  // Medidas de la lista de precios (llegan del servidor para no cargar la lista en el navegador).
+  const variants = { es: options.variants.es, shown: options.variants[lang] };
+  const [variant, setVariant] = useVariantParam(options.variants.es);
 
   return (
     <main className={styles.page}>
@@ -108,16 +103,16 @@ export function ValveSheetView({ slug }: { slug: string }) {
               <div><dt>{t.code}</dt><dd>{sheet.code}</dd></div>
               <div><dt>{t.sizes}</dt><dd>{sheet.range}</dd></div>
             </dl>
-            <div className={styles.actions}>
-              <button type="button" className={styles.primary} onClick={add} aria-live="polite">
-                {added ? <Check size={18} aria-hidden="true" /> : <ShoppingCart size={18} aria-hidden="true" />}
-                {added ? t.added : t.add}
-              </button>
-              <a className={styles.secondary} href={whatsappLink(t.message(sheet.es.name, sheet.code))} target="_blank" rel="noopener noreferrer">
-                <MessageCircleMore size={18} aria-hidden="true" />
-                {t.whatsapp}
-              </a>
-            </div>
+            <SheetOrder
+              lang={lang}
+              product={{ slug: sheet.slug, nameEs: sheet.es.name, name: text.name, image: sheet.image, href: path }}
+              variants={variants}
+              pressure={options.pressure}
+              selected={variant}
+              onSelect={setVariant}
+              whatsappHref={whatsappLink(t.message(sheet.es.name, sheet.code))}
+              addedLabel={t.added}
+            />
             <p className={styles.note}>
               {t.noPrice} <Link href="/contacto">{t.advice}</Link>
             </p>
@@ -163,6 +158,8 @@ export function ValveSheetView({ slug }: { slug: string }) {
             <p>{t.source}</p>
           </aside>
         </section>
+
+        <VariantTable lang={lang} name={text.name} variants={variants} selected={variant} onSelect={setVariant} />
 
         <section className={styles.block} aria-labelledby="ficha-related" data-reveal>
           <div className={styles.relatedHead}>

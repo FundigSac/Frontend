@@ -2,6 +2,7 @@ import { products as PRICE_LIST, type Product as PriceListProduct } from "@/lib/
 import { DATASHEETS } from "@/screens/islands/w06-ficha-data";
 import { PRICE_LIST_EN, translateSpecLabel, translateSpecValue, translateVariant } from "./public-catalog-en";
 import { VALVE_SHEETS, type ValveSheet } from "./valve-sheets";
+import { pressureOf } from "./variant-table";
 
 /**
  * Catálogo público: une en una sola lista lo que el sitio puede afirmar de cada producto.
@@ -60,6 +61,8 @@ export type CatalogSheet = CatalogCell & {
   applications: { es: readonly string[]; en: readonly string[] };
   specs: { es: readonly (readonly [string, string])[]; en: readonly (readonly [string, string])[] };
   variants: { es: readonly string[]; en: readonly string[] };
+  /** Presión nominal publicada en la ficha (por ejemplo "PN16"); sin dato, no se muestra. */
+  pressure?: string;
   sourceNote: Localized;
   indexable: boolean;
   sku?: string;
@@ -401,6 +404,19 @@ function familyFields(family: FamilySlug) {
   return { familyName: f.name, familyHref: f.href };
 }
 
+/** Medidas de la lista de precios de un producto (también de las válvulas con ficha propia, que no salen en la lista). */
+function priceVariants(slug: string): { es: string[]; en: string[] } {
+  const p = PRICE_LIST.find((x) => x.slug === slug);
+  const es = (p?.variants ?? []).map((v) => (v.sdr ? `${v.label} · ${v.sdr}` : v.label));
+  return { es, en: es.map(translateVariant) };
+}
+
+/** Lo que necesita el bloque de pedido de una ficha de válvula: sus medidas publicadas y la presión de su ficha. */
+export function valveOrderOptions(slug: string): { variants: { es: string[]; en: string[] }; pressure?: string } {
+  const sheet = VALVE_SHEETS.find((s) => s.slug === slug);
+  return { variants: priceVariants(slug), pressure: sheet ? pressureOf(sheet.es.specs) : undefined };
+}
+
 function fromValveSheet(s: ValveSheet): CatalogSheet {
   const cell = sheetCell(s);
   return {
@@ -410,7 +426,8 @@ function fromValveSheet(s: ValveSheet): CatalogSheet {
     features: { es: s.es.features, en: s.en.features },
     applications: { es: s.es.applications, en: s.en.applications },
     specs: { es: s.es.specs, en: s.en.specs },
-    variants: { es: [], en: [] },
+    variants: priceVariants(s.slug),
+    pressure: pressureOf(s.es.specs),
     sourceNote: SHEET_SOURCE,
     indexable: true,
     sku: s.code,
@@ -421,14 +438,15 @@ function fromValveSheet(s: ValveSheet): CatalogSheet {
 function fromPriceList(p: PriceListProduct, cell: CatalogCell): CatalogSheet {
   const specsEs = (p.specs ?? []).map(([k, v]) => [k, v.replace(/\s*\(el documento[^)]*\)/, "")] as const);
   const specsEn = specsEs.map(([k, v]) => [translateSpecLabel(k), translateSpecValue(v)] as const);
-  const variantsEs = (p.variants ?? []).map((v) => (v.sdr ? `${v.label} · ${v.sdr}` : v.label));
+  const variants = priceVariants(p.slug);
   const pending = LEGACY_VALVES.has(p.slug);
   const pendingRows = (rows: readonly (readonly [string, string])[]) => ({ es: rows.map(([a]) => [a, CONFIRM.es] as const), en: rows.map(([, b]) => [b, CONFIRM.en] as const) });
   return {
     ...cell, ...familyFields(cell.family),
     paragraphs: { es: [], en: [] }, features: { es: [], en: [] }, applications: { es: [], en: [] },
     specs: pending ? pendingRows(P_DN) : { es: specsEs, en: specsEn },
-    variants: { es: variantsEs, en: variantsEs.map(translateVariant) },
+    variants,
+    pressure: pending ? undefined : pressureOf(specsEs),
     sourceNote: pending ? PENDING_SOURCE : PRICE_SOURCE,
     indexable: !pending,
     sku: cell.code,

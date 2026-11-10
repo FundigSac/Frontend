@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ComponentType } from "react";
 import { notFound } from "next/navigation";
-import { findCatalogSheet } from "@/modules/catalog/public-catalog";
+import { findCatalogSheet, valveOrderOptions } from "@/modules/catalog/public-catalog";
 import { CATEGORIES, PRODUCTS, findProduct, type ProductEntry } from "@/modules/catalog/registry";
 import { findValveSheet } from "@/modules/catalog/valve-sheets";
 import { CatalogSheetView } from "@/screens/islands/catalog-sheet";
@@ -109,7 +109,7 @@ export default async function ProductPage({ params }: Props) {
             : productJsonLd(product, category?.name ?? product.category, url),
         ]}
       />
-      {sheet ? <ValveSheetView slug={sheet.slug} /> : view ? <view.Screen /> : generic && <CatalogSheetView sheet={generic} />}
+      {sheet ? <ValveSheetView slug={sheet.slug} options={valveOrderOptions(sheet.slug)} /> : view ? <view.Screen /> : generic && <CatalogSheetView sheet={generic} />}
     </>
   );
 }

@@ -2,15 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ChevronDown, CircleDashed, FileText, MessageCircleMore, ShoppingCart } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ArrowRight, Check, CircleDashed, FileText } from "lucide-react";
 import { whatsappLink } from "@/lib/site-info";
-import { addToCart, openCart } from "@/modules/cart/cart-store";
 import type { CatalogSheet } from "@/modules/catalog/public-catalog";
 import { sectorsOfSheet, type SheetSector } from "@/modules/catalog/sheet-sectors";
 import { requestDocumentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
 import extra from "./catalog-sheet.module.css";
+import { SheetOrder, VariantTable, useVariantParam } from "./sheet-order";
 import styles from "./valve-sheet.module.css";
 
 const UI = {
@@ -20,11 +19,6 @@ const UI = {
     products: "Productos",
     code: "Código",
     sizes: "Medidas",
-    size: "Medida",
-    sizeHint: "Elige la medida",
-    add: "Agregar a cotización",
-    added: "Agregado a tu cotización",
-    whatsapp: "Cotizar por WhatsApp",
     requestSheet: "Solicitar ficha técnica",
     advice: "Hablar con un asesor",
     noPrice: "Precio y disponibilidad se confirman al cotizar.",
@@ -48,11 +42,6 @@ const UI = {
     products: "Products",
     code: "Code",
     sizes: "Sizes",
-    size: "Size",
-    sizeHint: "Choose the size",
-    add: "Add to quote",
-    added: "Added to your quote",
-    whatsapp: "Quote on WhatsApp",
     requestSheet: "Request data sheet",
     advice: "Talk to an advisor",
     noPrice: "Price and availability are confirmed with your quote.",
@@ -87,19 +76,8 @@ export function CatalogSheetView({ sheet }: { sheet: CatalogSheet }) {
   const [lang] = useLang();
   const t = UI[lang];
   const name = sheet.name[lang];
-  const variants = sheet.variants[lang];
-  const [variant, setVariant] = useState(0);
-  const [added, setAdded] = useState(false);
-  const timer = useRef<number | undefined>(undefined);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-
-  const add = () => {
-    addToCart({ slug: sheet.slug, name: sheet.name.es, variant: sheet.variants.es[variant], image: sheet.image, href: sheet.href });
-    openCart();
-    setAdded(true);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setAdded(false), 2200);
-  };
+  const variants = { es: sheet.variants.es, shown: sheet.variants[lang] };
+  const [variant, setVariant] = useVariantParam(sheet.variants.es);
 
   const pending = sheet.status === "por-confirmar";
   const paragraphs = sheet.paragraphs[lang];
@@ -142,27 +120,15 @@ export function CatalogSheetView({ sheet }: { sheet: CatalogSheet }) {
                 <span>{t.pendingNote}</span>
               </div>
             )}
-            {variants.length > 0 && (
-              <label className={extra.field}>
-                <span>{t.size}</span>
-                <span className={extra.selectBox}>
-                  <select value={variant} onChange={(event) => setVariant(Number(event.target.value))} aria-label={t.sizeHint}>
-                    {variants.map((label, i) => <option key={label} value={i}>{label}</option>)}
-                  </select>
-                  <ChevronDown size={16} aria-hidden="true" />
-                </span>
-              </label>
-            )}
-            <div className={styles.actions}>
-              <button type="button" className={styles.primary} onClick={add} aria-live="polite">
-                {added ? <Check size={18} aria-hidden="true" /> : <ShoppingCart size={18} aria-hidden="true" />}
-                {added ? t.added : t.add}
-              </button>
-              <a className={styles.secondary} href={whatsappLink(t.message(sheet.name.es, sheet.code ?? ""))} target="_blank" rel="noopener noreferrer">
-                <MessageCircleMore size={18} aria-hidden="true" />
-                {t.whatsapp}
-              </a>
-            </div>
+            <SheetOrder
+              lang={lang}
+              product={{ slug: sheet.slug, nameEs: sheet.name.es, name, image: sheet.image, href: sheet.href }}
+              variants={variants}
+              pressure={sheet.pressure}
+              selected={variant}
+              onSelect={setVariant}
+              whatsappHref={whatsappLink(t.message(sheet.name.es, sheet.code ?? ""))}
+            />
             <p className={styles.note}>
               {t.noPrice} <Link href={requestDocumentHref(`Ficha técnica · ${sheet.name.es}`)}><FileText size={14} aria-hidden="true" /> {t.requestSheet}</Link> · <Link href="/contacto">{t.advice}</Link>
             </p>
@@ -224,6 +190,8 @@ export function CatalogSheetView({ sheet }: { sheet: CatalogSheet }) {
             </p>
           )}
         </section>
+
+        <VariantTable lang={lang} name={name} variants={variants} selected={variant} onSelect={setVariant} />
 
         {sheet.related.length > 0 && (
           <section className={styles.block} aria-labelledby="ficha-related" data-reveal>

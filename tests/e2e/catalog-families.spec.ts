@@ -83,11 +83,16 @@ test.describe("fichas genéricas del catálogo", () => {
     const cell = GENERIC.find((c) => (findCatalogSheet(c.slug)?.variants.es.length ?? 0) > 1)!;
     const sheet = findCatalogSheet(cell.slug)!;
     await page.goto(cell.href);
-    await page.getByRole("combobox", { name: "Elige la medida" }).selectOption({ label: sheet.variants.es[1] });
+    // Hasta 18 medidas se eligen con chips (B10-2); con más, con la lista desplegable.
+    const sizes = page.getByRole("group", { name: "Medida" });
+    if (sheet.variants.es.length <= 18) await sizes.getByRole("radio", { name: sheet.variants.es[1], exact: true }).check();
+    else await page.getByRole("combobox", { name: "Elige la medida" }).selectOption({ label: sheet.variants.es[1] });
     await page.getByRole("button", { name: "Agregar a cotización" }).click();
     await expect(page.getByRole("dialog", { name: /Tu carrito/ })).toBeVisible();
     const stored: { slug: string; variant?: string }[] = JSON.parse((await page.evaluate(() => localStorage.getItem("fundigsac-quote"))) ?? "[]");
-    expect(stored).toContainEqual(expect.objectContaining({ slug: cell.slug, variant: sheet.variants.es[1] }));
+    // La medida va tal cual y, si la ficha publica la presión, se le suma (cartVariant).
+    const expected = sheet.pressure && !/PN\d/.test(sheet.variants.es[1]) ? `${sheet.variants.es[1]} · ${sheet.pressure}` : sheet.variants.es[1];
+    expect(stored).toContainEqual(expect.objectContaining({ slug: cell.slug, variant: expected }));
     await expect(page.getByRole("link", { name: "Cotizar por WhatsApp" })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
   });
 

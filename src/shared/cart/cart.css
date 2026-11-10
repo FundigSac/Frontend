@@ -78,62 +78,6 @@ html[data-lp-theme="dark"] .ct-chip {
   text-transform: uppercase;
 }
 
-.ct-qty {
-  display: inline-flex;
-  align-items: center;
-  overflow: hidden;
-  border: 1px solid var(--ct-line);
-  border-radius: 10px;
-  background: var(--ct-bg);
-}
-
-.ct-qty button {
-  display: grid;
-  width: 32px;
-  height: 34px;
-  place-items: center;
-  border: 0;
-  background: transparent;
-  color: var(--ct-ink);
-  cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
-}
-
-.ct-qty button:hover:not(:disabled) {
-  background: var(--ct-soft);
-  color: var(--ct-orange-dark);
-}
-
-.ct-qty button:disabled {
-  color: var(--ct-muted);
-  cursor: default;
-  opacity: 0.45;
-}
-
-.ct-qty input {
-  width: 46px;
-  height: 34px;
-  border: 0;
-  border-inline: 1px solid var(--ct-line);
-  background: transparent;
-  color: var(--ct-ink);
-  font: 700 14px/1 var(--ct-font);
-  text-align: center;
-  -moz-appearance: textfield;
-}
-
-.ct-qty input::-webkit-inner-spin-button,
-.ct-qty input::-webkit-outer-spin-button {
-  margin: 0;
-  -webkit-appearance: none;
-}
-
-.ct-qty input:focus-visible,
-.ct-qty button:focus-visible {
-  outline: 2px solid var(--ct-orange);
-  outline-offset: -2px;
-}
-
 .ct-btn {
   display: inline-flex;
   min-height: 48px;
