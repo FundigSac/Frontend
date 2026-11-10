@@ -7,6 +7,29 @@ const chromePath = process.platform === "darwin" ? "/Applications/Google Chrome.
 // servidor que sí tiene BACKEND_URL.
 const baseURL = process.env.PW_BASE_URL ?? "http://127.0.0.1:3100";
 
+// Nunca contra producción: varias pruebas envían formularios (cotización, consulta, reclamo, consentimiento) y en
+// producción quedan como registros reales. Las previews de Vercel (`<proyecto>-git-<rama>-…` o `<proyecto>-<hash>-…`)
+// sí se permiten. Con E2E_ALLOW_PROD_READONLY=1 corre igual, pero las pruebas que envían formularios se saltan y los
+// envíos de pasada se cortan en el navegador (tests/e2e/_guard.ts).
+function isProduction(url: string | undefined): boolean {
+  if (!url) return false;
+  let host: string;
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+  if (["fundigsac-web.vercel.app", "fundigsac.com", "www.fundigsac.com"].includes(host)) return true;
+  if (!host.endsWith(".vercel.app")) return false;
+  const name = host.slice(0, -".vercel.app".length);
+  if (!name.startsWith("fundigsac-")) return false;
+  const preview = name.includes("-git-") || /^fundigsac-[a-z0-9-]*?-[a-z0-9]{9}-[a-z0-9-]+$/.test(name);
+  return !preview;
+}
+if (isProduction(process.env.PW_BASE_URL) && process.env.E2E_ALLOW_PROD_READONLY !== "1") {
+  throw new Error("No se corre la suite E2E contra producción: los formularios escriben datos reales.");
+}
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -19,5 +42,5 @@ export default defineConfig({
     { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
-  ...(process.env.PW_BASE_URL ? {} : { webServer: { command: "node_modules/.bin/next build && node_modules/.bin/next start --hostname 127.0.0.1 --port 3100", env: { BACKEND_URL: "off" }, url: baseURL, reuseExistingServer: !process.env.CI, timeout: 900_000 } }),
+  ...(process.env.PW_BASE_URL ? {} : { webServer: { command: "node scripts/build-image-variants.mjs && npx next build && npx next start --hostname 127.0.0.1 --port 3100", env: { BACKEND_URL: "off" }, url: baseURL, reuseExistingServer: !process.env.CI, timeout: 900_000 } }),
 });

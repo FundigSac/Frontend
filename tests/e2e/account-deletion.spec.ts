@@ -1,4 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { blockWritesIfReadOnly, skipIfReadOnly } from "./_guard";
+
+blockWritesIfReadOnly(test);
 
 async function prepare(page: Page, baseURL: string | undefined) {
   const consent = { necessary: true, performance: false, customization: false, version: 1, savedAt: new Date().toISOString() };
@@ -55,6 +58,7 @@ test("eliminar cuenta: borra la cotización y la conversación guardadas en este
 });
 
 test("eliminar cuenta: el formulario prepara la solicitud con código y envío por correo", async ({ page, baseURL }) => {
+  skipIfReadOnly(test);
   await prepare(page, baseURL);
   await page.goto("/eliminar-cuenta");
   const form = page.getByRole("form", { name: "Formulario de solicitud de eliminación de cuenta y datos" });

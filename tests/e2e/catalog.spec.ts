@@ -1,4 +1,7 @@
 import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
+import { blockWritesIfReadOnly, skipIfReadOnly } from "./_guard";
+
+blockWritesIfReadOnly(test);
 
 /** Recoge errores/avisos de consola y excepciones de la página. */
 function watchConsole(page: Page) {
@@ -469,6 +472,7 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
 });
 
 test.describe("W05 formulario de requerimiento", () => {
+  skipIfReadOnly(test);
   test("valida campos obligatorios y no envía sin completarlos", async ({ page }) => {
     await page.goto("/cotizar");
     const form = page.locator("#cotizacionForm");

@@ -1,4 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { blockWritesIfReadOnly, skipIfReadOnly } from "./_guard";
+
+blockWritesIfReadOnly(test);
 
 async function prepare(page: Page, baseURL: string | undefined) {
   const consent = { necessary: true, performance: false, customization: false, version: 1, savedAt: new Date().toISOString() };
@@ -45,6 +48,7 @@ test("acceso: inicio de sesión valida, muestra el aviso y enlaza registro y rec
 });
 
 test("acceso: registro exige términos y mide la seguridad de la contraseña", async ({ page, baseURL }) => {
+  skipIfReadOnly(test);
   test.skip(await accountsEnabled(page), "Con Backend el registro es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   await page.goto("/registro");
@@ -63,6 +67,7 @@ test("acceso: registro exige términos y mide la seguridad de la contraseña", a
 });
 
 test("acceso: recuperar y actualizar contraseña validan y avisan que las cuentas llegan pronto (sin éxito simulado)", async ({ page, baseURL }) => {
+  skipIfReadOnly(test);
   test.skip(await accountsEnabled(page), "Con Backend la recuperación es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   await page.goto("/recuperar");

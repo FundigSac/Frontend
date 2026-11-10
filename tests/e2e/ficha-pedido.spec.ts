@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { blockWritesIfReadOnly } from "./_guard";
+
+// El aviso de cookies registra el consentimiento al elegir: en solo lectura ese envío se corta.
+blockWritesIfReadOnly(test);
 
 /** Evita que el aviso de cookies tape los controles que se prueban. */
 async function dismissCookies(page: import("@playwright/test").Page) {

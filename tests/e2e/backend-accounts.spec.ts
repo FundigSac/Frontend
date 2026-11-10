@@ -1,4 +1,8 @@
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { skipIfReadOnly } from "./_guard";
+
+// Crea cuentas y cotizaciones reales: nunca en una corrida de solo lectura.
+skipIfReadOnly(test);
 
 /**
  * Recorrido real contra el Backend en Docker (API + PostgreSQL + Mailpit): registro, activación por correo, ingreso,

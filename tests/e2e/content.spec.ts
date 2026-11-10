@@ -1,4 +1,7 @@
 import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
+import { blockWritesIfReadOnly, skipIfReadOnly } from "./_guard";
+
+blockWritesIfReadOnly(test);
 
 // IP distinta por ejecución: evita el límite de 5 envíos / 10 min por cliente al repetir la suite.
 const fakeIp = `10.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`;
@@ -56,6 +59,7 @@ test.describe("W15 Contacto", () => {
   });
 
   test("el mensaje queda listo para enviar por correo o WhatsApp (sin folio inventado) y se puede editar", async ({ page }) => {
+    skipIfReadOnly(test);
     await go(page, "/contacto?motivo=reunion", "#contacto-form");
     const form = page.locator("#contacto-form");
     await form.locator('input[name="fullName"]').fill("Ing. Prueba");
@@ -119,6 +123,7 @@ async function fillQuoteGeneral(page: Page) {
 
 test.describe("W16 / W17 / W24 Cotización", () => {
   test("cotización general: validación nativa del RUC y envío → solicitud lista para correo o WhatsApp", async ({ page }) => {
+    skipIfReadOnly(test);
     await go(page, "/cotizar", "#razonSocial");
 
     await page.getByRole("button", { name: /Enviar solicitud/ }).click();
@@ -145,6 +150,7 @@ test.describe("W16 / W17 / W24 Cotización", () => {
   });
 
   test("producto precargado: título por slug, RUC y envío", async ({ page }) => {
+    skipIfReadOnly(test);
     await go(page, "/cotizar?producto=tuberia-tyton", "#input-qty");
     await expect(page).toHaveTitle(/Tyton/);
 
@@ -190,6 +196,7 @@ test.describe("W16 / W17 / W24 Cotización", () => {
 
 test.describe("W18 Libro de Reclamaciones", () => {
   test("hoja de reclamación: datos del proveedor, tipo accesible, validación nativa y solicitud lista para enviar", async ({ page }) => {
+    skipIfReadOnly(test);
     await go(page, "/reclamaciones");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Libro de Reclamaciones");
 

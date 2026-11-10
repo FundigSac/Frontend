@@ -1,4 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
+import { blockWritesIfReadOnly } from "./_guard";
+
+// El aviso de cookies registra el consentimiento al elegir: en solo lectura ese envío se corta.
+blockWritesIfReadOnly(test);
 
 const consentCookie = async (page: Page) => {
   const c = (await page.context().cookies()).find((x) => x.name === "fundigsac-consent");
