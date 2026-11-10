@@ -1,0 +1,119 @@
+/* Entrada "Línea de presión". X = centro del icono de la marca; V = posición de la válvula (62 % del ancho). */
+.fx-intro {
+  display: none;
+}
+
+html[data-intro] .fx-intro {
+  --fx-x: calc(var(--lp-gutter, 20px) + 24px);
+  --fx-v: 62%;
+  position: fixed;
+  top: 84px;
+  right: 0;
+  left: 0;
+  z-index: 55;
+  display: block;
+  height: 40px;
+  color: var(--lp-orange, #f26a1b);
+  pointer-events: none;
+  contain: layout paint;
+  animation: fx-web-out 320ms cubic-bezier(0.4, 0, 1, 1) 1180ms forwards;
+}
+
+.fx-intro__pipe,
+.fx-intro__track,
+.fx-intro__riser,
+.fx-intro__valve {
+  position: absolute;
+}
+
+/* Tubería: dos paredes de 2 px que se trazan de derecha a izquierda, hacia la marca. */
+.fx-intro__pipe {
+  top: 17px;
+  right: 0;
+  left: var(--fx-x);
+  height: 6px;
+  border-block: 2px solid currentColor;
+  transform-origin: right;
+  animation: fx-web-draw-x 520ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.fx-intro__valve {
+  top: 0;
+  left: calc(var(--fx-v) - 20px);
+  animation: fx-web-rise 480ms cubic-bezier(0.16, 1, 0.3, 1) 160ms backwards;
+}
+
+.fx-intro__wheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fx-web-turn 480ms cubic-bezier(0.65, 0, 0.35, 1) 520ms both;
+}
+
+/* Pista del pulso: estática entre la marca y la válvula; el pulso viaja hacia la izquierda. */
+.fx-intro__track {
+  top: 19px;
+  right: calc(100% - var(--fx-v));
+  left: var(--fx-x);
+  height: 2px;
+  overflow: hidden;
+}
+
+.fx-intro__flow {
+  position: absolute;
+  inset: 0;
+  transform: translateX(100%);
+  animation: fx-web-flow 480ms cubic-bezier(0.65, 0, 0.35, 1) 760ms forwards;
+}
+
+.fx-intro__flow::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 2px;
+  background: #ffd2b3;
+  content: "";
+}
+
+/* Tramo vertical bajo la marca: el agua sube hasta ella. */
+.fx-intro__riser {
+  top: 0;
+  left: calc(var(--fx-x) - 3px);
+  width: 6px;
+  height: 17px;
+  border-inline: 2px solid currentColor;
+  transform-origin: bottom;
+  animation: fx-web-draw-y 200ms cubic-bezier(0.16, 1, 0.3, 1) 1040ms backwards;
+}
+
+@keyframes fx-web-draw-x {
+  from { transform: scaleX(0); }
+}
+@keyframes fx-web-draw-y {
+  from { transform: scaleY(0); }
+}
+@keyframes fx-web-rise {
+  from { opacity: 0; translate: 0 8px; }
+}
+@keyframes fx-web-turn {
+  to { rotate: 90deg; }
+}
+@keyframes fx-web-flow {
+  to { transform: translateX(0); }
+}
+@keyframes fx-web-out {
+  to { opacity: 0; }
+}
+
+/* La cabecera de la portada mide 72 px en móvil. */
+@media (max-width: 860px) {
+  html[data-intro] .fx-intro {
+    top: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-intro {
+    display: none !important;
+  }
+}
