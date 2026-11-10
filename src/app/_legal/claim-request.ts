@@ -43,6 +43,14 @@ export function complaintBody(data: FormData, privacyNoticeVersion: string): Com
   };
 }
 
+/** Momento de registro de la API (ISO 8601, UTC) en hora de Lima: "10 de noviembre de 2026, 10:30". Vacío si no es válido. */
+export function formatFiledAt(isoInstant: string | undefined, lang: "es" | "en"): string {
+  if (!isoInstant) return "";
+  const time = Date.parse(isoInstant);
+  if (Number.isNaN(time)) return "";
+  return new Intl.DateTimeFormat(lang === "en" ? "en-US" : "es-PE", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Lima" }).format(time);
+}
+
 /** Fecha límite de la API (AAAA-MM-DD) en palabras: "4 de noviembre de 2026". */
 export function formatDueDate(isoDate: string, lang: "es" | "en"): string {
   const [y, m, d] = isoDate.split("-").map(Number);

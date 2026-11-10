@@ -1,18 +1,21 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Copy, Mail, MessageCircle, MessageSquareWarning, Megaphone, RotateCcw } from "lucide-react";
+import { ArrowRight, CheckCircle2, Copy, Mail, MessageCircle, MessageSquareWarning, Megaphone, Printer, RotateCcw } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { newIdempotencyKey, submitForm } from "@/modules/backend/client";
 import { PRIVACY_NOTICE_VERSION } from "@/modules/backend/legal";
 import { LeadSubmit, useLeadState } from "@/modules/leads/lead-form";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { SITE } from "@/shared/config/site";
+import { FormErrorSummary, useFormErrorSummary } from "@/shared/ui/form-error-summary";
 import { buildClaimMessage, mailtoUrl, whatsappUrl } from "./claim-message";
-import { complaintBody, formatDueDate } from "./claim-request";
+import { complaintBody, formatDueDate, formatFiledAt } from "./claim-request";
 import { CLAIMS } from "./copy";
 import { useCopy } from "./use-copy";
 
 type Kind = "RECLAMO" | "QUEJA";
+/** Respuesta de POST /api/v1/complaints (ComplaintReceipt del Backend); filedAt puede faltar en versiones anteriores. */
+type ComplaintReceipt = { folio: string; kind: string; responseDueOn: string; filedAt?: string };
 type Contact = { email: string; phone?: string; whatsappNumber: string };
 
 function Field({ id, label, required, full, children }: { id: string; label: string; required?: boolean; full?: boolean; children: React.ReactNode }) {
@@ -283,23 +286,29 @@ function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
   const [lang] = useLang();
   const [prepared, setPrepared] = useState<{ subject: string; body: string } | null>(null);
   const [copied, setCopied] = useState(false);
-  const [saved, setSaved] = useState<{ folio: string; kind: string; responseDueOn: string } | null>(null);
+  const [saved, setSaved] = useState<ComplaintReceipt | null>(null);
+  const savedTitle = useRef<HTMLHeadingElement>(null);
   const [error, setError] = useState<string | null>(null);
   const sending = useRef(false);
   const idempotencyKey = useRef(newIdempotencyKey());
+  const summary = useFormErrorSummary(lang);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (sending.current) return;
     const data = new FormData(event.currentTarget);
+    summary.clear();
     setError(null);
     // Con Backend, la hoja se registra con número correlativo y plazo legal; sin él se prepara el envío como antes.
     sending.current = true;
-    const outcome = await submitForm<{ folio: string; kind: string; responseDueOn: string }>("complaint", complaintBody(data, PRIVACY_NOTICE_VERSION), idempotencyKey.current);
+    const outcome = await submitForm<ComplaintReceipt>("complaint", complaintBody(data, PRIVACY_NOTICE_VERSION), idempotencyKey.current);
     sending.current = false;
     if (outcome.kind === "saved") {
       setSaved(outcome.data);
-      window.requestAnimationFrame(() => document.getElementById("reclamo-registrado")?.scrollIntoView({ block: "center", behavior: "smooth" }));
+      window.requestAnimationFrame(() => {
+        savedTitle.current?.focus({ preventScroll: true });
+        document.getElementById("reclamo-registrado")?.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
       return;
     }
     if (outcome.kind === "invalid" || outcome.kind === "limited") {
@@ -348,9 +357,10 @@ function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
 
   return (
     <>
-      <form className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} hidden={prepared !== null || saved !== null}>
+      <form className="lg-form-card" id="reclamaciones-form" aria-label={t.formAria} onSubmit={onSubmit} onInvalidCapture={summary.onInvalidCapture} hidden={prepared !== null || saved !== null}>
         <h2>{t.formTitle}</h2>
         <p>{t.formIntro}</p>
+        <FormErrorSummary issues={summary.issues} lang={lang} summaryRef={summary.summaryRef} />
         <div style={{ marginTop: 22 }}>
           <Fields />
         </div>
@@ -362,15 +372,25 @@ function OfflineClaimForm({ email, whatsappNumber }: Omit<Contact, "phone">) {
       </form>
 
       {saved && (
-        <section className="lg-form-card lg-success" id="reclamo-registrado" role="status" aria-labelledby="reclamo-registrado-title">
+        /* Constancia (X11-2): solo los datos que devolvió el sistema (folio, registro y plazo legal) y los del proveedor. */
+        <section className="lg-form-card lg-success lg-receipt" id="reclamo-registrado" role="status" aria-labelledby="reclamo-registrado-title">
           <CheckCircle2 aria-hidden="true" size={44} strokeWidth={1.6} />
-          <h2 id="reclamo-registrado-title">{t.success.title.replace("{kind}", (saved.kind === "CLAIM" ? t.kinds.reclamo.title : t.kinds.queja.title).toLowerCase())}</h2>
-          <p className="lg-text">{t.success.sheet}</p>
-          <code>{saved.folio}</code>
-          <p className="lg-text">{t.success.due.replace("{date}", formatDueDate(saved.responseDueOn, lang))}</p>
-          <button type="button" className="lp-btn lp-btn--outline" onClick={() => window.location.reload()}>
-            {t.success.again}
-          </button>
+          <h2 id="reclamo-registrado-title" ref={savedTitle} tabIndex={-1}>{t.success.title.replace("{kind}", (saved.kind === "CLAIM" ? t.kinds.reclamo.title : t.kinds.queja.title).toLowerCase())}</h2>
+          <dl className="lg-receipt__data">
+            <div><dt>{t.success.sheet}</dt><dd><code>{saved.folio}</code></dd></div>
+            {formatFiledAt(saved.filedAt, lang) && <div><dt>{t.success.filed}</dt><dd>{formatFiledAt(saved.filedAt, lang)}</dd></div>}
+            {saved.responseDueOn && <div><dt>{t.success.dueLabel}</dt><dd>{formatDueDate(saved.responseDueOn, lang)}</dd></div>}
+            <div><dt>{t.success.provider}</dt><dd>{SITE.registeredName} · RUC {SITE.ruc}</dd></div>
+          </dl>
+          {saved.responseDueOn && <p className="lg-text">{t.success.due.replace("{date}", formatDueDate(saved.responseDueOn, lang))}</p>}
+          <div className="lg-receipt__actions">
+            <button type="button" className="lp-btn lp-btn--solid" onClick={() => window.print()}>
+              <Printer aria-hidden="true" size={18} strokeWidth={1.8} /> {t.success.print}
+            </button>
+            <button type="button" className="lp-btn lp-btn--outline" onClick={() => window.location.reload()}>
+              {t.success.again}
+            </button>
+          </div>
         </section>
       )}
 

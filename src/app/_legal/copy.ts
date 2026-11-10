@@ -369,7 +369,7 @@ export const CLAIMS: Pair<{
   clear: string;
   submit: { reclamo: string; queja: string };
   sending: string;
-  success: { title: string; text: string; again: string; sheet: string; due: string; invalid: string; limited: string };
+  success: { title: string; text: string; again: string; sheet: string; due: string; invalid: string; limited: string; filed: string; dueLabel: string; provider: string; print: string };
   offline: { title: string; text: string; mail: string; whatsapp: string; copy: string; copied: string; preview: string; note: string; edit: string };
   side: {
     blue: { title: string; text: string };
@@ -449,6 +449,10 @@ export const CLAIMS: Pair<{
     sending: "Enviando…",
     success: { title: "Recibimos tu {kind}", text: "Guarda tu código de registro. Te contactaremos por el medio que elegiste para darte una respuesta.", again: "Registrar otra solicitud",
       sheet: "Hoja de reclamación N.°",
+      filed: "Fecha de registro",
+      dueLabel: "Plazo legal de respuesta",
+      provider: "Proveedor",
+      print: "Imprimir constancia",
       due: "Te responderemos a más tardar el {date} (15 días hábiles), por el medio que elegiste. Te enviamos la constancia a tu correo.",
       invalid: "El sistema no aceptó algunos datos. Revisa el documento, el correo y que el detalle de los hechos tenga al menos 20 caracteres.",
       limited: "Enviaste varias hojas seguidas. Espera unos minutos y vuelve a intentarlo.",
@@ -558,6 +562,10 @@ export const CLAIMS: Pair<{
     sending: "Sending…",
     success: { title: "We received your {kind}", text: "Keep your registration code. We will contact you through the channel you chose to give you a response.", again: "Submit another request",
       sheet: "Complaint sheet No.",
+      filed: "Filing date",
+      dueLabel: "Legal response deadline",
+      provider: "Provider",
+      print: "Print receipt",
       due: "We will reply no later than {date} (15 business days), through the channel you chose. We emailed you the confirmation.",
       invalid: "The system didn’t accept some details. Check the document, the email and that the description of the facts has at least 20 characters.",
       limited: "You sent several sheets in a row. Wait a few minutes and try again.",

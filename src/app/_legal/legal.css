@@ -3070,3 +3070,112 @@ html[data-lp-theme="dark"] .lg-prefs__note--saved {
     border-top-color: #2b2a28;
   }
 }
+
+/* ===== Constancia del Libro de Reclamaciones (X11-2) ===== */
+.lg-receipt h2:focus {
+  outline: none;
+}
+
+.lg-receipt__data {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 16px 18px;
+  border: 1px solid #bfe3cd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.lg-receipt__data > div {
+  display: grid;
+  gap: 2px 16px;
+  grid-template-columns: minmax(170px, 0.8fr) 1.2fr;
+  align-items: baseline;
+}
+
+.lg-receipt__data dt {
+  color: #4a5568;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lg-receipt__data dd {
+  margin: 0;
+  color: var(--lp-navy);
+  font-size: 15.5px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.lg-receipt__data code {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 17px;
+}
+
+.lg-receipt__actions svg {
+  color: currentColor;
+}
+
+.lg-receipt__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 560px) {
+  .lg-receipt__data > div {
+    grid-template-columns: 1fr;
+  }
+
+  .lg-receipt__actions > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+html[data-lp-theme="dark"] .lg .lg-receipt__data {
+  border-color: rgb(52 211 153 / 30%);
+  background: #1d1c1b;
+}
+
+html[data-lp-theme="dark"] .lg .lg-receipt__data dt {
+  color: #c8c5c0;
+}
+
+html[data-lp-theme="dark"] .lg .lg-receipt__data dd {
+  color: #f7f7f7;
+}
+
+/* Al imprimir con la constancia en pantalla, solo sale la constancia (sin cabecera, pie, botones ni asistente). */
+@media print {
+  body:has(#reclamo-registrado) * {
+    visibility: hidden !important;
+  }
+
+  body:has(#reclamo-registrado) #reclamo-registrado,
+  body:has(#reclamo-registrado) #reclamo-registrado * {
+    visibility: visible !important;
+  }
+
+  body:has(#reclamo-registrado) #reclamo-registrado {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 1px solid #999;
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  body:has(#reclamo-registrado) .lg-receipt__actions {
+    display: none !important;
+  }
+
+  body:has(#reclamo-registrado) #reclamo-registrado :is(h2, dt, dd, p, code) {
+    color: #000 !important;
+  }
+}
