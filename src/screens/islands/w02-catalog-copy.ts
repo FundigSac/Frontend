@@ -3,7 +3,7 @@ import type { Lang } from "@/shared/layout/landing-prefs";
 /** Textos del catálogo general en español e inglés (el idioma lo elige el selector del sitio). */
 type Pair<T> = Record<Lang, T>;
 
-export type FamilyId = "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
+export type FamilyId = "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings" | "equipos-termofusion" | "medidores";
 
 export const FAMILY_TEXT: Pair<Record<FamilyId, { label: string; alt: string; description: string }>> = {
   es: {
@@ -12,6 +12,8 @@ export const FAMILY_TEXT: Pair<Record<FamilyId, { label: string; alt: string; de
     "marcos-y-tapas": { label: "Marcos y tapas", alt: "Tapa de hierro dúctil instalada en pavimento", description: "Marcos y tapas de hierro dúctil para infraestructura urbana." },
     "accesorios-hdpe": { label: "Accesorios HDPE", alt: "Accesorios HDPE bridados de color azul", description: "Acoples, adaptadores, uniones y reducciones." },
     "conexiones-y-fittings": { label: "Conexiones y fittings", alt: "Codos, tees y conexiones de polietileno de alta densidad", description: "Codos, tees, reducciones, tapones y más." },
+    "equipos-termofusion": { label: "Equipos de termofusión", alt: "Máquina de termofusión para soldar tubería de polietileno", description: "Máquinas de termofusión y electrofusión para tubería HDPE." },
+    medidores: { label: "Medidores", alt: "Medidor electromagnético azul con transmisor y cable de señal", description: "Medidores electromagnéticos y tipo Woltman para redes de agua." },
   },
   en: {
     valvulas: { label: "Valves", alt: "Blue gate valve for a water network", description: "Gate, butterfly, check and air valves, and more." },
@@ -19,6 +21,8 @@ export const FAMILY_TEXT: Pair<Record<FamilyId, { label: string; alt: string; de
     "marcos-y-tapas": { label: "Frames and covers", alt: "Ductile iron cover installed in a pavement", description: "Ductile iron frames and covers for urban infrastructure." },
     "accesorios-hdpe": { label: "HDPE accessories", alt: "Blue flanged HDPE accessories", description: "Couplings, adapters, joints and reducers." },
     "conexiones-y-fittings": { label: "Connections and fittings", alt: "High-density polyethylene elbows, tees and connections", description: "Elbows, tees, reducers, plugs and more." },
+    "equipos-termofusion": { label: "Fusion equipment", alt: "Butt-fusion machine for welding polyethylene pipe", description: "Butt-fusion and electrofusion machines for HDPE pipe." },
+    medidores: { label: "Meters", alt: "Blue electromagnetic meter with transmitter and signal cable", description: "Electromagnetic and Woltman meters for water networks." },
   },
 };
 
@@ -36,6 +40,8 @@ export const PRODUCT_TEXT: Pair<Record<string, { name: string; badge?: string; a
     "reduction-hdpe": { name: "Reducción HDPE", alt: "Reducción negra para tubería HDPE" },
     "adapter-hdpe": { name: "Adaptador brida HDPE", alt: "Adaptador azul bridado para tubería" },
     "air-valve": { name: "Válvula de aire", alt: "Válvula de aire para redes hidráulicas" },
+    "termofusion-hdc": { name: "Máquina de termofusión serie HDC", alt: "Máquina de termofusión serie HDC sobre fondo blanco" },
+    "medidor-electromagnetico": { name: "Medidor electromagnético MELEC", alt: "Medidor electromagnético azul con transmisor y cable de señal" },
   },
   en: {
     compuerta: { name: "Flanged gate valve", alt: "Blue gate valve" },
@@ -50,6 +56,8 @@ export const PRODUCT_TEXT: Pair<Record<string, { name: string; badge?: string; a
     "reduction-hdpe": { name: "HDPE reducer", alt: "Black reducer for HDPE pipe" },
     "adapter-hdpe": { name: "HDPE flange adapter", alt: "Blue flanged adapter for pipe" },
     "air-valve": { name: "Air valve", alt: "Air valve for hydraulic networks" },
+    "termofusion-hdc": { name: "HDC series butt-fusion machine", alt: "HDC series butt-fusion machine on a white background" },
+    "medidor-electromagnetico": { name: "MELEC electromagnetic meter", alt: "Blue electromagnetic meter with transmitter and signal cable" },
   },
 };
 
@@ -66,6 +74,7 @@ export const UI = {
     filterAria: "Filtrar por familia",
     filterLabel: "Filtrar por familia:",
     all: "Todas",
+    facetCount: (n: number) => (n === 1 ? "1 producto destacado" : `${n} productos destacados`),
     quality: ["Calidad", "Resistencia", "Confianza"],
     familiesTitle: "Familias de productos",
     explore: "Explorar ",
@@ -111,6 +120,7 @@ export const UI = {
     filterAria: "Filter by family",
     filterLabel: "Filter by family:",
     all: "All",
+    facetCount: (n: number) => (n === 1 ? "1 featured product" : `${n} featured products`),
     quality: ["Quality", "Strength", "Trust"],
     familiesTitle: "Product families",
     explore: "Explore ",

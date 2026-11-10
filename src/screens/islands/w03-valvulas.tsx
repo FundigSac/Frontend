@@ -45,7 +45,7 @@ const VALVES: readonly { id: string; group: GroupId; images: readonly string[]; 
   { id: "reductora", group: "reduccion", images: ["/media/valvulas-page/valvula-reductora.webp"], href: "/productos/valvulas/valvula-reductora-de-presion" },
   { id: "alivio", group: "reduccion", images: ["/media/catalog/valvula-alivio.webp"], href: "/productos/valvulas/valvula-de-alivio-bridada" },
   { id: "flotadora", group: "reduccion", images: ["/media/catalog/valvula-flotadora.webp"], href: "/productos/valvulas/valvula-flotadora-bridada" },
-  { id: "aire", group: "aire", images: ["/media/valvulas-page/valvula-aire.webp"], href: "/contacto" },
+  { id: "aire", group: "aire", images: ["/media/valvulas-page/valvula-aire.webp"], href: "/productos/valvulas/valvula-de-aire-3-funciones-premium-vdap" },
 ];
 
 const sheetRange = (slug: string) => findValveSheet(slug)?.range ?? "";

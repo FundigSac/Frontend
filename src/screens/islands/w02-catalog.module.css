@@ -299,7 +299,7 @@
 
 .categoryGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -473,7 +473,7 @@
 
 .productGrid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1514,4 +1514,62 @@
 :global(html[data-lp-theme="dark"]) .catalogMockup {
   -webkit-mask-image: none;
   mask-image: none;
+}
+
+/* Conteo por familia en los filtros (X5-1): el número va dentro del botón y la familia sin productos se desactiva. */
+.filters {
+  flex-wrap: wrap;
+}
+
+.facetCount {
+  display: inline-grid;
+  min-width: 20px;
+  height: 18px;
+  margin-left: 7px;
+  padding: 0 5px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(17, 27, 32, .08);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.filterActive .facetCount {
+  background: rgba(255, 255, 255, .22);
+}
+
+.filterPill:disabled {
+  border-style: dashed;
+  background: transparent;
+  color: #5d676c;
+  cursor: not-allowed;
+  opacity: .7;
+}
+
+.filterPill:disabled:hover {
+  border-color: #d1d5d5;
+}
+
+/* Familias cuya foto es el producto recortado sobre blanco (termofusión y medidores): se muestra entero. */
+.categoryCutout {
+  background: #fff;
+}
+
+.categoryCutout img {
+  padding: 14px 18px;
+  object-fit: contain;
+}
+
+.categoryCard:hover .categoryCutout img {
+  transform: scale(1.02);
+}
+
+:global(html[data-lp-theme="dark"]) .facetCount {
+  background: rgb(255 255 255 / 14%);
+}
+
+:global(html[data-lp-theme="dark"]) .filterPill:disabled {
+  background: transparent;
+  color: #b7b3ad;
 }

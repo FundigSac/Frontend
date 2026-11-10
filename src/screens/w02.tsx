@@ -1,6 +1,6 @@
 import { W02Catalog } from "@/screens/islands/w02-catalog";
+import type { FamilyFilter } from "@/screens/islands/w02-catalog-data";
 
-type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
 
 export function ScreenW02({
   initialQuery,

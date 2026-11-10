@@ -128,7 +128,7 @@ test.describe("X2-1 + X1-1 filtros activos y contador", () => {
     await open(page, "/productos?familia=valvulas", 'input[type="search"]');
     await expect(page.locator('#productos-destacados p[aria-live="polite"]')).toHaveText("5 productos");
     await page.getByRole("button", { name: "Quitar filtro: Válvulas" }).click();
-    await expect(page.locator('#productos-destacados p[aria-live="polite"]')).toHaveText("12 productos");
+    await expect(page.locator('#productos-destacados p[aria-live="polite"]')).toHaveText("14 productos");
     await expect(page).not.toHaveURL(/familia=/);
   });
 });

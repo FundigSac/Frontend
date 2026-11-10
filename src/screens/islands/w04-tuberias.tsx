@@ -24,12 +24,12 @@ const GROUPS: readonly { id: GroupId; image: string }[] = [
 ];
 
 const VALVES: readonly { id: string; group: GroupId; image: string; href: string }[] = [
-  { id: "hdpe", group: "junta", image: "/media/tuberias-page/hdpe.webp", href: "/contacto" },
-  { id: "revestimiento", group: "mecanica", image: "/media/tuberias-page/revestimiento.webp", href: "/contacto" },
-  { id: "bridas", group: "accesorios", image: "/media/tuberias-page/bridas.webp", href: "/contacto" },
-  { id: "union-junta", group: "junta", image: "/media/tuberias-page/union-junta.webp", href: "/contacto" },
-  { id: "union-mecanica", group: "mecanica", image: "/media/tuberias-page/union-mecanica.webp", href: "/contacto" },
-  { id: "mortero", group: "junta", image: "/media/tuberias-page/mortero.webp", href: "/contacto" },
+  { id: "hdpe", group: "junta", image: "/media/tuberias-page/hdpe.webp", href: "/productos/tuberias/tuberia-hdpe" },
+  { id: "revestimiento", group: "mecanica", image: "/media/tuberias-page/revestimiento.webp", href: "/productos/tuberias/tuberia-con-revestimiento" },
+  { id: "bridas", group: "accesorios", image: "/media/tuberias-page/bridas.webp", href: "/productos/tuberias/tuberia-con-bridas" },
+  { id: "union-junta", group: "junta", image: "/media/tuberias-page/union-junta.webp", href: "/productos/tuberias/tuberia-union-junta" },
+  { id: "union-mecanica", group: "mecanica", image: "/media/tuberias-page/union-mecanica.webp", href: "/productos/tuberias/tuberia-union-mecanica" },
+  { id: "mortero", group: "junta", image: "/media/tuberias-page/mortero.webp", href: "/productos/tuberias/tuberia-mortero-cemento" },
 ];
 
 function normalize(value: string) {

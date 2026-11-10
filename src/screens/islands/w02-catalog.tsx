@@ -4,54 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, Download, FileCheck2, Headphones, Mail, MessageCircle, Search, ShieldCheck } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { documentHref } from "@/modules/resources/documents";
 import { useLang } from "@/shared/layout/landing-prefs";
-import { FAMILY_TEXT, PRODUCT_TEXT, UI, type FamilyId } from "./w02-catalog-copy";
+import { FAMILY_TEXT, PRODUCT_TEXT, UI } from "./w02-catalog-copy";
+import { FAMILIES, FEATURED_PRODUCTS, facetCounts, isFamilyId, matchesQuery, type FamilyFilter, type FeaturedProduct } from "./w02-catalog-data";
 import { ActiveFilters, EmptySearch, FILTER_UI, ResultCount, type FilterChip } from "./catalog-filters";
 import styles from "./w02-catalog.module.css";
 
-type FamilyFilter = "todas" | FamilyId;
-
-const FAMILIES: readonly { id: FamilyId; href: string; image: string; search: string }[] = [
-  { id: "valvulas", href: "/productos/valvulas", image: "/media/productos-page/productos2.jpg", search: "hierro ductil compuerta mariposa control" },
-  { id: "tuberias", href: "/productos/tuberias", image: "/media/productos-page/productos3.jpg", search: "hdpe pead hierro ductil conduccion" },
-  { id: "marcos-y-tapas", href: "/productos/marcos-y-tapas", image: "/media/productos-page/productos4.jpg", search: "tapa tapa circular hierro ductil buzones" },
-  { id: "accesorios-hdpe", href: "/productos?familia=accesorios-hdpe", image: "/media/productos-page/productos5.jpg", search: "hdpe pead termofusion codos tees reducciones" },
-  { id: "conexiones-y-fittings", href: "/productos?familia=conexiones-y-fittings", image: "/media/productos-page/productos6.jpg", search: "acoples uniones adaptadores bridas conexiones fittings" },
-];
-
-/** Nombre, etiqueta y texto alternativo de cada producto están en w02-catalog-copy.ts (ES/EN). */
-type FeaturedProduct = {
-  id: string;
-  family: FamilyId;
-  descriptor: string;
-  image: string;
-  href: string;
-  terms: string;
-};
-
-const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
-  { id: "compuerta", family: "valvulas", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-hd/v-01.webp", href: "/productos/valvulas/valvula-compuerta", terms: "válvula compuerta cierre agua hierro dúctil" },
-  { id: "compuerta-fundigsac", family: "valvulas", descriptor: "DN 50 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac/f-07.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac", terms: "válvula compuerta fundigsac cierre agua hierro dúctil" },
-  { id: "compuerta-garantia-extendida", family: "valvulas", descriptor: "DN 40 – DN 600  |  PN 10/16", image: "/media/valvula-fundigsac-cuadrante/g-01.webp", href: "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida", terms: "válvula compuerta fundigsac garantía extendida cuadrante cierre agua hierro dúctil" },
-  { id: "mariposa", family: "valvulas", descriptor: "DN 50 – DN 1200  |  PN 10/16", image: "/media/productos-page/featured-mariposa.jpg", href: "/productos/valvulas/valvula-mariposa", terms: "válvula mariposa palanca control" },
-  { id: "hdpe-pipe", family: "tuberias", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tuberia.jpg", href: "/productos/tuberias", terms: "tubería hdpe pe100 pead conducción" },
-  { id: "tapa-d400", family: "marcos-y-tapas", descriptor: "Clase B125 – D400", image: "/media/productos-page/featured-tapa.jpg", href: "/productos/marcos-y-tapas/marco-tapa-d400", terms: "tapa circular marco calzada hierro dúctil" },
-  { id: "union-flexible", family: "conexiones-y-fittings", descriptor: "DN 50 – DN 600", image: "/media/productos-page/featured-union.jpg", href: "/productos?familia=conexiones-y-fittings", terms: "unión flexible acople hdpe fitting" },
-  { id: "elbow-90", family: "accesorios-hdpe", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-codo.jpg", href: "/productos?familia=accesorios-hdpe", terms: "codo 90 hdpe termofusión" },
-  { id: "tee-hdpe", family: "accesorios-hdpe", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tee.jpg", href: "/productos?familia=accesorios-hdpe", terms: "tee t hdpe derivación" },
-  { id: "reduction-hdpe", family: "accesorios-hdpe", descriptor: "DN 32 – DN 630", image: "/media/productos-page/featured-reduccion.jpg", href: "/productos?familia=accesorios-hdpe", terms: "reducción hdpe adaptador" },
-  { id: "adapter-hdpe", family: "conexiones-y-fittings", descriptor: "DN 50 – DN 630", image: "/media/productos-page/featured-adaptador.jpg", href: "/productos?familia=conexiones-y-fittings", terms: "adaptador brida hdpe conexión" },
-  { id: "air-valve", family: "valvulas", descriptor: "DN 50 – DN 200  |  PN 16", image: "/media/productos-page/featured-valvula-aire.jpg", href: "/productos/valvulas", terms: "válvula aire ventosa purga" },
-];
-
-function normalize(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es-PE").trim();
-}
-
 function readFamily(value: string | null): FamilyFilter {
-  return value && FAMILIES.some((family) => family.id === value) ? value as FamilyId : "todas";
+  return isFamilyId(value) ? value : "todas";
 }
 
 /** Parámetros de dirección que corresponden a un estado (los espacios al teclear no llegan a la URL). */
@@ -76,7 +38,7 @@ function CategoryCard({ family }: { family: (typeof FAMILIES)[number] }) {
   const text = FAMILY_TEXT[lang][family.id];
   return (
     <article className={styles.categoryCard}>
-      <Link href={family.href} className={styles.categoryImage} aria-label={t.explore + text.label}>
+      <Link href={family.href} className={styles.categoryImage + (family.cutout ? " " + styles.categoryCutout : "")} aria-label={t.explore + text.label}>
         <Image src={family.image} alt={text.alt} fill sizes="(min-width: 1181px) 18vw, (min-width: 641px) 32vw, 46vw" />
       </Link>
       <div className={styles.categoryBody}>
@@ -167,16 +129,13 @@ export function W02Catalog({
     readAddress();
   }, [addressKey, readAddress]);
 
-  const visibleProducts = useMemo(() => {
-    const terms = normalize(query).split(/\s+/).filter(Boolean);
-    return FEATURED_PRODUCTS.filter((product) => {
-      if (family !== "todas" && product.family !== family) return false;
-      const familyInfo = FAMILIES.find((entry) => entry.id === product.family);
-      // Se busca en los dos idiomas: da igual con qué idioma se vea el sitio.
-      const haystack = normalize([PRODUCT_TEXT.es[product.id].name, PRODUCT_TEXT.en[product.id].name, product.descriptor, product.terms, FAMILY_TEXT.es[product.family].label, FAMILY_TEXT.en[product.family].label, familyInfo?.search].join(" "));
-      return terms.every((term) => haystack.includes(term));
-    });
-  }, [family, query]);
+  const visibleProducts = useMemo(
+    () => FEATURED_PRODUCTS.filter((product) => (family === "todas" || product.family === family) && matchesQuery(product, query)),
+    [family, query],
+  );
+  // Cuántos productos dejaría ver cada filtro con la búsqueda actual (X5-1); los que quedan en 0 se desactivan.
+  const counts = useMemo(() => facetCounts(query), [query]);
+  const facetId = useId();
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -227,10 +186,23 @@ export function W02Catalog({
             </form>
             <div className={styles.filters} aria-label={t.filterAria}>
               <span className={styles.filterLabel}>{t.filterLabel}</span>
-              <button type="button" aria-pressed={family === "todas"} onClick={() => pickFamily("todas")} className={family === "todas" ? styles.filterActive : styles.filterPill}>{t.all}</button>
-              {FAMILIES.map((entry) => (
-                <button key={entry.id} type="button" aria-pressed={family === entry.id} onClick={() => pickFamily(family === entry.id ? "todas" : entry.id)} className={family === entry.id ? styles.filterActive : styles.filterPill}>{FAMILY_TEXT[lang][entry.id].label}</button>
-              ))}
+              <button type="button" aria-pressed={family === "todas"} aria-describedby={`${facetId}-todas`} onClick={() => pickFamily("todas")} className={family === "todas" ? styles.filterActive : styles.filterPill}>
+                {t.all}<span className={styles.facetCount} aria-hidden="true">{counts.todas}</span>
+              </button>
+              {FAMILIES.map((entry) => {
+                const active = family === entry.id;
+                const empty = counts[entry.id] === 0 && !active;
+                return (
+                  <button key={entry.id} type="button" aria-pressed={active} aria-describedby={`${facetId}-${entry.id}`} disabled={empty} onClick={() => pickFamily(active ? "todas" : entry.id)} className={active ? styles.filterActive : styles.filterPill}>
+                    {FAMILY_TEXT[lang][entry.id].label}<span className={styles.facetCount} aria-hidden="true">{counts[entry.id]}</span>
+                  </button>
+                );
+              })}
+              {/* Texto de cada conteo para el lector de pantalla: el número visible va oculto para que el nombre del botón siga siendo la familia. */}
+              <span hidden>
+                <span id={`${facetId}-todas`}>{t.facetCount(counts.todas)}</span>
+                {FAMILIES.map((entry) => <span key={entry.id} id={`${facetId}-${entry.id}`}>{t.facetCount(counts[entry.id])}</span>)}
+              </span>
             </div>
           </div>
           <div className={styles.qualityStamp}>{t.quality.map((word) => <span key={word}>{word}</span>)}</div>

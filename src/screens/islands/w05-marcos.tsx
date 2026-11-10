@@ -27,11 +27,11 @@ const GROUPS: readonly { id: GroupId; image: string }[] = [
 
 const VALVES: readonly { id: string; group: GroupId; image: string; href: string }[] = [
   { id: "tapa-circular", group: "circulares", image: "/media/marcos-page/tapa-circular.webp", href: "/productos/marcos-y-tapas/marco-tapa-d400" },
-  { id: "marco-d400", group: "pesado", image: "/media/marcos-page/marco-d400.webp", href: "/contacto" },
-  { id: "rejilla", group: "rejillas", image: "/media/marcos-page/rejilla.webp", href: "/contacto" },
-  { id: "tapa-valvula", group: "circulares", image: "/media/marcos-page/tapa-valvula.webp", href: "/contacto" },
-  { id: "marco-rectangular", group: "marcos", image: "/media/marcos-page/marco-rectangular.webp", href: "/contacto" },
-  { id: "tapa-registro", group: "peatonal", image: "/media/marcos-page/tapa-registro.webp", href: "/contacto" },
+  { id: "marco-d400", group: "pesado", image: "/media/marcos-page/marco-d400.webp", href: "/productos/marcos-y-tapas/marco-y-tapa-clase-d400" },
+  { id: "rejilla", group: "rejillas", image: "/media/marcos-page/rejilla.webp", href: "/productos/marcos-y-tapas/rejilla-pluvial" },
+  { id: "tapa-valvula", group: "circulares", image: "/media/marcos-page/tapa-valvula.webp", href: "/productos/marcos-y-tapas/tapa-para-valvula" },
+  { id: "marco-rectangular", group: "marcos", image: "/media/marcos-page/marco-rectangular.webp", href: "/productos/marcos-y-tapas/marco-rectangular" },
+  { id: "tapa-registro", group: "peatonal", image: "/media/marcos-page/tapa-registro.webp", href: "/productos/marcos-y-tapas/tapa-de-registro" },
 ];
 
 function normalize(value: string) {

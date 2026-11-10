@@ -2,6 +2,7 @@ import { SITE } from "@/shared/config/site";
 import { JsonLd, breadcrumbList } from "@/shared/seo/json-ld";
 import { pageMetadata } from "@/shared/seo/page-metadata";
 import { ScreenW02 } from "@/screens/w02";
+import { isFamilyId, type FamilyFilter } from "@/screens/islands/w02-catalog-data";
 
 export const metadata = pageMetadata({
   title: "Catálogo de válvulas, tuberías y tapas",
@@ -10,16 +11,13 @@ export const metadata = pageMetadata({
 });
 
 type SearchParams = Record<string, string | string[] | undefined>;
-type FamilyFilter = "todas" | "valvulas" | "tuberias" | "marcos-y-tapas" | "accesorios-hdpe" | "conexiones-y-fittings";
 
 function firstValue(value: string | string[] | undefined) {
   return (Array.isArray(value) ? value[0] : value) ?? "";
 }
 
 function validFamily(value: string): FamilyFilter {
-  return value === "valvulas" || value === "tuberias" || value === "marcos-y-tapas" || value === "accesorios-hdpe" || value === "conexiones-y-fittings"
-    ? value
-    : "todas";
+  return isFamilyId(value) ? value : "todas";
 }
 
 export default async function CatalogPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
