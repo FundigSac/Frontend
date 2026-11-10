@@ -69,7 +69,16 @@ export async function callBackend<T>(path: string, options: CallOptions = {}): P
   if (options.body !== undefined) headers.set("Content-Type", "application/json");
   if (options.token) headers.set("Authorization", `Bearer ${options.token}`);
   const ip = options.request ? clientIp(options.request) : null;
-  if (ip) headers.set("X-Forwarded-For", ip);
+  if (ip) {
+    headers.set("X-Forwarded-For", ip);
+    // Vercel reescribe X-Forwarded-For entre proyectos: la IP del visitante viaja aparte, firmada con el secreto
+    // compartido con la API, para que los límites cuenten por persona y no por el servidor del sitio.
+    const shared = process.env.API_CLIENT_SECRET?.trim();
+    if (shared) {
+      headers.set("X-Client-IP", ip);
+      headers.set("X-Client-Auth", shared);
+    }
+  }
 
   let response: Response;
   try {
