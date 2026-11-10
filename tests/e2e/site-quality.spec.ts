@@ -118,7 +118,9 @@ test.describe("diseño", () => {
       if (original) document.startViewTransition = ((...args: Parameters<typeof original>) => { w.__vt++; return original(...args); }) as typeof document.startViewTransition;
     });
     await page.goto("/");
-    await page.locator("footer a[href='/productos/valvulas']").first().click();
+    // Con el teclado: en WebKit el clic de Playwright cae mientras el desplazamiento suave (Lenis) todavía mueve el pie.
+    await page.locator("footer a[href='/productos/valvulas']").first().focus();
+    await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/productos\/valvulas$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     // Una transición de vista dibujaba las capturas de página encima de la cabecera fija y fundía todo a blanco.

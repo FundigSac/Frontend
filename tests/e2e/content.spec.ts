@@ -319,7 +319,7 @@ test.describe("W19 Privacidad", () => {
 });
 
 test.describe("W20 Cookies", () => {
-  test("preferencias reales: cookie propia, estado, contenido de terceros y persistencia", async ({ page, context }) => {
+  test("preferencias reales: cookie propia, estado, contenido de terceros y persistencia", async ({ page, context, browserName }) => {
     await go(page, "/cookies", ".lg-switch:not([disabled])");
     expect((await context.cookies()).find((c) => c.name === "fundigsac-consent")).toBeUndefined();
     const thirdParty = page.getByRole("switch", { name: "Contenido de terceros" });
@@ -334,7 +334,9 @@ test.describe("W20 Cookies", () => {
     await expect(thirdParty).toHaveAttribute("aria-checked", "false");
     const rejected = (await context.cookies()).find((c) => c.name === "fundigsac-consent");
     expect(rejected).toBeTruthy();
-    expect(rejected!.sameSite).toBe("Lax");
+    // WebKit de Playwright fuera de macOS informa SameSite=None para toda cookie (limitación del motor); el atributo
+    // Lax que escribe el sitio lo cubren Chromium y Firefox.
+    if (browserName !== "webkit") expect(rejected!.sameSite).toBe("Lax");
     expect(rejected!.secure).toBe(false); // http en las pruebas
     const days = (rejected!.expires - Date.now() / 1000) / 86400;
     expect(days).toBeGreaterThan(179);

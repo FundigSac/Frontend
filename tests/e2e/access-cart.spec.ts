@@ -52,6 +52,7 @@ test("acceso: registro exige términos y mide la seguridad de la contraseña", a
   test.skip(await accountsEnabled(page), "Con Backend el registro es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   await page.goto("/registro");
+  await page.waitForFunction((sel) => { const el = document.querySelector(sel); return !!el && Object.keys(el).some((k) => k.startsWith("__react")); }, "form.ac-form");
   await expect(page.getByRole("link", { name: "Registrarme con Google" })).toHaveAttribute("href", /from=registro/);
   await expect(page.getByText("Facebook")).toHaveCount(0);
   await page.getByLabel("Nombres y apellidos").fill("María Quispe");
@@ -71,6 +72,8 @@ test("acceso: recuperar y actualizar contraseña validan y avisan que las cuenta
   test.skip(await accountsEnabled(page), "Con Backend la recuperación es real: lo cubre backend-accounts.spec.ts.");
   await prepare(page, baseURL);
   await page.goto("/recuperar");
+  // WebKit hidrata más tarde: lo escrito antes de que React tome el formulario se pierde al hidratar.
+  await page.waitForFunction((sel) => { const el = document.querySelector(sel); return !!el && Object.keys(el).some((k) => k.startsWith("__react")); }, "form.ac-form");
   await page.getByLabel("Correo electrónico").fill("maria@constructora.pe");
   await page.getByRole("button", { name: "Enviar enlace" }).click();
   // Solo hay acceso con Google: no se envía correo, así que no se muestra "Revisa tu correo".
@@ -78,6 +81,8 @@ test("acceso: recuperar y actualizar contraseña validan y avisan que las cuenta
   await expect(page.getByRole("heading", { name: "Revisa tu correo" })).toHaveCount(0);
 
   await page.goto("/restablecer");
+  // WebKit hidrata más tarde: lo escrito antes de que React tome el formulario se pierde al hidratar.
+  await page.waitForFunction((sel) => { const el = document.querySelector(sel); return !!el && Object.keys(el).some((k) => k.startsWith("__react")); }, "form.ac-form");
   await page.getByLabel("Nueva contraseña").fill("Fundig#2026x");
   await page.getByLabel("Confirmar contraseña").fill("Otra#2026");
   await page.getByRole("button", { name: "Actualizar contraseña" }).click();

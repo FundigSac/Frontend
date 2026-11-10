@@ -61,6 +61,8 @@ test("eliminar cuenta: el formulario prepara la solicitud con código y envío p
   skipIfReadOnly(test);
   await prepare(page, baseURL);
   await page.goto("/eliminar-cuenta");
+  // WebKit hidrata más tarde: lo escrito antes de que React tome el formulario se pierde al hidratar.
+  await page.waitForFunction((sel) => { const el = document.querySelector(sel); return !!el && Object.keys(el).some((k) => k.startsWith("__react")); }, "form[aria-label=\"Formulario de solicitud de eliminación de cuenta y datos\"]");
   const form = page.getByRole("form", { name: "Formulario de solicitud de eliminación de cuenta y datos" });
   await form.getByLabel("Nombres y apellidos").fill("Ana Torres Quispe");
   await form.getByLabel("Correo asociado a tu cuenta").fill("ana.torres@constructora.pe");

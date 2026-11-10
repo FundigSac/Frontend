@@ -69,7 +69,10 @@ test("ficha con garantía extendida: dos flyers (volante y dado) con descarga, v
   await order.getByRole("button", { name: "Agregar al carrito" }).click();
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("fundigsac-quote") ?? "[]"));
   expect(stored).toEqual([expect.objectContaining({ slug: "valvula-compuerta-fundigsac-garantia-extendida", variant: "DN100 · PN16 · Dado" })]);
+  // El panel del carrito se descarga al abrirlo: se espera a que esté antes de cerrarlo con Escape.
+  await expect(page.getByRole("dialog", { name: /Tu carrito/ })).toBeVisible();
   await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: /Tu carrito/ })).toBeHidden();
 
   // Vista en pantalla del flyer, una sola página y sin navegación entre páginas.
   await flyers.getByRole("button", { name: "Ver flyer con volante (timón) en pantalla" }).first().click();

@@ -29,7 +29,8 @@ test.describe("familias del catálogo con diseño del 4 de noviembre", () => {
       for (const width of [390, 1280]) {
         await page.setViewportSize({ width, height: 900 });
         const response = await page.goto(family.href);
-        expect(response?.status()).toBe(200);
+        // Firefox informa 304 al volver a pedir la misma página desde su caché (la segunda pasada, a otro ancho).
+        expect([200, 304]).toContain(response?.status());
         await expect(page.getByRole("heading", { level: 1 })).toHaveText(family.title.es);
         await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", new RegExp(`${family.href}$`));
         await expect(page.locator("[data-cell]")).toHaveCount(cells.length);
@@ -70,7 +71,7 @@ test.describe("fichas genéricas del catálogo", () => {
         await page.setViewportSize({ width, height: 900 });
         for (const cell of cells) {
           const response = await page.goto(cell.href);
-          expect(response?.status(), cell.href).toBe(200);
+          expect([200, 304], cell.href).toContain(response?.status());
           await expect(page.getByRole("heading", { level: 1 }), cell.href).toHaveText(cell.name.es);
           await expect(page.getByRole("button", { name: "Agregar a cotización" })).toBeVisible();
           expect(await noHorizontalOverflow(page), `${cell.href} @ ${width}px`).toBe(true);
