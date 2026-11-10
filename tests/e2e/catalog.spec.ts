@@ -36,8 +36,8 @@ test.describe("W01 inicio", () => {
     await page.goto("/");
     const hrefs = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     expect(hrefs.filter((h) => h === "#")).toEqual([]);
-    // El carrusel de componentes enlaza a las familias y a búsquedas del catálogo.
-    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos?q=acople", "/productos/tuberias", "/industrias", "/contacto?motivo=documentacion", "/contacto"]) {
+    // El carrusel de componentes enlaza a las familias del catálogo (Acoples lleva a conexiones y fittings).
+    for (const href of ["/productos/valvulas", "/productos/marcos-y-tapas", "/productos/conexiones-y-fittings", "/productos/tuberias", "/industrias", "/contacto?motivo=documentacion", "/contacto"]) {
       expect(hrefs, `falta un enlace a ${href}`).toContain(href);
     }
     await expect(page.getByRole("link", { name: "Explorar productos" })).toHaveAttribute("href", "/productos");
@@ -52,10 +52,16 @@ test.describe("W01 inicio", () => {
     const mapHrefs = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href") ?? ""));
     expect([...homeHrefs, ...mapHrefs]).not.toContain("/productos?q=grifo");
     const searches = [...new Set([...homeHrefs, ...mapHrefs].filter((h) => h.startsWith("/productos?q=")))];
-    expect(searches.length).toBeGreaterThan(0);
     for (const href of searches) {
       await page.goto(href);
       await expect(page.locator("#productos-destacados article").first(), `${href} no devuelve productos`).toBeVisible();
+    }
+    // Acoples y las familias sin pantalla propia llevan a su página de familia: ninguna queda vacía.
+    const families = [...new Set([...homeHrefs, ...mapHrefs].filter((h) => /^\/productos\/(accesorios-hdpe|conexiones-y-fittings|equipos-termofusion|medidores)$/.test(h)))];
+    expect(searches.length + families.length).toBeGreaterThan(0);
+    for (const href of families) {
+      await page.goto(href);
+      await expect(page.locator("[data-cell]").first(), `${href} no muestra productos`).toBeVisible();
     }
   });
 

@@ -45,17 +45,17 @@ test.describe("familias del catálogo con diseño del 4 de noviembre", () => {
   test("el buscador de la familia filtra las tarjetas", async ({ page }) => {
     await page.goto("/productos/equipos-termofusion");
     const first = cellsOfFamily("equipos-termofusion")[0];
-    await page.getByRole("searchbox").fill(first.code ?? first.name.es);
+    await page.locator("main").getByRole("searchbox").fill(first.code ?? first.name.es);
     await expect(page.locator(`[data-cell="${first.slug}"]`)).toBeVisible();
     expect(await page.locator("[data-cell]").count()).toBeLessThan(cellsOfFamily("equipos-termofusion").length);
   });
 
-  test("el menú Productos y /productos llevan a las familias nuevas", async ({ page }) => {
+  test("el menú Productos, el pie y el mapa del sitio llevan a las familias nuevas", async ({ page }) => {
     await page.goto("/mapa-del-sitio");
     for (const slug of NEW_FAMILIES) await expect(page.locator(`main a[href="/productos/${slug}"]`).first()).toBeVisible();
+    // En /productos las tarjetas de familia filtran en la misma página (diseño del 4 de noviembre): el acceso es el menú.
     await page.goto("/productos");
-    await expect(page.locator('main a[href="/productos/accesorios-hdpe"]').first()).toBeVisible();
-    await expect(page.locator('main a[href="/productos/conexiones-y-fittings"]').first()).toBeVisible();
+    for (const slug of NEW_FAMILIES) await expect(page.locator(`header a[href="/productos/${slug}"]`).first()).toBeAttached();
     for (const slug of NEW_FAMILIES) await expect(page.locator(`footer a[href="/productos/${slug}"]`)).toHaveCount(1);
   });
 });
@@ -86,9 +86,8 @@ test.describe("fichas genéricas del catálogo", () => {
     await page.getByRole("combobox", { name: "Elige la medida" }).selectOption({ label: sheet.variants.es[1] });
     await page.getByRole("button", { name: "Agregar a cotización" }).click();
     await expect(page.getByRole("dialog", { name: /Tu carrito/ })).toBeVisible();
-    const stored = await page.evaluate(() => localStorage.getItem("fundigsac-quote"));
-    expect(stored).toContain(cell.slug);
-    expect(stored).toContain(sheet.variants.es[1]);
+    const stored: { slug: string; variant?: string }[] = JSON.parse((await page.evaluate(() => localStorage.getItem("fundigsac-quote"))) ?? "[]");
+    expect(stored).toContainEqual(expect.objectContaining({ slug: cell.slug, variant: sheet.variants.es[1] }));
     await expect(page.getByRole("link", { name: "Cotizar por WhatsApp" })).toHaveAttribute("href", /^https:\/\/wa\.me\/51908849664\?text=/);
   });
 

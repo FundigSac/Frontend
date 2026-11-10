@@ -16,8 +16,8 @@ const FAMILIES: readonly { id: FamilyId; href: string; image: string; search: st
   { id: "valvulas", href: "/productos/valvulas", image: "/media/productos-page/productos2.jpg", search: "hierro ductil compuerta mariposa control" },
   { id: "tuberias", href: "/productos/tuberias", image: "/media/productos-page/productos3.jpg", search: "hdpe pead hierro ductil conduccion" },
   { id: "marcos-y-tapas", href: "/productos/marcos-y-tapas", image: "/media/productos-page/productos4.jpg", search: "tapa tapa circular hierro ductil buzones" },
-  { id: "accesorios-hdpe", href: "/productos/accesorios-hdpe", image: "/media/productos-page/productos5.jpg", search: "hdpe pead termofusion codos tees reducciones" },
-  { id: "conexiones-y-fittings", href: "/productos/conexiones-y-fittings", image: "/media/productos-page/productos6.jpg", search: "acoples uniones adaptadores bridas conexiones fittings" },
+  { id: "accesorios-hdpe", href: "/productos?familia=accesorios-hdpe", image: "/media/productos-page/productos5.jpg", search: "hdpe pead termofusion codos tees reducciones" },
+  { id: "conexiones-y-fittings", href: "/productos?familia=conexiones-y-fittings", image: "/media/productos-page/productos6.jpg", search: "acoples uniones adaptadores bridas conexiones fittings" },
 ];
 
 /** Nombre, etiqueta y texto alternativo de cada producto están en w02-catalog-copy.ts (ES/EN). */
@@ -37,11 +37,11 @@ const FEATURED_PRODUCTS: readonly FeaturedProduct[] = [
   { id: "mariposa", family: "valvulas", descriptor: "DN 50 – DN 1200  |  PN 10/16", image: "/media/productos-page/featured-mariposa.jpg", href: "/productos/valvulas/valvula-mariposa", terms: "válvula mariposa palanca control" },
   { id: "hdpe-pipe", family: "tuberias", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tuberia.jpg", href: "/productos/tuberias", terms: "tubería hdpe pe100 pead conducción" },
   { id: "tapa-d400", family: "marcos-y-tapas", descriptor: "Clase B125 – D400", image: "/media/productos-page/featured-tapa.jpg", href: "/productos/marcos-y-tapas/marco-tapa-d400", terms: "tapa circular marco calzada hierro dúctil" },
-  { id: "union-flexible", family: "conexiones-y-fittings", descriptor: "DN 50 – DN 600", image: "/media/productos-page/featured-union.jpg", href: "/productos/conexiones-y-fittings", terms: "unión flexible acople hdpe fitting" },
-  { id: "elbow-90", family: "accesorios-hdpe", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-codo.jpg", href: "/productos/accesorios-hdpe", terms: "codo 90 hdpe termofusión" },
-  { id: "tee-hdpe", family: "accesorios-hdpe", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tee.jpg", href: "/productos/accesorios-hdpe", terms: "tee t hdpe derivación" },
-  { id: "reduction-hdpe", family: "accesorios-hdpe", descriptor: "DN 32 – DN 630", image: "/media/productos-page/featured-reduccion.jpg", href: "/productos/accesorios-hdpe", terms: "reducción hdpe adaptador" },
-  { id: "adapter-hdpe", family: "conexiones-y-fittings", descriptor: "DN 50 – DN 630", image: "/media/productos-page/featured-adaptador.jpg", href: "/productos/conexiones-y-fittings", terms: "adaptador brida hdpe conexión" },
+  { id: "union-flexible", family: "conexiones-y-fittings", descriptor: "DN 50 – DN 600", image: "/media/productos-page/featured-union.jpg", href: "/productos?familia=conexiones-y-fittings", terms: "unión flexible acople hdpe fitting" },
+  { id: "elbow-90", family: "accesorios-hdpe", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-codo.jpg", href: "/productos?familia=accesorios-hdpe", terms: "codo 90 hdpe termofusión" },
+  { id: "tee-hdpe", family: "accesorios-hdpe", descriptor: "DN 20 – DN 1200", image: "/media/productos-page/featured-tee.jpg", href: "/productos?familia=accesorios-hdpe", terms: "tee t hdpe derivación" },
+  { id: "reduction-hdpe", family: "accesorios-hdpe", descriptor: "DN 32 – DN 630", image: "/media/productos-page/featured-reduccion.jpg", href: "/productos?familia=accesorios-hdpe", terms: "reducción hdpe adaptador" },
+  { id: "adapter-hdpe", family: "conexiones-y-fittings", descriptor: "DN 50 – DN 630", image: "/media/productos-page/featured-adaptador.jpg", href: "/productos?familia=conexiones-y-fittings", terms: "adaptador brida hdpe conexión" },
   { id: "air-valve", family: "valvulas", descriptor: "DN 50 – DN 200  |  PN 16", image: "/media/productos-page/featured-valvula-aire.jpg", href: "/productos/valvulas", terms: "válvula aire ventosa purga" },
 ];
 
