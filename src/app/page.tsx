@@ -1,6 +1,7 @@
 import { pageMetadata } from "@/shared/seo/page-metadata";
 import { FloatingActions } from "./_landing/floating-actions";
 import { HomeHero } from "./_landing/hero";
+import { HomeIntro } from "./_landing/intro";
 import { BackingSection, DocsSection, FamiliesSection, LocationSection, SectorsSection } from "./_landing/home-sections";
 import "./landing.css";
 
@@ -13,6 +14,7 @@ export const metadata = pageMetadata({
 export default function HomePage() {
   return (
     <main className="lp">
+      <HomeIntro />
       <HomeHero />
       <FamiliesSection />
       <SectorsSection />
