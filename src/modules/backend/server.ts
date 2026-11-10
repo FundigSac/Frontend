@@ -37,6 +37,12 @@ export function backendUrl(): string | null {
 export const backendEnabled = () => backendUrl() !== null;
 
 /**
+ * Cuentas de clientes con correo. Se pueden apagar con CUSTOMER_ACCOUNTS=off mientras el correo transaccional no puede
+ * llegar al público (dominio sin verificar): los formularios siguen usando la API y la zona de cuentas dice "muy pronto".
+ */
+export const accountsEnabled = () => backendEnabled() && process.env.CUSTOMER_ACCOUNTS?.trim().toLowerCase() !== "off";
+
+/**
  * IP del visitante para que la API aplique sus límites por persona y no por servidor. Solo se confía en
  * X-Forwarded-For detrás de un proxy que la reescribe (Vercel) o si TRUST_PROXY=1; en local no se envía.
  */

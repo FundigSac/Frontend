@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE, noStore, readSession } from "@/modules/auth/server";
-import { backendEnabled } from "@/modules/backend/server";
+import { accountsEnabled } from "@/modules/backend/server";
 import { apiAccessToken, withApiCookies } from "@/modules/backend/session";
 
 export const runtime = "nodejs";
@@ -12,7 +12,7 @@ export const runtime = "nodejs";
  */
 export async function GET(request: NextRequest) {
   const user = await readSession(request);
-  const accounts = backendEnabled();
+  const accounts = accountsEnabled();
   if (user?.api && accounts) {
     const api = await apiAccessToken(request);
     if (!api?.token && api?.cookies?.clear) {

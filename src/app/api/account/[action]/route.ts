@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { PRIVACY_NOTICE_VERSION, fetchMe, openSession } from "@/modules/backend/account";
-import { callBackend, relay } from "@/modules/backend/server";
+import { accountsEnabled, callBackend, relay } from "@/modules/backend/server";
 import type { ApiTokens } from "@/modules/backend/session";
 import { noStore } from "@/modules/auth/server";
 import { isSameOriginRequest, readJsonBody } from "@/shared/security/request-guard";
@@ -55,6 +55,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { action } = await params;
   const handler = Object.hasOwn(ACTIONS, action) ? ACTIONS[action] : undefined;
   if (!handler) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404, headers: noStore });
+  if (!accountsEnabled()) return NextResponse.json({ error: "NOT_CONFIGURED" }, { status: 503, headers: noStore });
   if (!isSameOriginRequest(request)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403, headers: noStore });
   const body = await readJsonBody(request, 8 * 1024);
   if (!body.ok || !body.value || typeof body.value !== "object") return NextResponse.json({ error: "INVALID_BODY" }, { status: 400, headers: noStore });

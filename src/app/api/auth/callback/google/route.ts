@@ -15,7 +15,7 @@ import {
   type SessionUser,
 } from "@/modules/auth/server";
 import { PRIVACY_NOTICE_VERSION, fetchMe, openSession } from "@/modules/backend/account";
-import { backendEnabled, callBackend } from "@/modules/backend/server";
+import { accountsEnabled, callBackend } from "@/modules/backend/server";
 import type { ApiTokens } from "@/modules/backend/session";
 
 /** Callback de Google: valida state (CSRF), canjea el código con PKCE, valida el id_token y abre la sesión. */
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
 
   // Con Backend: la API valida el mismo id_token con las claves de Google y crea o vincula la cuenta de cliente. Si la
   // API no responde o no tiene Google habilitado, se mantiene la sesión solo con Google (como antes de conectarla).
-  if (idToken && backendEnabled()) {
+  if (idToken && accountsEnabled()) {
     const api = await callBackend<ApiTokens>("/api/v1/auth/google", {
       request,
       body: { idToken, privacyNoticeVersion: PRIVACY_NOTICE_VERSION, source: flow.from === "registro" ? "registro" : "login" },
