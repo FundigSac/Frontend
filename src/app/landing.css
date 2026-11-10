@@ -2112,3 +2112,21 @@ html[data-lp-theme="dark"] .lp-footer {
     transition: none;
   }
 }
+
+/* Avance de lectura en el botón de subir: barra de 3 px en su borde inferior. Solo transform (scaleX); se actualiza
+   con el desplazamiento, sin transición propia. */
+.lp-float__top {
+  overflow: hidden;
+}
+.lp-float__top::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--c-action);
+  content: "";
+  pointer-events: none;
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+}

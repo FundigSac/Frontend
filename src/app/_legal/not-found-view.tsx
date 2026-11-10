@@ -25,6 +25,9 @@ function FlangeZero() {
 }
 
 const CARD_HREFS = ["/productos", "/industrias", "/contacto?motivo=documentacion"] as const;
+// Miniaturas de la 404 anterior al rediseño (WebP ya optimizados en public/media/legal/404). Decorativas: el enlace
+// ya se nombra con su título.
+const CARD_THUMBS = ["/media/legal/404/404-productos", "/media/legal/404/404-sectores", "/media/legal/404/404-recursos"] as const;
 
 export function NotFoundView() {
   const t = useCopy(NOT_FOUND);
@@ -59,6 +62,8 @@ export function NotFoundView() {
             {t.cards.map((c, i) => (
               <li key={CARD_HREFS[i]}>
                 <Link href={CARD_HREFS[i]}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- estáticos pregenerados, sin transformación */}
+                  <img className="ls-nf__thumb" src={`${CARD_THUMBS[i]}-256.webp`} srcSet={`${CARD_THUMBS[i]}-256.webp 1x, ${CARD_THUMBS[i]}-512.webp 2x`} width={80} height={80} alt="" loading="lazy" decoding="async" />
                   <strong>{c.title}</strong>
                   <span>{c.text}</span>
                   <ArrowRight aria-hidden="true" size={20} strokeWidth={2} />

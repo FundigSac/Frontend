@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFloat } from "@/shared/layout/home-copy";
 import { scrollToTop } from "./scroll-control";
 
@@ -23,6 +23,7 @@ const TOLERANCE = 8;
 export function FloatingActions() {
   const t = useFloat();
   const [showTop, setShowTop] = useState(false);
+  const topRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -33,7 +34,10 @@ export function FloatingActions() {
     const update = () => {
       frame = 0;
       const y = window.scrollY;
+      const max = root.scrollHeight - window.innerHeight;
       setShowTop(y > 480);
+      // La barra del botón de subir muestra cuánto se recorrió de la página (sin re-render: solo una variable CSS).
+      topRef.current?.style.setProperty("--p", max > 0 ? Math.min(1, y / max).toFixed(3) : "0");
 
       if (!compact.matches || y < 240) delete root.dataset.floats;
       else if (y - lastY > TOLERANCE) root.dataset.floats = "hidden";
@@ -57,6 +61,7 @@ export function FloatingActions() {
   return (
     <div className="lp-float">
       <button
+        ref={topRef}
         type="button"
         className={`lp-float__top${showTop ? " is-visible" : ""}`}
         aria-label={t.top}

@@ -890,7 +890,7 @@ html main.lg.ls {
 
 .ls-nf__links a {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 20px;
+  grid-template-columns: 80px minmax(0, 1fr) 20px;
   gap: var(--sp-1) var(--sp-3);
   align-items: center;
   padding-block: var(--sp-4);
@@ -907,14 +907,27 @@ html main.lg.ls {
 }
 
 .ls-nf__links span {
-  grid-column: 1;
+  grid-column: 2;
   color: var(--c-on-surface-variant);
   font-size: var(--fs-small);
   line-height: 22px;
 }
 
-.ls-nf__links svg {
+.ls-nf__links strong {
   grid-column: 2;
+}
+
+.ls-nf__thumb {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--r-control);
+  object-fit: cover;
+}
+
+.ls-nf__links svg {
+  grid-column: 3;
   grid-row: 1 / 3;
   color: var(--c-link);
 }
