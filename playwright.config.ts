@@ -41,6 +41,10 @@ export default defineConfig({
   projects: [
     { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
+    // Los motores de Firefox y Safari (escritorio y iPhone): parte del público entra con ellos.
+    { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
+    { name: "desktop-webkit", use: { ...devices["Desktop Safari"] } },
+    { name: "mobile-webkit", use: { ...devices["iPhone 15"] } },
   ],
-  ...(process.env.PW_BASE_URL ? {} : { webServer: { command: "node scripts/build-image-variants.mjs && npx next build && npx next start --hostname 127.0.0.1 --port 3100", env: { BACKEND_URL: "off" }, url: baseURL, reuseExistingServer: !process.env.CI, timeout: 900_000 } }),
+  ...(process.env.PW_BASE_URL ? {} : { webServer: { command: "node scripts/build-image-variants.mjs && npx next build && npx next start --hostname 127.0.0.1 --port 3100", env: { BACKEND_URL: "off", LOCAL_HTTP_SERVER: "1" }, url: baseURL, reuseExistingServer: !process.env.CI, timeout: 900_000 } }),
 });

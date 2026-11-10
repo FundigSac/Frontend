@@ -12,6 +12,9 @@ function watchConsole(page: Page) {
     if (/Failed to load resource.*404/.test(m.text()) && page.url().includes("ruta-que-no-existe")) return;
     // Solo en `next dev`: precarga el CSS del not-found (legal.css) en todas las rutas y Chrome avisa si la carga tarda. El build de producción no lo emite.
     if (/legal_[\w-]+\.css was preloaded using link preload but not used/.test(m.text())) return;
+    // Firefox avisa de la precarga del hero que no corresponde a la pantalla (`media` del otro tamaño): es lo esperado,
+    // cada tamaño precarga solo su foto. Chrome y Safari la omiten en silencio.
+    if (/Preload of .+ was ignored due to unknown .as. or .type. values, or non-matching .media. attribute/.test(m.text())) return;
     problems.push(`${m.type()}: ${m.text()}`);
   });
   page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
@@ -83,14 +86,14 @@ test.describe("W02 catálogo", () => {
   const searchbox = (page: Page) => page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" });
   const familyButton = (page: Page, name: string) => page.getByRole("button", { name, exact: true });
 
-  test("muestra 5 familias y 12 productos destacados", async ({ page }) => {
+  test("muestra 7 familias y 14 productos destacados", async ({ page }) => {
     await page.goto("/productos");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Catálogo general");
     const families = page.getByRole("region", { name: "Familias de productos" }).locator("article");
-    await expect(families).toHaveCount(5);
+    await expect(families).toHaveCount(7);
     const hrefs = await families.locator("a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings"]));
-    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    expect(hrefs).toEqual(expect.arrayContaining(["/productos/valvulas", "/productos/tuberias", "/productos/marcos-y-tapas", "/productos?familia=accesorios-hdpe", "/productos?familia=conexiones-y-fittings", "/productos/equipos-termofusion", "/productos/medidores"]));
+    await expect(page.locator("#productos-destacados article")).toHaveCount(14);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -105,7 +108,7 @@ test.describe("W02 catálogo", () => {
     await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
     await expect(cards).toHaveCount(0);
     await page.getByRole("button", { name: /Ver todos los productos/ }).click();
-    await expect(cards).toHaveCount(12);
+    await expect(cards).toHaveCount(14);
     await expect(searchbox(page)).toHaveValue("");
     await expect(page).not.toHaveURL(/q=/);
   });
@@ -113,7 +116,7 @@ test.describe("W02 catálogo", () => {
   test("filtros por familia: cada botón filtra, repetir el clic lo quita y se combina con la búsqueda", async ({ page }) => {
     await page.goto("/productos");
     const cards = page.locator("#productos-destacados article");
-    for (const [label, familia, total] of [["Válvulas", "valvulas", 5], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
+    for (const [label, familia, total] of [["Válvulas", "valvulas", 5], ["Tuberías", "tuberias", 1], ["Marcos y tapas", "marcos-y-tapas", 1], ["Accesorios HDPE", "accesorios-hdpe", 3], ["Equipos de termofusión", "equipos-termofusion", 1], ["Medidores", "medidores", 1], ["Conexiones y fittings", "conexiones-y-fittings", 2]] as const) {
       await familyButton(page, label).click();
       await expect(familyButton(page, label)).toHaveAttribute("aria-pressed", "true");
       await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "false");
@@ -121,7 +124,7 @@ test.describe("W02 catálogo", () => {
       await expect(page).toHaveURL(new RegExp(`familia=${familia}`));
     }
     await familyButton(page, "Conexiones y fittings").click(); // segundo clic: vuelve a "Todas"
-    await expect(cards).toHaveCount(12);
+    await expect(cards).toHaveCount(14);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
     await expect(page).not.toHaveURL(/familia=/);
 
@@ -129,8 +132,8 @@ test.describe("W02 catálogo", () => {
     await searchbox(page).fill("codo 90");
     await expect(cards).toHaveCount(1);
     await expect(cards.first()).toContainText("Codo 90° HDPE");
-    await familyButton(page, "Válvulas").click();
-    await expect(page.getByRole("heading", { name: "No encontramos productos con esos datos" })).toBeVisible();
+    // Con "codo 90" no hay válvulas: el filtro queda desactivado (X5-1) en lugar de llevar a una lista vacía.
+    await expect(familyButton(page, "Válvulas")).toBeDisabled();
     await familyButton(page, "Todas").click();
     await expect(cards).toHaveCount(1);
   });
@@ -141,7 +144,7 @@ test.describe("W02 catálogo", () => {
     await expect(searchbox(page)).toHaveValue("tapa");
     await expect(familyButton(page, "Marcos y tapas")).toHaveAttribute("aria-pressed", "true");
     await page.goto("/productos?familia=inexistente");
-    await expect(page.locator("#productos-destacados article")).toHaveCount(12);
+    await expect(page.locator("#productos-destacados article")).toHaveCount(14);
     await expect(familyButton(page, "Todas")).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -423,7 +426,7 @@ lineTests({
   za: "Válvula reductora de presión",
   emptyHeading: "No encontramos válvulas con esos datos",
   resetButton: "Ver todas las válvulas",
-  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/productos/valvulas/valvula-check-swing"], ["Válvula de compuerta acerrojada", "/productos/valvulas/valvula-compuerta-acerrojada"], ["Válvula de aire", "/contacto?motivo=documentacion&documento=V%C3%A1lvula%20de%20aire"]],
+  cards: [["Válvula de compuerta bridada", "/productos/valvulas/valvula-compuerta"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac"], ["Válvula de compuerta FUNDIGSAC", "/productos/valvulas/valvula-compuerta-fundigsac-garantia-extendida"], ["Válvula mariposa", "/productos/valvulas/valvula-mariposa"], ["Válvula check swing", "/productos/valvulas/valvula-check-swing"], ["Válvula de compuerta acerrojada", "/productos/valvulas/valvula-compuerta-acerrojada"], ["Válvula de aire", "/productos/valvulas/valvula-de-aire-3-funciones-premium-vdap"]],
 });
 
 lineTests({
@@ -440,7 +443,7 @@ lineTests({
   za: "Tubería HDPE",
   emptyHeading: "No encontramos tuberías con esos datos",
   resetButton: "Ver todos los productos",
-  cards: [["Tubería HDPE", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20HDPE"], ["Tubería con bridas", "/contacto?motivo=documentacion&documento=Tuber%C3%ADa%20con%20bridas"]],
+  cards: [["Tubería HDPE", "/productos/tuberias/tuberia-hdpe"], ["Tubería con bridas", "/productos/tuberias/tuberia-con-bridas"]],
 });
 
 lineTests({
@@ -457,7 +460,7 @@ lineTests({
   za: "Tapa para válvula",
   emptyHeading: "No encontramos productos con esos datos",
   resetButton: "Ver todos los productos",
-  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/contacto?motivo=documentacion&documento=Rejilla%20pluvial"]],
+  cards: [["Tapa circular dúctil", "/productos/marcos-y-tapas/marco-tapa-d400"], ["Rejilla pluvial", "/productos/marcos-y-tapas/rejilla-pluvial"]],
 });
 
 test.describe("W04 / W05 / W10-W12 enlaces", () => {
@@ -469,11 +472,11 @@ test.describe("W04 / W05 / W10-W12 enlaces", () => {
       expect(await page.locator("main button[type='button']:not([role='tab'])").count()).toBe(0);
     });
   }
-  test("W04: solicitar ficha de tubería HDPE abre contacto con el producto indicado", async ({ page }) => {
+  test("W04: la tarjeta de tubería HDPE abre su ficha (por confirmar) y no Contacto", async ({ page }) => {
     await page.goto("/productos/tuberias");
-    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Solicitar ficha", exact: true }).click();
-    await expect(page).toHaveURL(/\/contacto\?motivo=documentacion&documento=Tuber%C3%ADa%20HDPE$/);
-    await expect(page.locator('textarea[name="message"]')).toHaveValue(/Tubería HDPE/);
+    await page.locator('section[aria-label="Catálogo de tuberías"] article').filter({ hasText: "Tubería HDPE" }).getByRole("link", { name: "Ver ficha", exact: true }).click();
+    await expect(page).toHaveURL(/\/productos\/tuberias\/tuberia-hdpe$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Tubería HDPE");
   });
 });
 

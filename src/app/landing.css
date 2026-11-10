@@ -3471,3 +3471,14 @@ html[data-lp-theme="dark"] .lp-search__close:hover {
     justify-content: flex-start;
   }
 }
+
+/* Firefox no estira los ítems de la lista del pie por debajo de su contenido mínimo: el correo largo
+   (cotizaciones@fundigsac.com) empujaba la página 7 px a 390 px y 42 px a 320 px. La columna se ciñe al ancho
+   disponible y el correo puede cortarse donde haga falta. */
+.lp-footer ul {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lp-footer address li > a {
+  overflow-wrap: anywhere;
+}

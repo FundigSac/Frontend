@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 import { CANONICAL_HOST_PATTERN } from "./src/shared/config/env";
 
 const isDev = process.env.NODE_ENV !== "production";
+// Servidor local de pruebas en http://127.0.0.1 (E2E): WebKit aplica upgrade-insecure-requests también a 127.0.0.1 y pediría
+// todo por HTTPS. Solo la suite local lo activa (playwright.config.ts); en Vercel nunca está definida.
+const localHttp = process.env.LOCAL_HTTP_SERVER === "1";
 
 /**
  * CSP: el único tercero en scripts es Google Analytics 4, y solo se carga tras aceptar la analítica. 'unsafe-inline' en script-src es necesario hoy por los scripts inline de Next
@@ -34,7 +37,7 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
-  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+  ...(isDev || localHttp ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 
 // Funciones del navegador que el sitio no usa: se niegan a la página y a cualquier iframe (el mapa de Google incluido).
@@ -71,7 +74,8 @@ const nextConfig: NextConfig = {
   // Los estilos viajan con el HTML: el título se pinta antes de evaluar el JavaScript, que era lo que retrasaba el LCP móvil.
   experimental: { inlineCss: true },
   // Loader propio: las fotos se sirven como variantes WebP pregeneradas (ver src/shared/media/image-loader.ts).
-  images: { loader: "custom", loaderFile: "./src/shared/media/image-loader.ts", minimumCacheTTL: 60 * 60 * 24 * 30, qualities: [60, 70, 72, 75, 85] },
+  // imageSizes suma 480 a los anchos por omisión: el srcset ofrece la variante de 480 px para fotos chicas en teléfonos.
+  images: { loader: "custom", loaderFile: "./src/shared/media/image-loader.ts", minimumCacheTTL: 60 * 60 * 24 * 30, qualities: [60, 70, 72, 75, 85], imageSizes: [32, 48, 64, 96, 128, 256, 384, 480] },
   async redirects() {
     return [
       // La ficha FUNDIGSAC con garantía extendida antes tenía otra URL.
