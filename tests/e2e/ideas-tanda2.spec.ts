@@ -147,7 +147,7 @@ test.describe("/productos: conteo por filtro (X5-1) y familias nuevas", () => {
 
   test("con una búsqueda, las familias sin resultados quedan desactivadas", async ({ page }) => {
     await page.goto("/productos");
-    await hydrated(page, 'input[type="search"]');
+    await hydrated(page, 'main input[type="search"]');
     await page.getByRole("searchbox", { name: "Buscar productos por nombre, referencia o aplicación" }).fill("medidor");
     await expect(familyButton(page, "Todas")).toContainText("1");
     await expect(familyButton(page, "Medidores")).toBeEnabled();

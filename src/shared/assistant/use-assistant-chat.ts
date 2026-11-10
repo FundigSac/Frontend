@@ -144,6 +144,14 @@ export function useAssistantChat(lang: Lang, page: string, onSettled?: (result: 
     if (!busy) save(messages);
   }, [messages, busy]);
 
+  // Al recargar o salir justo cuando termina una respuesta, el guardado de arriba podía no haber corrido aún (Safari):
+  // se guarda también al ocultar la página. Una respuesta a medias se marca como terminada al volver (load).
+  useEffect(() => {
+    const flush = () => save(messagesRef.current);
+    window.addEventListener("pagehide", flush);
+    return () => window.removeEventListener("pagehide", flush);
+  }, []);
+
   useEffect(() => () => abortRef.current?.abort(), []);
 
   const send = useCallback(

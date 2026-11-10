@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpDown, ChevronDown, Filter, MessageCircleMore, Search } from "lucide-react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CatalogCell, CatalogFamily } from "@/modules/catalog/public-catalog";
 import { useLang } from "@/shared/layout/landing-prefs";
 import { FAMILY_UI } from "./catalog-family-copy";
@@ -55,6 +55,14 @@ export function CatalogFamilyView({ family, cells, specs = {} }: { family: Catal
 
   const name = family.name[lang];
   const searchRef = useRef<HTMLInputElement>(null);
+  // Lo escrito antes de que React tome la página (Safari en iPhone, equipos lentos) se adopta al hidratar.
+  useEffect(() => {
+    const typed = searchRef.current?.value ?? "";
+    if (typed) {
+      setFiltered(true);
+      setQueryState(typed);
+    }
+  }, []);
   const f = FILTER_UI[lang];
   const lineLabel = lines.find((entry) => entry.id === line)?.label[lang];
   const chips: FilterChip[] = [

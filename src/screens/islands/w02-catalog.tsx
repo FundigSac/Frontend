@@ -135,6 +135,15 @@ export function W02Catalog({
   );
   // Cuántos productos dejaría ver cada filtro con la búsqueda actual (X5-1); los que quedan en 0 se desactivan.
   const counts = useMemo(() => facetCounts(query), [query]);
+  // En equipos lentos (Safari en iPhone) se puede escribir antes de que React tome la página: lo escrito quedaba en el
+  // campo pero no filtraba. Al hidratar se adopta el texto que ya tenga el campo.
+  useEffect(() => {
+    const typed = searchRef.current?.value ?? "";
+    if (typed && typed !== latest.current.query) {
+      setFiltered(true);
+      setQuery(typed);
+    }
+  }, []);
   const facetId = useId();
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
